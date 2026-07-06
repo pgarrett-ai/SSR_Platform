@@ -13,11 +13,12 @@ __pycache__/
 node_modules/
 dist/
 
-# runtime state (SQLite DBs, trained model bundles incl. .prev backups)
+# runtime state (SQLite DBs, trained model bundles incl. .prev backups, launch logs)
 *.db
 *.joblib
 *.joblib.*
 *.pkl
+.logs/
 
 # editor/os noise
 .DS_Store
