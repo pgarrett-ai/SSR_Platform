@@ -19,6 +19,7 @@ dist/
 *.joblib.*
 *.pkl
 .logs/
+platform/backend/app/data/runtime_settings.json
 
 # editor/os noise
 .DS_Store
