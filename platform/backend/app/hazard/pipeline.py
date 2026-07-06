@@ -110,11 +110,12 @@ def _quarterly_risk_timeline(company, sym: str, altman, years: int) -> list[dict
     return out if any(p["risk"] is not None for p in out) else []
 
 
-def _trend(risk_series: list[Optional[float]]) -> dict:
+def _trend(risk_series: list[Optional[float]], steps_per_year: int = 1) -> dict:
+    """Slope of the last 4 timeline points, annualized (UI label says risk/yr)."""
     pts = [r for r in risk_series if r is not None][-4:]
     if len(pts) < 2:
         return {"direction": "n/a", "slope": None}
-    slope = float(np.polyfit(range(len(pts)), pts, 1)[0])   # risk units / year
+    slope = float(np.polyfit(range(len(pts)), pts, 1)[0]) * steps_per_year
     direction = "worsening" if slope > 2 else ("improving" if slope < -2 else "stable")
     return {"direction": direction, "slope": round(slope, 2)}
 
@@ -147,6 +148,7 @@ def analyze(ticker: str, years: int = 10) -> dict:
     # Risk timeline: quarterly composite when 10-Q XBRL supports it; annual Altman fallback.
     altman = next(s for s in scorers if s.name == "Altman Z''")
     risk_timeline = _quarterly_risk_timeline(company, sym, altman, years)
+    steps_per_year = 4 if risk_timeline else 1
     if not risk_timeline:
         for t in timeline:
             sc = altman.score(t)
@@ -187,7 +189,7 @@ def analyze(ticker: str, years: int = 10) -> dict:
             "composite_of": composite_of,
             "distress_pd": merton.get("pd") if merton.get("available") else None,
             "distance_to_default": merton.get("value") if merton.get("available") else None,
-            "trend": _trend([r["risk"] for r in risk_timeline]),
+            "trend": _trend([r["risk"] for r in risk_timeline], steps_per_year),
         },
         "cross_signals": cross,
         "scores": scores,
