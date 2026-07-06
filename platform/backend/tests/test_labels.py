@@ -91,6 +91,28 @@ def test_sd_events_from_frame():
     assert norm_name('"Beta Retail Corp"'.strip('"')) == "BETA RETAIL"
 
 
+def test_sd_events_from_frame_moodys_config():
+    frame = pd.DataFrame([
+        # organization-level C -> default event
+        {"obligor_name": '"Alpha Airways, Inc."', "central_index_key": "0001234",
+         "rating": "C", "rating_action_date": "2020-05-01",
+         "rating_type": "Organization"},
+        # Ca is "very near default", not default -> ignored
+        {"obligor_name": '"Beta Retail Corp"', "central_index_key": "0000777",
+         "rating": "Ca", "rating_action_date": "2019-01-15",
+         "rating_type": "Organization"},
+        # instrument-level C -> ignored (type must equal Organization)
+        {"obligor_name": '"Delta Corp"', "central_index_key": "0009999",
+         "rating": "C", "rating_action_date": "2020-01-01",
+         "rating_type": "Instrument"},
+    ])
+    events, unmatched = sd_events_from_frame(frame, {}, ratings={"C"},
+                                             type_pattern="^Organization$",
+                                             source="moodys_c")
+    assert unmatched == 0
+    assert [(e["cik"], e["source"]) for e in events] == [("1234", "moodys_c")]
+
+
 def test_sd_merge_keeps_earliest_event(tmp_path, monkeypatch):
     ev_path, sd_path = tmp_path / "ev.json", tmp_path / "sd.json"
     ev_path.write_text(json.dumps([

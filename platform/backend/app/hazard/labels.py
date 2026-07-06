@@ -23,9 +23,10 @@ Honesty notes baked in:
     frequency; the bundle stores the MEASURED base rate (events / universe firm-years) and
     the scorer applies a King–Zeng prior correction, then maps PD to an implied agency
     rating band (see train.prior_correct / score.implied_rating).
-  * label enrichment (data/sd_events.json, via --harvest-sd): Fitch 17g-7 D/RD issuer
-    rating actions — distressed exchanges and missed payments that never file an
-    Item 1.03 8-K; merged with the earliest event winning per CIK.
+  * label enrichment (data/sd_events.json, via --harvest-sd): 17g-7 rating default
+    actions (Fitch issuer D/RD, Moody's organization C) — distressed exchanges and
+    missed payments that never file an Item 1.03 8-K; merged with the earliest event
+    winning per CIK.
   * market features: each panel row also carries trailing-window equity vol / drawdown /
     excess return AS OF that fiscal year end (market.pit_market_features — no lookahead);
     delisted firms without price history just leave them NaN.
@@ -127,7 +128,7 @@ def load_or_harvest_events(start_year: int = 2015, end_year: Optional[int] = Non
         events = harvest_default_events(start_year, end_year or dt.date.today().year)
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         EVENTS_PATH.write_text(json.dumps(events, indent=1), encoding="utf-8")
-    if SD_PATH.exists():   # enrich with Fitch 17g-7 D/RD events; keep the earliest event per CIK
+    if SD_PATH.exists():   # enrich with 17g-7 rating default events; earliest event per CIK
         by_cik = {e["cik"]: e for e in events}
         for ev in json.loads(SD_PATH.read_text(encoding="utf-8")):
             cur = by_cik.get(ev["cik"])
@@ -139,13 +140,15 @@ def load_or_harvest_events(start_year: int = 2015, end_year: Optional[int] = Non
 
 # ---------------------------------------------------------------------------
 # Rating-based default events (Rule 17g-7 histories) — distressed exchanges and
-# missed payments get a Fitch D/RD without ever filing an 8-K Item 1.03
+# missed payments get a rating default action without ever filing an 8-K Item 1.03
 # ---------------------------------------------------------------------------
 
 # ratingshistory.info republishes the NRSROs' regulatory 17g-7 XBRL as CSV, monthly.
 # S&P's own portal is bot-walled; Fitch D/RD covers the same event class (RD = restricted
 # default, Fitch's marker for distressed exchanges).
 _FITCH_CSV = "https://ratingshistory.info/api/public/20260501%20Fitch%20Ratings%20Corporate.csv"
+_MOODYS_CSV = ("https://ratingshistory.info/api/public/"
+               "20240715%20Moody's%20Investors%20Service%20Corporate.csv")
 _CIK_LOOKUP = "https://www.sec.gov/Archives/edgar/cik-lookup-data.txt"
 
 _NAME_SUFFIXES = {"INC", "CORP", "CO", "LLC", "LP", "LTD", "PLC",
@@ -185,14 +188,17 @@ def _cik_by_name() -> dict[str, str]:
     return out
 
 
-def sd_events_from_frame(df, lookup: dict[str, str]) -> tuple[list[dict], int]:
+def sd_events_from_frame(df, lookup: dict[str, str], ratings: set[str] = frozenset({"D", "RD"}),
+                         type_pattern: str = "Issuer Default",
+                         source: str = "fitch_rd") -> tuple[list[dict], int]:
     """Pure part of the SD harvest: 17g-7 frame + name->CIK lookup -> (events, unmatched).
-    First issuer-level D/RD action per obligor; CIK from the file where present, else a
-    unique normalized-name match; unmatched obligors (mostly non-SEC filers) are skipped."""
+    First issuer-level default-rating action per obligor, where "default rating" =
+    `ratings` on rows whose rating_type matches `type_pattern` (regex). CIK from the file
+    where present, else a unique normalized-name match; unmatched obligors (mostly
+    non-SEC filers) are skipped."""
     import pandas as pd
 
-    m = df["rating"].isin(["D", "RD"]) & df["rating_type"].str.contains("Issuer Default",
-                                                                        na=False)
+    m = df["rating"].isin(ratings) & df["rating_type"].str.contains(type_pattern, na=False)
     d = df.loc[m, ["obligor_name", "central_index_key", "rating_action_date"]].copy()
     d["obligor_name"] = d["obligor_name"].fillna("").str.strip('"')
     d = d.sort_values("rating_action_date").drop_duplicates("obligor_name")
@@ -205,22 +211,39 @@ def sd_events_from_frame(df, lookup: dict[str, str]) -> tuple[list[dict], int]:
             unmatched += 1
             continue
         events.append({"cik": cik, "name": row["obligor_name"],
-                       "filed": row["rating_action_date"], "source": "fitch_rd"})
+                       "filed": row["rating_action_date"], "source": source})
     return sorted(events, key=lambda e: e["filed"]), unmatched
 
 
-def harvest_sd_events(csv_url: str = _FITCH_CSV) -> list[dict]:
-    """Download Fitch's Rule 17g-7 corporate rating history and extract default events."""
+# (url, default-rating set, rating_type regex, source tag). Moody's 17g-7 has no D/SD
+# rating at all — organization-level C ("typically in default") is its default marker;
+# Ca ("likely in or very near default") is deliberately excluded as too soft.
+_SD_SOURCES = [
+    (_FITCH_CSV, {"D", "RD"}, "Issuer Default", "fitch_rd"),
+    (_MOODYS_CSV, {"C"}, "^Organization$", "moodys_c"),
+]
+
+
+def harvest_sd_events() -> list[dict]:
+    """Download the NRSROs' Rule 17g-7 corporate rating histories and extract default
+    events, earliest event per CIK across sources."""
     import pandas as pd
 
-    req = urllib.request.Request(csv_url,
-                                 headers={"User-Agent": get_settings().sec_user_agent})
-    with urllib.request.urlopen(req, timeout=300) as r:
-        df = pd.read_csv(io.BytesIO(r.read()), dtype=str)
-    events, unmatched = sd_events_from_frame(df, _cik_by_name())
-    print(f"  fitch 17g-7: {len(events)} D/RD issuers matched to a CIK, "
-          f"{unmatched} unmatched (mostly non-SEC filers)")
-    return events
+    lookup = _cik_by_name()
+    by_cik: dict[str, dict] = {}
+    for url, ratings, type_pattern, source in _SD_SOURCES:
+        req = urllib.request.Request(url,
+                                     headers={"User-Agent": get_settings().sec_user_agent})
+        with urllib.request.urlopen(req, timeout=300) as r:
+            df = pd.read_csv(io.BytesIO(r.read()), dtype=str)
+        events, unmatched = sd_events_from_frame(df, lookup, ratings, type_pattern, source)
+        print(f"  {source}: {len(events)} issuers matched to a CIK, "
+              f"{unmatched} unmatched (mostly non-SEC filers)")
+        for ev in events:
+            cur = by_cik.get(ev["cik"])
+            if cur is None or ev["filed"] < cur["filed"]:
+                by_cik[ev["cik"]] = ev
+    return sorted(by_cik.values(), key=lambda e: e["filed"])
 
 
 # ---------------------------------------------------------------------------
@@ -413,11 +436,11 @@ if __name__ == "__main__":
     ap.add_argument("--controls", type=int, default=120)
     ap.add_argument("--start-year", type=int, default=2015)
     ap.add_argument("--harvest-sd", action="store_true",
-                    help="(re)harvest Fitch 17g-7 D/RD events into data/sd_events.json")
+                    help="(re)harvest 17g-7 rating default events into data/sd_events.json")
     args = ap.parse_args()
 
     if args.harvest_sd:
-        print("0/3 harvesting Fitch 17g-7 D/RD events…")
+        print("0/3 harvesting 17g-7 rating default events (Fitch D/RD, Moody's C)…")
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         SD_PATH.write_text(json.dumps(harvest_sd_events(), indent=1), encoding="utf-8")
 
@@ -435,8 +458,8 @@ if __name__ == "__main__":
     sample_rate = float(df["label"].mean())
     print(f"   base rate: {true_rate:.4%}/yr measured vs {sample_rate:.2%} in-sample "
           f"-> prior correction stored in bundle")
-    label_kind = ("8-K Item 1.03 + Fitch 17g-7 D/RD harvest" if SD_PATH.exists()
-                  else "8-K Item 1.03 harvest")
+    label_kind = ("8-K Item 1.03 + 17g-7 rating defaults (Fitch D/RD, Moody's C)"
+                  if SD_PATH.exists() else "8-K Item 1.03 harvest")
     label_source = (f"{label_kind} {args.start_year}–{events[-1]['filed'][:4]} "
                     f"({int(df['label'].sum())} default firm-years / {len(df)} rows; "
                     f"controls from point-in-time 10-K filer universe "
