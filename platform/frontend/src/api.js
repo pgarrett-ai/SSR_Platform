@@ -6,6 +6,16 @@ export async function fetchHealth() {
   return r.json();
 }
 
+export async function setLlmEnabled(enabled) {
+  const r = await fetch("/api/settings/llm", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ enabled }),
+  });
+  if (!r.ok) throw new Error("toggle failed");
+  return r.json();
+}
+
 export async function fetchOverview(ticker, years, live = false) {
   const url = `/api/overview?ticker=${encodeURIComponent(ticker)}&years=${years}&live=${live}`;
   const r = await fetch(url);

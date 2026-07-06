@@ -26,7 +26,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from . import models
 from .core.cache import cached_tickers
-from .core.config import get_settings
+from .core.config import get_settings, set_llm_runtime_enabled
 from .core.db import init_db, session_scope
 from .edgar.client import NoFilingsError, TickerNotFoundError
 from .fulcrum import CapitalStructure, Entity, SimConfig, Tranche
@@ -70,10 +70,22 @@ def health() -> dict:
     return {
         "status": "ok",
         "llm_enabled": s.llm_enabled,
+        "llm_key_set": s.llm_key_set,   # lets the UI tell "toggled off" from "no key"
         "hero_tickers": sorted(s.hero_ticker_set),
         "cached": cached_tickers(),
         "sec_user_agent_set": bool(s.sec_user_agent and "example.com" not in s.sec_user_agent),
     }
+
+
+class LlmToggleBody(BaseModel):
+    enabled: bool
+
+
+@app.post("/api/settings/llm")
+def set_llm(body: LlmToggleBody) -> dict:
+    set_llm_runtime_enabled(body.enabled)
+    s = get_settings()
+    return {"llm_enabled": s.llm_enabled, "llm_key_set": s.llm_key_set}
 
 
 def _handle_pipeline_errors(fn):

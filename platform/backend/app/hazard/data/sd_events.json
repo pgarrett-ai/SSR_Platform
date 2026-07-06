@@ -24,6 +24,18 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "908262",
+  "name": "Cinram International Inc.",
+  "filed": "2012-06-27",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "75208",
+  "name": "Overseas Shipholding Group, Inc.",
+  "filed": "2012-10-22",
+  "source": "moodys_c"
+ },
+ {
   "cik": "1263050",
   "name": "Texas Competitive Electric Holdings Company LLC",
   "filed": "2012-12-05",
@@ -54,6 +66,12 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1551512",
+  "name": "Revel Atlantic City, LLC",
+  "filed": "2013-03-26",
+  "source": "moodys_c"
+ },
+ {
   "cik": "931987",
   "name": "Corporacion GEO, S.A. de C.V.",
   "filed": "2013-05-08",
@@ -66,6 +84,12 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1180941",
+  "name": "hibu Plc",
+  "filed": "2013-07-29",
+  "source": "moodys_c"
+ },
+ {
   "cik": "1678131",
   "name": "Winsway Enterprises Holdings Limited",
   "filed": "2013-10-15",
@@ -76,6 +100,24 @@
   "name": "OGX Petroleo E Gas Participacoes S.A.",
   "filed": "2013-10-31",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1258150",
+  "name": "Seat Pagine Gialle S.p.a.",
+  "filed": "2013-12-02",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1283898",
+  "name": "Sare Holding, S.A.B. de C.V.",
+  "filed": "2014-07-15",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1347850",
+  "name": "Northland Resources AB",
+  "filed": "2014-10-21",
+  "source": "moodys_c"
  },
  {
   "cik": "858395",
@@ -96,6 +138,12 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1484705",
+  "name": "Magnetation LLC",
+  "filed": "2015-05-06",
+  "source": "moodys_c"
+ },
+ {
   "cik": "1161785",
   "name": "Abengoa S.A.",
   "filed": "2015-12-14",
@@ -104,14 +152,38 @@
  {
   "cik": "1037676",
   "name": "Arch Resources, Inc.",
-  "filed": "2016-01-12",
-  "source": "fitch_rd"
+  "filed": "2016-01-11",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1449216",
+  "name": "Hidili Industry International Development Ltd",
+  "filed": "2016-01-22",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1421845",
+  "name": "Noranda Aluminum Acquisition Corporation",
+  "filed": "2016-02-08",
+  "source": "moodys_c"
  },
  {
   "cik": "1486724",
   "name": "China Fishery Group Ltd.",
   "filed": "2016-03-01",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1414937",
+  "name": "UCI INTERNATIONAL, LLC",
+  "filed": "2016-03-21",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1346980",
+  "name": "Chaparral Energy, Inc.",
+  "filed": "2016-04-07",
+  "source": "moodys_c"
  },
  {
   "cik": "1064728",
@@ -132,6 +204,12 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "892986",
+  "name": "Warren Resources, Inc.",
+  "filed": "2016-05-10",
+  "source": "moodys_c"
+ },
+ {
   "cik": "1160846",
   "name": "Oi S.A.",
   "filed": "2016-06-21",
@@ -144,10 +222,28 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "911692",
+  "name": "Carboclor S.A.",
+  "filed": "2017-01-03",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1448701",
+  "name": "PDG Realty S.A. Empreend. e Part",
+  "filed": "2017-02-03",
+  "source": "moodys_c"
+ },
+ {
   "cik": "739708",
   "name": "iHeartCommunications, Inc.",
   "filed": "2017-02-08",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "885012",
+  "name": "Empresas ICA, S.A.B. de C.V.",
+  "filed": "2017-08-30",
+  "source": "moodys_c"
  },
  {
   "cik": "1722814",
@@ -160,6 +256,18 @@
   "name": "Toys 'R' Us - Delaware, Inc.",
   "filed": "2017-09-19",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1062781",
+  "name": "Ultrapetrol (Bahamas) Limited",
+  "filed": "2017-12-12",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "316300",
+  "name": "EXCO Resources, Inc.",
+  "filed": "2017-12-27",
+  "source": "moodys_c"
  },
  {
   "cik": "1286045",
@@ -204,14 +312,14 @@
   "source": "fitch_rd"
  },
  {
-  "cik": "1407702",
-  "name": "Energy Harbor Generation LLC",
-  "filed": "2018-04-03",
-  "source": "fitch_rd"
- },
- {
   "cik": "1407703",
   "name": "FirstEnergy Solutions Corp.",
+  "filed": "2018-04-02",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1407702",
+  "name": "Energy Harbor Generation LLC",
   "filed": "2018-04-03",
   "source": "fitch_rd"
  },
@@ -220,6 +328,12 @@
   "name": "FirstEnergy Nuclear Generation, LLC",
   "filed": "2018-04-03",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1058626",
+  "name": "Transworld Systems, Inc.",
+  "filed": "2018-06-01",
+  "source": "moodys_c"
  },
  {
   "cik": "1784823",
@@ -232,6 +346,18 @@
   "name": "CHS/Community Health Systems, Inc.",
   "filed": "2018-06-25",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1482892",
+  "name": "House of Fraser (UK & Ireland) Limited",
+  "filed": "2018-08-14",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "106455",
+  "name": "Westmoreland Coal Company",
+  "filed": "2018-10-11",
+  "source": "moodys_c"
  },
  {
   "cik": "319256",
@@ -254,8 +380,8 @@
  {
   "cik": "1004980",
   "name": "PG&E Corporation",
-  "filed": "2019-01-30",
-  "source": "fitch_rd"
+  "filed": "2019-01-14",
+  "source": "moodys_c"
  },
  {
   "cik": "1585644",
@@ -282,6 +408,18 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1493144",
+  "name": "Cloud Peak Energy Resources LLC",
+  "filed": "2019-05-13",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1637655",
+  "name": "Horizon Global Corporation",
+  "filed": "2019-06-14",
+  "source": "moodys_c"
+ },
+ {
   "cik": "1575969",
   "name": "Avianca Holdings S.A.",
   "filed": "2019-07-22",
@@ -294,14 +432,14 @@
   "source": "fitch_rd"
  },
  {
-  "cik": "1540729",
-  "name": "Foresight Energy LP",
-  "filed": "2020-03-11",
-  "source": "fitch_rd"
+  "cik": "1640281",
+  "name": "Murray Energy Corporation",
+  "filed": "2019-10-30",
+  "source": "moodys_c"
  },
  {
   "cik": "1540729",
-  "name": "Foresight Energy LLC",
+  "name": "Foresight Energy LP",
   "filed": "2020-03-11",
   "source": "fitch_rd"
  },
@@ -390,10 +528,22 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1549848",
+  "name": "Hi-Crush Inc.",
+  "filed": "2020-07-13",
+  "source": "moodys_c"
+ },
+ {
   "cik": "1737484",
   "name": "Fieldwood Energy LLC",
   "filed": "2020-08-05",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1029787",
+  "name": "Town Sports International, LLC",
+  "filed": "2020-08-31",
+  "source": "moodys_c"
  },
  {
   "cik": "1661920",
@@ -414,16 +564,34 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1400561",
+  "name": "Boart Longyear Limited",
+  "filed": "2021-09-10",
+  "source": "moodys_c"
+ },
+ {
   "cik": "1161976",
   "name": "Talen Energy Supply, LLC",
   "filed": "2022-05-11",
   "source": "fitch_rd"
  },
  {
+  "cik": "1452217",
+  "name": "TPC Group Inc.",
+  "filed": "2022-06-06",
+  "source": "moodys_c"
+ },
+ {
   "cik": "1737927",
   "name": "Canopy Growth Corporation",
   "filed": "2022-07-20",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1344154",
+  "name": "Envision Healthcare Corporation",
+  "filed": "2022-09-21",
+  "source": "moodys_c"
  },
  {
   "cik": "885590",
@@ -454,6 +622,24 @@
   "name": "Avaya LLC",
   "filed": "2023-02-16",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1870997",
+  "name": "Loyalty Ventures Inc.",
+  "filed": "2023-03-10",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "1849276",
+  "name": "Diamond Sports Group, LLC",
+  "filed": "2023-03-16",
+  "source": "moodys_c"
+ },
+ {
+  "cik": "57725",
+  "name": "Lannett Company, Inc.",
+  "filed": "2023-05-02",
+  "source": "moodys_c"
  },
  {
   "cik": "1533523",

@@ -83,6 +83,10 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("stockholders_equity", "Stockholders' equity", "BalanceSheet", "instant",
                ("StockholdersEquity",
                 "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest")),
+    # per-quarter Merton E = shares × price. us-gaap concept lands exactly on the balance-sheet
+    # date; the dei cover-page tag is dated days later so it rarely anchors — kept as fallback.
+    MetricSpec("shares_outstanding", "Common shares outstanding", "BalanceSheet", "instant",
+               ("CommonStockSharesOutstanding", "dei:EntityCommonStockSharesOutstanding")),
     # --- income statement (duration) ---
     MetricSpec("revenue", "Revenue", "IncomeStatement", "duration",
                ("RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues",
@@ -182,8 +186,9 @@ def _rank(fact, statement: Optional[str]) -> tuple:
 
 
 def _query_concept(entity_facts, concept: str, statement: Optional[str]):
-    """Return raw facts for a concept, trying the statement filter first, then unfiltered."""
-    base = f"us-gaap:{concept}"
+    """Return raw facts for a concept, trying the statement filter first, then unfiltered.
+    Bare concept names get the us-gaap prefix; qualified ones (e.g. dei:…) pass through."""
+    base = concept if ":" in concept else f"us-gaap:{concept}"
     results = []
     if statement:
         try:

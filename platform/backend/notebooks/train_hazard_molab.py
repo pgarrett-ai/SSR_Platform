@@ -78,7 +78,13 @@ def _(backend, controls, defaulters, mo, ua):
     from app.hazard.train import train_from_panel
 
     events = load_or_harvest_events(2010)
-    print(f"{len(events)} default events {events[0]['filed']} … {events[-1]['filed']}")
+    # Shuffle so a partial run samples firms uniformly instead of chronologically.
+    # Leak-free: every row is point-in-time per firm-year and walk-forward folds
+    # split on the observation's calendar year — order changes WHICH firms enter,
+    # never a row's temporal content.
+    import random
+    random.Random(0).shuffle(events)
+    print(f"{len(events)} default events across {len({e['cik'] for e in events})} firms")
     df = build_real_panel(events, defaulters.value, controls.value, start_year=2010)
     true_rate = annual_default_rate(events, load_or_harvest_universe(2010))
     aucs, bundle = train_from_panel(df, save=True, meta={

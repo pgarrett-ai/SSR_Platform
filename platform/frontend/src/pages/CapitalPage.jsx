@@ -87,6 +87,15 @@ export default function CapitalPage({ ticker, years, health }) {
   }, [cacheKey]);
 
   const flags = overview?.forensic_flags || [];
+  // Badge for LLM-derived sections: fresh run → none; spliced prior snapshot → "prior
+  // analysis"; nothing to show → "LLM off". Full note (with date) rides in warnings.
+  const llmBadge = overview?.header?.llm_enabled
+    ? null
+    : overview?.llm_fallback_note?.startsWith("Prior")
+      ? "prior analysis"
+      : health?.llm_key_set === false
+        ? "needs API key"
+        : "LLM off";
 
   return (
     <div>
@@ -110,7 +119,11 @@ export default function CapitalPage({ ticker, years, health }) {
           </a>
         )}
         {health && !health.llm_enabled && (
-          <span className="text-amber-400">LLM key not set — OBS/covenant sections skipped</span>
+          <span className="text-amber-400">
+            {health.llm_key_set
+              ? "LLM analysis is off — live runs reuse the last saved analysis"
+              : "LLM key not set — OBS/covenant sections skipped"}
+          </span>
         )}
       </div>
 
@@ -137,7 +150,7 @@ export default function CapitalPage({ ticker, years, health }) {
           <Section
             title="Economic Debt Bridge"
             subtitle="reported debt → economic (adjusted) debt"
-            badge={overview.header.llm_enabled ? null : "needs API key"}
+            badge={llmBadge}
           >
             <EconomicDebtBridge bridge={overview.economic_debt_bridge} />
           </Section>
@@ -145,6 +158,7 @@ export default function CapitalPage({ ticker, years, health }) {
           <Section
             title="As-reported debt schedule"
             subtitle={`${overview.debt_schedule?.length || 0} instruments from the debt footnote`}
+            badge={llmBadge}
           >
             <DebtScheduleTable instruments={overview.debt_schedule} />
             {overview.maturity_wall?.length > 0 && <MaturityWall wall={overview.maturity_wall} />}
@@ -173,6 +187,7 @@ export default function CapitalPage({ ticker, years, health }) {
           <Section
             title="Off-balance-sheet findings"
             subtitle={`${overview.obs_items?.length || 0} items extracted from footnotes & MD&A`}
+            badge={llmBadge}
           >
             <ObsFindings items={overview.obs_items} />
           </Section>
@@ -189,6 +204,7 @@ export default function CapitalPage({ ticker, years, health }) {
           <Section
             title="Covenant summary"
             subtitle={`${overview.covenants?.length || 0} agreement(s) from EX-10.x / EX-4.x`}
+            badge={llmBadge}
           >
             <CovenantCard covenants={overview.covenants} />
           </Section>

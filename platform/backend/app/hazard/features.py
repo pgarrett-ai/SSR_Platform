@@ -99,6 +99,28 @@ def year_features(yf: YearFacts) -> dict:
     return f
 
 
+class _TTMFact:
+    """Fact-shaped wrapper so raw_value/year_features can read TTM floats."""
+    __slots__ = ("numeric_value",)
+
+    def __init__(self, v):
+        self.numeric_value = v
+
+
+def quarter_features(qf) -> dict:
+    """Same features as year_features, at one quarter end: instant facts at that date +
+    trailing-4-quarter (TTM) flows. QuarterFacts.ttm holds plain floats — wrap them
+    fact-shaped and reuse year_features unchanged."""
+    view = YearFacts(fiscal_year=qf.period_end.year, period_end=qf.period_end,
+                     metrics={**{k: _TTMFact(v) for k, v in qf.ttm.items() if v is not None},
+                              **qf.metrics})
+    f = year_features(view)
+    f["label"] = qf.label
+    f["period_end"] = qf.period_end.isoformat()
+    f["shares_outstanding"] = raw_value(view, "shares_outstanding")
+    return f
+
+
 def year_citations(yf: YearFacts, cik: str) -> dict:
     """Filing provenance for the raw-figures table (Risk page drill-down). Single-fact
     metrics cite their filing verbatim; composites (total debt, EBITDA, FCF) carry the

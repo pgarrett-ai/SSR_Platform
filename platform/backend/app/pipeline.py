@@ -12,7 +12,7 @@ from typing import Optional
 
 from .capstack.bridge import build_bridge
 from .capstack.covenants import extract_covenant_summary, find_credit_documents
-from .core.cache import is_hero, load_overview, save_overview
+from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
 from .capstack.debt_schedule import extract_debt_schedule
 from .capstack.forensic import build_forensic_table, detect_flags
 from .capstack.mdna_drift import build_drift
@@ -125,12 +125,19 @@ def run_overview(
     debt_schedule = []
     covenants = []
     subsidiaries = []
+    # Document text is fetched even when the LLM is off (runtime toggle or no key) so the
+    # EDGAR disk cache stays warm and re-enabling analyzes instantly.
+    ft = None
+    try:
+        progress.emit("Fetching latest 10-K text…", step="obs", pct=65)
+        latest_10k = company.get_filings(form="10-K").latest(1)
+        ft = get_filing_text(latest_10k) if latest_10k is not None else None
+    except Exception as exc:
+        warnings.append(f"10-K text fetch failed: {exc}")
     if settings.llm_enabled:
         try:
             progress.emit("Extracting footnotes & MD&A (leases, pension, supplier finance, "
                           "guarantees, VIEs)…", step="obs", pct=68)
-            latest_10k = company.get_filings(form="10-K").latest(1)
-            ft = get_filing_text(latest_10k) if latest_10k is not None else None
             if ft is None:
                 warnings.append("Could not extract 10-K text — OBS bridge skipped.")
             else:
@@ -154,11 +161,17 @@ def run_overview(
             warnings.append(f"OBS/bridge step failed: {exc}")
             progress.emit(f"OBS/bridge step failed: {exc}", step="obs", pct=80)
 
-        # --- Phase 4: covenant extraction from credit agreements / indentures (§5) ---
+    # --- Phase 4: covenant extraction from credit agreements / indentures (§5) ---
+    credit_docs = []
+    try:   # locating + fetching the exhibits is EDGAR-only — always runs (warms cache)
+        progress.emit("Locating credit agreements / indentures…", step="covenants", pct=83)
+        credit_docs = find_credit_documents(company, years)
+    except Exception as exc:
+        warnings.append(f"Credit-document fetch failed: {exc}")
+    if settings.llm_enabled:
         try:
-            progress.emit("Locating credit agreements / indentures and extracting covenants…",
+            progress.emit("Extracting covenants from credit documents…",
                           step="covenants", pct=85)
-            credit_docs = find_credit_documents(company, years)
             clause_texts: list[tuple] = []
             for d in credit_docs[:2]:
                 summ, clause, _lme = extract_covenant_summary(d)
@@ -189,7 +202,7 @@ def run_overview(
         except Exception as exc:
             warnings.append(f"Exhibit 21 step failed: {exc}")
     else:
-        progress.emit("Skipping LLM extraction (no ANTHROPIC_API_KEY).", step="obs", pct=88)
+        progress.emit("Skipping LLM extraction (LLM analysis is off).", step="obs", pct=88)
 
     # --- Phase 4.6: leverage timeline, maturity wall, what-changed ---
     # Quarterly TTM cadence when 10-Q XBRL supports it; annual FY-vs-FY fallback otherwise.
@@ -241,6 +254,40 @@ def run_overview(
         warnings.append(f"MD&A drift step failed: {exc}")
         progress.emit(f"MD&A drift step failed: {exc}", step="drift", pct=98)
 
+    # LLM off → splice the LLM-derived sections from the newest cached snapshot so the
+    # dashboard still shows analysis (clearly labeled as prior) instead of empty cards.
+    llm_fallback_note = None
+    if not settings.llm_enabled:
+        prior = load_latest_overview(ticker)
+        if prior is not None and (prior.economic_debt_bridge or prior.obs_items
+                                  or prior.covenants or prior.subsidiaries
+                                  or prior.debt_schedule):
+            # ponytail: the note's date drifts forward if a spliced snapshot is itself
+            # re-spliced later; per-section provenance tracking if that ever matters.
+            snap_date = (prior.header.last_updated or "")[:10] or "an earlier run"
+            llm_fallback_note = (f"Prior analysis from {snap_date} — LLM analysis is off. "
+                                 "Re-enable to refresh.")
+            economic_debt_bridge = economic_debt_bridge or prior.economic_debt_bridge
+            obs_items = obs_items or prior.obs_items
+            covenants = covenants or prior.covenants
+            subsidiaries = subsidiaries or prior.subsidiaries
+            debt_schedule = debt_schedule or prior.debt_schedule
+            # MD&A tone is LLM-derived; the TF-IDF drift itself stays fresh.
+            prior_tone = {(p.period_end, p.form_type): p.liquidity_tone_score
+                          for p in prior.mdna_drift}
+            for p in mdna_drift:
+                if p.liquidity_tone_score is None:
+                    p.liquidity_tone_score = prior_tone.get((p.period_end, p.form_type))
+        else:
+            llm_fallback_note = "LLM analysis is off — re-enable to analyze."
+        warnings.append(llm_fallback_note)
+        if not settings.llm_key_set:
+            warnings.append(
+                "ANTHROPIC_API_KEY not set — covenant and footnote/OBS LLM extraction are "
+                "skipped. EDGAR retrieval, the XBRL debt schedule, and the forensic "
+                "cash-vs-debt flags still run."
+            )
+
     header = IssuerHeader(
         issuer=issuer_name,
         ticker=ticker,
@@ -252,12 +299,6 @@ def run_overview(
         from_cache=False,
         llm_enabled=settings.llm_enabled,
     )
-
-    if not settings.llm_enabled:
-        warnings.append(
-            "ANTHROPIC_API_KEY not set — covenant and footnote/OBS LLM extraction are skipped. "
-            "EDGAR retrieval, the XBRL debt schedule, and the forensic cash-vs-debt flags still run."
-        )
 
     overview = Overview(
         header=header,
@@ -275,6 +316,7 @@ def run_overview(
         what_changed=changes,
         sources=sources,
         warnings=warnings,
+        llm_fallback_note=llm_fallback_note,
     )
 
     # Write back so the next non-live request for this (ticker, years) is instant.
