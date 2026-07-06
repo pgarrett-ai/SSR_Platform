@@ -13,10 +13,13 @@ Single-issuer distressed-credit research: enter a ticker, get an integrated view
   legal-entity trees; quarterly TTM timelines and maturity walls.
 - **Default risk** — scorecards (Altman Z″, Merton distance-to-default with a real PD
   term structure, CHS hazard) alongside a gradient-boosted hazard model trained on real
-  8-K Item 1.03 bankruptcy events (2015–2025), walk-forward validated, with
-  survivorship-bias-free point-in-time controls, competing-risks censoring, and PDs
-  calibrated to a measured base rate and mapped to an implied agency rating band.
-  Cross-module signals (hidden leverage, MD&A tone) blend into the composite.
+  default events (2010–2026): 8-K Item 1.03 bankruptcies plus Fitch 17g-7 D/RD rating
+  actions (distressed exchanges), walk-forward validated with precision/lift and
+  calibration reporting, survivorship-bias-free point-in-time controls, competing-risks
+  censoring, point-in-time market features (trailing vol/drawdown/excess return per
+  fiscal year end), and PDs calibrated to a measured base rate and mapped to an implied
+  agency rating band. Cross-module signals (hidden leverage, MD&A tone) blend into the
+  composite.
 - **Recovery** — editable capital-structure waterfall with Monte Carlo simulation over
   enterprise value: allowed claims (principal + accrued + make-wholes), structural
   subordination across entities, fulcrum-security identification, per-tranche recovery
@@ -52,14 +55,24 @@ cd platform\backend && .venv\Scripts\python -m pytest tests -q
 
 ## Hazard model bundle
 
-Trained model bundles are not committed. Rebuild from primary sources (EDGAR only,
-~15 minutes): `python -m app.hazard.labels --defaulters 120 --controls 120`.
-Harvested event and universe caches ship in `platform/backend/app/hazard/data/`.
+Trained model bundles are not committed. Rebuild from primary sources — a quick pass
+(~15 minutes) or the full panel (multi-hour EDGAR fetch):
+
+```bat
+python -m app.hazard.labels --defaulters 120 --controls 480 --start-year 2010
+python -m app.hazard.labels --defaulters 900 --controls 3600 --start-year 2010
+```
+
+Harvested event and universe caches ship in `platform/backend/app/hazard/data/`
+(`--harvest-sd` refreshes the Fitch 17g-7 D/RD events). Cloud option: open
+`platform/backend/notebooks/train_hazard_molab.py` on https://molab.marimo.io
+(New notebook → paste the file's GitHub URL) and run it there.
 
 ## Data sources
 
-SEC EDGAR (XBRL company facts, full-text search, filing documents) · yfinance market
-data · FINRA fixed-income data (optional).
+SEC EDGAR (XBRL company facts, full-text search, filing documents, historical CIK
+lookup) · Fitch Rule 17g-7 rating histories (via ratingshistory.info CSV conversion) ·
+yfinance market data · FINRA fixed-income data (optional).
 
 ## Disclaimer
 

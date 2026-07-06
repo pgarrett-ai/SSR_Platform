@@ -7,6 +7,7 @@ degrades to None on failure rather than killing the pipeline.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Optional
 
 import numpy as np
@@ -32,6 +33,61 @@ def _annualized_vol(close: np.ndarray) -> Optional[float]:
     if len(rets) < 30:
         return None
     return float(np.std(rets[-252:], ddof=1) * np.sqrt(252))
+
+
+def price_history(ticker: str):
+    """Full daily adjusted-close history for one ticker as a tz-naive pandas Series, or None.
+    One download per firm; pit_market_features slices it per fiscal year end."""
+    try:
+        import yfinance as yf
+        hist = yf.Ticker(ticker).history(period="max", auto_adjust=True)
+        if hist is None or hist.empty:
+            return None
+        close = hist["Close"]
+        close.index = close.index.tz_localize(None)
+        close = close[np.isfinite(close)]
+        return close if len(close) else None
+    except Exception:
+        return None
+
+
+@lru_cache(maxsize=1)
+def benchmark_history(index: str = "SPY"):
+    return price_history(index)
+
+
+def pit_market_features(close, period_end, bench=None) -> dict:
+    """Point-in-time market features from the ~252 trading days ending at period_end —
+    nothing after period_end is touched, so panel rows carry no lookahead. Same semantics
+    as the live snapshot in get_market_data (equity_vol / drawdown_52w / excess_return_1y),
+    which is what the trained scorer overlays at serving time."""
+    out = {"equity_vol": None, "drawdown_52w": None, "excess_return_1y": None}
+    if close is None:
+        return out
+    import pandas as pd
+    end = pd.Timestamp(period_end)
+    w = close.loc[:end].tail(253)
+    # stale-history guard: a recycled/delisted ticker whose data stops (or starts) far from
+    # period_end must not contribute another firm's — or years-old — prices
+    if len(w) < 60 or (end - w.index[-1]).days > 60:
+        return out
+    arr = w.to_numpy(dtype=float)
+    rets = np.diff(np.log(arr))
+    rets = rets[np.isfinite(rets)]
+    if len(rets) >= 30:
+        out["equity_vol"] = float(np.std(rets, ddof=1) * np.sqrt(252))
+    peak = float(np.max(arr))
+    if peak > 0:
+        out["drawdown_52w"] = float(arr[-1] / peak - 1.0)
+    if len(arr) >= 250:
+        stock_ret = arr[-1] / arr[0] - 1.0
+        bench_ret = 0.0
+        if bench is not None:
+            b = bench.loc[:end].tail(len(w)).to_numpy(dtype=float)
+            if len(b) >= 250 and b[0] > 0:
+                bench_ret = b[-1] / b[0] - 1.0
+        out["excess_return_1y"] = float(stock_ret - bench_ret)
+    return out
 
 
 def get_market_data(ticker: str, index: str = "SPY") -> MarketData:

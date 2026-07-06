@@ -23,12 +23,20 @@ Honesty notes baked in:
     frequency; the bundle stores the MEASURED base rate (events / universe firm-years) and
     the scorer applies a King–Zeng prior correction, then maps PD to an implied agency
     rating band (see train.prior_correct / score.implied_rating).
+  * label enrichment (data/sd_events.json, via --harvest-sd): Fitch 17g-7 D/RD issuer
+    rating actions — distressed exchanges and missed payments that never file an
+    Item 1.03 8-K; merged with the earliest event winning per CIK.
+  * market features: each panel row also carries trailing-window equity vol / drawdown /
+    excess return AS OF that fiscal year end (market.pit_market_features — no lookahead);
+    delisted firms without price history just leave them NaN.
 """
 from __future__ import annotations
 
 import datetime as dt
+import io
 import json
 import random
+import re
 import time
 import urllib.parse
 import urllib.request
@@ -40,6 +48,7 @@ from ..core.config import get_settings
 DATA_DIR = Path(__file__).resolve().parent / "data"
 EVENTS_PATH = DATA_DIR / "default_events.json"
 UNIVERSE_PATH = DATA_DIR / "pit_universe.json"
+SD_PATH = DATA_DIR / "sd_events.json"
 
 _FTS = "https://efts.sec.gov/LATEST/search-index?"
 _FORM_IDX = "https://www.sec.gov/Archives/edgar/full-index/{y}/QTR{q}/form.idx"
@@ -77,10 +86,18 @@ def harvest_default_events(start_year: int, end_year: int,
             start, end = f"{year}-{q0}", f"{year}-{q1}"
             frm = 0
             while frm < 400:                       # FTS pages are 10 hits; sane cap per quarter
-                try:
-                    page = _fts_page(start, end, frm)
-                except Exception:
-                    break                           # transient EDGAR hiccup: skip rest of window
+                # FTS throws intermittent 500s; a silent skip here once cost two whole years
+                # of defaulters (2012–2013), so retry with backoff and WARN before giving up
+                for attempt in range(4):
+                    try:
+                        page = _fts_page(start, end, frm)
+                        break
+                    except Exception:
+                        time.sleep(2.0 * (attempt + 1))
+                else:
+                    print(f"  WARN: FTS unreachable for {start}..{end} from page {frm // 10} "
+                          f"— window truncated, events may be missing")
+                    break
                 hits = (page.get("hits") or {}).get("hits") or []
                 for h in hits:
                     src = h.get("_source") or {}
@@ -105,10 +122,104 @@ def harvest_default_events(start_year: int, end_year: int,
 
 def load_or_harvest_events(start_year: int = 2015, end_year: Optional[int] = None) -> list[dict]:
     if EVENTS_PATH.exists():
-        return json.loads(EVENTS_PATH.read_text(encoding="utf-8"))
-    events = harvest_default_events(start_year, end_year or dt.date.today().year)
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    EVENTS_PATH.write_text(json.dumps(events, indent=1), encoding="utf-8")
+        events = json.loads(EVENTS_PATH.read_text(encoding="utf-8"))
+    else:
+        events = harvest_default_events(start_year, end_year or dt.date.today().year)
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        EVENTS_PATH.write_text(json.dumps(events, indent=1), encoding="utf-8")
+    if SD_PATH.exists():   # enrich with Fitch 17g-7 D/RD events; keep the earliest event per CIK
+        by_cik = {e["cik"]: e for e in events}
+        for ev in json.loads(SD_PATH.read_text(encoding="utf-8")):
+            cur = by_cik.get(ev["cik"])
+            if cur is None or ev["filed"] < cur["filed"]:
+                by_cik[ev["cik"]] = ev
+        events = sorted(by_cik.values(), key=lambda e: e["filed"])
+    return events
+
+
+# ---------------------------------------------------------------------------
+# Rating-based default events (Rule 17g-7 histories) — distressed exchanges and
+# missed payments get a Fitch D/RD without ever filing an 8-K Item 1.03
+# ---------------------------------------------------------------------------
+
+# ratingshistory.info republishes the NRSROs' regulatory 17g-7 XBRL as CSV, monthly.
+# S&P's own portal is bot-walled; Fitch D/RD covers the same event class (RD = restricted
+# default, Fitch's marker for distressed exchanges).
+_FITCH_CSV = "https://ratingshistory.info/api/public/20260501%20Fitch%20Ratings%20Corporate.csv"
+_CIK_LOOKUP = "https://www.sec.gov/Archives/edgar/cik-lookup-data.txt"
+
+_NAME_SUFFIXES = {"INC", "CORP", "CO", "LLC", "LP", "LTD", "PLC",
+                  "CORPORATION", "COMPANY", "INCORPORATED"}
+
+
+def norm_name(s: str) -> str:
+    """Normalize a company name for matching: uppercase, alphanumeric, legal suffixes off."""
+    parts = re.sub(r"[^A-Z0-9 ]", " ", s.upper()).split()
+    while parts and parts[-1] in _NAME_SUFFIXES:
+        parts.pop()
+    return " ".join(parts)
+
+
+def _cik_by_name() -> dict[str, str]:
+    """EDGAR's full historical company list (dead firms included): normalized name -> CIK.
+    Names that map to more than one CIK are dropped — unique matches only."""
+    req = urllib.request.Request(_CIK_LOOKUP,
+                                 headers={"User-Agent": get_settings().sec_user_agent})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        text = r.read().decode("latin-1")
+    out: dict[str, str] = {}
+    dupes: set[str] = set()
+    for line in text.splitlines():                 # "COMPANY NAME:CIK:" (name may hold colons)
+        name, sep, cik = line.rstrip(":").rpartition(":")
+        cik = cik.strip()
+        if not sep or not cik.isdigit():
+            continue
+        key = norm_name(name)
+        if not key:
+            continue
+        if key in out and out[key] != cik.lstrip("0"):
+            dupes.add(key)
+        out[key] = cik.lstrip("0")
+    for key in dupes:
+        del out[key]
+    return out
+
+
+def sd_events_from_frame(df, lookup: dict[str, str]) -> tuple[list[dict], int]:
+    """Pure part of the SD harvest: 17g-7 frame + name->CIK lookup -> (events, unmatched).
+    First issuer-level D/RD action per obligor; CIK from the file where present, else a
+    unique normalized-name match; unmatched obligors (mostly non-SEC filers) are skipped."""
+    import pandas as pd
+
+    m = df["rating"].isin(["D", "RD"]) & df["rating_type"].str.contains("Issuer Default",
+                                                                        na=False)
+    d = df.loc[m, ["obligor_name", "central_index_key", "rating_action_date"]].copy()
+    d["obligor_name"] = d["obligor_name"].fillna("").str.strip('"')
+    d = d.sort_values("rating_action_date").drop_duplicates("obligor_name")
+    events, unmatched = [], 0
+    for _, row in d.iterrows():
+        cik = str(row["central_index_key"]).lstrip("0") if pd.notna(row["central_index_key"]) else ""
+        if not cik:
+            cik = lookup.get(norm_name(row["obligor_name"]), "")
+        if not cik:
+            unmatched += 1
+            continue
+        events.append({"cik": cik, "name": row["obligor_name"],
+                       "filed": row["rating_action_date"], "source": "fitch_rd"})
+    return sorted(events, key=lambda e: e["filed"]), unmatched
+
+
+def harvest_sd_events(csv_url: str = _FITCH_CSV) -> list[dict]:
+    """Download Fitch's Rule 17g-7 corporate rating history and extract default events."""
+    import pandas as pd
+
+    req = urllib.request.Request(csv_url,
+                                 headers={"User-Agent": get_settings().sec_user_agent})
+    with urllib.request.urlopen(req, timeout=300) as r:
+        df = pd.read_csv(io.BytesIO(r.read()), dtype=str)
+    events, unmatched = sd_events_from_frame(df, _cik_by_name())
+    print(f"  fitch 17g-7: {len(events)} D/RD issuers matched to a CIK, "
+          f"{unmatched} unmatched (mostly non-SEC filers)")
     return events
 
 
@@ -192,16 +303,22 @@ def label_for_year(period_end: dt.date, event_date: Optional[dt.date],
 
 def _firm_rows(company, event_date: Optional[dt.date], lookback_years: int,
                horizon_days: int) -> list[dict]:
+    from ..edgar import current_ticker
     from ..edgar.facts import build_financial_series
     from .features import year_features
+    from .market import benchmark_history, pit_market_features, price_history
 
     series = build_financial_series(company, lookback_years)
+    ticker = current_ticker(company)                # dead firms keep their last ticker on EDGAR
+    close = price_history(ticker) if ticker else None
+    bench = benchmark_history() if close is not None else None
     rows = []
     for yf in series.years:
         label = label_for_year(yf.period_end, event_date, horizon_days)
         if label is None:
             continue
         f = year_features(yf)
+        f.update(pit_market_features(close, yf.period_end, bench))
         f.update({"firm_id": str(company.cik), "date": yf.period_end.isoformat(),
                   "label": label})
         rows.append(f)
@@ -295,7 +412,14 @@ if __name__ == "__main__":
     ap.add_argument("--defaulters", type=int, default=120)
     ap.add_argument("--controls", type=int, default=120)
     ap.add_argument("--start-year", type=int, default=2015)
+    ap.add_argument("--harvest-sd", action="store_true",
+                    help="(re)harvest Fitch 17g-7 D/RD events into data/sd_events.json")
     args = ap.parse_args()
+
+    if args.harvest_sd:
+        print("0/3 harvesting Fitch 17g-7 D/RD events…")
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        SD_PATH.write_text(json.dumps(harvest_sd_events(), indent=1), encoding="utf-8")
 
     print("1/3 harvesting 8-K Item 1.03 events…")
     events = load_or_harvest_events(args.start_year)
@@ -311,7 +435,9 @@ if __name__ == "__main__":
     sample_rate = float(df["label"].mean())
     print(f"   base rate: {true_rate:.4%}/yr measured vs {sample_rate:.2%} in-sample "
           f"-> prior correction stored in bundle")
-    label_source = (f"8-K Item 1.03 harvest {args.start_year}–{events[-1]['filed'][:4]} "
+    label_kind = ("8-K Item 1.03 + Fitch 17g-7 D/RD harvest" if SD_PATH.exists()
+                  else "8-K Item 1.03 harvest")
+    label_source = (f"{label_kind} {args.start_year}–{events[-1]['filed'][:4]} "
                     f"({int(df['label'].sum())} default firm-years / {len(df)} rows; "
                     f"controls from point-in-time 10-K filer universe "
                     f"{args.start_year}–{dt.date.today().year}, non-bankruptcy exits "
@@ -322,4 +448,25 @@ if __name__ == "__main__":
     print("walk-forward AUC by test year:")
     for y, a in sorted(aucs.items()):
         print(f"  {y}: {a:.3f}")
+    ev = bundle.get("eval") or {}
+    acct = ev.get("auc_by_year_accounting_only")
+    if acct:
+        import statistics
+        both = [(aucs[y], acct[y]) for y in aucs if y in acct]
+        if both:
+            print(f"ablation: mean AUC {statistics.mean(a for a, _ in both):.3f} with market "
+                  f"features vs {statistics.mean(b for _, b in both):.3f} accounting-only")
+    cov = ev.get("market_coverage")
+    if cov:
+        print(f"market-feature coverage: {cov['defaulter_rows']:.0%} of defaulter rows, "
+              f"{cov['control_rows']:.0%} of control rows")
+    for name, op in (ev.get("operating_points") or {}).items():
+        print(f"{name}: precision {op['precision']:.1%}, lift {op['lift']}x, "
+              f"recall {op['recall']:.1%} ({op['n_flagged']} flagged)")
+    if ev.get("calibration"):
+        print("calibration (pooled out-of-sample, case-control space): "
+              "decile mean-predicted vs realized")
+        for c in ev["calibration"]:
+            print(f"  d{c['decile']:>2}: pred {c['mean_pred']:.4f}  "
+                  f"realized {c['realized']:.4f}  (n={c['n']})")
     print(f"label source: {label_source}")

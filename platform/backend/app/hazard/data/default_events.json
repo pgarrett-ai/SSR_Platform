@@ -1,8 +1,2208 @@
 [
  {
+  "cik": "810332",
+  "name": "MESA AIR GROUP INC  (MESA)",
+  "filed": "2010-01-06"
+ },
+ {
+  "cik": "810536",
+  "name": "FIRSTFED FINANCIAL CORP",
+  "filed": "2010-01-07"
+ },
+ {
+  "cik": "1101661",
+  "name": "SONORAN ENERGY INC",
+  "filed": "2010-01-11"
+ },
+ {
+  "cik": "1002682",
+  "name": "HORIZON FINANCIAL CORP",
+  "filed": "2010-01-11"
+ },
+ {
+  "cik": "926617",
+  "name": "VERMILLION, INC.  (AWH)",
+  "filed": "2010-01-12"
+ },
+ {
+  "cik": "310316",
+  "name": "CANARGO ENERGY CORP",
+  "filed": "2010-01-14"
+ },
+ {
+  "cik": "1269022",
+  "name": "ATOMIC PAINTBALL INC",
+  "filed": "2010-01-14"
+ },
+ {
+  "cik": "1454238",
+  "name": "Protective Products of America, Inc.",
+  "filed": "2010-01-14"
+ },
+ {
+  "cik": "1098685",
+  "name": "Dynamic Response Group, Inc.",
+  "filed": "2010-01-15"
+ },
+ {
+  "cik": "30419",
+  "name": "R H DONNELLEY CORP",
+  "filed": "2010-01-15"
+ },
+ {
+  "cik": "1239819",
+  "name": "LUNA INNOVATIONS INC  (LUNA)",
+  "filed": "2010-01-15"
+ },
+ {
+  "cik": "1276476",
+  "name": "MORRIS PUBLISHING FINANCE CO",
+  "filed": "2010-01-20"
+ },
+ {
+  "cik": "840256",
+  "name": "VINEYARD NATIONAL BANCORP",
+  "filed": "2010-01-20"
+ },
+ {
+  "cik": "1131072",
+  "name": "TETON ENERGY CORP",
+  "filed": "2010-01-22"
+ },
+ {
+  "cik": "1143566",
+  "name": "EVERGREENBANCORP INC",
+  "filed": "2010-01-25"
+ },
+ {
+  "cik": "1160294",
+  "name": "HERBST GAMING INC",
+  "filed": "2010-01-28"
+ },
+ {
+  "cik": "313395",
+  "name": "TXCO Resources Inc",
+  "filed": "2010-01-29"
+ },
+ {
+  "cik": "878808",
+  "name": "FIRSTGOLD CORP.",
+  "filed": "2010-01-29"
+ },
+ {
+  "cik": "356708",
+  "name": "FIRST REGIONAL BANCORP",
+  "filed": "2010-02-01"
+ },
+ {
+  "cik": "1115568",
+  "name": "WGNB CORP",
+  "filed": "2010-02-02"
+ },
+ {
+  "cik": "1296595",
+  "name": "CROSS CANYON ENERGY CORP.",
+  "filed": "2010-02-02"
+ },
+ {
+  "cik": "1170902",
+  "name": "FLORIDA COMMUNITY BANKS INC",
+  "filed": "2010-02-02"
+ },
+ {
+  "cik": "855667",
+  "name": "NEENAH ENTERPRISES, INC.",
+  "filed": "2010-02-04"
+ },
+ {
+  "cik": "1307425",
+  "name": "CARBIZ INC",
+  "filed": "2010-02-12"
+ },
+ {
+  "cik": "1129695",
+  "name": "BioAuthorize Holdings, Inc.",
+  "filed": "2010-02-18"
+ },
+ {
+  "cik": "1026304",
+  "name": "BUCKHEAD COMMUNITY BANCORP INC",
+  "filed": "2010-02-22"
+ },
+ {
+  "cik": "817979",
+  "name": "ACCURIDE CORP",
+  "filed": "2010-02-22"
+ },
+ {
+  "cik": "919226",
+  "name": "SMURFIT STONE CONTAINER CORP",
+  "filed": "2010-02-25"
+ },
+ {
+  "cik": "1221354",
+  "name": "MARCO COMMUNITY BANCORP INC",
+  "filed": "2010-02-25"
+ },
+ {
+  "cik": "771485",
+  "name": "PDG ENVIRONMENTAL INC",
+  "filed": "2010-02-26"
+ },
+ {
+  "cik": "913015",
+  "name": "REGENT COMMUNICATIONS INC",
+  "filed": "2010-03-01"
+ },
+ {
+  "cik": "1243800",
+  "name": "RAINIER PACIFIC FINANCIAL GROUP INC",
+  "filed": "2010-03-01"
+ },
+ {
+  "cik": "1285043",
+  "name": "AVENTINE RENEWABLE ENERGY HOLDINGS INC",
+  "filed": "2010-03-02"
+ },
+ {
+  "cik": "38570",
+  "name": "ORLEANS HOMEBUILDERS INC",
+  "filed": "2010-03-03"
+ },
+ {
+  "cik": "1125532",
+  "name": "VERTICAL BRANDING, INC.",
+  "filed": "2010-03-05"
+ },
+ {
+  "cik": "937969",
+  "name": "BERTHEL GROWTH & INCOME TRUST I",
+  "filed": "2010-03-05"
+ },
+ {
+  "cik": "920317",
+  "name": "US DRY CLEANING CORP",
+  "filed": "2010-03-05"
+ },
+ {
+  "cik": "1050112",
+  "name": "ANTHRACITE CAPITAL INC",
+  "filed": "2010-03-15"
+ },
+ {
+  "cik": "1016900",
+  "name": "PNG VENTURES INC",
+  "filed": "2010-03-17"
+ },
+ {
+  "cik": "1421481",
+  "name": "FUTUREIT, INC.",
+  "filed": "2010-03-22"
+ },
+ {
+  "cik": "1019883",
+  "name": "APPALACHIAN BANCSHARES INC",
+  "filed": "2010-03-24"
+ },
+ {
+  "cik": "1345968",
+  "name": "EBHI Holdings, Inc.",
+  "filed": "2010-03-24"
+ },
+ {
+  "cik": "1000234",
+  "name": "IMPERIAL CAPITAL BANCORP, INC.",
+  "filed": "2010-03-26"
+ },
+ {
+  "cik": "1287151",
+  "name": "XERIUM TECHNOLOGIES INC",
+  "filed": "2010-03-30"
+ },
+ {
+  "cik": "944522",
+  "name": "VION PHARMACEUTICALS INC",
+  "filed": "2010-04-09"
+ },
+ {
+  "cik": "949228",
+  "name": "BEACH FIRST NATIONAL BANCSHARES INC",
+  "filed": "2010-04-12"
+ },
+ {
+  "cik": "1137469",
+  "name": "NOVA BIOSOURCE FUELS, INC.",
+  "filed": "2010-04-14"
+ },
+ {
+  "cik": "899166",
+  "name": "POINT BLANK SOLUTIONS, INC.",
+  "filed": "2010-04-14"
+ },
+ {
+  "cik": "943320",
+  "name": "TRUMP ENTERTAINMENT RESORTS, INC.",
+  "filed": "2010-04-16"
+ },
+ {
+  "cik": "1099980",
+  "name": "TAMALPAIS BANCORP",
+  "filed": "2010-04-19"
+ },
+ {
+  "cik": "1096339",
+  "name": "SARATOGA RESOURCES INC /TX",
+  "filed": "2010-04-22"
+ },
+ {
+  "cik": "1410402",
+  "name": "FX Real Estate & Entertainment Inc.",
+  "filed": "2010-04-22"
+ },
+ {
+  "cik": "1322705",
+  "name": "Spansion Inc.",
+  "filed": "2010-04-22"
+ },
+ {
+  "cik": "758256",
+  "name": "Saint James CO",
+  "filed": "2010-04-22"
+ },
+ {
+  "cik": "1070510",
+  "name": "SARS CORP.",
+  "filed": "2010-04-27"
+ },
+ {
+  "cik": "878774",
+  "name": "AMERICAN MORTGAGE ACCEPTANCE CO",
+  "filed": "2010-04-28"
+ },
+ {
+  "cik": "1073429",
+  "name": "US CONCRETE INC",
+  "filed": "2010-04-29"
+ },
+ {
+  "cik": "1016933",
+  "name": "R&G FINANCIAL CORP",
+  "filed": "2010-04-30"
+ },
+ {
+  "cik": "716457",
+  "name": "FRONTIER FINANCIAL CORP /WA/",
+  "filed": "2010-05-03"
+ },
+ {
+  "cik": "1084887",
+  "name": "W HOLDING CO INC",
+  "filed": "2010-05-04"
+ },
+ {
+  "cik": "1161924",
+  "name": "MiddleBrook Pharmaceuticals, Inc.",
+  "filed": "2010-05-04"
+ },
+ {
+  "cik": "1164554",
+  "name": "EUROBANCSHARES INC",
+  "filed": "2010-05-04"
+ },
+ {
+  "cik": "701374",
+  "name": "SIX FLAGS, INC.",
+  "filed": "2010-05-04"
+ },
+ {
+  "cik": "1127442",
+  "name": "CITIZENS FIRST BANCORP INC",
+  "filed": "2010-05-06"
+ },
+ {
+  "cik": "1010610",
+  "name": "TLC VISION CORP",
+  "filed": "2010-05-11"
+ },
+ {
+  "cik": "1330487",
+  "name": "CHEM RX CORP",
+  "filed": "2010-05-12"
+ },
+ {
+  "cik": "1380712",
+  "name": "1st Pacific Bancorp",
+  "filed": "2010-05-13"
+ },
+ {
+  "cik": "1047153",
+  "name": "CERTIFIED DIABETIC SERVICES INC",
+  "filed": "2010-05-13"
+ },
+ {
+  "cik": "318259",
+  "name": "MDI, INC.",
+  "filed": "2010-05-14"
+ },
+ {
+  "cik": "1051379",
+  "name": "MIDWEST BANC HOLDINGS INC",
+  "filed": "2010-05-20"
+ },
+ {
+  "cik": "1320461",
+  "name": "Cooper-Standard Holdings Inc.  (CPS)",
+  "filed": "2010-05-24"
+ },
+ {
+  "cik": "1310527",
+  "name": "Anpath Group, Inc.",
+  "filed": "2010-05-26"
+ },
+ {
+  "cik": "1076930",
+  "name": "GSI GROUP INC  (NOVT)",
+  "filed": "2010-05-28"
+ },
+ {
+  "cik": "38984",
+  "name": "FREMONT GENERAL CORP",
+  "filed": "2010-06-01"
+ },
+ {
+  "cik": "1082368",
+  "name": "BANK OF FLORIDA CORP",
+  "filed": "2010-06-01"
+ },
+ {
+  "cik": "1174527",
+  "name": "CITADEL BROADCASTING CORP",
+  "filed": "2010-06-01"
+ },
+ {
+  "cik": "1180743",
+  "name": "CERAGENIX PHARMACEUTICALS, INC.",
+  "filed": "2010-06-03"
+ },
+ {
+  "cik": "1022974",
+  "name": "DGI RESOLUTION INC",
+  "filed": "2010-06-03"
+ },
+ {
+  "cik": "92339",
+  "name": "COLONIAL BANCGROUP INC",
+  "filed": "2010-06-10"
+ },
+ {
+  "cik": "23341",
+  "name": "CONGOLEUM CORP",
+  "filed": "2010-06-10"
+ },
+ {
+  "cik": "778164",
+  "name": "Pacific Ethanol, Inc.  (ALTO)",
+  "filed": "2010-06-11"
+ },
+ {
+  "cik": "1003429",
+  "name": "REUNION INDUSTRIES INC",
+  "filed": "2010-06-11"
+ },
+ {
+  "cik": "51939",
+  "name": "CORUS BANKSHARES INC",
+  "filed": "2010-06-15"
+ },
+ {
+  "cik": "1066961",
+  "name": "Infosmart Group, Inc.",
+  "filed": "2010-06-18"
+ },
+ {
+  "cik": "1234383",
+  "name": "BANK HOLDINGS",
+  "filed": "2010-06-24"
+ },
+ {
+  "cik": "855372",
+  "name": "ECO2 PLASTICS INC",
+  "filed": "2010-07-02"
+ },
+ {
+  "cik": "1170605",
+  "name": "TIERONE CORP",
+  "filed": "2010-07-06"
+ },
+ {
+  "cik": "1163958",
+  "name": "MEDICAL STAFFING NETWORK HOLDINGS INC",
+  "filed": "2010-07-09"
+ },
+ {
+  "cik": "1211805",
+  "name": "TOPSPIN MEDICAL INC  (MYSZ)",
+  "filed": "2010-07-13"
+ },
+ {
+  "cik": "899647",
+  "name": "RIVIERA HOLDINGS CORP",
+  "filed": "2010-07-14"
+ },
+ {
+  "cik": "1089787",
+  "name": "BAY NATIONAL CORP",
+  "filed": "2010-07-15"
+ },
+ {
+  "cik": "1305748",
+  "name": "HEALTHCARE PROVIDERS DIRECT INC.",
+  "filed": "2010-07-16"
+ },
+ {
+  "cik": "806817",
+  "name": "JENNIFER CONVERTIBLES INC",
+  "filed": "2010-07-20"
+ },
+ {
+  "cik": "27960",
+  "name": "QSGI INC.",
+  "filed": "2010-07-20"
+ },
+ {
+  "cik": "1095274",
+  "name": "FIRST NATIONAL BANCSHARES INC /SC/",
+  "filed": "2010-07-21"
+ },
+ {
+  "cik": "1116694",
+  "name": "CAPITAL GROWTH SYSTEMS INC /FL/",
+  "filed": "2010-07-23"
+ },
+ {
+  "cik": "883476",
+  "name": "CRESCENT BANKING CO",
+  "filed": "2010-07-26"
+ },
+ {
+  "cik": "1141590",
+  "name": "PLAYLOGIC ENTERTAINMENT INC",
+  "filed": "2010-07-27"
+ },
+ {
+  "cik": "819551",
+  "name": "ILX RESORTS INC",
+  "filed": "2010-07-28"
+ },
+ {
+  "cik": "1059397",
+  "name": "KOLORFUSION INTERNATIONAL INC",
+  "filed": "2010-08-02"
+ },
+ {
+  "cik": "894267",
+  "name": "COWLITZ BANCORPORATION",
+  "filed": "2010-08-02"
+ },
+ {
+  "cik": "74783",
+  "name": "ACCEPTANCE INSURANCE COMPANIES INC",
+  "filed": "2010-08-10"
+ },
+ {
+  "cik": "314132",
+  "name": "FLEETWOOD ENTERPRISES INC/DE/",
+  "filed": "2010-08-11"
+ },
+ {
+  "cik": "1093273",
+  "name": "MAGNA ENTERTAINMENT CORP",
+  "filed": "2010-08-12"
+ },
+ {
+  "cik": "1157443",
+  "name": "nCoat, Inc.",
+  "filed": "2010-08-16"
+ },
+ {
+  "cik": "714756",
+  "name": "AMCORE FINANCIAL INC",
+  "filed": "2010-08-20"
+ },
+ {
+  "cik": "1329184",
+  "name": "Chartwell International, Inc.",
+  "filed": "2010-08-20"
+ },
+ {
+  "cik": "878731",
+  "name": "FINLAY ENTERPRISES INC /DE",
+  "filed": "2010-08-24"
+ },
+ {
+  "cik": "947425",
+  "name": "PROFESSIONAL VETERINARY PRODUCTS LTD /NE/",
+  "filed": "2010-08-25"
+ },
+ {
+  "cik": "1170833",
+  "name": "COMMUNITY VALLEY BANCORP",
+  "filed": "2010-08-25"
+ },
+ {
+  "cik": "1120427",
+  "name": "SONOMA VALLEY BANCORP",
+  "filed": "2010-08-25"
+ },
+ {
+  "cik": "921549",
+  "name": "TRICO MARINE SERVICES INC",
+  "filed": "2010-08-26"
+ },
+ {
+  "cik": "1111335",
+  "name": "VISTEON CORP  (VC)",
+  "filed": "2010-09-07"
+ },
+ {
+  "cik": "1095751",
+  "name": "SKYE INTERNATIONAL, INC",
+  "filed": "2010-09-09"
+ },
+ {
+  "cik": "1122887",
+  "name": "JAVA DETOUR INC.",
+  "filed": "2010-09-10"
+ },
+ {
+  "cik": "898660",
+  "name": "STATION CASINOS INC",
+  "filed": "2010-09-15"
+ },
+ {
+  "cik": "1074458",
+  "name": "HORIZON BANCORPORATION INC",
+  "filed": "2010-09-17"
+ },
+ {
+  "cik": "1402364",
+  "name": "Ultimate Escapes, Inc.",
+  "filed": "2010-09-20"
+ },
+ {
+  "cik": "1085734",
+  "name": "BLOCKBUSTER INC",
+  "filed": "2010-09-24"
+ },
+ {
+  "cik": "1083036",
+  "name": "ELECTRONIC GAME CARD INC",
+  "filed": "2010-09-29"
+ },
+ {
+  "cik": "1240722",
+  "name": "SOLOMON TECHNOLOGIES INC",
+  "filed": "2010-09-30"
+ },
+ {
+  "cik": "1393614",
+  "name": "Kentucky USA Energy, Inc.",
+  "filed": "2010-10-07"
+ },
+ {
+  "cik": "1287900",
+  "name": "RANCHER ENERGY CORP.",
+  "filed": "2010-10-21"
+ },
+ {
+  "cik": "913665",
+  "name": "TERRESTAR CORP",
+  "filed": "2010-10-22"
+ },
+ {
+  "cik": "1289370",
+  "name": "MetaMorphix Inc.",
+  "filed": "2010-10-22"
+ },
+ {
+  "cik": "895648",
+  "name": "GENERAL GROWTH PROPERTIES INC",
+  "filed": "2010-10-27"
+ },
+ {
+  "cik": "726990",
+  "name": "AMERICANWEST BANCORPORATION",
+  "filed": "2010-10-28"
+ },
+ {
+  "cik": "1362659",
+  "name": "TETRAGENEX PHARMACEUTICALS, INC.",
+  "filed": "2010-11-01"
+ },
+ {
+  "cik": "77155",
+  "name": "PENN TRAFFIC CO",
+  "filed": "2010-11-02"
+ },
+ {
+  "cik": "1063537",
+  "name": "NUTRACEA  (RIBT)",
+  "filed": "2010-11-02"
+ },
+ {
+  "cik": "1310094",
+  "name": "ACCENTIA BIOPHARMACEUTICALS INC",
+  "filed": "2010-11-02"
+ },
+ {
+  "cik": "704384",
+  "name": "BIOVEST INTERNATIONAL INC",
+  "filed": "2010-11-02"
+ },
+ {
+  "cik": "1091862",
+  "name": "Chemtura CORP",
+  "filed": "2010-11-04"
+ },
+ {
+  "cik": "1405419",
+  "name": "GULFSTREAM INTERNATIONAL GROUP INC",
+  "filed": "2010-11-05"
+ },
+ {
+  "cik": "104599",
+  "name": "CIRCUIT CITY STORES INC",
+  "filed": "2010-11-05"
+ },
+ {
+  "cik": "874501",
+  "name": "AMBAC FINANCIAL GROUP INC  (AMBC)",
+  "filed": "2010-11-10"
+ },
+ {
+  "cik": "1284453",
+  "name": "VISUAL MANAGEMENT SYSTEMS INC",
+  "filed": "2010-11-10"
+ },
+ {
+  "cik": "1439600",
+  "name": "Local Insight Regatta Holdings, Inc.",
+  "filed": "2010-11-18"
+ },
+ {
+  "cik": "1328910",
+  "name": "TRONOX INC",
+  "filed": "2010-11-23"
+ },
+ {
+  "cik": "923473",
+  "name": "PALM HARBOR HOMES INC /FL/",
+  "filed": "2010-11-30"
+ },
+ {
+  "cik": "1393066",
+  "name": "AbitibiBowater Inc.",
+  "filed": "2010-11-30"
+ },
+ {
+  "cik": "1329605",
+  "name": "PLATINUM ENERGY RESOURCES INC",
+  "filed": "2010-12-01"
+ },
+ {
+  "cik": "928800",
+  "name": "KH FUNDING CO",
+  "filed": "2010-12-06"
+ },
+ {
+  "cik": "840216",
+  "name": "CALIFORNIA COASTAL COMMUNITIES INC",
+  "filed": "2010-12-08"
+ },
+ {
+  "cik": "1452206",
+  "name": "Ad Systems Communications, Inc.",
+  "filed": "2010-12-09"
+ },
+ {
+  "cik": "1410637",
+  "name": "RHI Entertainment, Inc.",
+  "filed": "2010-12-13"
+ },
+ {
+  "cik": "1145238",
+  "name": "INSIGHT HEALTH SERVICES HOLDINGS CORP",
+  "filed": "2010-12-14"
+ },
+ {
+  "cik": "1340752",
+  "name": "Molecular Insight Pharmaceuticals, Inc.",
+  "filed": "2010-12-14"
+ },
+ {
+  "cik": "43300",
+  "name": "GREAT ATLANTIC & PACIFIC TEA CO INC",
+  "filed": "2010-12-15"
+ },
+ {
+  "cik": "1406574",
+  "name": "SINOHUB, INC.",
+  "filed": "2011-01-03"
+ },
+ {
+  "cik": "1062613",
+  "name": "FAIRPOINT COMMUNICATIONS INC",
+  "filed": "2011-01-14"
+ },
+ {
+  "cik": "29806",
+  "name": "CONSTAR INTERNATIONAL INC",
+  "filed": "2011-01-18"
+ },
+ {
+  "cik": "1295879",
+  "name": "CommunitySouth Financial CORP",
+  "filed": "2011-01-24"
+ },
+ {
+  "cik": "1092302",
+  "name": "JAVO BEVERAGE CO INC",
+  "filed": "2011-01-24"
+ },
+ {
+  "cik": "1042418",
+  "name": "COMMONWEALTH BIOTECHNOLOGIES INC  (INTI)",
+  "filed": "2011-01-25"
+ },
+ {
+  "cik": "1094572",
+  "name": "ICOP DIGITAL, INC",
+  "filed": "2011-01-25"
+ },
+ {
+  "cik": "1096481",
+  "name": "ANGIOTECH PHARMACEUTICALS INC",
+  "filed": "2011-02-01"
+ },
+ {
+  "cik": "897861",
+  "name": "FIRST STATE BANCORPORATION",
+  "filed": "2011-02-01"
+ },
+ {
+  "cik": "1346222",
+  "name": "FIRST UNITED ETHANOL LLC",
+  "filed": "2011-02-02"
+ },
+ {
+  "cik": "1452384",
+  "name": "SEAHAWK DRILLING, INC.",
+  "filed": "2011-02-14"
+ },
+ {
+  "cik": "1235091",
+  "name": "PSB GROUP INC",
+  "filed": "2011-02-14"
+ },
+ {
+  "cik": "96638",
+  "name": "ADVANTA CORP",
+  "filed": "2011-02-16"
+ },
+ {
+  "cik": "940510",
+  "name": "BORDERS GROUP INC",
+  "filed": "2011-02-17"
+ },
+ {
+  "cik": "754597",
+  "name": "HABERSHAM BANCORP",
+  "filed": "2011-02-23"
+ },
+ {
+  "cik": "790414",
+  "name": "GOTTSCHALKS INC",
+  "filed": "2011-03-02"
+ },
+ {
+  "cik": "1289871",
+  "name": "MPC CORP",
+  "filed": "2011-03-14"
+ },
+ {
+  "cik": "1122101",
+  "name": "EPIC ENERGY RESOURCES, INC.",
+  "filed": "2011-03-24"
+ },
+ {
+  "cik": "1334127",
+  "name": "Harry & David Holdings, Inc.",
+  "filed": "2011-03-28"
+ },
+ {
+  "cik": "1076462",
+  "name": "ALPHATRADE COM",
+  "filed": "2011-03-28"
+ },
+ {
+  "cik": "1321099",
+  "name": "DigitalPost Interactive, Inc.",
+  "filed": "2011-04-01"
+ },
+ {
+  "cik": "40730",
+  "name": "Motors Liquidation Co",
+  "filed": "2011-04-04"
+ },
+ {
+  "cik": "58592",
+  "name": "4 KIDS ENTERTAINMENT INC",
+  "filed": "2011-04-06"
+ },
+ {
+  "cik": "946842",
+  "name": "AMBASSADORS INTERNATIONAL INC",
+  "filed": "2011-04-07"
+ },
+ {
+  "cik": "883697",
+  "name": "REGEN BIOLOGICS INC",
+  "filed": "2011-04-11"
+ },
+ {
+  "cik": "317477",
+  "name": "COMPOSITE TECHNOLOGY CORP",
+  "filed": "2011-04-11"
+ },
+ {
+  "cik": "1065298",
+  "name": "SUPERIOR BANCORP",
+  "filed": "2011-04-19"
+ },
+ {
+  "cik": "19731",
+  "name": "CANAL Corp",
+  "filed": "2011-04-19"
+ },
+ {
+  "cik": "1338949",
+  "name": "Majestic Capital, Ltd.",
+  "filed": "2011-05-02"
+ },
+ {
+  "cik": "705200",
+  "name": "PAB BANKSHARES INC",
+  "filed": "2011-05-02"
+ },
+ {
+  "cik": "1103078",
+  "name": "RASER TECHNOLOGIES INC",
+  "filed": "2011-05-03"
+ },
+ {
+  "cik": "1014133",
+  "name": "COMMUNITY CENTRAL BANK CORP",
+  "filed": "2011-05-04"
+ },
+ {
+  "cik": "1014653",
+  "name": "PROFILE TECHNOLOGIES INC",
+  "filed": "2011-05-10"
+ },
+ {
+  "cik": "1406081",
+  "name": "Guaranty Financial Group Inc.",
+  "filed": "2011-05-13"
+ },
+ {
+  "cik": "821536",
+  "name": "HEARUSA INC",
+  "filed": "2011-05-19"
+ },
+ {
+  "cik": "1313730",
+  "name": "Atlantic Southern Financial Group, Inc.",
+  "filed": "2011-05-23"
+ },
+ {
+  "cik": "1283552",
+  "name": "JACKSON HEWITT TAX SERVICE INC",
+  "filed": "2011-05-24"
+ },
+ {
+  "cik": "1360581",
+  "name": "FGBC Bancshares, Inc.",
+  "filed": "2011-05-25"
+ },
+ {
+  "cik": "32621",
+  "name": "EMERSON RADIO CORP  (MSN)",
+  "filed": "2011-06-01"
+ },
+ {
+  "cik": "872545",
+  "name": "MCINTOSH BANCSHARES INC /GA/",
+  "filed": "2011-06-21"
+ },
+ {
+  "cik": "830519",
+  "name": "EMAX HOLDINGS CORP",
+  "filed": "2011-06-23"
+ },
+ {
+  "cik": "1360214",
+  "name": "TRANSDEL PHARMACEUTICALS INC  (HROW, HROWL, HROWM)",
+  "filed": "2011-06-27"
+ },
+ {
+  "cik": "97052",
+  "name": "TELTRONICS INC",
+  "filed": "2011-06-27"
+ },
+ {
+  "cik": "1056756",
+  "name": "NBC ACQUISITION CORP",
+  "filed": "2011-06-27"
+ },
+ {
+  "cik": "1112485",
+  "name": "PRIMEHOLDINGS COM INC",
+  "filed": "2011-06-27"
+ },
+ {
+  "cik": "1162245",
+  "name": "FPB BANCORP INC",
+  "filed": "2011-07-18"
+ },
+ {
+  "cik": "804331",
+  "name": "Indian Hill Holdings Corp",
+  "filed": "2011-07-28"
+ },
+ {
+  "cik": "1165921",
+  "name": "LAW ENFORCEMENT ASSOCIATES CORP",
+  "filed": "2011-07-29"
+ },
+ {
+  "cik": "764241",
+  "name": "INTEGRA BANK CORP",
+  "filed": "2011-08-01"
+ },
+ {
+  "cik": "947397",
+  "name": "EVERGREEN SOLAR INC",
+  "filed": "2011-08-15"
+ },
+ {
+  "cik": "1160165",
+  "name": "ShengdaTech, Inc.",
+  "filed": "2011-08-23"
+ },
+ {
+  "cik": "1068084",
+  "name": "PRIVATE MEDIA GROUP INC",
+  "filed": "2011-08-26"
+ },
+ {
+  "cik": "1416712",
+  "name": "IRON MINING GROUP, INC.",
+  "filed": "2011-08-30"
+ },
+ {
+  "cik": "744962",
+  "name": "NUTRITION 21 INC",
+  "filed": "2011-08-31"
+ },
+ {
+  "cik": "84919",
+  "name": "RCLC, INC.",
+  "filed": "2011-09-09"
+ },
+ {
+  "cik": "1329068",
+  "name": "NewPage Holding CORP",
+  "filed": "2011-09-12"
+ },
+ {
+  "cik": "742814",
+  "name": "TELEMETRIX INC",
+  "filed": "2011-09-16"
+ },
+ {
+  "cik": "1096560",
+  "name": "SULPHCO INC",
+  "filed": "2011-09-16"
+ },
+ {
+  "cik": "1108730",
+  "name": "PUBLIC MEDIA WORKS INC",
+  "filed": "2011-09-26"
+ },
+ {
+  "cik": "1160084",
+  "name": "LOCATEPLUS HOLDINGS CORP",
+  "filed": "2011-09-26"
+ },
+ {
+  "cik": "835012",
+  "name": "COMMONWEALTH BANKSHARES INC",
+  "filed": "2011-09-30"
+ },
+ {
+  "cik": "1043156",
+  "name": "STAR BUFFET INC",
+  "filed": "2011-09-30"
+ },
+ {
+  "cik": "1289480",
+  "name": "Real Mex Restaurants, Inc.",
+  "filed": "2011-10-04"
+ },
+ {
+  "cik": "777516",
+  "name": "Healthsport, Inc.",
+  "filed": "2011-10-06"
+ },
+ {
+  "cik": "833203",
+  "name": "Wyndstorm CORP",
+  "filed": "2011-10-13"
+ },
+ {
+  "cik": "16104",
+  "name": "CAGLES INC",
+  "filed": "2011-10-20"
+ },
+ {
+  "cik": "935724",
+  "name": "PMI GROUP INC",
+  "filed": "2011-10-24"
+ },
+ {
+  "cik": "1144834",
+  "name": "KAISER VENTURES LLC",
+  "filed": "2011-10-31"
+ },
+ {
+  "cik": "1103345",
+  "name": "BEACON POWER CORP",
+  "filed": "2011-10-31"
+ },
+ {
+  "cik": "724742",
+  "name": "SYMS CORP  (TPHS)",
+  "filed": "2011-11-02"
+ },
+ {
+  "cik": "1401106",
+  "name": "MF Global Holdings Ltd.",
+  "filed": "2011-11-03"
+ },
+ {
+  "cik": "1105055",
+  "name": "DYNEGY HOLDINGS, LLC",
+  "filed": "2011-11-08"
+ },
+ {
+  "cik": "1039184",
+  "name": "TRAILER BRIDGE INC",
+  "filed": "2011-11-16"
+ },
+ {
+  "cik": "1443799",
+  "name": "General Maritime Corp / MI",
+  "filed": "2011-11-17"
+ },
+ {
+  "cik": "1086411",
+  "name": "JOHN D. OIL & GAS CO",
+  "filed": "2011-11-28"
+ },
+ {
+  "cik": "6201",
+  "name": "AMR CORP  (AAL)",
+  "filed": "2011-11-29"
+ },
+ {
+  "cik": "4515",
+  "name": "AMERICAN AIRLINES INC",
+  "filed": "2011-11-29"
+ },
+ {
+  "cik": "1096791",
+  "name": "Oilsands Quest Inc",
+  "filed": "2011-12-05"
+ },
+ {
+  "cik": "58361",
+  "name": "LEE ENTERPRISES, INC  (LEE)",
+  "filed": "2011-12-12"
+ },
+ {
+  "cik": "1137239",
+  "name": "AMERICAS ENERGY Co - AECO",
+  "filed": "2011-12-13"
+ },
+ {
+  "cik": "806085",
+  "name": "LEHMAN BROTHERS HOLDINGS INC",
+  "filed": "2011-12-14"
+ },
+ {
+  "cik": "894552",
+  "name": "E MED FUTURE INC  (EMDF)",
+  "filed": "2011-12-15"
+ },
+ {
+  "cik": "1448064",
+  "name": "RoomStore, Inc.",
+  "filed": "2011-12-16"
+ },
+ {
+  "cik": "1309126",
+  "name": "Money Tree, Inc.",
+  "filed": "2011-12-19"
+ },
+ {
+  "cik": "276750",
+  "name": "AMBER RESOURCES CO OF COLORADO",
+  "filed": "2011-12-22"
+ },
+ {
+  "cik": "821483",
+  "name": "DELTA PETROLEUM CORP/CO  (PARR)",
+  "filed": "2011-12-22"
+ },
+ {
+  "cik": "859475",
+  "name": "TRIDENT MICROSYSTEMS INC",
+  "filed": "2012-01-04"
+ },
+ {
+  "cik": "1282607",
+  "name": "COLONY RESORTS LVH ACQUISITIONS LLC",
+  "filed": "2012-01-12"
+ },
+ {
+  "cik": "732717",
+  "name": "AT&T INC.  (T, TBB, TBC, T-PA, T-PC)",
+  "filed": "2012-01-13"
+ },
+ {
+  "cik": "31235",
+  "name": "EASTMAN KODAK CO  (KODK)",
+  "filed": "2012-01-19"
+ },
+ {
+  "cik": "706465",
+  "name": "HENRY COUNTY BANCSHARES INC",
+  "filed": "2012-01-24"
+ },
+ {
+  "cik": "912365",
+  "name": "EVERGREEN ENERGY INC",
+  "filed": "2012-01-24"
+ },
+ {
+  "cik": "895642",
+  "name": "ENER1 INC",
+  "filed": "2012-01-26"
+ },
+ {
+  "cik": "1323033",
+  "name": "Tennessee Commerce Bancorp, Inc.",
+  "filed": "2012-01-30"
+ },
+ {
+  "cik": "1382805",
+  "name": "Game Trading Technologies, Inc.",
+  "filed": "2012-02-02"
+ },
+ {
+  "cik": "1397867",
+  "name": "Global Aviation Holdings Inc.",
+  "filed": "2012-02-06"
+ },
+ {
+  "cik": "1479920",
+  "name": "TBS International plc",
+  "filed": "2012-02-08"
+ },
+ {
+  "cik": "1173738",
+  "name": "CDEX INC",
+  "filed": "2012-02-10"
+ },
+ {
+  "cik": "32878",
+  "name": "ENERGY CONVERSION DEVICES INC",
+  "filed": "2012-02-14"
+ },
+ {
+  "cik": "216039",
+  "name": "GRUBB & ELLIS CO",
+  "filed": "2012-02-21"
+ },
+ {
+  "cik": "1377720",
+  "name": "CYBERDEFENDER CORP",
+  "filed": "2012-02-27"
+ },
+ {
+  "cik": "933136",
+  "name": "WASHINGTON MUTUAL, INC  (COOP)",
+  "filed": "2012-03-01"
+ },
+ {
+  "cik": "944725",
+  "name": "UNITED WESTERN BANCORP INC",
+  "filed": "2012-03-05"
+ },
+ {
+  "cik": "894490",
+  "name": "BANKUNITED FINANCIAL CORP",
+  "filed": "2012-03-09"
+ },
+ {
+  "cik": "1253710",
+  "name": "CANO PETROLEUM, INC",
+  "filed": "2012-03-13"
+ },
+ {
+  "cik": "811036",
+  "name": "TaxMasters, Inc.",
+  "filed": "2012-03-16"
+ },
+ {
+  "cik": "1114605",
+  "name": "AMERICAN SCIENTIFIC RESOURCES INC",
+  "filed": "2012-03-19"
+ },
+ {
+  "cik": "356591",
+  "name": "NEUROLOGIX INC/DE",
+  "filed": "2012-03-21"
+ },
+ {
+  "cik": "1344770",
+  "name": "RECYCLE TECH INC",
+  "filed": "2012-03-29"
+ },
+ {
+  "cik": "853695",
+  "name": "DRI CORP",
+  "filed": "2012-03-29"
+ },
+ {
+  "cik": "1030058",
+  "name": "WORLDGATE COMMUNICATIONS INC",
+  "filed": "2012-03-30"
+ },
+ {
+  "cik": "1166291",
+  "name": "PINNACLE AIRLINES CORP",
+  "filed": "2012-04-02"
+ },
+ {
+  "cik": "355356",
+  "name": "IMPERIAL PETROLEUM INC",
+  "filed": "2012-04-10"
+ },
+ {
+  "cik": "1024452",
+  "name": "SMF ENERGY CORP",
+  "filed": "2012-04-16"
+ },
+ {
+  "cik": "1268984",
+  "name": "REDDY ICE HOLDINGS INC",
+  "filed": "2012-04-17"
+ },
+ {
+  "cik": "1367387",
+  "name": "Exterra Energy Inc.",
+  "filed": "2012-05-01"
+ },
+ {
+  "cik": "856569",
+  "name": "ENCORIUM GROUP INC",
+  "filed": "2012-05-18"
+ },
+ {
+  "cik": "913144",
+  "name": "RENAISSANCERE HOLDINGS LTD  (RNR, RNR-PF, RNR-PG)",
+  "filed": "2012-05-22"
+ },
+ {
+  "cik": "831246",
+  "name": "FRANKLIN CREDIT HOLDING CORP/DE/",
+  "filed": "2012-06-05"
+ },
+ {
+  "cik": "74273",
+  "name": "OLD STONE CORP",
+  "filed": "2012-06-06"
+ },
+ {
+  "cik": "1045014",
+  "name": "GAMETECH INTERNATIONAL INC",
+  "filed": "2012-07-02"
+ },
+ {
+  "cik": "1379895",
+  "name": "DYNEGY INC.",
+  "filed": "2012-07-06"
+ },
+ {
+  "cik": "1376812",
+  "name": "Patriot Coal CORP",
+  "filed": "2012-07-09"
+ },
+ {
+  "cik": "885551",
+  "name": "VALENCE TECHNOLOGY INC",
+  "filed": "2012-07-13"
+ },
+ {
+  "cik": "1010286",
+  "name": "FiberTower CORP",
+  "filed": "2012-07-18"
+ },
+ {
+  "cik": "1341293",
+  "name": "Neogenix Oncology Inc",
+  "filed": "2012-07-26"
+ },
+ {
+  "cik": "1434893",
+  "name": "CURAXIS PHARMACEUTICAL Corp",
+  "filed": "2012-07-30"
+ },
+ {
+  "cik": "1097575",
+  "name": "AcuNetx, Inc.",
+  "filed": "2012-08-07"
+ },
+ {
+  "cik": "57055",
+  "name": "KV PHARMACEUTICAL CO /DE/",
+  "filed": "2012-08-08"
+ },
+ {
+  "cik": "840264",
+  "name": "CAPITOL BANCORP LTD",
+  "filed": "2012-08-09"
+ },
+ {
+  "cik": "22551",
+  "name": "TRI VALLEY CORP",
+  "filed": "2012-08-09"
+ },
+ {
+  "cik": "1123647",
+  "name": "ATP OIL & GAS CORP",
+  "filed": "2012-08-20"
+ },
+ {
+  "cik": "1104358",
+  "name": "BROADVIEW NETWORKS HOLDINGS INC",
+  "filed": "2012-08-23"
+ },
+ {
+  "cik": "731859",
+  "name": "AMPAL-AMERICAN ISRAEL CORP",
+  "filed": "2012-08-31"
+ },
+ {
+  "cik": "1490930",
+  "name": "Digital Domain Media Group, Inc.",
+  "filed": "2012-09-12"
+ },
+ {
+  "cik": "1205181",
+  "name": "IMAGING3 INC  (GPFT)",
+  "filed": "2012-09-20"
+ },
+ {
+  "cik": "1443818",
+  "name": "Freedom Environmental Services, Inc.",
+  "filed": "2012-09-28"
+ },
+ {
+  "cik": "1171032",
+  "name": "BAKERS FOOTWEAR GROUP INC",
+  "filed": "2012-10-03"
+ },
+ {
+  "cik": "944136",
+  "name": "TC GLOBAL, INC.",
+  "filed": "2012-10-15"
+ },
+ {
+  "cik": "1167178",
+  "name": "A123 SYSTEMS, INC.",
+  "filed": "2012-10-17"
+ },
+ {
+  "cik": "889423",
+  "name": "SATCON TECHNOLOGY CORP",
+  "filed": "2012-10-18"
+ },
+ {
+  "cik": "1068912",
+  "name": "FIRST PLACE FINANCIAL CORP /DE/",
+  "filed": "2012-10-29"
+ },
+ {
+  "cik": "1203957",
+  "name": "BIONOVO INC",
+  "filed": "2012-11-01"
+ },
+ {
+  "cik": "707855",
+  "name": "PRINCETON NATIONAL BANCORP INC",
+  "filed": "2012-11-05"
+ },
+ {
+  "cik": "312065",
+  "name": "FLORIDA GAMING CORP",
+  "filed": "2012-11-08"
+ },
+ {
+  "cik": "1477961",
+  "name": "Latitude Solutions, Inc.",
+  "filed": "2012-11-13"
+ },
+ {
+  "cik": "75208",
+  "name": "OVERSEAS SHIPHOLDING GROUP INC",
+  "filed": "2012-11-15"
+ },
+ {
+  "cik": "1274563",
+  "name": "HELICOS BIOSCIENCES CORP",
+  "filed": "2012-11-15"
+ },
+ {
+  "cik": "911631",
+  "name": "TRIAD GUARANTY INC",
+  "filed": "2012-12-12"
+ },
+ {
+  "cik": "930835",
+  "name": "EDISON MISSION ENERGY",
+  "filed": "2012-12-17"
+ },
+ {
+  "cik": "839441",
+  "name": "IMAGENETIX INC /NV/",
+  "filed": "2012-12-18"
+ },
+ {
+  "cik": "865570",
+  "name": "THQ INC",
+  "filed": "2012-12-19"
+ },
+ {
+  "cik": "1134016",
+  "name": "MIDWEST GENERATION LLC",
+  "filed": "2012-12-21"
+ },
+ {
+  "cik": "1493587",
+  "name": "Luxeyard, Inc.",
+  "filed": "2013-01-09"
+ },
+ {
+  "cik": "764897",
+  "name": "Banyan Rail Services Inc.  (BRST)",
+  "filed": "2013-01-14"
+ },
+ {
+  "cik": "1392902",
+  "name": "TECTON CORP",
+  "filed": "2013-01-22"
+ },
+ {
+  "cik": "1023362",
+  "name": "POWERWAVE TECHNOLOGIES INC",
+  "filed": "2013-01-28"
+ },
+ {
+  "cik": "911002",
+  "name": "LODGENET INTERACTIVE CORP",
+  "filed": "2013-01-28"
+ },
+ {
+  "cik": "1055454",
+  "name": "SCHOOL SPECIALTY INC",
+  "filed": "2013-01-28"
+ },
+ {
+  "cik": "810208",
+  "name": "AuraSound, Inc.",
+  "filed": "2013-01-31"
+ },
+ {
+  "cik": "867687",
+  "name": "AMERICA WEST RESOURCES, INC.",
+  "filed": "2013-02-07"
+ },
+ {
+  "cik": "1120830",
+  "name": "China Natural Gas, Inc.",
+  "filed": "2013-02-14"
+ },
+ {
+  "cik": "1503813",
+  "name": "RDA Holding Co.",
+  "filed": "2013-02-19"
+ },
+ {
+  "cik": "1488591",
+  "name": "COVENANT BANCSHARES, INC.",
+  "filed": "2013-02-21"
+ },
+ {
+  "cik": "1009833",
+  "name": "GABRIEL TECHNOLOGIES CORP",
+  "filed": "2013-03-04"
+ },
+ {
+  "cik": "852766",
+  "name": "YTB International, Inc.",
+  "filed": "2013-03-05"
+ },
+ {
+  "cik": "314606",
+  "name": "GEOKINETICS INC",
+  "filed": "2013-03-12"
+ },
+ {
+  "cik": "1367396",
+  "name": "SUPERMEDIA INC.",
+  "filed": "2013-03-18"
+ },
+ {
+  "cik": "1288359",
+  "name": "OTELCO INC.",
+  "filed": "2013-03-25"
+ },
+ {
+  "cik": "1551510",
+  "name": "Revel AC, Inc.",
+  "filed": "2013-03-27"
+ },
+ {
+  "cik": "1127342",
+  "name": "GMX RESOURCES INC",
+  "filed": "2013-04-01"
+ },
+ {
+  "cik": "1341843",
+  "name": "POLYMEDIX, INC",
+  "filed": "2013-04-01"
+ },
+ {
+  "cik": "1173313",
+  "name": "ECOLOGY COATINGS, INC.  (ABVC)",
+  "filed": "2013-04-03"
+ },
+ {
+  "cik": "1020448",
+  "name": "IMPERIAL PETROLEUM RECOVERY CORP",
+  "filed": "2013-04-05"
+ },
+ {
+  "cik": "1175108",
+  "name": "ROTECH HEALTHCARE INC",
+  "filed": "2013-04-08"
+ },
+ {
+  "cik": "1046880",
+  "name": "CENTRAL EUROPEAN DISTRIBUTION CORP",
+  "filed": "2013-04-08"
+ },
+ {
+  "cik": "356870",
+  "name": "Indigo-Energy, Inc.",
+  "filed": "2013-04-08"
+ },
+ {
+  "cik": "1076700",
+  "name": "KIT digital, Inc.",
+  "filed": "2013-04-26"
+ },
+ {
+  "cik": "1064015",
+  "name": "AMERITRANS CAPITAL CORP",
+  "filed": "2013-05-01"
+ },
+ {
+  "cik": "25354",
+  "name": "CPI CORP",
+  "filed": "2013-05-01"
+ },
+ {
+  "cik": "870398",
+  "name": "SBM CERTIFICATE CO",
+  "filed": "2013-05-03"
+ },
+ {
+  "cik": "1556739",
+  "name": "DEX MEDIA, INC.  (THRY)",
+  "filed": "2013-05-03"
+ },
+ {
+  "cik": "1176325",
+  "name": "Skinny Nutritional Corp.",
+  "filed": "2013-05-08"
+ },
+ {
+  "cik": "1014052",
+  "name": "Digerati Technologies, Inc.  (DTGI)",
+  "filed": "2013-06-05"
+ },
+ {
+  "cik": "813781",
+  "name": "EXIDE TECHNOLOGIES",
+  "filed": "2013-06-10"
+ },
+ {
+  "cik": "1177070",
+  "name": "MOUNTAIN NATIONAL BANCSHARES INC",
+  "filed": "2013-06-10"
+ },
+ {
+  "cik": "896842",
+  "name": "ORCHARD SUPPLY HARDWARE STORES CORP",
+  "filed": "2013-06-17"
+ },
+ {
+  "cik": "352747",
+  "name": "UNIGENE LABORATORIES INC",
+  "filed": "2013-07-02"
+ },
+ {
+  "cik": "1368218",
+  "name": "Tootie Pie Company, Inc.",
+  "filed": "2013-07-09"
+ },
+ {
+  "cik": "1331427",
+  "name": "AgFeed Industries, Inc.",
+  "filed": "2013-07-15"
+ },
+ {
+  "cik": "1303849",
+  "name": "Avantair, Inc",
+  "filed": "2013-07-30"
+ },
+ {
+  "cik": "1262751",
+  "name": "GRYPHON GOLD CORP",
+  "filed": "2013-08-01"
+ },
+ {
+  "cik": "852570",
+  "name": "GLOBAL AXCESS CORP",
+  "filed": "2013-08-06"
+ },
+ {
+  "cik": "885322",
+  "name": "ANCHOR BANCORP WISCONSIN INC",
+  "filed": "2013-08-13"
+ },
+ {
+  "cik": "1392477",
+  "name": "XTREME GREEN PRODUCTS INC.",
+  "filed": "2013-08-28"
+ },
+ {
+  "cik": "1389115",
+  "name": "Innolog Holdings Corp.",
+  "filed": "2013-09-05"
+ },
+ {
+  "cik": "50957",
+  "name": "FURNITURE BRANDS INTERNATIONAL INC",
+  "filed": "2013-09-10"
+ },
+ {
+  "cik": "1301206",
+  "name": "ECOTALITY, INC.",
+  "filed": "2013-09-17"
+ },
+ {
+  "cik": "1127362",
+  "name": "Colorado 2000D Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1156220",
+  "name": "Colorado 2001C Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1156216",
+  "name": "Colorado 2001D Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1156221",
+  "name": "Colorado 2001A Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1042582",
+  "name": "Eastern 1997D Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1031999",
+  "name": "Eastern 1996D Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1127358",
+  "name": "Colorado 2000B Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1224923",
+  "name": "Colorado 2002A Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1080504",
+  "name": "Eastern 1998D Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1127360",
+  "name": "Colorado 2000C Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1093942",
+  "name": "CO & PA 1999D Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1156218",
+  "name": "Colorado 2001B Limited Partnership",
+  "filed": "2013-09-18"
+ },
+ {
+  "cik": "1506932",
+  "name": "Lone Pine Resources Inc.",
+  "filed": "2013-09-25"
+ },
+ {
+  "cik": "1368900",
+  "name": "GateHouse Media, Inc.",
+  "filed": "2013-09-27"
+ },
+ {
+  "cik": "830741",
+  "name": "VHGI HOLDINGS, INC.",
+  "filed": "2013-09-30"
+ },
+ {
+  "cik": "722104",
+  "name": "SAVIENT PHARMACEUTICALS INC",
+  "filed": "2013-10-15"
+ },
+ {
+  "cik": "1332412",
+  "name": "VALLEY FORGE COMPOSITE TECHNOLOGIES, INC.",
+  "filed": "2013-10-15"
+ },
+ {
+  "cik": "1014763",
+  "name": "AMARILLO BIOSCIENCES INC  (AIMD, AIMDW)",
+  "filed": "2013-11-01"
+ },
+ {
+  "cik": "944739",
+  "name": "TRANSWITCH CORP /DE",
+  "filed": "2013-11-21"
+ },
+ {
+  "cik": "1058767",
+  "name": "BIOMODA INC/NM",
+  "filed": "2013-11-25"
+ },
+ {
+  "cik": "1355128",
+  "name": "OCZ TECHNOLOGY GROUP INC",
+  "filed": "2013-12-06"
+ },
+ {
+  "cik": "1451951",
+  "name": "FriendFinder Networks Inc.",
+  "filed": "2013-12-18"
+ },
+ {
+  "cik": "1045309",
+  "name": "W R GRACE & CO",
+  "filed": "2014-02-07"
+ },
+ {
+  "cik": "1324759",
+  "name": "Cereplast Inc  (HGYN)",
+  "filed": "2014-02-12"
+ },
+ {
+  "cik": "946090",
+  "name": "FIRST MARINER BANCORP",
+  "filed": "2014-02-12"
+ },
+ {
+  "cik": "1121783",
+  "name": "AMERICAN SPECTRUM REALTY INC",
+  "filed": "2014-02-21"
+ },
+ {
+  "cik": "1065059",
+  "name": "USEC INC  (LEU)",
+  "filed": "2014-03-05"
+ },
+ {
+  "cik": "1163332",
+  "name": "VERTICAL HEALTH SOLUTIONS INC",
+  "filed": "2014-03-17"
+ },
+ {
+  "cik": "869487",
+  "name": "TANDY BRANDS ACCESSORIES INC",
+  "filed": "2014-03-17"
+ },
+ {
+  "cik": "1396838",
+  "name": "Dolan Co.",
+  "filed": "2014-03-24"
+ },
+ {
+  "cik": "1311486",
+  "name": "Global Geophysical Services Inc",
+  "filed": "2014-03-27"
+ },
+ {
+  "cik": "1297720",
+  "name": "James River Coal CO",
+  "filed": "2014-04-08"
+ },
+ {
+  "cik": "1018005",
+  "name": "COLDWATER CREEK INC",
+  "filed": "2014-04-11"
+ },
+ {
+  "cik": "1405041",
+  "name": "Momentive Performance Materials Inc.",
+  "filed": "2014-04-15"
+ },
+ {
+  "cik": "928375",
+  "name": "Dutch Gold Resources Inc",
+  "filed": "2014-04-17"
+ },
+ {
+  "cik": "1326200",
+  "name": "GENCO SHIPPING & TRADING LTD  (GNK)",
+  "filed": "2014-04-21"
+ },
+ {
+  "cik": "941020",
+  "name": "GENELINK INC",
+  "filed": "2014-04-22"
+ },
+ {
+  "cik": "1275712",
+  "name": "GSE Holding, Inc.",
+  "filed": "2014-05-05"
+ },
+ {
+  "cik": "1436164",
+  "name": "Oryon Technologies, Inc.",
+  "filed": "2014-05-08"
+ },
+ {
+  "cik": "924095",
+  "name": "WATERSIDE CAPITAL CORP  (MVCO)",
+  "filed": "2014-06-03"
+ },
+ {
+  "cik": "739878",
+  "name": "KID BRANDS, INC",
+  "filed": "2014-06-19"
+ },
+ {
+  "cik": "1476719",
+  "name": "Crumbs Bake Shop, Inc.",
+  "filed": "2014-07-16"
+ },
+ {
+  "cik": "1047919",
+  "name": "AMBIENT CORP /NY",
+  "filed": "2014-07-29"
+ },
+ {
+  "cik": "1322439",
+  "name": "Eagle Bulk Shipping Inc.",
+  "filed": "2014-08-06"
+ },
+ {
+  "cik": "1514443",
+  "name": "HEALTH REVENUE ASSURANCE HOLDINGS, INC.  (AGSS)",
+  "filed": "2014-08-12"
+ },
+ {
+  "cik": "1423107",
+  "name": "BOLDFACE GROUP, INC.",
+  "filed": "2014-09-08"
+ },
+ {
+  "cik": "1554594",
+  "name": "A.C. Simmonds & Sons",
+  "filed": "2014-09-09"
+ },
+ {
+  "cik": "1100202",
+  "name": "LENCO MOBILE INC.",
+  "filed": "2014-09-11"
+ },
+ {
+  "cik": "1037016",
+  "name": "NII HOLDINGS INC",
+  "filed": "2014-09-15"
+ },
+ {
+  "cik": "1010086",
+  "name": "SIGA TECHNOLOGIES INC  (SIGA)",
+  "filed": "2014-09-18"
+ },
+ {
+  "cik": "357108",
+  "name": "ISC8 INC. /DE",
+  "filed": "2014-09-24"
+ },
+ {
+  "cik": "1140414",
+  "name": "Legend Oil & Gas, Ltd.",
+  "filed": "2014-09-25"
+ },
+ {
+  "cik": "1405424",
+  "name": "VISION INDUSTRIES CORP",
+  "filed": "2014-09-25"
+ },
+ {
+  "cik": "1394954",
+  "name": "GT Advanced Technologies Inc.",
+  "filed": "2014-10-10"
+ },
+ {
+  "cik": "30302",
+  "name": "ALCO STORES INC",
+  "filed": "2014-10-14"
+ },
+ {
+  "cik": "1112412",
+  "name": "ENDEAVOUR INTERNATIONAL CORP",
+  "filed": "2014-10-14"
+ },
+ {
+  "cik": "826773",
+  "name": "UniTek Global Services, Inc.",
+  "filed": "2014-11-03"
+ },
+ {
+  "cik": "1418862",
+  "name": "Kior Inc",
+  "filed": "2014-11-10"
+ },
+ {
+  "cik": "1107332",
+  "name": "DENDREON CORP",
+  "filed": "2014-11-10"
+ },
+ {
+  "cik": "1230355",
+  "name": "BAXANO SURGICAL, INC.",
+  "filed": "2014-11-14"
+ },
+ {
+  "cik": "72316",
+  "name": "NORD RESOURCES CORP",
+  "filed": "2014-11-24"
+ },
+ {
+  "cik": "1337885",
+  "name": "dELiAs, Inc.",
+  "filed": "2014-12-10"
+ },
+ {
+  "cik": "804154",
+  "name": "LITHIUM TECHNOLOGY CORP",
+  "filed": "2014-12-11"
+ },
+ {
+  "cik": "1296391",
+  "name": "TENGION INC",
+  "filed": "2014-12-29"
+ },
+ {
+  "cik": "1116112",
+  "name": "US FUEL CORP",
+  "filed": "2014-12-30"
+ },
+ {
+  "cik": "1379246",
+  "name": "BODY CENTRAL CORP",
+  "filed": "2015-01-09"
+ },
+ {
+  "cik": "858395",
+  "name": "CAESARS ENTERTAINMENT OPERATING COMPANY, INC.",
+  "filed": "2015-01-15"
+ },
+ {
+  "cik": "863456",
+  "name": "WET SEAL INC",
+  "filed": "2015-01-16"
+ },
+ {
+  "cik": "1137204",
+  "name": "HIPCRICKET, INC.",
+  "filed": "2015-01-22"
+ },
+ {
+  "cik": "1541354",
+  "name": "Twin Cities Power Holdings, LLC",
+  "filed": "2015-01-22"
+ },
+ {
+  "cik": "1393631",
+  "name": "Xhibit Corp.",
+  "filed": "2015-01-23"
+ },
+ {
+  "cik": "49534",
+  "name": "LIFE PARTNERS HOLDINGS INC",
+  "filed": "2015-01-26"
+ },
+ {
+  "cik": "96289",
+  "name": "RADIOSHACK CORP",
+  "filed": "2015-02-11"
+ },
+ {
+  "cik": "1106935",
+  "name": "IVANHOE ENERGY INC",
+  "filed": "2015-02-26"
+ },
+ {
+  "cik": "840889",
+  "name": "DORAL FINANCIAL CORP",
+  "filed": "2015-03-02"
+ },
+ {
+  "cik": "1377053",
+  "name": "AtheroNova Inc.",
+  "filed": "2015-03-03"
+ },
+ {
+  "cik": "1383960",
+  "name": "UNIVERSITY GENERAL HEALTH SYSTEM, INC.",
+  "filed": "2015-03-05"
+ },
+ {
+  "cik": "1364100",
+  "name": "Cal Dive International, Inc.",
+  "filed": "2015-03-09"
+ },
+ {
+  "cik": "1100592",
+  "name": "ASSURED PHARMACY, INC.",
+  "filed": "2015-03-09"
+ },
+ {
+  "cik": "1376610",
+  "name": "Allied Nevada Gold Corp.",
+  "filed": "2015-03-10"
+ },
+ {
   "cik": "1023734",
   "name": "BPZ RESOURCES, INC.",
-  "filed": "2015-07-14"
+  "filed": "2015-03-10"
+ },
+ {
+  "cik": "1092839",
+  "name": "DUNE ENERGY INC",
+  "filed": "2015-03-12"
+ },
+ {
+  "cik": "93456",
+  "name": "STANDARD REGISTER CO",
+  "filed": "2015-03-13"
+ },
+ {
+  "cik": "1060990",
+  "name": "QUICKSILVER RESOURCES INC",
+  "filed": "2015-03-17"
+ },
+ {
+  "cik": "1487920",
+  "name": "USA Synthetic Fuel Corp",
+  "filed": "2015-03-23"
+ },
+ {
+  "cik": "1532543",
+  "name": "EveryWare Global, Inc.",
+  "filed": "2015-04-08"
+ },
+ {
+  "cik": "1431888",
+  "name": "AVT, Inc.",
+  "filed": "2015-05-04"
+ },
+ {
+  "cik": "1066134",
+  "name": "CORINTHIAN COLLEGES INC",
+  "filed": "2015-05-06"
+ },
+ {
+  "cik": "1282613",
+  "name": "AMERICAN EAGLE ENERGY Corp",
+  "filed": "2015-05-12"
+ },
+ {
+  "cik": "1494214",
+  "name": "InterCore, Inc.",
+  "filed": "2015-05-13"
+ },
+ {
+  "cik": "1508677",
+  "name": "Colt Defense LLC",
+  "filed": "2015-06-15"
+ },
+ {
+  "cik": "1319009",
+  "name": "Midway Gold Corp",
+  "filed": "2015-06-22"
+ },
+ {
+  "cik": "1259550",
+  "name": "LOCAL Corp",
+  "filed": "2015-06-24"
+ },
+ {
+  "cik": "1489137",
+  "name": "Molycorp, Inc.",
+  "filed": "2015-06-30"
  },
  {
   "cik": "38079",
@@ -20,19 +2220,9 @@
   "filed": "2015-08-03"
  },
  {
-  "cik": "357108",
-  "name": "ISC8 INC. /DE",
-  "filed": "2015-08-06"
- },
- {
   "cik": "1124608",
   "name": "RESPONSE GENETICS INC",
   "filed": "2015-08-11"
- },
- {
-  "cik": "1487920",
-  "name": "USA Synthetic Fuel Corp",
-  "filed": "2015-08-14"
  },
  {
   "cik": "1330849",
@@ -53,11 +2243,6 @@
   "cik": "1081074",
   "name": "Armada Oil, Inc.",
   "filed": "2015-08-31"
- },
- {
-  "cik": "1393631",
-  "name": "Xhibit Corp.",
-  "filed": "2015-09-02"
  },
  {
   "cik": "1475899",
@@ -90,6 +2275,341 @@
   "filed": "2015-09-25"
  },
  {
+  "cik": "728249",
+  "name": "INTERPHASE CORP",
+  "filed": "2015-10-01"
+ },
+ {
+  "cik": "785968",
+  "name": "MILLER ENERGY RESOURCES, INC.",
+  "filed": "2015-10-06"
+ },
+ {
+  "cik": "1336545",
+  "name": "AMERICAN APPAREL, INC",
+  "filed": "2015-10-08"
+ },
+ {
+  "cik": "1015979",
+  "name": "Bio Nitrogen Holdings Corp",
+  "filed": "2015-11-04"
+ },
+ {
+  "cik": "29834",
+  "name": "Escalera Resources Co.",
+  "filed": "2015-11-09"
+ },
+ {
+  "cik": "1124024",
+  "name": "FAR EAST ENERGY CORP",
+  "filed": "2015-11-10"
+ },
+ {
+  "cik": "1419428",
+  "name": "Vantage Drilling CO",
+  "filed": "2015-12-03"
+ },
+ {
+  "cik": "753048",
+  "name": "AXION INTERNATIONAL HOLDINGS, INC.",
+  "filed": "2015-12-08"
+ },
+ {
+  "cik": "1023291",
+  "name": "Energy Future Holdings Corp /TX/",
+  "filed": "2015-12-11"
+ },
+ {
+  "cik": "319156",
+  "name": "CUBIC ENERGY INC",
+  "filed": "2015-12-14"
+ },
+ {
+  "cik": "1477472",
+  "name": "Active Health Foods, Inc.",
+  "filed": "2015-12-14"
+ },
+ {
+  "cik": "1335190",
+  "name": "MAGNUM HUNTER RESOURCES CORP",
+  "filed": "2015-12-15"
+ },
+ {
+  "cik": "1293310",
+  "name": "KALOBIOS PHARMACEUTICALS INC",
+  "filed": "2015-12-30"
+ },
+ {
+  "cik": "351817",
+  "name": "SWIFT ENERGY CO",
+  "filed": "2016-01-04"
+ },
+ {
+  "cik": "745543",
+  "name": "All State Properties Holdings, Inc.  (PBAJ)",
+  "filed": "2016-01-04"
+ },
+ {
+  "cik": "1037676",
+  "name": "ARCH COAL INC  (ARCH)",
+  "filed": "2016-01-11"
+ },
+ {
+  "cik": "1109153",
+  "name": "TRISTAR WELLNESS SOLUTIONS, INC.",
+  "filed": "2016-01-15"
+ },
+ {
+  "cik": "1421182",
+  "name": "Verso Corp",
+  "filed": "2016-01-26"
+ },
+ {
+  "cik": "1091596",
+  "name": "Nuo Therapeutics, Inc.  (AURX)",
+  "filed": "2016-02-01"
+ },
+ {
+  "cik": "919013",
+  "name": "WAVE SYSTEMS CORP",
+  "filed": "2016-02-01"
+ },
+ {
+  "cik": "1385544",
+  "name": "Horsehead Holding Corp",
+  "filed": "2016-02-02"
+ },
+ {
+  "cik": "812906",
+  "name": "HANCOCK FABRICS INC",
+  "filed": "2016-02-02"
+ },
+ {
+  "cik": "1562594",
+  "name": "Liquid Holdings Group, Inc.",
+  "filed": "2016-02-02"
+ },
+ {
+  "cik": "1568832",
+  "name": "RCS Capital Corp",
+  "filed": "2016-02-04"
+ },
+ {
+  "cik": "1553588",
+  "name": "SFX Entertainment, INC",
+  "filed": "2016-02-05"
+ },
+ {
+  "cik": "1594590",
+  "name": "PARAGON OFFSHORE PLC",
+  "filed": "2016-02-16"
+ },
+ {
+  "cik": "1465872",
+  "name": "VANTAGE DRILLING INTERNATIONAL  (VTDRF)",
+  "filed": "2016-02-17"
+ },
+ {
+  "cik": "1159154",
+  "name": "REPUBLIC AIRWAYS HOLDINGS INC",
+  "filed": "2016-02-26"
+ },
+ {
+  "cik": "1582054",
+  "name": "MILLENNIUM HEALTHCARE INC.",
+  "filed": "2016-03-01"
+ },
+ {
+  "cik": "1410056",
+  "name": "GreenHunter Resources, Inc.",
+  "filed": "2016-03-04"
+ },
+ {
+  "cik": "1086303",
+  "name": "PACIFIC WEBWORKS INC  (HCIL)",
+  "filed": "2016-03-07"
+ },
+ {
+  "cik": "1283843",
+  "name": "Emerald Oil, Inc.",
+  "filed": "2016-03-23"
+ },
+ {
+  "cik": "1166380",
+  "name": "QUANTUM FUEL SYSTEMS TECHNOLOGIES WORLDWIDE, INC.",
+  "filed": "2016-03-23"
+ },
+ {
+  "cik": "1422109",
+  "name": "Blue Earth, Inc.",
+  "filed": "2016-03-24"
+ },
+ {
+  "cik": "1313024",
+  "name": "Venoco, Inc.",
+  "filed": "2016-03-24"
+ },
+ {
+  "cik": "1473061",
+  "name": "PostRock Energy Corp",
+  "filed": "2016-04-01"
+ },
+ {
+  "cik": "874841",
+  "name": "PACIFIC SUNWEAR OF CALIFORNIA INC",
+  "filed": "2016-04-08"
+ },
+ {
+  "cik": "1129048",
+  "name": "WeedHire International, Inc.",
+  "filed": "2016-04-08"
+ },
+ {
+  "cik": "1064728",
+  "name": "PEABODY ENERGY CORP  (BTU)",
+  "filed": "2016-04-13"
+ },
+ {
+  "cik": "1346526",
+  "name": "ESP Resources, Inc.",
+  "filed": "2016-04-14"
+ },
+ {
+  "cik": "1343719",
+  "name": "Energy XXI Ltd",
+  "filed": "2016-04-14"
+ },
+ {
+  "cik": "943861",
+  "name": "GOODRICH PETROLEUM CORP",
+  "filed": "2016-04-15"
+ },
+ {
+  "cik": "945436",
+  "name": "SUNEDISON, INC.",
+  "filed": "2016-04-27"
+ },
+ {
+  "cik": "1533924",
+  "name": "Midstates Petroleum Company, Inc.  (AMPY)",
+  "filed": "2016-05-02"
+ },
+ {
+  "cik": "1338095",
+  "name": "NephroGenex, Inc.",
+  "filed": "2016-05-02"
+ },
+ {
+  "cik": "1385228",
+  "name": "BIND Therapeutics, Inc",
+  "filed": "2016-05-02"
+ },
+ {
+  "cik": "1022646",
+  "name": "ULTRA PETROLEUM CORP",
+  "filed": "2016-05-03"
+ },
+ {
+  "cik": "1555492",
+  "name": "Fairway Group Holdings Corp",
+  "filed": "2016-05-04"
+ },
+ {
+  "cik": "1586300",
+  "name": "CHC Group Ltd.",
+  "filed": "2016-05-05"
+ },
+ {
+  "cik": "1168213",
+  "name": "AEROPOSTALE INC",
+  "filed": "2016-05-06"
+ },
+ {
+  "cik": "1346980",
+  "name": "Chaparral Energy, Inc.",
+  "filed": "2016-05-09"
+ },
+ {
+  "cik": "1132143",
+  "name": "LEGEND INTERNATIONAL HOLDINGS INC",
+  "filed": "2016-05-09"
+ },
+ {
+  "cik": "844985",
+  "name": "POSITRON CORP",
+  "filed": "2016-05-10"
+ },
+ {
+  "cik": "778438",
+  "name": "Berry Petroleum Company, LLC",
+  "filed": "2016-05-11"
+ },
+ {
+  "cik": "1326428",
+  "name": "LINN ENERGY, LLC",
+  "filed": "2016-05-11"
+ },
+ {
+  "cik": "1549756",
+  "name": "LinnCo, LLC",
+  "filed": "2016-05-11"
+ },
+ {
+  "cik": "77159",
+  "name": "PENN VIRGINIA CORP",
+  "filed": "2016-05-12"
+ },
+ {
+  "cik": "1418115",
+  "name": "Verity Corp.",
+  "filed": "2016-05-16"
+ },
+ {
+  "cik": "1349436",
+  "name": "SANDRIDGE ENERGY INC  (SD)",
+  "filed": "2016-05-16"
+ },
+ {
+  "cik": "1357371",
+  "name": "Breitburn Energy Partners LP",
+  "filed": "2016-05-16"
+ },
+ {
+  "cik": "1613011",
+  "name": "Code Rebel Corp",
+  "filed": "2016-05-19"
+ },
+ {
+  "cik": "320174",
+  "name": "Perseon Corp",
+  "filed": "2016-05-23"
+ },
+ {
+  "cik": "892986",
+  "name": "WARREN RESOURCES INC",
+  "filed": "2016-06-03"
+ },
+ {
+  "cik": "1532930",
+  "name": "Seventy Seven Energy Inc.",
+  "filed": "2016-06-07"
+ },
+ {
+  "cik": "796764",
+  "name": "PREMIER EXHIBITIONS, INC.",
+  "filed": "2016-06-14"
+ },
+ {
+  "cik": "1506374",
+  "name": "ARABELLA EXPLORATION, INC.",
+  "filed": "2016-06-22"
+ },
+ {
+  "cik": "1281922",
+  "name": "Triangle Petroleum Corp",
+  "filed": "2016-06-30"
+ },
+ {
   "cik": "1023994",
   "name": "SG BLOCKS, INC.  (SGBX)",
   "filed": "2016-07-07"
@@ -105,34 +2625,14 @@
   "filed": "2016-07-12"
  },
  {
-  "cik": "892986",
-  "name": "WARREN RESOURCES INC",
-  "filed": "2016-07-12"
- },
- {
   "cik": "1410711",
   "name": "Armco Metals Holdings, Inc.",
   "filed": "2016-07-12"
  },
  {
-  "cik": "1506374",
-  "name": "ARABELLA EXPLORATION, INC.",
-  "filed": "2016-07-15"
- },
- {
-  "cik": "1532930",
-  "name": "Seventy Seven Energy Inc.",
-  "filed": "2016-07-20"
- },
- {
   "cik": "1615817",
   "name": "C&J Energy Services Ltd.",
   "filed": "2016-07-21"
- },
- {
-  "cik": "1422109",
-  "name": "Blue Earth, Inc.",
-  "filed": "2016-07-25"
  },
  {
   "cik": "1135906",
@@ -155,11 +2655,6 @@
   "filed": "2016-07-28"
  },
  {
-  "cik": "1342514",
-  "name": "Atlas America Series 26-2005 L.P.",
-  "filed": "2016-07-28"
- },
- {
   "cik": "1379763",
   "name": "Atlas America Series 27-2006 L.P.",
   "filed": "2016-07-28"
@@ -170,13 +2665,13 @@
   "filed": "2016-07-28"
  },
  {
-  "cik": "1374985",
-  "name": "Atlas Resources Public #16-2007 (A) L.P.",
+  "cik": "1342514",
+  "name": "Atlas America Series 26-2005 L.P.",
   "filed": "2016-07-28"
  },
  {
-  "cik": "1175028",
-  "name": "ATLAS AMERICA PUBLIC #11-2002 LTD.",
+  "cik": "1374985",
+  "name": "Atlas Resources Public #16-2007 (A) L.P.",
   "filed": "2016-07-28"
  },
  {
@@ -192,6 +2687,11 @@
  {
   "cik": "1335236",
   "name": "Atlas America Public #15-2005 (A) L.P.",
+  "filed": "2016-07-28"
+ },
+ {
+  "cik": "1175028",
+  "name": "ATLAS AMERICA PUBLIC #11-2002 LTD.",
   "filed": "2016-07-28"
  },
  {
@@ -255,59 +2755,9 @@
   "filed": "2016-08-04"
  },
  {
-  "cik": "919013",
-  "name": "WAVE SYSTEMS CORP",
-  "filed": "2016-08-16"
- },
- {
-  "cik": "77159",
-  "name": "PENN VIRGINIA CORP",
-  "filed": "2016-08-17"
- },
- {
-  "cik": "1060990",
-  "name": "QUICKSILVER RESOURCES INC",
-  "filed": "2016-08-22"
- },
- {
-  "cik": "1023291",
-  "name": "Energy Future Holdings Corp /TX/",
-  "filed": "2016-08-30"
- },
- {
-  "cik": "1489137",
-  "name": "Molycorp, Inc.",
-  "filed": "2016-09-01"
- },
- {
-  "cik": "874841",
-  "name": "PACIFIC SUNWEAR OF CALIFORNIA INC",
-  "filed": "2016-09-12"
- },
- {
-  "cik": "1349436",
-  "name": "SANDRIDGE ENERGY INC  (SD)",
-  "filed": "2016-09-14"
- },
- {
-  "cik": "1385544",
-  "name": "Horsehead Holding Corp",
-  "filed": "2016-09-15"
- },
- {
-  "cik": "1037676",
-  "name": "ARCH COAL INC  (ARCH)",
-  "filed": "2016-09-15"
- },
- {
   "cik": "922475",
   "name": "ITT EDUCATIONAL SERVICES INC",
   "filed": "2016-09-26"
- },
- {
-  "cik": "1385228",
-  "name": "DNIB UNWIND, INC.",
-  "filed": "2016-09-27"
  },
  {
   "cik": "1171014",
@@ -318,16 +2768,6 @@
   "cik": "776008",
   "name": "ROCK CREEK PHARMACEUTICALS, INC.",
   "filed": "2016-09-28"
- },
- {
-  "cik": "943861",
-  "name": "GOODRICH PETROLEUM CORP",
-  "filed": "2016-10-03"
- },
- {
-  "cik": "1533924",
-  "name": "Midstates Petroleum Company, Inc.  (AMPY)",
-  "filed": "2016-10-04"
  },
  {
   "cik": "1424328",
@@ -355,16 +2795,6 @@
   "filed": "2016-10-31"
  },
  {
-  "cik": "1096339",
-  "name": "SARATOGA RESOURCES INC /TX",
-  "filed": "2016-11-03"
- },
- {
-  "cik": "49534",
-  "name": "LIFE PARTNERS HOLDINGS INC",
-  "filed": "2016-11-07"
- },
- {
   "cik": "1490165",
   "name": "ERICKSON INC.",
   "filed": "2016-11-09"
@@ -373,16 +2803,6 @@
   "cik": "887150",
   "name": "HAMPSHIRE GROUP LTD",
   "filed": "2016-11-25"
- },
- {
-  "cik": "1553588",
-  "name": "SFX Entertainment, INC",
-  "filed": "2016-12-07"
- },
- {
-  "cik": "1379895",
-  "name": "DYNEGY INC.",
-  "filed": "2016-12-09"
  },
  {
   "cik": "904080",
@@ -395,14 +2815,224 @@
   "filed": "2016-12-19"
  },
  {
-  "cik": "1346980",
-  "name": "Chaparral Energy, Inc.",
-  "filed": "2016-12-20"
- },
- {
   "cik": "1367311",
   "name": "DAKOTA PLAINS HOLDINGS, INC.",
   "filed": "2016-12-22"
+ },
+ {
+  "cik": "1509589",
+  "name": "Bonanza Creek Energy, Inc.  (CIVI, CIVII, CIVIW)",
+  "filed": "2017-01-04"
+ },
+ {
+  "cik": "1521847",
+  "name": "Memorial Production Partners LP",
+  "filed": "2017-01-17"
+ },
+ {
+  "cik": "1116521",
+  "name": "AVAYA INC",
+  "filed": "2017-01-19"
+ },
+ {
+  "cik": "1434842",
+  "name": "Forbes Energy Services Ltd.",
+  "filed": "2017-01-23"
+ },
+ {
+  "cik": "1575599",
+  "name": "AZURE MIDSTREAM PARTNERS, LP",
+  "filed": "2017-01-31"
+ },
+ {
+  "cik": "1384072",
+  "name": "Vanguard Natural Resources, LLC",
+  "filed": "2017-02-02"
+ },
+ {
+  "cik": "1456455",
+  "name": "PFO Global, Inc.",
+  "filed": "2017-02-06"
+ },
+ {
+  "cik": "758743",
+  "name": "VIDEO DISPLAY CORP  (VIDE)",
+  "filed": "2017-02-16"
+ },
+ {
+  "cik": "1396279",
+  "name": "hhgregg, Inc.",
+  "filed": "2017-03-07"
+ },
+ {
+  "cik": "1421601",
+  "name": "WESTMOUNTAIN GOLD, INC.",
+  "filed": "2017-03-07"
+ },
+ {
+  "cik": "1490636",
+  "name": "Gordmans Stores, Inc.",
+  "filed": "2017-03-13"
+ },
+ {
+  "cik": "1398702",
+  "name": "Electronic Cigarettes International Group, Ltd.",
+  "filed": "2017-03-16"
+ },
+ {
+  "cik": "1088162",
+  "name": "MAD CATZ INTERACTIVE INC",
+  "filed": "2017-03-31"
+ },
+ {
+  "cik": "918581",
+  "name": "CIBER INC",
+  "filed": "2017-04-10"
+ },
+ {
+  "cik": "1476170",
+  "name": "Unilife Corp",
+  "filed": "2017-04-12"
+ },
+ {
+  "cik": "1020475",
+  "name": "GRANDPARENTS.COM, INC.",
+  "filed": "2017-04-17"
+ },
+ {
+  "cik": "1602367",
+  "name": "Adeptus Health Inc.",
+  "filed": "2017-04-20"
+ },
+ {
+  "cik": "2178",
+  "name": "ADAMS RESOURCES & ENERGY, INC.  (AE)",
+  "filed": "2017-04-24"
+ },
+ {
+  "cik": "1403433",
+  "name": "America Greener Technologies, Inc.",
+  "filed": "2017-04-24"
+ },
+ {
+  "cik": "1403853",
+  "name": "Nuverra Environmental Solutions, Inc.",
+  "filed": "2017-05-01"
+ },
+ {
+  "cik": "1496631",
+  "name": "First NBC Bank Holding Co",
+  "filed": "2017-05-04"
+ },
+ {
+  "cik": "1444310",
+  "name": "AMBICOM HOLDINGS, INC",
+  "filed": "2017-05-05"
+ },
+ {
+  "cik": "54681",
+  "name": "KATY INDUSTRIES INC",
+  "filed": "2017-05-18"
+ },
+ {
+  "cik": "98222",
+  "name": "TIDEWATER INC  (TDW, TDDWW, TDGMW, TDW-WT)",
+  "filed": "2017-05-18"
+ },
+ {
+  "cik": "1030749",
+  "name": "GULFMARK OFFSHORE INC",
+  "filed": "2017-05-18"
+ },
+ {
+  "cik": "1434589",
+  "name": "T3M INC.",
+  "filed": "2017-05-19"
+ },
+ {
+  "cik": "73605",
+  "name": "OAKRIDGE HOLDINGS INC",
+  "filed": "2017-05-23"
+ },
+ {
+  "cik": "1574300",
+  "name": "Content Checked Holdings, Inc.",
+  "filed": "2017-05-26"
+ },
+ {
+  "cik": "1536256",
+  "name": "First Capital Real Estate Trust Inc",
+  "filed": "2017-06-02"
+ },
+ {
+  "cik": "1526796",
+  "name": "Ignite Restaurant Group, Inc.",
+  "filed": "2017-06-08"
+ },
+ {
+  "cik": "1013871",
+  "name": "NRG ENERGY, INC.  (NRG)",
+  "filed": "2017-06-14"
+ },
+ {
+  "cik": "1126294",
+  "name": "GenOn Energy, Inc.",
+  "filed": "2017-06-14"
+ },
+ {
+  "cik": "1475273",
+  "name": "SOUPMAN, INC.",
+  "filed": "2017-06-16"
+ },
+ {
+  "cik": "1025953",
+  "name": "NOVATION COMPANIES, INC.",
+  "filed": "2017-06-16"
+ },
+ {
+  "cik": "18172",
+  "name": "CASTLE A M & CO",
+  "filed": "2017-06-19"
+ },
+ {
+  "cik": "1554923",
+  "name": "Aina Le'a Inc.",
+  "filed": "2017-06-30"
+ },
+ {
+  "cik": "878802",
+  "name": "Quadrant 4 System Corp",
+  "filed": "2017-07-05"
+ },
+ {
+  "cik": "886328",
+  "name": "E DIGITAL CORP",
+  "filed": "2017-07-07"
+ },
+ {
+  "cik": "1311230",
+  "name": "TerraVia Holdings, Inc.",
+  "filed": "2017-08-02"
+ },
+ {
+  "cik": "1093207",
+  "name": "CROSSROADS SYSTEMS INC",
+  "filed": "2017-08-14"
+ },
+ {
+  "cik": "1171012",
+  "name": "Uni-Pixel",
+  "filed": "2017-08-25"
+ },
+ {
+  "cik": "880460",
+  "name": "Perfumania Holdings, Inc.",
+  "filed": "2017-08-29"
+ },
+ {
+  "cik": "1301712",
+  "name": "IRONCLAD PERFORMANCE WEAR CORP",
+  "filed": "2017-09-11"
  },
  {
   "cik": "1166365",
@@ -410,24 +3040,9 @@
   "filed": "2017-10-02"
  },
  {
-  "cik": "1602367",
-  "name": "Adeptus Health Inc.",
-  "filed": "2017-10-02"
- },
- {
-  "cik": "1171012",
-  "name": "Uni-Pixel",
-  "filed": "2017-10-03"
- },
- {
   "cik": "1383154",
   "name": "COPsync, Inc.",
   "filed": "2017-10-04"
- },
- {
-  "cik": "1030749",
-  "name": "GULFMARK OFFSHORE INC",
-  "filed": "2017-10-05"
  },
  {
   "cik": "1602381",
@@ -435,24 +3050,9 @@
   "filed": "2017-10-06"
  },
  {
-  "cik": "880460",
-  "name": "Perfumania Holdings, Inc.",
-  "filed": "2017-10-13"
- },
- {
-  "cik": "1475273",
-  "name": "SOUPMAN, INC.",
-  "filed": "2017-10-18"
- },
- {
   "cik": "104897",
   "name": "WSI INDUSTRIES, INC.",
   "filed": "2017-10-23"
- },
- {
-  "cik": "38984",
-  "name": "Real Industry, Inc.",
-  "filed": "2017-11-17"
  },
  {
   "cik": "1058623",
@@ -495,34 +3095,14 @@
   "filed": "2017-12-15"
  },
  {
-  "cik": "1126294",
-  "name": "GenOn Energy, Inc.",
-  "filed": "2017-12-18"
- },
- {
-  "cik": "1013871",
-  "name": "NRG ENERGY, INC.  (NRG)",
-  "filed": "2017-12-18"
- },
- {
   "cik": "868725",
   "name": "RENTECH, INC.",
   "filed": "2017-12-21"
  },
  {
-  "cik": "1109153",
-  "name": "TRISTAR WELLNESS SOLUTIONS, INC.",
-  "filed": "2017-12-28"
- },
- {
   "cik": "316300",
   "name": "EXCO RESOURCES INC",
   "filed": "2018-01-17"
- },
- {
-  "cik": "1311230",
-  "name": "TerraVia Holdings, Inc.",
-  "filed": "2018-01-18"
  },
  {
   "cik": "1576778",
@@ -553,11 +3133,6 @@
   "cik": "1464865",
   "name": "Lone Star Gold, Inc.  (ASII)",
   "filed": "2018-02-08"
- },
- {
-  "cik": "1301712",
-  "name": "ICPW LIQUIDATION Corp",
-  "filed": "2018-02-15"
  },
  {
   "cik": "1394872",
@@ -600,11 +3175,6 @@
   "filed": "2018-03-19"
  },
  {
-  "cik": "1357371",
-  "name": "Breitburn Energy Partners LP",
-  "filed": "2018-03-28"
- },
- {
   "cik": "1361937",
   "name": "EV Energy Partners, LP",
   "filed": "2018-04-02"
@@ -612,11 +3182,6 @@
  {
   "cik": "1407703",
   "name": "FirstEnergy Solutions Corp.",
-  "filed": "2018-04-02"
- },
- {
-  "cik": "878802",
-  "name": "Quadrant 4 System Corp",
   "filed": "2018-04-02"
  },
  {
@@ -670,11 +3235,6 @@
   "filed": "2018-07-31"
  },
  {
-  "cik": "844985",
-  "name": "POSITRON CORP",
-  "filed": "2018-08-01"
- },
- {
   "cik": "1660719",
   "name": "Aralez Pharmaceuticals Inc.",
   "filed": "2018-08-14"
@@ -685,34 +3245,304 @@
   "filed": "2018-08-28"
  },
  {
+  "cik": "106455",
+  "name": "WESTMORELAND COAL Co",
+  "filed": "2018-10-09"
+ },
+ {
+  "cik": "1412347",
+  "name": "Westmoreland Resource Partners, LP",
+  "filed": "2018-10-09"
+ },
+ {
+  "cik": "1310067",
+  "name": "SEARS HOLDINGS CORP",
+  "filed": "2018-10-15"
+ },
+ {
+  "cik": "1582919",
+  "name": "Flitways Technology Inc.",
+  "filed": "2018-10-15"
+ },
+ {
+  "cik": "105608",
+  "name": "AG&E HOLDINGS INC.",
+  "filed": "2018-10-18"
+ },
+ {
+  "cik": "1549145",
+  "name": "ALLIANCE BIOENERGY PLUS, INC.  (BIOF)",
+  "filed": "2018-10-23"
+ },
+ {
+  "cik": "1586105",
+  "name": "Egalet Corp",
+  "filed": "2018-10-31"
+ },
+ {
+  "cik": "1431372",
+  "name": "Gastar Exploration Inc.",
+  "filed": "2018-11-01"
+ },
+ {
+  "cik": "1407805",
+  "name": "ROCKIES REGION 2007 LP",
+  "filed": "2018-11-05"
+ },
+ {
+  "cik": "1376912",
+  "name": "Rockies Region 2006 Limited Partnership",
+  "filed": "2018-11-05"
+ },
+ {
+  "cik": "872248",
+  "name": "PETROQUEST ENERGY INC",
+  "filed": "2018-11-07"
+ },
+ {
+  "cik": "1699683",
+  "name": "Longfin Corp",
+  "filed": "2018-11-21"
+ },
+ {
+  "cik": "820380",
+  "name": "INTERNATIONAL AUTOMATED SYSTEMS INC",
+  "filed": "2018-11-21"
+ },
+ {
+  "cik": "1105533",
+  "name": "ARGOS THERAPEUTICS INC",
+  "filed": "2018-12-03"
+ },
+ {
+  "cik": "1450390",
+  "name": "BAKKEN RESOURCES INC",
+  "filed": "2018-12-10"
+ },
+ {
+  "cik": "76321",
+  "name": "PARKER DRILLING CO /DE/",
+  "filed": "2018-12-12"
+ },
+ {
+  "cik": "1347613",
+  "name": "SYNERGY PHARMACEUTICALS, INC.",
+  "filed": "2018-12-13"
+ },
+ {
+  "cik": "1494448",
+  "name": "EMERGENT CAPITAL, INC.",
+  "filed": "2018-12-14"
+ },
+ {
+  "cik": "75439",
+  "name": "Medite Cancer Diagnostics, Inc.",
+  "filed": "2019-01-03"
+ },
+ {
+  "cik": "1004980",
+  "name": "PG&E Corp  (PCG, PCG-PA, PCG-PB, PCG-PC, PCG-PD, PCG-PE, PCG-PG, PCG-PH, PCG-PI)",
+  "filed": "2019-01-14"
+ },
+ {
+  "cik": "1538495",
+  "name": "Earth Science Tech, Inc.  (ETST, UNOV)",
+  "filed": "2019-01-16"
+ },
+ {
+  "cik": "1012477",
+  "name": "AVADEL PHARMACEUTICALS PLC  (AVDL)",
+  "filed": "2019-02-12"
+ },
+ {
+  "cik": "1013238",
+  "name": "ARADIGM CORP",
+  "filed": "2019-02-19"
+ },
+ {
+  "cik": "1024126",
+  "name": "PERNIX THERAPEUTICS HOLDINGS, INC.",
+  "filed": "2019-02-19"
+ },
+ {
+  "cik": "1282266",
+  "name": "WINDSTREAM HOLDINGS, INC.",
+  "filed": "2019-02-28"
+ },
+ {
+  "cik": "1208261",
+  "name": "IMMUNE PHARMACEUTICALS INC",
+  "filed": "2019-03-08"
+ },
+ {
+  "cik": "1140310",
+  "name": "EnSync, Inc.",
+  "filed": "2019-03-12"
+ },
+ {
+  "cik": "350403",
+  "name": "PHI INC  (PHIG)",
+  "filed": "2019-03-15"
+ },
+ {
+  "cik": "1109196",
+  "name": "MABVAX THERAPEUTICS HOLDINGS, INC.",
+  "filed": "2019-03-25"
+ },
+ {
+  "cik": "1403802",
+  "name": "SPINDLE, INC.",
+  "filed": "2019-03-29"
+ },
+ {
+  "cik": "13239",
+  "name": "HEXION INC.",
+  "filed": "2019-04-01"
+ },
+ {
+  "cik": "1573166",
+  "name": "Jones Energy, Inc.",
+  "filed": "2019-04-15"
+ },
+ {
+  "cik": "1301501",
+  "name": "Achaogen, Inc.",
+  "filed": "2019-04-15"
+ },
+ {
+  "cik": "1265572",
+  "name": "KONA GRILL INC",
+  "filed": "2019-05-01"
+ },
+ {
   "cik": "1441849",
   "name": "CLOUD PEAK ENERGY INC.",
-  "filed": "2019-10-01"
+  "filed": "2019-05-10"
+ },
+ {
+  "cik": "73887",
+  "name": "Bristow Group Inc",
+  "filed": "2019-05-13"
+ },
+ {
+  "cik": "827809",
+  "name": "NOVELION THERAPEUTICS INC.",
+  "filed": "2019-05-21"
+ },
+ {
+  "cik": "1552845",
+  "name": "Natur International Corp.",
+  "filed": "2019-05-28"
+ },
+ {
+  "cik": "1071411",
+  "name": "Fusion Connect, Inc.",
+  "filed": "2019-06-03"
+ },
+ {
+  "cik": "1575360",
+  "name": "FTD Companies, Inc.",
+  "filed": "2019-06-05"
+ },
+ {
+  "cik": "1516479",
+  "name": "Insys Therapeutics, Inc.",
+  "filed": "2019-06-10"
+ },
+ {
+  "cik": "1735828",
+  "name": "Legacy Reserves Inc.",
+  "filed": "2019-06-21"
+ },
+ {
+  "cik": "1265107",
+  "name": "MONITRONICS INTERNATIONAL INC",
+  "filed": "2019-07-01"
+ },
+ {
+  "cik": "1437106",
+  "name": "Ascent Capital Group, Inc.",
+  "filed": "2019-07-01"
+ },
+ {
+  "cik": "1603923",
+  "name": "Weatherford International plc  (WFRD)",
+  "filed": "2019-07-02"
+ },
+ {
+  "cik": "1555177",
+  "name": "Emerge Energy Services LP",
+  "filed": "2019-07-17"
+ },
+ {
+  "cik": "1434621",
+  "name": "LendingTree, Inc.  (TREE)",
+  "filed": "2019-07-25"
+ },
+ {
+  "cik": "1387156",
+  "name": "AIRXPANDERS INC",
+  "filed": "2019-07-25"
+ },
+ {
+  "cik": "1720201",
+  "name": "iPic Entertainment Inc.",
+  "filed": "2019-08-05"
+ },
+ {
+  "cik": "1528837",
+  "name": "Sanchez Energy Corp",
+  "filed": "2019-08-12"
+ },
+ {
+  "cik": "1080029",
+  "name": "Dougherty's Pharmacy, Inc.",
+  "filed": "2019-08-30"
+ },
+ {
+  "cik": "1045425",
+  "name": "RAIT Financial Trust",
+  "filed": "2019-09-03"
+ },
+ {
+  "cik": "1568079",
+  "name": "PetroShare Corp.",
+  "filed": "2019-09-04"
+ },
+ {
+  "cik": "724571",
+  "name": "FREDS INC",
+  "filed": "2019-09-09"
+ },
+ {
+  "cik": "1518403",
+  "name": "Alta Mesa Holdings, LP",
+  "filed": "2019-09-12"
+ },
+ {
+  "cik": "1690769",
+  "name": "Alta Mesa Resources, Inc. /DE",
+  "filed": "2019-09-12"
+ },
+ {
+  "cik": "1656328",
+  "name": "Sienna Biopharmaceuticals, Inc.",
+  "filed": "2019-09-17"
  },
  {
   "cik": "2034",
   "name": "ACETO CORP",
-  "filed": "2019-10-01"
+  "filed": "2019-09-20"
+ },
+ {
+  "cik": "1409916",
+  "name": "Nobilis Health Corp.",
+  "filed": "2019-09-27"
  },
  {
   "cik": "1584952",
   "name": "EP Energy Corp",
   "filed": "2019-10-04"
- },
- {
-  "cik": "73887",
-  "name": "Bristow Group Inc",
-  "filed": "2019-10-09"
- },
- {
-  "cik": "796764",
-  "name": "PREMIER EXHIBITIONS, INC.",
-  "filed": "2019-10-18"
- },
- {
-  "cik": "1310067",
-  "name": "SEARS HOLDINGS CORP",
-  "filed": "2019-10-21"
  },
  {
   "cik": "727346",
@@ -760,11 +3590,6 @@
   "filed": "2019-11-19"
  },
  {
-  "cik": "1735828",
-  "name": "Legacy Reserves Inc.",
-  "filed": "2019-11-19"
- },
- {
   "cik": "1561880",
   "name": "Legacy Education Alliance, Inc.  (LEAI)",
   "filed": "2019-11-21"
@@ -780,29 +3605,434 @@
   "filed": "2019-12-19"
  },
  {
-  "cik": "1575360",
-  "name": "GUE Liquidation Companies, Inc.",
-  "filed": "2019-12-20"
- },
- {
-  "cik": "1555177",
-  "name": "Emerge Energy Services LP",
-  "filed": "2019-12-26"
- },
- {
   "cik": "1461993",
   "name": "MELINTA THERAPEUTICS, INC. /NEW/",
   "filed": "2019-12-27"
  },
  {
-  "cik": "1494448",
-  "name": "EMERGENT CAPITAL, INC.",
-  "filed": "2021-01-04"
+  "cik": "1496268",
+  "name": "REVA Medical, Inc.",
+  "filed": "2020-01-15"
+ },
+ {
+  "cik": "708819",
+  "name": "MCDERMOTT INTERNATIONAL INC",
+  "filed": "2020-01-22"
+ },
+ {
+  "cik": "1040792",
+  "name": "Helios & Matheson Analytics Inc.",
+  "filed": "2020-01-29"
+ },
+ {
+  "cik": "1496818",
+  "name": "STEALTH TECHNOLOGIES, INC.",
+  "filed": "2020-01-30"
+ },
+ {
+  "cik": "1619250",
+  "name": "Valeritas Holdings Inc.",
+  "filed": "2020-02-10"
+ },
+ {
+  "cik": "1056087",
+  "name": "MCCLATCHY CO",
+  "filed": "2020-02-13"
+ },
+ {
+  "cik": "278130",
+  "name": "PIER 1 IMPORTS INC/DE",
+  "filed": "2020-02-18"
+ },
+ {
+  "cik": "320575",
+  "name": "PIONEER ENERGY SERVICES CORP",
+  "filed": "2020-03-02"
+ },
+ {
+  "cik": "1056386",
+  "name": "Internap Corp",
+  "filed": "2020-03-16"
+ },
+ {
+  "cik": "1456212",
+  "name": "BlackRidge Technology International, Inc.",
+  "filed": "2020-03-18"
+ },
+ {
+  "cik": "1505497",
+  "name": "BioRestorative Therapies, Inc.  (BRTX)",
+  "filed": "2020-03-20"
+ },
+ {
+  "cik": "1527844",
+  "name": "Globe Photos, Inc.",
+  "filed": "2020-03-25"
+ },
+ {
+  "cik": "920448",
+  "name": "BROADVISION INC",
+  "filed": "2020-03-27"
+ },
+ {
+  "cik": "1009672",
+  "name": "CARBO CERAMICS INC",
+  "filed": "2020-03-30"
+ },
+ {
+  "cik": "1255474",
+  "name": "WHITING PETROLEUM CORP",
+  "filed": "2020-04-01"
+ },
+ {
+  "cik": "1650445",
+  "name": "Quorum Health Corp",
+  "filed": "2020-04-07"
+ },
+ {
+  "cik": "1375618",
+  "name": "Amazing Energy Oil & Gas, Co.",
+  "filed": "2020-04-09"
+ },
+ {
+  "cik": "1669812",
+  "name": "LSC Communications, Inc.",
+  "filed": "2020-04-13"
+ },
+ {
+  "cik": "20520",
+  "name": "FRONTIER COMMUNICATIONS CORP  (FYBR)",
+  "filed": "2020-04-15"
+ },
+ {
+  "cik": "1672326",
+  "name": "Yuma Energy, Inc.",
+  "filed": "2020-04-16"
+ },
+ {
+  "cik": "1157987",
+  "name": "MERRILL LYNCH DEPOSITOR INC PREFERREDPLUS TRUST SER CZN 1",
+  "filed": "2020-04-17"
+ },
+ {
+  "cik": "1436161",
+  "name": "United Cannabis Corp",
+  "filed": "2020-04-24"
+ },
+ {
+  "cik": "949039",
+  "name": "DIAMOND OFFSHORE DRILLING, INC.  (DO, DODRW)",
+  "filed": "2020-04-27"
+ },
+ {
+  "cik": "1051251",
+  "name": "J CREW GROUP INC",
+  "filed": "2020-05-04"
+ },
+ {
+  "cik": "6885",
+  "name": "STAGE STORES INC",
+  "filed": "2020-05-12"
+ },
+ {
+  "cik": "1525773",
+  "name": "Intelsat S.A.",
+  "filed": "2020-05-14"
+ },
+ {
+  "cik": "1563298",
+  "name": "Energy & Water Development Corp  (EAWD)",
+  "filed": "2020-05-15"
+ },
+ {
+  "cik": "1166126",
+  "name": "J C PENNEY CO INC",
+  "filed": "2020-05-18"
+ },
+ {
+  "cik": "844143",
+  "name": "Centric Brands Inc.",
+  "filed": "2020-05-18"
+ },
+ {
+  "cik": "3116",
+  "name": "AKORN INC",
+  "filed": "2020-05-21"
+ },
+ {
+  "cik": "1131227",
+  "name": "HORNBECK OFFSHORE SERVICES INC /LA",
+  "filed": "2020-05-22"
+ },
+ {
+  "cik": "798949",
+  "name": "UNIT CORP  (UNTC, UNTCW)",
+  "filed": "2020-05-26"
+ },
+ {
+  "cik": "1657853",
+  "name": "HERTZ GLOBAL HOLDINGS, INC  (HTZ, HTZWW)",
+  "filed": "2020-05-26"
+ },
+ {
+  "cik": "878726",
+  "name": "TUESDAY MORNING CORP/DE  (TUEMQ)",
+  "filed": "2020-05-28"
+ },
+ {
+  "cik": "902274",
+  "name": "LIBBEY INC",
+  "filed": "2020-06-01"
+ },
+ {
+  "cik": "939930",
+  "name": "PYXUS INTERNATIONAL, INC.  (PYYX)",
+  "filed": "2020-06-15"
+ },
+ {
+  "cik": "1655020",
+  "name": "Extraction Oil & Gas, Inc.",
+  "filed": "2020-06-15"
+ },
+ {
+  "cik": "1636509",
+  "name": "Vitalibis, Inc.",
+  "filed": "2020-06-16"
+ },
+ {
+  "cik": "1459482",
+  "name": "Chineseinvestors.com, Inc.",
+  "filed": "2020-06-19"
+ },
+ {
+  "cik": "1037131",
+  "name": "PLAYERS NETWORK",
+  "filed": "2020-06-22"
+ },
+ {
+  "cik": "1502034",
+  "name": "GNC HOLDINGS, INC.",
+  "filed": "2020-06-24"
+ },
+ {
+  "cik": "1579252",
+  "name": "Jason Industries, Inc.",
+  "filed": "2020-06-24"
+ },
+ {
+  "cik": "1606180",
+  "name": "AAC Holdings, Inc.",
+  "filed": "2020-06-25"
+ },
+ {
+  "cik": "1437557",
+  "name": "LILIS ENERGY, INC.",
+  "filed": "2020-06-29"
+ },
+ {
+  "cik": "895126",
+  "name": "CHESAPEAKE ENERGY CORP  (CHK, CHKEL, CHKEW, CHKEZ)",
+  "filed": "2020-06-29"
+ },
+ {
+  "cik": "1722287",
+  "name": "Covia Holdings Corp",
+  "filed": "2020-06-30"
+ },
+ {
+  "cik": "881524",
+  "name": "VIVUS INC",
+  "filed": "2020-07-07"
+ },
+ {
+  "cik": "1013606",
+  "name": "ENDOLOGIX INC /DE/",
+  "filed": "2020-07-09"
+ },
+ {
+  "cik": "1627606",
+  "name": "DAVIDsTEA Inc.  (DTEAF)",
+  "filed": "2020-07-09"
+ },
+ {
+  "cik": "1549848",
+  "name": "Hi-Crush Inc.",
+  "filed": "2020-07-13"
+ },
+ {
+  "cik": "1211351",
+  "name": "RTW Retailwinds, Inc.",
+  "filed": "2020-07-13"
+ },
+ {
+  "cik": "1609253",
+  "name": "California Resources Corp  (CRC, CRCQW)",
+  "filed": "2020-07-16"
+ },
+ {
+  "cik": "14195",
+  "name": "BRIGGS & STRATTON CORP",
+  "filed": "2020-07-20"
+ },
+ {
+  "cik": "1512077",
+  "name": "Global Eagle Entertainment Inc.",
+  "filed": "2020-07-22"
+ },
+ {
+  "cik": "1498301",
+  "name": "Ascena Retail Group, Inc.",
+  "filed": "2020-07-23"
+ },
+ {
+  "cik": "1397403",
+  "name": "IMH Financial Corp",
+  "filed": "2020-07-23"
+ },
+ {
+  "cik": "1659122",
+  "name": "Rosehill Resources Inc.",
+  "filed": "2020-07-27"
+ },
+ {
+  "cik": "945764",
+  "name": "DENBURY RESOURCES INC",
+  "filed": "2020-07-31"
+ },
+ {
+  "cik": "1458891",
+  "name": "Noble Corp plc",
+  "filed": "2020-07-31"
+ },
+ {
+  "cik": "884217",
+  "name": "TAILORED BRANDS INC",
+  "filed": "2020-08-03"
+ },
+ {
+  "cik": "1435181",
+  "name": "Pharmagreen Biotech Inc.  (PHBI)",
+  "filed": "2020-08-12"
+ },
+ {
+  "cik": "884940",
+  "name": "STEIN MART INC",
+  "filed": "2020-08-12"
+ },
+ {
+  "cik": "314808",
+  "name": "Valaris plc  (VAL, VAL-WT)",
+  "filed": "2020-08-19"
+ },
+ {
+  "cik": "1514732",
+  "name": "SAExploration Holdings, Inc.",
+  "filed": "2020-08-28"
+ },
+ {
+  "cik": "904979",
+  "name": "SHILOH INDUSTRIES INC",
+  "filed": "2020-08-31"
+ },
+ {
+  "cik": "1455926",
+  "name": "IRONCLAD ENCRYPTION Corp",
+  "filed": "2020-09-01"
+ },
+ {
+  "cik": "22872",
+  "name": "Advanzeon Solutions, Inc.",
+  "filed": "2020-09-11"
+ },
+ {
+  "cik": "1281774",
+  "name": "TOWN SPORTS INTERNATIONAL HOLDINGS INC",
+  "filed": "2020-09-14"
+ },
+ {
+  "cik": "1735707",
+  "name": "Garrett Motion Inc.  (GTX)",
+  "filed": "2020-09-21"
+ },
+ {
+  "cik": "1529463",
+  "name": "FTS International, Inc.",
+  "filed": "2020-09-22"
+ },
+ {
+  "cik": "1814974",
+  "name": "BBX Capital Florida LLC  (BBXIA, BBXIB)",
+  "filed": "2020-09-24"
+ },
+ {
+  "cik": "1486159",
+  "name": "Oasis Petroleum Inc.  (CHRD, OASPW, WLLAW, WLLBW)",
+  "filed": "2020-09-30"
+ },
+ {
+  "cik": "1661920",
+  "name": "Lonestar Resources US Inc.",
+  "filed": "2020-10-01"
+ },
+ {
+  "cik": "1567892",
+  "name": "Mallinckrodt plc",
+  "filed": "2020-10-13"
+ },
+ {
+  "cik": "711665",
+  "name": "Gadsden Properties, Inc.",
+  "filed": "2020-10-13"
  },
  {
   "cik": "1157817",
   "name": "SITO MOBILE, LTD.",
-  "filed": "2021-01-08"
+  "filed": "2020-10-15"
+ },
+ {
+  "cik": "1517342",
+  "name": "PACIFIC DRILLING S.A.",
+  "filed": "2020-11-02"
+ },
+ {
+  "cik": "77281",
+  "name": "PENNSYLVANIA REAL ESTATE INVESTMENT TRUST",
+  "filed": "2020-11-03"
+ },
+ {
+  "cik": "1593470",
+  "name": "Tiger Reef, Inc.",
+  "filed": "2020-11-04"
+ },
+ {
+  "cik": "1516332",
+  "name": "Blue Water Global Group, Inc.",
+  "filed": "2020-11-04"
+ },
+ {
+  "cik": "874499",
+  "name": "GULFPORT ENERGY CORP  (GPOR)",
+  "filed": "2020-11-16"
+ },
+ {
+  "cik": "1275229",
+  "name": "General Moly, Inc",
+  "filed": "2020-11-20"
+ },
+ {
+  "cik": "1399935",
+  "name": "Francesca's Holdings CORP",
+  "filed": "2020-12-04"
+ },
+ {
+  "cik": "886835",
+  "name": "SUPERIOR ENERGY SERVICES INC",
+  "filed": "2020-12-07"
+ },
+ {
+  "cik": "1581545",
+  "name": "GL Brands, Inc.",
+  "filed": "2020-12-21"
  },
  {
   "cik": "922358",
@@ -815,59 +4045,9 @@
   "filed": "2021-01-14"
  },
  {
-  "cik": "895126",
-  "name": "CHESAPEAKE ENERGY CORP  (CHK, CHKEL, CHKEW, CHKEZ)",
-  "filed": "2021-01-19"
- },
- {
-  "cik": "886835",
-  "name": "SUPERIOR ENERGY SERVICES INC",
-  "filed": "2021-01-20"
- },
- {
-  "cik": "1582919",
-  "name": "Flitways Technology Inc.",
-  "filed": "2021-01-21"
- },
- {
-  "cik": "1516332",
-  "name": "Blue Water Global Group, Inc.",
-  "filed": "2021-01-21"
- },
- {
-  "cik": "1593470",
-  "name": "Tiger Reef, Inc.",
-  "filed": "2021-01-21"
- },
- {
-  "cik": "1459482",
-  "name": "Chineseinvestors.com, Inc.",
-  "filed": "2021-01-22"
- },
- {
-  "cik": "1166126",
-  "name": "Old COPPER Company, Inc.",
-  "filed": "2021-02-01"
- },
- {
   "cik": "1404079",
   "name": "Samson Oil & Gas LTD",
   "filed": "2021-02-02"
- },
- {
-  "cik": "1498301",
-  "name": "Mahwah Bergen Retail Group, Inc.",
-  "filed": "2021-03-03"
- },
- {
-  "cik": "711665",
-  "name": "Gadsden Properties, Inc.",
-  "filed": "2021-03-03"
- },
- {
-  "cik": "314808",
-  "name": "Valaris plc  (VAL, VAL-WT)",
-  "filed": "2021-03-05"
  },
  {
   "cik": "1536577",
@@ -880,24 +4060,9 @@
   "filed": "2021-03-10"
  },
  {
-  "cik": "1669812",
-  "name": "LSC Communications, Inc.",
-  "filed": "2021-03-10"
- },
- {
   "cik": "1725526",
   "name": "HighPoint Resources Corp",
   "filed": "2021-03-15"
- },
- {
-  "cik": "1627606",
-  "name": "DAVIDsTEA Inc.  (DTEAF)",
-  "filed": "2021-03-24"
- },
- {
-  "cik": "1455926",
-  "name": "IRONCLAD ENCRYPTION Corp",
-  "filed": "2021-03-29"
  },
  {
   "cik": "1036848",
@@ -910,24 +4075,9 @@
   "filed": "2021-04-01"
  },
  {
-  "cik": "949039",
-  "name": "DIAMOND OFFSHORE DRILLING, INC.  (DO, DODRW)",
-  "filed": "2021-04-14"
- },
- {
   "cik": "1717556",
   "name": "Vinco Ventures, Inc.  (BBIG)",
   "filed": "2021-04-21"
- },
- {
-  "cik": "1735707",
-  "name": "Garrett Motion Inc.  (GTX)",
-  "filed": "2021-04-27"
- },
- {
-  "cik": "874499",
-  "name": "GULFPORT ENERGY CORP  (GPOR)",
-  "filed": "2021-04-29"
  },
  {
   "cik": "1583077",
@@ -940,21 +4090,6 @@
   "filed": "2021-06-14"
  },
  {
-  "cik": "1657853",
-  "name": "HERTZ GLOBAL HOLDINGS, INC  (HTZ, HTZWW)",
-  "filed": "2021-06-16"
- },
- {
-  "cik": "1814974",
-  "name": "BBX Capital, Inc.  (BBXIA, BBXIB)",
-  "filed": "2021-06-17"
- },
- {
-  "cik": "1399935",
-  "name": "FHC Holdings Corp",
-  "filed": "2021-07-26"
- },
- {
   "cik": "910612",
   "name": "CBL & ASSOCIATES PROPERTIES INC  (CBL)",
   "filed": "2021-08-12"
@@ -963,11 +4098,6 @@
   "cik": "1648428",
   "name": "Sequential Brands Group, Inc.",
   "filed": "2021-09-01"
- },
- {
-  "cik": "1538495",
-  "name": "Earth Science Tech, Inc.  (ETST, UNOV)",
-  "filed": "2021-09-02"
  },
  {
   "cik": "352998",
@@ -983,16 +4113,6 @@
   "cik": "1315255",
   "name": "GTT Communications, Inc.",
   "filed": "2021-11-01"
- },
- {
-  "cik": "1525773",
-  "name": "Intelsat S.A.",
-  "filed": "2021-12-20"
- },
- {
-  "cik": "1375618",
-  "name": "Amazing Energy Oil & Gas, Co.",
-  "filed": "2022-02-09"
  },
  {
   "cik": "1539894",
@@ -1015,11 +4135,6 @@
   "filed": "2022-04-20"
  },
  {
-  "cik": "1567892",
-  "name": "Mallinckrodt plc",
-  "filed": "2022-05-03"
- },
- {
   "cik": "1587246",
   "name": "Cypress Environmental Partners, L.P.",
   "filed": "2022-05-11"
@@ -1038,11 +4153,6 @@
   "cik": "1587221",
   "name": "Zosano Pharma Corp",
   "filed": "2022-06-02"
- },
- {
-  "cik": "1346526",
-  "name": "ESP Resources, Inc.",
-  "filed": "2022-06-06"
  },
  {
   "cik": "1784168",
@@ -1178,11 +4288,6 @@
   "cik": "1418100",
   "name": "Avaya Holdings Corp.",
   "filed": "2023-02-14"
- },
- {
-  "cik": "878726",
-  "name": "TUESDAY MORNING CORP/DE  (TUEMQ)",
-  "filed": "2023-02-16"
  },
  {
   "cik": "1884697",
@@ -1405,11 +4510,6 @@
   "filed": "2023-08-10"
  },
  {
-  "cik": "1025953",
-  "name": "NOVATION COMPANIES, INC.",
-  "filed": "2023-08-16"
- },
- {
   "cik": "1066719",
   "name": "Taihe Group, Inc.  (TIHE)",
   "filed": "2023-08-18"
@@ -1515,23 +4615,18 @@
   "filed": "2023-12-11"
  },
  {
-  "cik": "77281",
-  "name": "PENNSYLVANIA REAL ESTATE INVESTMENT TRUST",
-  "filed": "2023-12-11"
- },
- {
   "cik": "1841800",
   "name": "Nogin, Inc.",
   "filed": "2023-12-11"
  },
  {
-  "cik": "1640265",
-  "name": "GPB Holdings II, LP",
+  "cik": "1578742",
+  "name": "GPB Automotive Portfolio, LP",
   "filed": "2023-12-13"
  },
  {
-  "cik": "1578742",
-  "name": "GPB Automotive Portfolio, LP",
+  "cik": "1640265",
+  "name": "GPB Holdings II, LP",
   "filed": "2023-12-13"
  },
  {
@@ -1568,11 +4663,6 @@
   "cik": "1855631",
   "name": "AERWINS Technologies Inc.  (AWIN, AWINW)",
   "filed": "2024-01-03"
- },
- {
-  "cik": "1293310",
-  "name": "HUMANIGEN, INC",
-  "filed": "2024-01-08"
  },
  {
   "cik": "1368148",
@@ -1852,11 +4942,6 @@
  {
   "cik": "1723580",
   "name": "BurgerFi International, Inc.  (BFI, BFIIW)",
-  "filed": "2024-09-17"
- },
- {
-  "cik": "1536256",
-  "name": "First Capital Real Estate Trust Inc",
   "filed": "2024-09-17"
  },
  {
@@ -2188,5 +5273,100 @@
   "cik": "846475",
   "name": "ZYNEX INC  (ZYXI)",
   "filed": "2025-12-16"
+ },
+ {
+  "cik": "720875",
+  "name": "DYNATRONICS CORP  (DYNT)",
+  "filed": "2026-01-12"
+ },
+ {
+  "cik": "2011954",
+  "name": "Twin Hospitality Group Inc.  (TWNP)",
+  "filed": "2026-01-27"
+ },
+ {
+  "cik": "1705012",
+  "name": "Fat Brands, Inc  (FAT, FATBB, FATBP)",
+  "filed": "2026-01-27"
+ },
+ {
+  "cik": "1532286",
+  "name": "Nine Energy Service, Inc.  (NINE)",
+  "filed": "2026-02-02"
+ },
+ {
+  "cik": "1015155",
+  "name": "CHARLES & COLVARD LTD",
+  "filed": "2026-03-04"
+ },
+ {
+  "cik": "1776738",
+  "name": "Cannabist Co Holdings Inc.  (CBSTF)",
+  "filed": "2026-03-24"
+ },
+ {
+  "cik": "1659323",
+  "name": "Iterum Therapeutics plc  (ITRM)",
+  "filed": "2026-03-27"
+ },
+ {
+  "cik": "1865494",
+  "name": "IO Biotech, Inc.  (IOBT)",
+  "filed": "2026-03-31"
+ },
+ {
+  "cik": "1347242",
+  "name": "LIPELLA PHARMACEUTICALS INC.  (LIPO)",
+  "filed": "2026-03-31"
+ },
+ {
+  "cik": "1413754",
+  "name": "MARIZYME, INC.",
+  "filed": "2026-04-17"
+ },
+ {
+  "cik": "1355096",
+  "name": "QVC Group, Inc.  (QVCGA, QVCGB, QVCGP)",
+  "filed": "2026-04-17"
+ },
+ {
+  "cik": "1254699",
+  "name": "QVC INC  (QVCC, QVCD)",
+  "filed": "2026-04-17"
+ },
+ {
+  "cik": "1817511",
+  "name": "SOCIETY PASS INCORPORATED.  (SOPA)",
+  "filed": "2026-05-14"
+ },
+ {
+  "cik": "1901799",
+  "name": "Bitcoin Depot Inc.  (BTM, BTMWW)",
+  "filed": "2026-05-18"
+ },
+ {
+  "cik": "1519061",
+  "name": "Trinseo PLC  (TSEOF)",
+  "filed": "2026-05-26"
+ },
+ {
+  "cik": "720154",
+  "name": "Inotiv, Inc.  (NOTV)",
+  "filed": "2026-06-03"
+ },
+ {
+  "cik": "1808220",
+  "name": "GoHealth, Inc.  (GOCO)",
+  "filed": "2026-06-08"
+ },
+ {
+  "cik": "827187",
+  "name": "Sleep Number Corp  (SNBR)",
+  "filed": "2026-06-12"
+ },
+ {
+  "cik": "1001233",
+  "name": "SANGAMO THERAPEUTICS, INC  (SGMO)",
+  "filed": "2026-06-23"
  }
 ]
