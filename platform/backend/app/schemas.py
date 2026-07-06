@@ -214,3 +214,5 @@ class Overview(BaseModel):
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY
     sources: list[FilingRef] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+    # set when the LLM is off and sections were spliced from a prior snapshot (or none exists)
+    llm_fallback_note: Optional[str] = None

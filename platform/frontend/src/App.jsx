@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
-import { fetchHealth } from "./api.js";
+import { fetchHealth, setLlmEnabled } from "./api.js";
 import OverviewPage from "./pages/OverviewPage.jsx";
 import CapitalPage from "./pages/CapitalPage.jsx";
 import RiskPage from "./pages/RiskPage.jsx";
@@ -128,8 +128,24 @@ export default function App() {
           </div>
 
           {health && (
-            <div className="mt-6 text-[11px] text-slate-600">
-              LLM: <span className={health.llm_enabled ? "text-emerald-400" : "text-amber-400"}>{health.llm_enabled ? "on" : "off"}</span>
+            <div className="mt-6 flex items-center gap-2 text-[11px] text-slate-600">
+              LLM:
+              {health.llm_key_set ? (
+                <button
+                  onClick={async () => {
+                    try {
+                      await setLlmEnabled(!health.llm_enabled);
+                      setHealth(await fetchHealth());
+                    } catch {}
+                  }}
+                  title="toggle LLM analysis (covenants, OBS, subsidiaries, MD&A tone)"
+                  className={`rounded-full border px-2 py-0.5 ${health.llm_enabled ? "border-emerald-400/40 text-emerald-400" : "border-amber-400/40 text-amber-400"}`}
+                >
+                  {health.llm_enabled ? "on" : "off"}
+                </button>
+              ) : (
+                <span className="text-amber-400" title="set ANTHROPIC_API_KEY in platform/.env">no key</span>
+              )}
             </div>
           )}
         </div>

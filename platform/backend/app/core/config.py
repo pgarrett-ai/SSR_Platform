@@ -6,6 +6,7 @@ keeps working, with platform-level files taking precedence.
 """
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 from pathlib import Path
 
@@ -53,12 +54,34 @@ class Settings(BaseSettings):
         return {t.strip().upper() for t in self.hero_tickers.split(",") if t.strip()}
 
     @property
-    def llm_enabled(self) -> bool:
+    def llm_key_set(self) -> bool:
         return bool(self.anthropic_api_key.strip())
+
+    @property
+    def llm_enabled(self) -> bool:
+        return self.llm_key_set and _runtime().get("llm_enabled", True)
 
     @property
     def trace_enabled(self) -> bool:
         return bool(self.finra_api_key.strip() and self.finra_api_secret.strip())
+
+
+# Runtime toggles the UI can flip without a restart. Read per access (tiny file) so the
+# lru_cached Settings needs no invalidation.
+RUNTIME_SETTINGS_PATH = DATA_DIR / "runtime_settings.json"
+
+
+def _runtime() -> dict:
+    try:
+        return json.loads(RUNTIME_SETTINGS_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def set_llm_runtime_enabled(enabled: bool) -> None:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    RUNTIME_SETTINGS_PATH.write_text(
+        json.dumps({**_runtime(), "llm_enabled": bool(enabled)}), encoding="utf-8")
 
 
 @lru_cache
