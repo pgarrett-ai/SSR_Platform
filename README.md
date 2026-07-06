@@ -33,7 +33,7 @@ FastAPI + SQLite backend (`:8001`) · React/Vite/Tailwind frontend (`:5173`) · 
 
 ```bat
 :: 1. configure (SEC_USER_AGENT is the only required setting)
-copy platform\.env.example platform\.env
+copy platform\.env.example 
 
 :: 2. backend
 cd platform\backend
