@@ -1,0 +1,18 @@
+{
+ "AAL": [
+  {
+   "symbol": "AAL5147600",
+   "cusip": "00253XAB7",
+   "issuer": "AAdvantage Loyalty IP Ltd / American Airlines Inc",
+   "coupon": 5.75,
+   "maturity": "2029-04-20",
+   "callable": false,
+   "last_price": 100.0,
+   "last_yield": 6.0,
+   "last_trade": "2026-07-02",
+   "rating": "Ba2 (Moody's 2026-06-03)",
+   "source": "https://www.finra.org/finra-data/fixed-income/bond?symbol=AAL5147600&bondType=CA",
+   "as_of": "2026-07-03"
+  }
+ ]
+}

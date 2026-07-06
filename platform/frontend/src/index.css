@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+/* Institutional tables live or die on digit alignment. */
+.font-mono,
+code,
+kbd {
+  font-variant-numeric: tabular-nums;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0b0f17;
+  color: #e5e9f0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Citation underline affordance */
+.cite-link {
+  text-decoration: underline dotted rgba(148, 163, 184, 0.6);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.cite-link:hover {
+  text-decoration-color: #5e7bff;
+}
+
+/* Thin scrollbars */
+*::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #263041;
+  border-radius: 8px;
+}

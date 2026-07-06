@@ -1,0 +1,44 @@
+# Unified platform requirements = union of capstack + hazard + fulcrum backends.
+# Dropped from the union: streamlit + requests (fulcrum's UI/bridge — replaced by the
+# in-process call), and hazard's separate root env (survival lib folded in below).
+
+# --- Web / API ---
+fastapi>=0.111
+uvicorn[standard]>=0.30
+pydantic>=2.7
+pydantic-settings>=2.3
+python-dotenv>=1.0
+sse-starlette>=2.1            # streaming progress log to the UI
+
+# --- Data store ---
+SQLAlchemy>=2.0
+
+# --- EDGAR retrieval + XBRL facts (the ONE copy) ---
+edgartools>=3.0
+
+# --- Document parsing (covenant agreements, indentures, footnotes) ---
+pdfplumber>=0.11
+beautifulsoup4>=4.12
+lxml>=5.2
+selectolax>=0.3
+
+# --- LLM structured extraction ---
+anthropic>=0.40
+
+# --- Numerics / ML ---
+numpy>=1.26
+pandas>=2.2
+scipy>=1.11
+scikit-learn>=1.5             # MD&A TF-IDF drift + hazard gradient boosting
+scikit-survival>=0.22         # survival model panel (Cox/RSF/GBS)
+lifelines>=0.27               # Weibull AFT
+matplotlib>=3.8               # report figures (fulcrum histograms, survival report)
+
+# --- Market data (hazard) ---
+yfinance>=0.2.40
+
+# --- Tests ---
+pytest>=8.0
+
+# TRACE bond spreads (optional): pip install git+https://github.com/chencindyj/finra_api_queries.git
+# Optional embedding-based MD&A drift (pulls torch): sentence-transformers>=3.0

@@ -1,0 +1,43 @@
+# secrets — API keys live in .env files, never commit
+.env
+**/.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# node
+node_modules/
+dist/
+
+# runtime state (SQLite DBs, trained model bundles incl. .prev backups)
+*.db
+*.joblib
+*.joblib.*
+*.pkl
+
+# editor/os noise
+.DS_Store
+Thumbs.db
+.claude/
+.obsidian/
+.~lock*#
+
+# local working material — session handoffs, plans, prompts, office docs (never public)
+SESSION_HANDOFF.md
+PLATFORM_PLAN.md
+TODO.md
+/Fulcrum MVP Audit & Repair.md
+/claude_code_prompt_capital_structure_mvp.md
+/distressed-debt-metrics-guide.md
+/distressed-debt-ml-implementation-guide.md
+*.docx
+*.xlsx
+
+# pre-platform legacy apps (superseded by platform/; kept on disk for reference only)
+/capstack/
+/hazard/
+/fulcrum/
