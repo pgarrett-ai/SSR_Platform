@@ -63,6 +63,53 @@ def capstack_signals(ticker: str) -> dict:
     return out
 
 
+def _quarterly_risk_timeline(company, sym: str, altman, years: int) -> list[dict]:
+    """Per-quarter composite risk: mean of the signals computable at that quarter end
+    (Altman from instant + TTM XBRL; Merton PD where shares × price × vol exist) — the
+    executive-summary gauge's definition, extended through time."""
+    import pandas as pd
+
+    from ..edgar.facts import build_quarterly_series
+    from . import merton as merton_mod
+    from .market import benchmark_history, pit_market_features, price_history
+
+    try:
+        quarters = build_quarterly_series(company, years)
+    except Exception:
+        return []
+    if not quarters:
+        return []
+    settings = get_settings()
+    close = price_history(sym)
+    bench = benchmark_history(settings.market_index)
+    out = []
+    for qf in quarters:
+        f = features.quarter_features(qf)
+        sc = altman.score(f)
+        z = sc.get("value") if sc.get("available") else None
+        alt_risk = _altman_to_risk(z)
+        merton_risk = None
+        shares, debt = f.get("shares_outstanding"), f.get("total_debt")
+        if close is not None and shares and debt and debt > 0:
+            end = pd.Timestamp(qf.period_end)
+            sigma_e = pit_market_features(close, qf.period_end, bench)["equity_vol"]
+            w = close.loc[:end]
+            price = (float(w.iloc[-1])
+                     if len(w) and (end - w.index[-1]).days <= 60 else None)
+            if sigma_e and price:
+                res = merton_mod.merton(E=shares * price, sigma_E=sigma_e,
+                                        D=debt, r=settings.risk_free_rate)
+                if res is not None:
+                    merton_risk = res.pd_by_horizon[1.0] * 100.0
+        parts = {"Merton PD": merton_risk, "Altman": alt_risk}
+        avail = {k: v for k, v in parts.items() if v is not None}
+        out.append({"fiscal_year": qf.period_end.year, "label": qf.label,
+                    "period_end": f["period_end"], "altman_z": z, "altman_risk": alt_risk,
+                    "risk": round(float(np.mean(list(avail.values()))), 1) if avail else None,
+                    "components": list(avail)})
+    return out if any(p["risk"] is not None for p in out) else []
+
+
 def _trend(risk_series: list[Optional[float]]) -> dict:
     pts = [r for r in risk_series if r is not None][-4:]
     if len(pts) < 2:
@@ -97,14 +144,18 @@ def analyze(ticker: str, years: int = 10) -> dict:
     contributions = {s.name: s.contributions(latest, market) for s in scorers
                      if s.contributions(latest, market) is not None}
 
-    # Altman risk per year -> risk timeline + trend.
+    # Risk timeline: quarterly composite when 10-Q XBRL supports it; annual Altman fallback.
     altman = next(s for s in scorers if s.name == "Altman Z''")
-    risk_timeline = []
-    for t in timeline:
-        sc = altman.score(t)
-        z = sc.get("value") if sc.get("available") else None
-        risk_timeline.append({"fiscal_year": t["fiscal_year"],
-                              "altman_z": z, "risk": _altman_to_risk(z)})
+    risk_timeline = _quarterly_risk_timeline(company, sym, altman, years)
+    if not risk_timeline:
+        for t in timeline:
+            sc = altman.score(t)
+            z = sc.get("value") if sc.get("available") else None
+            r = _altman_to_risk(z)
+            risk_timeline.append({"fiscal_year": t["fiscal_year"],
+                                  "label": str(t["fiscal_year"]), "altman_z": z,
+                                  "altman_risk": r, "risk": r,
+                                  "components": ["Altman"] if r is not None else []})
 
     # Composite overall risk (0-100): equal-weight blend of available signals, now including
     # the capstack cross-module signals (hidden leverage, MD&A tone) when a snapshot exists.
@@ -113,8 +164,8 @@ def analyze(ticker: str, years: int = 10) -> dict:
     if merton.get("available") and merton.get("pd", {}).get("12m") is not None:
         signals.append(merton["pd"]["12m"] * 100.0)
         composite_of.append("Merton PD")
-    if risk_timeline and risk_timeline[-1]["risk"] is not None:
-        signals.append(risk_timeline[-1]["risk"])
+    if risk_timeline and risk_timeline[-1]["altman_risk"] is not None:
+        signals.append(risk_timeline[-1]["altman_risk"])
         composite_of.append("Altman")
     cross = capstack_signals(sym) or capstack_signals(ticker)
     for key, label in (("hidden_leverage", "hidden leverage"), ("mdna_tone", "MD&A tone")):
@@ -122,6 +173,11 @@ def analyze(ticker: str, years: int = 10) -> dict:
             signals.append(cross[key]["risk"])
             composite_of.append(label)
     overall_risk = round(float(np.mean(signals)), 1) if signals else None
+    # The gauge and the timeline's final point are the same blend by construction —
+    # the last point simply gets the full signal set (live Merton + cross-module signals).
+    if risk_timeline and overall_risk is not None:
+        risk_timeline[-1]["risk"] = overall_risk
+        risk_timeline[-1]["components"] = composite_of
 
     return {
         "issuer": {"ticker": sym, "name": getattr(company, "name", None),
