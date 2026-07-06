@@ -1,6 +1,6 @@
 # SSR Platform — Special Situations Research Platform
 
-Single-issuer distressed-credit research: enter a ticker, get an integrated view of
+Distressed-credit research: enter a ticker, get an integrated view of
 **capital structure**, **default risk**, and **recovery** — built on primary sources
 (SEC EDGAR/XBRL), with every headline number citable back to the filing it came from.
 
