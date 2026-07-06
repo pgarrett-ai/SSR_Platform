@@ -208,6 +208,13 @@ class TrainedHazardScorer(Scorer):
 
     def score(self, feats: dict, market=None) -> dict:
         import numpy as np
+        if market is not None and getattr(market, "ok", False):
+            # live market snapshot fills the market features the panel trained on
+            # (same trailing-window semantics — see market.pit_market_features)
+            overlay = {k: getattr(market, k, None)
+                       for k in ("equity_vol", "drawdown_52w", "excess_return_1y")}
+            feats = {**feats, **{k: v for k, v in overlay.items()
+                                 if v is not None and k in self.features}}
         x = np.array([[feats.get(f, np.nan) for f in self.features]], dtype=float)
         if np.isnan(x).all():
             return {"available": False, "note": "no features for trained model"}

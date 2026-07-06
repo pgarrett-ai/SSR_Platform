@@ -1,0 +1,536 @@
+[
+ {
+  "cik": "4515",
+  "name": "American Airlines, Inc.",
+  "filed": "2012-06-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "6201",
+  "name": "American Airlines Group Inc.",
+  "filed": "2012-06-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "902053",
+  "name": "PGS ASA",
+  "filed": "2012-06-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1105055",
+  "name": "Dynegy Holdings LLC",
+  "filed": "2012-06-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1263050",
+  "name": "Texas Competitive Electric Holdings Company LLC",
+  "filed": "2012-12-05",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1445049",
+  "name": "Energy Future Competitive Holdings",
+  "filed": "2012-12-05",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1445146",
+  "name": "Energy Future Intermediate Holdings, Inc.",
+  "filed": "2012-12-05",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "930835",
+  "name": "Edison Mission Energy",
+  "filed": "2012-12-21",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1134016",
+  "name": "Midwest Generation LLC",
+  "filed": "2012-12-21",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "931987",
+  "name": "Corporacion GEO, S.A. de C.V.",
+  "filed": "2013-05-08",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1293153",
+  "name": "Desarrolladora Homex, S.A.B de C.V.",
+  "filed": "2013-07-11",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1678131",
+  "name": "Winsway Enterprises Holdings Limited",
+  "filed": "2013-10-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1450579",
+  "name": "OGX Petroleo E Gas Participacoes S.A.",
+  "filed": "2013-10-31",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "858395",
+  "name": "Caesars Entertainment Operating Company, Inc.",
+  "filed": "2015-01-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "96289",
+  "name": "RadioShack Corporation",
+  "filed": "2015-02-06",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1638371",
+  "name": "Metinvest B.V.",
+  "filed": "2015-04-14",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1161785",
+  "name": "Abengoa S.A.",
+  "filed": "2015-12-14",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1037676",
+  "name": "Arch Resources, Inc.",
+  "filed": "2016-01-12",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1486724",
+  "name": "China Fishery Group Ltd.",
+  "filed": "2016-03-01",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1064728",
+  "name": "Peabody Energy Corporation",
+  "filed": "2016-04-13",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1404973",
+  "name": "Energy XXI Gulf Coast, Inc.",
+  "filed": "2016-04-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1343719",
+  "name": "Energy XXI LTD",
+  "filed": "2016-04-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1160846",
+  "name": "Oi S.A.",
+  "filed": "2016-06-21",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "2060485",
+  "name": "GOL Linhas Aereas S.A.",
+  "filed": "2016-07-07",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "739708",
+  "name": "iHeartCommunications, Inc.",
+  "filed": "2017-02-08",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1722814",
+  "name": "Global A&T Electronics Ltd",
+  "filed": "2017-09-01",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "51734",
+  "name": "Toys 'R' Us - Delaware, Inc.",
+  "filed": "2017-09-19",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1286045",
+  "name": "General Nutrition Centers, Inc.",
+  "filed": "2017-12-29",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1502034",
+  "name": "GNC Holdings, Inc.",
+  "filed": "2017-12-29",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "357294",
+  "name": "Hovnanian Enterprises, Inc.",
+  "filed": "2018-02-02",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "88255",
+  "name": "Sears Roebuck Acceptance Corp.",
+  "filed": "2018-03-21",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1310067",
+  "name": "Sears Holdings Corporation",
+  "filed": "2018-03-21",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "56824",
+  "name": "Kmart Corp.",
+  "filed": "2018-03-21",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1448818",
+  "name": "Noble Group Ltd.",
+  "filed": "2018-03-22",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1407702",
+  "name": "Energy Harbor Generation LLC",
+  "filed": "2018-04-03",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1407703",
+  "name": "FirstEnergy Solutions Corp.",
+  "filed": "2018-04-03",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1470653",
+  "name": "FirstEnergy Nuclear Generation, LLC",
+  "filed": "2018-04-03",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1784823",
+  "name": "Constellation Oil Services Holding S.A.",
+  "filed": "2018-06-12",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1413383",
+  "name": "CHS/Community Health Systems, Inc.",
+  "filed": "2018-06-25",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "319256",
+  "name": "Sears, Roebuck and Co.",
+  "filed": "2018-10-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1229206",
+  "name": "Kmart Holding Corp.",
+  "filed": "2018-10-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1645826",
+  "name": "Digicel Group Limited",
+  "filed": "2019-01-11",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1004980",
+  "name": "PG&E Corporation",
+  "filed": "2019-01-30",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1585644",
+  "name": "Windstream Services, LLC",
+  "filed": "2019-02-27",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "350403",
+  "name": "PHI, Inc.",
+  "filed": "2019-03-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1489271",
+  "name": "MIE Holdings Corporation",
+  "filed": "2019-04-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1480919",
+  "name": "Jones Energy Holdings, LLC",
+  "filed": "2019-04-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1575969",
+  "name": "Avianca Holdings S.A.",
+  "filed": "2019-07-22",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1439578",
+  "name": "Thomas Cook Group plc",
+  "filed": "2019-09-24",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1540729",
+  "name": "Foresight Energy LP",
+  "filed": "2020-03-11",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1540729",
+  "name": "Foresight Energy LLC",
+  "filed": "2020-03-11",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "40867",
+  "name": "Frontier North Inc.",
+  "filed": "2020-04-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "40865",
+  "name": "Frontier Florida LLC",
+  "filed": "2020-04-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "20520",
+  "name": "Frontier Communications Corporation",
+  "filed": "2020-04-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "19724",
+  "name": "Frontier West Virginia Inc.",
+  "filed": "2020-04-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "40864",
+  "name": "Frontier California, Inc.",
+  "filed": "2020-04-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "40874",
+  "name": "Frontier Southwest Inc.",
+  "filed": "2020-04-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1817667",
+  "name": "Enjoy S.A.",
+  "filed": "2020-04-27",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1022646",
+  "name": "Ultra Petroleum Corp.",
+  "filed": "2020-05-18",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1166126",
+  "name": "J. C. Penney Company, Inc.",
+  "filed": "2020-05-19",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "798949",
+  "name": "Unit Corporation",
+  "filed": "2020-05-26",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1047716",
+  "name": "LATAM Airlines Group S.A.",
+  "filed": "2020-05-26",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1655020",
+  "name": "Extraction Oil & Gas, Inc.",
+  "filed": "2020-06-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "893538",
+  "name": "SM Energy Company",
+  "filed": "2020-06-22",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1615063",
+  "name": "Inspired Entertainment, Inc.",
+  "filed": "2020-07-13",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1737484",
+  "name": "Fieldwood Energy LLC",
+  "filed": "2020-08-05",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1661920",
+  "name": "Lonestar Resources US, Inc.",
+  "filed": "2020-10-02",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1163739",
+  "name": "Nabors Industries, Ltd.",
+  "filed": "2020-12-03",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1745621",
+  "name": "Genneia S.A.",
+  "filed": "2021-09-02",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1161976",
+  "name": "Talen Energy Supply, LLC",
+  "filed": "2022-05-11",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1737927",
+  "name": "Canopy Growth Corporation",
+  "filed": "2022-07-20",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "885590",
+  "name": "Bausch Health Companies Inc.",
+  "filed": "2022-10-06",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1004530",
+  "name": "Mountain Province Diamonds Inc.",
+  "filed": "2022-12-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1592058",
+  "name": "Party City Holdco Inc.",
+  "filed": "2023-01-19",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1340554",
+  "name": "Party City Holdings Inc.",
+  "filed": "2023-01-19",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1116521",
+  "name": "Avaya LLC",
+  "filed": "2023-02-16",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1533523",
+  "name": "WeWork Companies LLC",
+  "filed": "2023-05-12",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1813756",
+  "name": "WeWork Inc.",
+  "filed": "2023-05-12",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1447221",
+  "name": "Light S.A.",
+  "filed": "2023-05-15",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1145971",
+  "name": "Anagram International Inc.",
+  "filed": "2023-09-26",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1975622",
+  "name": "Atento Luxco 1 S.A.",
+  "filed": "2023-10-09",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "84129",
+  "name": "Rite Aid Corporation",
+  "filed": "2023-10-17",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1740915",
+  "name": "Farfetch Ltd.",
+  "filed": "2024-02-05",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1324501",
+  "name": "Level 3 Financing, Inc.",
+  "filed": "2024-03-28",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "794323",
+  "name": "Level 3 Parent, LLC",
+  "filed": "2024-03-28",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "8868",
+  "name": "Avon Products, Inc.",
+  "filed": "2024-08-14",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "890447",
+  "name": "Vertex Energy Inc.",
+  "filed": "2024-09-27",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1534015",
+  "name": "ASP Unifrax Holdings, Inc.",
+  "filed": "2024-10-03",
+  "source": "fitch_rd"
+ },
+ {
+  "cik": "1498710",
+  "name": "Spirit Airlines, LLC",
+  "filed": "2024-11-20",
+  "source": "fitch_rd"
+ }
+]
