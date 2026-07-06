@@ -30,6 +30,9 @@ Honesty notes baked in:
   * market features: each panel row also carries trailing-window equity vol / drawdown /
     excess return AS OF that fiscal year end (market.pit_market_features — no lookahead);
     delisted firms without price history just leave them NaN.
+  * panel checkpoint store (data/panel.db, gitignored): per-firm feature rows persist the
+    moment they're fetched — killed runs resume for free, bigger samples only fetch new
+    firms, and the accumulated store is the training base going forward.
 """
 from __future__ import annotations
 
@@ -348,27 +351,70 @@ def _firm_rows(company, event_date: Optional[dt.date], lookback_years: int,
     return rows
 
 
+def _fetch_firm_rows(cik: str, event_date: Optional[dt.date], lookback: int,
+                     horizon_days: int) -> list[dict]:
+    """Network seam: EDGAR company lookup + feature rows (monkeypatched in tests)."""
+    from edgar import Company
+    return _firm_rows(Company(int(cik)), event_date, lookback, horizon_days)
+
+
+# Per-firm checkpoint store: every successfully fetched firm's rows land here the moment
+# they're built, so a killed run resumes where it stopped and future runs only fetch NEW
+# firms. Historical firm-years never change — rows are reused forever. To force a refetch
+# (e.g. an annual top-up so cached firms gain their newest fiscal year):
+#   DELETE FROM firm_rows WHERE fetched_at < '<date>';
+PANEL_DB = DATA_DIR / "panel.db"
+
+
+def _panel_db():
+    import sqlite3
+
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    con = sqlite3.connect(PANEL_DB)
+    con.execute("""CREATE TABLE IF NOT EXISTS firm_rows (
+        cik TEXT NOT NULL,
+        event_date TEXT NOT NULL DEFAULT '',
+        horizon_days INTEGER NOT NULL,
+        fetched_at TEXT NOT NULL,
+        rows_json TEXT NOT NULL,
+        PRIMARY KEY (cik, event_date, horizon_days))""")
+    return con
+
+
 def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: int = 120,
                      lookback_years: int = 8, horizon_days: int = 365, seed: int = 0,
                      start_year: int = 2015):
     """Feature panel with real labels: defaulter fiscal years labeled by proximity to the
     Item 1.03 filing, control fiscal years labeled 0 and sampled from the point-in-time
-    10-K filer universe. Skips firms without usable XBRL."""
+    10-K filer universe. Skips firms without usable XBRL.
+
+    Per-firm rows are checkpointed to data/panel.db as they're fetched (see PANEL_DB) —
+    a killed run resumes for free, and growing the sample only fetches unseen firms."""
     import pandas as pd
-    from edgar import Company
 
     from ..edgar.client import _ensure_identity
     _ensure_identity()                              # edgartools 403s without it
 
     skips: list[str] = []
+    con = _panel_db()
 
     def try_firm(cik: str, event_date, lookback: int) -> list[dict]:
+        ev_key = event_date.isoformat() if event_date else ""
+        hit = con.execute("SELECT rows_json FROM firm_rows WHERE cik=? AND event_date=? "
+                          "AND horizon_days=?", (cik, ev_key, horizon_days)).fetchone()
+        if hit is not None:
+            return json.loads(hit[0])
         try:
-            return _firm_rows(Company(int(cik)), event_date, lookback, horizon_days)
+            rows = _fetch_firm_rows(cik, event_date, lookback, horizon_days)
         except Exception as exc:
             if len(skips) < 5:
                 skips.append(f"CIK {cik}: {type(exc).__name__}: {exc}")
-            return []
+            return []           # failures are NOT cached — retried on the next run
+        con.execute("INSERT OR REPLACE INTO firm_rows VALUES (?,?,?,?,?)",
+                    (cik, ev_key, horizon_days, dt.date.today().isoformat(),
+                     json.dumps(rows)))
+        con.commit()            # per-firm transaction — the crash checkpoint
+        return rows
 
     today = dt.date.today()
     rows: list[dict] = []

@@ -113,6 +113,35 @@ def test_sd_events_from_frame_moodys_config():
     assert [(e["cik"], e["source"]) for e in events] == [("1234", "moodys_c")]
 
 
+def test_panel_store_checkpoints_and_resumes(tmp_path, monkeypatch):
+    calls = []
+
+    def fake_fetch(cik, event_date, lookback, horizon_days):
+        calls.append(cik)
+        if cik == "9":
+            raise ConnectionError("transient")
+        label = 1 if event_date else 0
+        return [{"firm_id": cik, "date": "2019-12-31", "label": label, "leverage": 0.5},
+                {"firm_id": cik, "date": "2018-12-31", "label": 0, "leverage": 0.4}]
+
+    monkeypatch.setattr(labels, "PANEL_DB", tmp_path / "panel.db")
+    monkeypatch.setattr(labels, "_fetch_firm_rows", fake_fetch)
+    monkeypatch.setattr(labels, "load_or_harvest_universe",
+                        lambda *a, **k: {"2": [2015, 2026], "9": [2015, 2026],
+                                         "3": [2015, 2026]})
+    events = [{"cik": "1", "filed": "2020-06-01"}]
+
+    df1 = labels.build_real_panel(events, n_defaulters=1, n_controls=3, start_year=2015)
+    # 1 defaulter + controls 2 and 3 + the failing control 9, each fetched once
+    assert sorted(calls) == ["1", "2", "3", "9"]
+    assert len(df1) == 6 and int(df1["label"].sum()) == 1
+
+    df2 = labels.build_real_panel(events, n_defaulters=1, n_controls=3, start_year=2015)
+    # successes served from the store; only the FAILED firm is retried
+    assert sorted(calls) == ["1", "2", "3", "9", "9"]
+    assert len(df2) == len(df1) and list(df2.columns) == list(df1.columns)
+
+
 def test_sd_merge_keeps_earliest_event(tmp_path, monkeypatch):
     ev_path, sd_path = tmp_path / "ev.json", tmp_path / "sd.json"
     ev_path.write_text(json.dumps([
