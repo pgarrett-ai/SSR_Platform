@@ -3,6 +3,7 @@ import {
   Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
 import { fetchHealth, setLlmEnabled } from "./api.js";
+import ScreenTable from "./components/ScreenTable.jsx";
 import OverviewPage from "./pages/OverviewPage.jsx";
 import CapitalPage from "./pages/CapitalPage.jsx";
 import RiskPage from "./pages/RiskPage.jsx";
@@ -216,6 +217,7 @@ function Landing({ onPick }) {
           </button>
         ))}
       </div>
+      <ScreenTable onPick={onPick} />
     </div>
   );
 }
