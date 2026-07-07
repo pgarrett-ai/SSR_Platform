@@ -49,6 +49,11 @@ def save_overview(ticker: str, years: int, overview: Overview) -> None:
         cache_path(ticker, years).write_text(
             overview.model_dump_json(indent=2), encoding="utf-8"
         )
+        # keep the screening index in step with the snapshot (lazy import: no cycle)
+        from ..store import upsert_snapshot
+        from .db import session_scope
+        with session_scope() as session:
+            upsert_snapshot(session, ticker.strip().upper(), overview)
     except Exception:
         pass  # caching is best-effort; never fail a request over it
 

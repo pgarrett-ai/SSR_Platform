@@ -1,7 +1,8 @@
-"""Persistence helpers: write EDGAR filings/exhibits into SQLite, dedup by accession."""
+"""Persistence helpers: write EDGAR filings/exhibits into SQLite, dedup by accession.
+Also owns the screening index (snapshots table) and the FTS5 sync (rebuild_fts)."""
 from __future__ import annotations
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from . import models
@@ -88,6 +89,7 @@ def persist_covenants(
             clause_text=clause_text,
             citation_id=citation_row.id if citation_row else None,
         ))
+    rebuild_fts(session, ticker)
 
 
 def persist_obs(session: Session, ticker: str, items: list[ObsItemSchema]) -> None:
@@ -123,6 +125,7 @@ def persist_obs(session: Session, ticker: str, items: list[ObsItemSchema]) -> No
             notes=it.notes,
             citation_id=citation_id,
         ))
+    rebuild_fts(session, ticker)
 
 
 def persist_mdna(session: Session, ticker: str, periods) -> None:
@@ -142,6 +145,69 @@ def persist_mdna(session: Session, ticker: str, periods) -> None:
             drift_from_prior=p.drift_from_prior,
             liquidity_tone_score=p.tone,
         ))
+    rebuild_fts(session, ticker)
+
+
+def upsert_snapshot(session: Session, ticker: str, overview) -> None:
+    """Refresh the ticker's screening-index row from an Overview. merge() replaces every
+    column, so hazard risk values from a prior Default Risk run are carried over."""
+    def _val(cv):
+        return cv.value if cv is not None else None
+
+    bridge = overview.economic_debt_bridge
+    tones = [p.liquidity_tone_score for p in overview.mdna_drift
+             if p.liquidity_tone_score is not None]
+    prior = session.get(models.Snapshot, ticker)
+    session.merge(models.Snapshot(
+        ticker=ticker,
+        issuer=overview.header.issuer,
+        cik=overview.header.cik,
+        years=overview.header.years,
+        last_updated=overview.header.last_updated,
+        reported_leverage=_val(bridge.reported_leverage) if bridge else None,
+        economic_leverage=_val(bridge.economic_leverage) if bridge else None,
+        net_economic_debt=_val(bridge.net_economic_debt) if bridge else None,
+        flag_count=len(overview.forensic_flags),
+        liquidity_tone=tones[-1] if tones else None,
+        overall_risk=prior.overall_risk if prior else None,
+        trained_pd=prior.trained_pd if prior else None,
+        implied_rating=prior.implied_rating if prior else None,
+    ))
+
+
+def update_snapshot_risk(session: Session, ticker: str, hz: dict) -> None:
+    """Fill the hazard columns on an existing snapshot row after a Default Risk run.
+    No snapshot row yet (never capstack-analyzed) -> no-op; the screener lists analyzed
+    companies only."""
+    row = session.get(models.Snapshot, ticker)
+    if row is None:
+        return
+    row.overall_risk = (hz.get("executive_summary") or {}).get("overall_risk")
+    trained = (hz.get("scores") or {}).get("Trained hazard") or {}
+    row.trained_pd = trained.get("value")
+    row.implied_rating = trained.get("implied_rating")
+
+
+def rebuild_fts(session: Session, ticker: str) -> None:
+    """Re-sync the ticker's rows in the FTS5 `search` table from the source tables.
+    Runs inside the caller's transaction right after a persist_* delete-then-insert, so
+    the index can never drift from the tables. Idempotent. No-op when FTS5 is absent."""
+    from .core.db import FTS_AVAILABLE
+    if not FTS_AVAILABLE:
+        return
+    session.flush()   # SessionLocal is autoflush=False; INSERT..SELECT must see new rows
+    session.execute(text("DELETE FROM search WHERE ticker = :t"), {"t": ticker})
+    session.execute(text("""
+        INSERT INTO search(text, source_kind, ticker, ref_id)
+        SELECT clause_text, 'covenant', ticker, id FROM covenants
+          WHERE ticker = :t AND clause_text IS NOT NULL
+        UNION ALL
+        SELECT text, 'mdna', ticker, id FROM mdna_sections
+          WHERE ticker = :t AND text IS NOT NULL
+        UNION ALL
+        SELECT COALESCE(label,'') || ' ' || COALESCE(notes,''), 'obs', ticker, id
+          FROM obs_items WHERE ticker = :t AND (label IS NOT NULL OR notes IS NOT NULL)
+    """), {"t": ticker})
 
 
 def filing_refs(filings: list[models.Filing]) -> list[FilingRef]:

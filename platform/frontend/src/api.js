@@ -87,6 +87,16 @@ export async function fetchHazard(ticker, years = 10) {
   return hz;
 }
 
+// ---- Screening + full-text search --------------------------------------------
+
+export async function fetchScreen() {
+  return jsonOrThrow(await fetch("/api/screen"));
+}
+
+export async function searchText(q) {
+  return jsonOrThrow(await fetch(`/api/search?q=${encodeURIComponent(q)}`));
+}
+
 // ---- Recovery (fulcrum) ------------------------------------------------------
 
 async function jsonOrThrow(r) {

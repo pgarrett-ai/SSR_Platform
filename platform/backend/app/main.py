@@ -35,6 +35,7 @@ from .fulcrum.adapter import overview_to_structure
 from .fulcrum.waterfall import run_waterfall
 from .hazard.pipeline import analyze as hazard_analyze
 from .pipeline import run_overview
+from .store import update_snapshot_risk
 from .core.progress import ProgressEvent, ProgressLog
 
 
@@ -178,8 +179,56 @@ def company(
             return JSONResponse(status_code=404, content={"error": str(exc)})
         except Exception as exc:
             out["sections"]["hazard"] = {"error": str(exc)}
+        else:
+            try:   # fill the screening index's risk columns; never fail the request
+                with session_scope() as session:
+                    update_snapshot_risk(session, out["ticker"], out["sections"]["hazard"])
+            except Exception:
+                pass
 
     return JSONResponse(content=jsonable(out))
+
+
+@app.get("/api/screen")
+def screen() -> JSONResponse:
+    """Every analyzed company's headline metrics — filtering happens client-side."""
+    from sqlalchemy import desc, nulls_last
+
+    with session_scope() as session:
+        rows = (session.query(models.Snapshot)
+                .order_by(nulls_last(desc(models.Snapshot.economic_leverage))).all())
+        return JSONResponse(content=jsonable([{
+            "ticker": r.ticker, "issuer": r.issuer, "last_updated": r.last_updated,
+            "reported_leverage": r.reported_leverage,
+            "economic_leverage": r.economic_leverage,
+            "net_economic_debt": r.net_economic_debt,
+            "flag_count": r.flag_count, "liquidity_tone": r.liquidity_tone,
+            "overall_risk": r.overall_risk, "trained_pd": r.trained_pd,
+            "implied_rating": r.implied_rating,
+        } for r in rows]))
+
+
+@app.get("/api/search")
+def search(q: str = Query(..., min_length=1, max_length=200),
+           limit: int = Query(20, ge=1, le=100)) -> JSONResponse:
+    """BM25 full-text search over covenant clauses, MD&A, and OBS narratives (FTS5)."""
+    from sqlalchemy import text as sql
+
+    from .core.db import FTS_AVAILABLE
+    if not FTS_AVAILABLE:
+        return JSONResponse(content={"hits": [], "note": "FTS5 unavailable in this build"})
+    # Trust boundary: quote each token so user input can't hit FTS query syntax
+    # (implicit AND between quoted tokens is preserved).
+    match = " ".join(f'"{tok.replace(chr(34), chr(34) * 2)}"' for tok in q.split())
+    with session_scope() as session:
+        rows = session.execute(sql(
+            "SELECT source_kind, ticker, ref_id, "
+            "snippet(search, 0, '<mark>', '</mark>', ' ... ', 24) AS snip "
+            "FROM search WHERE search MATCH :q ORDER BY bm25(search) LIMIT :n"),
+            {"q": match, "n": limit}).all()
+        return JSONResponse(content={"hits": [
+            {"source_kind": r[0], "ticker": r[1], "ref_id": r[2], "snippet": r[3]}
+            for r in rows]})
 
 
 def jsonable(obj):

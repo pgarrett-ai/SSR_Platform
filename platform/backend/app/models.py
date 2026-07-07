@@ -2,7 +2,7 @@
 or is explicitly marked `derived` with a formula. Nothing fakes a source.
 
 Tables (per brief §2/§4): filings, exhibits, citations, extracted_facts, covenants,
-obs_items, forensic_flags, mdna_sections, overview_cache.
+obs_items, forensic_flags, mdna_sections, snapshots (screening index).
 """
 from __future__ import annotations
 
@@ -209,15 +209,25 @@ class Scenario(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
 
-class OverviewCache(Base):
-    """A full structured overview snapshot, used for instant 'hero name' demos."""
+class Snapshot(Base):
+    """Headline metrics of the latest saved overview per ticker — the cross-company
+    screening index. Full snapshots stay as JSON files in app/cache/; this row is the
+    queryable summary, upserted on every save_overview. Risk columns fill in when a
+    Default Risk run happens for the ticker (nullable until then)."""
 
-    __tablename__ = "overview_cache"
-    __table_args__ = (UniqueConstraint("ticker", "years", name="uq_overview_ticker_years"),)
+    __tablename__ = "snapshots"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    ticker: Mapped[str] = mapped_column(String(16), index=True)
-    years: Mapped[int] = mapped_column(Integer)
-    is_hero: Mapped[bool] = mapped_column(Boolean, default=False)
-    payload: Mapped[dict] = mapped_column(JSON)
-    generated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    ticker: Mapped[str] = mapped_column(String(16), primary_key=True)
+    issuer: Mapped[Optional[str]] = mapped_column(Text)
+    cik: Mapped[Optional[str]] = mapped_column(String(16))
+    years: Mapped[Optional[int]] = mapped_column(Integer)
+    last_updated: Mapped[Optional[str]] = mapped_column(String(40))
+    saved_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    reported_leverage: Mapped[Optional[float]] = mapped_column(Float)
+    economic_leverage: Mapped[Optional[float]] = mapped_column(Float)
+    net_economic_debt: Mapped[Optional[float]] = mapped_column(Float)   # USD
+    flag_count: Mapped[Optional[int]] = mapped_column(Integer)
+    liquidity_tone: Mapped[Optional[float]] = mapped_column(Float)      # 0-100 stress
+    overall_risk: Mapped[Optional[float]] = mapped_column(Float)        # hazard composite
+    trained_pd: Mapped[Optional[float]] = mapped_column(Float)          # calibrated 12m PD
+    implied_rating: Mapped[Optional[str]] = mapped_column(String(8))
