@@ -43,3 +43,17 @@ TODO.md
 /capstack/
 /hazard/
 /fulcrum/
+
+# ---- local-only ignores (uncommitted; candidates to commit via next PR) ----
+/CLAUDE.md
+/SPECIAL_SITUATIONS_PLAN.md
+/ROUND_*_HANDOFF.md
+/PR1_RESULTS_COMMENT.md
+/PR2_BODY.md
+/DAILY_WORKFLOW.md
+/AGENT_WORKFLOW.md
+/GIT_CHEATSHEET.md
+/sweeps/
+/research/
+/ssr-pre-oss.bundle
+*.bundle
