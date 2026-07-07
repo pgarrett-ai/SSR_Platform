@@ -45,6 +45,7 @@ TODO.md
 /fulcrum/
 
 # ---- local-only ignores (uncommitted; candidates to commit via next PR) ----
+/PLATFORM_GUIDE.md
 /CLAUDE.md
 /SPECIAL_SITUATIONS_PLAN.md
 /ROUND_*_HANDOFF.md
@@ -57,3 +58,4 @@ TODO.md
 /research/
 /ssr-pre-oss.bundle
 *.bundle
+/*_CHEATSHEET.md
