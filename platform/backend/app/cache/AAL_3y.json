@@ -6,7 +6,7 @@
     "cik": "6201",
     "years": 3,
     "n_filings": 55,
-    "last_updated": "2026-07-03T03:15:33.338529+00:00",
+    "last_updated": "2026-07-08T14:11:41.626957+00:00",
     "from_cache": false,
     "llm_enabled": true
   },
@@ -114,7 +114,7 @@
             "section": "Note 1(l) Fuel Financing",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-            "quote": "In December 2024, we entered into a fuel financing facility with a bank pursuant to which the bank pays certain fuel invoices on our behalf. The agreement contains a maximum allowable outstanding principal balance at any time of $1.0 billion... As of December 31, 2025 and 2024, we had $914 million and $74 million, respectively, in fuel financing obligations included on our consolidated balance sheets."
+            "quote": "As of December 31, 2025 and 2024, we had $914 million and $74 million, respectively, in fuel financing obligations included on our consolidated balance sheets."
           },
           "derived": false,
           "formula": null,
@@ -682,7 +682,7 @@
       "coupon": "fixed interest rates ranging from 2.88% to 7.15%, averaging 3.95%",
       "maturity": "maturing from 2026 to 2038",
       "secured": true,
-      "seniority": "secured",
+      "seniority": "secured (equipment trust)",
       "citation": {
         "accession_no": "0000006201-26-000014",
         "form_type": "10-K",
@@ -1607,8 +1607,63 @@
   ],
   "obs_items": [
     {
+      "category": "supplier_finance",
+      "label": "Fuel financing facility (supply-chain/supplier finance)",
+      "amount": {
+        "value": 914000000.0,
+        "display": "$914M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000014",
+          "form_type": "10-K",
+          "filing_date": "2026-02-18",
+          "exhibit": null,
+          "section": "Note 1(l) Fuel Financing",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+          "quote": "As of December 31, 2025 and 2024, we had $914 million and $74 million, respectively, in fuel financing obligations included on our consolidated balance sheets."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt.",
+        "tie_out": null
+      },
+      "tax_effect": {
+        "value": 376568000.0,
+        "display": "$377M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000014",
+          "form_type": "10-K",
+          "filing_date": "2026-02-18",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $914M × effective tax rate 41.2%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later.",
+        "tie_out": null
+      },
+      "net": {
+        "value": 537432000.0,
+        "display": "$537M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $914M − tax effect $377M",
+        "note": null,
+        "tie_out": null
+      },
+      "recourse": "recourse",
+      "include_in_bridge": true,
+      "notes": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt."
+    },
+    {
       "category": "pension_opeb",
-      "label": "Pension and postretirement benefits (net underfunded liability recognized)",
+      "label": "Pension and postretirement benefits (underfunded, on balance sheet)",
       "amount": {
         "value": 1568000000.0,
         "display": "$1,568M",
@@ -1662,128 +1717,8 @@
       "notes": "Underfunded pension/OPEB deficit — a debt-like claim on the enterprise not included in the reported long-term-debt line."
     },
     {
-      "category": "supplier_finance",
-      "label": "Fuel financing facility (supplier/supply-chain finance on fuel invoices)",
-      "amount": {
-        "value": 914000000.0,
-        "display": "$914M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0000006201-26-000014",
-          "form_type": "10-K",
-          "filing_date": "2026-02-18",
-          "exhibit": null,
-          "section": "Note 1(l) Fuel Financing",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "In December 2024, we entered into a fuel financing facility with a bank pursuant to which the bank pays certain fuel invoices on our behalf. The agreement contains a maximum allowable outstanding principal balance at any time of $1.0 billion... As of December 31, 2025 and 2024, we had $914 million and $74 million, respectively, in fuel financing obligations included on our consolidated balance sheets."
-        },
-        "derived": false,
-        "formula": null,
-        "note": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt.",
-        "tie_out": null
-      },
-      "tax_effect": {
-        "value": 376568000.0,
-        "display": "$377M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0000006201-26-000014",
-          "form_type": "10-K",
-          "filing_date": "2026-02-18",
-          "exhibit": null,
-          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
-          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
-        },
-        "derived": true,
-        "formula": "gross $914M × effective tax rate 41.2%",
-        "note": "Uniform tax effect (latest effective tax rate); refine per item later.",
-        "tie_out": null
-      },
-      "net": {
-        "value": 537432000.0,
-        "display": "$537M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "gross $914M − tax effect $377M",
-        "note": null,
-        "tie_out": null
-      },
-      "recourse": "recourse",
-      "include_in_bridge": true,
-      "notes": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt."
-    },
-    {
-      "category": "vie",
-      "label": "Regional capacity purchase agreements - aircraft deemed leased (off-balance-sheet regional aircraft)",
-      "amount": null,
-      "tax_effect": null,
-      "net": null,
-      "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "Capacity purchase agreements create lease-like and take-or-pay-like commitments for regional aircraft the company does not own. No dollar amount is disclosed in the provided text (Note 11(b) not included), so amount is null. Not added to the bridge because no quantifiable incremental amount is provided and the lease components may already be captured within reported lease liabilities."
-    },
-    {
-      "category": "take_or_pay",
-      "label": "Republic Airways capacity purchase agreement (related-party regional carrier commitment)",
-      "amount": {
-        "value": 658000000.0,
-        "display": "$658M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0000006201-26-000014",
-          "form_type": "10-K",
-          "filing_date": "2026-02-18",
-          "exhibit": null,
-          "section": "Note 1(s) Regional Expenses",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "In 2025, 2024 and 2023, we recognized $658 million, $612 million and $636 million, respectively, of expense under our capacity purchase agreement with Republic Airways Inc. (Republic). We hold a 20.8% equity interest in Republic Airways Holdings Inc. (Republic Holdings), the parent company of Republic."
-        },
-        "derived": false,
-        "formula": null,
-        "note": "This is an annual expense figure under a related-party (20.8% equity-held) capacity purchase agreement, not a balance-sheet obligation amount. It is disclosed as an expense, not a future minimum commitment, so it is not a quantified incremental debt claim and is excluded from the bridge. Included for context on related-party / take-or-pay style commitments.",
-        "tie_out": null
-      },
-      "tax_effect": {
-        "value": 271096000.0,
-        "display": "$271M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0000006201-26-000014",
-          "form_type": "10-K",
-          "filing_date": "2026-02-18",
-          "exhibit": null,
-          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
-          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
-        },
-        "derived": true,
-        "formula": "gross $658M × effective tax rate 41.2%",
-        "note": "Uniform tax effect (latest effective tax rate); refine per item later.",
-        "tie_out": null
-      },
-      "net": {
-        "value": 386904000.0,
-        "display": "$387M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "gross $658M − tax effect $271M",
-        "note": null,
-        "tie_out": null
-      },
-      "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "This is an annual expense figure under a related-party (20.8% equity-held) capacity purchase agreement, not a balance-sheet obligation amount. It is disclosed as an expense, not a future minimum commitment, so it is not a quantified incremental debt claim and is excluded from the bridge. Included for context on related-party / take-or-pay style commitments."
-    },
-    {
       "category": "litigation_env",
-      "label": "Litigation reserve adjustments (special items)",
+      "label": "Litigation reserve adjustments (special item)",
       "amount": {
         "value": 77000000.0,
         "display": "$77M",
@@ -1796,11 +1731,11 @@
           "section": "Note 2 Special Items, Net",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Litigation reserve adjustments $77 — —"
+          "quote": "Litigation reserve adjustments $77 $— $—"
         },
         "derived": false,
         "formula": null,
-        "note": "This is a P&L special-item charge for litigation reserve adjustments recorded in 2025, not a disclosed outstanding reserve balance. Without the ending reserve balance (contained in Note 11 which is not provided), it cannot be treated as a quantifiable incremental balance-sheet claim. Excluded from the bridge; noted as a litigation-related disclosure.",
+        "note": "A $77M litigation reserve adjustment was recorded as a special item expense in 2025 and is reflected in accrued liabilities on the balance sheet. It is not a distinct off-balance-sheet obligation to add to reported debt; recorded for informational purposes. Full contingency detail (Note 11) not included in the provided text.",
         "tie_out": null
       },
       "tax_effect": {
@@ -1834,34 +1769,88 @@
       },
       "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "This is a P&L special-item charge for litigation reserve adjustments recorded in 2025, not a disclosed outstanding reserve balance. Without the ending reserve balance (contained in Note 11 which is not provided), it cannot be treated as a quantifiable incremental balance-sheet claim. Excluded from the bridge; noted as a litigation-related disclosure."
+      "notes": "A $77M litigation reserve adjustment was recorded as a special item expense in 2025 and is reflected in accrued liabilities on the balance sheet. It is not a distinct off-balance-sheet obligation to add to reported debt; recorded for informational purposes. Full contingency detail (Note 11) not included in the provided text."
+    },
+    {
+      "category": "related_party",
+      "label": "Republic Airways capacity purchase agreement annual expense (related-party CPA)",
+      "amount": {
+        "value": 658000000.0,
+        "display": "$658M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000014",
+          "form_type": "10-K",
+          "filing_date": "2026-02-18",
+          "exhibit": null,
+          "section": "Note 1(s) Regional Expenses",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+          "quote": "In 2025, 2024 and 2023, we recognized $658 million, $612 million and $636 million, respectively, of expense under our capacity purchase agreement with Republic Airways Inc. (Republic). We hold a 20.8% equity interest in Republic Airways Holdings Inc. (Republic Holdings), the parent company of Republic."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "This is a related-party (20.8% equity interest) recurring capacity purchase commitment. The $658M figure is an annual income-statement expense, not a balance-sheet obligation or total future commitment, so it is not an incremental debt amount to add to the bridge. Recorded for informational completeness; no total future minimum commitment is quantified in the excerpt.",
+        "tie_out": null
+      },
+      "tax_effect": {
+        "value": 271096000.0,
+        "display": "$271M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000014",
+          "form_type": "10-K",
+          "filing_date": "2026-02-18",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $658M × effective tax rate 41.2%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later.",
+        "tie_out": null
+      },
+      "net": {
+        "value": 386904000.0,
+        "display": "$387M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $658M − tax effect $271M",
+        "note": null,
+        "tie_out": null
+      },
+      "recourse": "unknown",
+      "include_in_bridge": false,
+      "notes": "This is a related-party (20.8% equity interest) recurring capacity purchase commitment. The $658M figure is an annual income-statement expense, not a balance-sheet obligation or total future commitment, so it is not an incremental debt amount to add to the bridge. Recorded for informational completeness; no total future minimum commitment is quantified in the excerpt."
     }
   ],
   "covenants": [
     {
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "None (no leverage-based maintenance financial covenant). The financial covenants in this secured facility are a Collateral Coverage Ratio (Section 6.09) and a Liquidity covenant (Section 6.08), not a leverage/net-leverage maintenance test.",
-      "leverage_ratio_threshold": "No leverage ratio. Collateral Coverage Ratio must be at least 1.6 to 1.0 (a \"Collateral Coverage Ratio Failure\" occurs if, as of any date of determination, the ratio is not at least 1.6 to 1.0). Ratio = Appraised Value of Collateral / Total Obligations.",
+      "leverage_covenant_type": "None (no leverage-ratio maintenance covenant). This secured facility instead relies on a Collateral Coverage Ratio maintenance test and a Liquidity covenant (Sections 6.08 and 6.09).",
+      "leverage_ratio_threshold": "No leverage ratio. Collateral Coverage Ratio must be at least 1.6 to 1.0: a \"Collateral Coverage Ratio Failure\" is defined as failure of the ratio \"to be at least equal to 1.6 to 1.0.\" (Collateral Coverage Ratio = Appraised Value of Collateral / Total Obligations.)",
       "ebitda_addback_categories": [
-        "Extraordinary losses and net losses on Disposition of assets",
+        "Extraordinary losses and net losses on Dispositions of assets",
         "Provision for income/profit taxes",
-        "Fixed Charges",
-        "Foreign currency translation losses (including Indebtedness currency remeasurements)",
-        "Depreciation, amortization (including intangibles) and other non-cash charges/expenses",
+        "Fixed Charges (interest expense)",
+        "Foreign currency translation losses (including on Indebtedness remeasurement)",
+        "Depreciation, amortization of intangibles and other non-cash charges",
         "Amortization of debt discount",
-        "Non-cash equity-grant compensation to employees",
-        "Net loss on sale/exchange/disposition of capital assets",
-        "Fuel hedging losses (pre-Closing arrangements; realized losses on post-Closing arrangements)",
+        "Equity-based compensation / grants of Equity Interests to employees",
+        "Net loss on sale/disposition of capital assets (including inventory and securities sold with fixed assets)",
+        "Fuel hedging losses (pre-Closing arrangements and realized post-Closing losses)",
         "Business interruption insurance proceeds",
-        "Indemnified/reimbursed expenses in connection with permitted acquisitions, mergers, dispositions, debt incurrence, equity issuance or investments",
-        "Non-cash items increasing Consolidated Net Income (minus / deducted)",
-        "Income tax credits and interest income (minus / deducted)"
+        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt incurrence, equity issuance or investments",
+        "Other non-cash items increasing Consolidated Net Income (excluding ordinary-course revenue accruals)"
       ],
-      "restricted_payments_basket_size": "Not specified in the provided excerpt. Restricted Payments are governed by Section 6.01 (referenced in the table of contents at p.141) but the basket sizing is not reproduced in the text provided.",
-      "mfn_sunset_period": "Not present in the provided text (no MFN protection or sunset appears in the excerpt; the \"All-In Initial Yield\" definition addresses incremental yield calculation but no MFN cap/sunset is reproduced).",
+      "restricted_payments_basket_size": "Section 6.01 (Restricted Payments) governs; the specific basket dollar amounts/builder amounts are not set out in the excerpted text provided, so the RP basket size cannot be quoted verbatim from the pages furnished.",
+      "mfn_sunset_period": "Not addressed in the excerpted text. The MFN concept appears only via the \"All-In Initial Yield\" definition used for incremental facility yield calculation; no MFN protection level or sunset period is stated in the provided pages.",
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 governs \"Designation of Restricted and Unrestricted Subsidiaries.\" Consolidated Net Income expressly excludes the net income (loss) of any Unrestricted Subsidiary (captured only via cash dividends/distributions), so Unrestricted Subsidiaries sit outside the credit group. The full designation mechanics/caps are in Section 5.05, which is referenced but not reproduced in the provided excerpt, so specific capacity cannot be quoted verbatim.",
-      "lme_risk_notes": "This is the Eleventh Amendment establishing $362,833,333.30 of 2026 Incremental Revolving Commitments plus $155,000,000 of new LC Commitments; the Existing Revolving Commitments are being terminated. Notable LME feature: the 2026 Incremental Revolving Lenders give an advance, irrevocable \"Specified Terms\" consent authorizing the Administrative Agent, Borrower and Guarantor to enter into a future \"Specified Amendment\" without further lender consent (effective on Required Lenders' consent or, if earlier, when the 2024 Replacement Term Loans are repaid/repriced/replaced) — a pre-baked amendment mechanic that reduces incremental lenders' future blocking rights. Because this is a secured, collateral-coverage-tested airline facility (Route Authorities, Slots, Gate Leaseholds, aircraft/engines, etc.), the primary protection is the 1.6:1.0 Collateral Coverage Ratio and Liquidity covenant rather than leverage. Drop-down/uptier risk turns on the Restricted Payments (6.01), Liens (6.06), Disposition of Collateral (6.04), and Unrestricted Subsidiary designation (5.05) provisions, which are referenced but not fully reproduced here; no J.Crew IP blocker or MFN sunset language appears in the provided excerpt.",
+      "unrestricted_subsidiary_designation_flexibility": "The agreement expressly contemplates Restricted/Unrestricted Subsidiary designation via Section 5.05 (\"Designation of Restricted and Unrestricted Subsidiaries\"). Consolidated Net Income excludes \"the net income (loss) of any Unrestricted Subsidiary,\" so earnings and assets can be moved outside the credit group by designating Unrestricted Subsidiaries. The detailed conditions/caps on designation are in Section 5.05, which is not reproduced in the excerpt.",
+      "lme_risk_notes": "This is the Eleventh Amendment to American Airlines' A&R Credit and Guaranty Agreement (SGR/route-authority-collateralized facility), establishing $362,833,333.30 of 2026 Incremental Revolving Commitments and $155,000,000 of new LC Commitments, with Barclays as Administrative Agent and Citi added as arranger. Key LME-relevant features: (1) The amendment contains a pre-baked serial-amendment/\"Specified Terms\" mechanism — the 2026 Incremental Revolving Lenders irrevocably consent in advance to a future \"Specified Amendment\" and agree no further consent or signature is required, with effectiveness on Required Lenders' consent (taking their pre-given consent into account) or upon repayment/repricing/replacement of the 2024 Replacement Term Loans. This is an uptier-style consent-harvesting structure that reduces minority-lender protection. (2) Protection here is collateral-based rather than leverage-based: value is governed by the 1.6x Collateral Coverage Ratio (Appraised Value of Collateral / Total Obligations, where Total Obligations includes revolver exposure, all Term Loans, Pari Passu Senior Secured Debt, and designated hedging/banking product obligations) plus a Liquidity covenant, with an Officer's Certificate condition certifying compliance. (3) Unrestricted Subsidiary designation (Section 5.05) plus CNI exclusion of Unrestricted Subsidiary income creates drop-down/asset-transfer capacity, but the excerpt does not reproduce the Section 5.05/6.04 (Disposition of Collateral) conditions needed to assess a J.Crew-style IP/asset drop-down blocker. (4) No maintenance leverage covenant, no stated MFN sunset in the excerpt.",
       "citation": {
         "accession_no": "0001193125-26-098647",
         "form_type": "8-K",
@@ -1870,31 +1859,31 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312526098647/d35934dex102.htm",
-        "quote": "\"Collateral Coverage Ratio Failure\" shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
+        "quote": "\"'Collateral Coverage Ratio Failure' shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.\""
       }
     },
     {
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "None (no traditional leverage/net-leverage maintenance covenant); the deal instead uses a Collateral Coverage Ratio covenant (Section 6.09) and a Liquidity covenant (Section 6.08)",
-      "leverage_ratio_threshold": "No leverage ratio. Collateral Coverage Ratio must be at least 1.6 to 1.0 (a \"Collateral Coverage Ratio Failure\" is a failure to maintain at least 1.6:1.0). Ratio = Appraised Value of Collateral / Total Obligations.",
+      "leverage_covenant_type": "None (no total-leverage maintenance covenant); the deal instead uses a Collateral Coverage Ratio and a minimum Liquidity covenant as its maintenance financial covenants",
+      "leverage_ratio_threshold": "No leverage-based threshold. Maintenance tests are: (i) Collateral Coverage Ratio must be at least 1.6 to 1.0 (a \"Collateral Coverage Ratio Failure\" is failure to be at least 1.6:1.0), tested per Section 6.09; and (ii) minimum Liquidity per Section 6.08.",
       "ebitda_addback_categories": [
-        "Extraordinary loss / net loss on Disposition of assets",
+        "Extraordinary losses and net losses on dispositions of assets",
         "Provision for income/profit taxes",
-        "Fixed Charges (interest expense)",
-        "Foreign currency translation losses (incl. currency remeasurement of Indebtedness)",
-        "Depreciation, amortization (incl. intangibles) and other non-cash charges/expenses",
+        "Fixed Charges",
+        "Foreign currency translation losses (including on Indebtedness remeasurement)",
+        "Depreciation, amortization (including of intangibles) and other non-cash charges/expenses",
         "Amortization of debt discount",
-        "Non-cash equity-based compensation grants to employees",
-        "Net loss on sale/exchange/disposition of capital assets",
+        "Non-cash equity/stock grant compensation to employees",
+        "Net losses on sale/exchange/disposition of capital assets",
         "Losses under fuel hedging arrangements",
         "Business interruption insurance proceeds",
         "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt incurrence, equity issuance or investments"
       ],
-      "restricted_payments_basket_size": null,
-      "mfn_sunset_period": null,
+      "restricted_payments_basket_size": "Section 6.01 (\"Restricted Payments\") governs RPs, but the specific builder/general basket dollar amounts are not set out in the excerpted text and cannot be stated verbatim.",
+      "mfn_sunset_period": "Not present in the provided text. The definition of \"All-In/Initial Yield\" references OID and Adjusted Term SOFR floor mechanics for Incremental Term Loans, but no MFN margin-protection provision or its sunset is set out in the excerpted pages.",
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries.\" Consolidated Net Income expressly excludes the net income (loss) of any Unrestricted Subsidiary, and dividends/distributions from non-Restricted-Subsidiary persons are included only to the extent paid in cash — indicating an Unrestricted Subsidiary construct exists. Specific mechanics/limits on designation are in Section 5.05 (not included in the excerpt provided), so the precise flexibility cannot be verified from the text supplied.",
-      "lme_risk_notes": "This is the Fourth Amendment establishing $1,451,333,333.35 of 2026 Incremental Revolving Commitments (replacing terminated Existing Revolving Commitments), not a full re-cut of negative covenants. Key structural protection here is asset-based, not leverage-based: the Collateral Coverage Ratio (min 1.6:1.0) tied to Appraised Value of Collateral (slots, routes, gates, aircraft, etc.) plus a Liquidity covenant (Section 6.08). Because value protection depends on periodic Appraisals of specialized airline collateral (Core Collateral = slots/routes in Central America, Caribbean, Mexico), appraisal methodology and the ability to add/substitute Additional Collateral or release Collateral (Section 6.04) are the pressure points. LME/priming risk turns on (i) capacity to designate Unrestricted Subsidiaries and drop specialized collateral (route/slot/gate) into them or into non-guarantor subsidiaries, and (ii) capacity to incur Pari Passu Senior Secured Debt (referenced in the Collateral Coverage Ratio's Total Obligations), which could dilute the collateral pool. The excerpt does not contain the debt/lien incurrence baskets, RP baskets, unrestricted-sub designation limits, or MFN provisions needed to fully score drop-down/uptier vulnerability. No maintenance leverage covenant means limited early-warning trigger; enforcement effectively runs through the Collateral Coverage Ratio and Liquidity tests. Note also carve-outs: Airline/Parent Merger and Airlines Merger are expressly excluded from Change of Control, giving intra-group reorganization flexibility.",
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 governs \"Designation of Restricted and Unrestricted Subsidiaries\"; Consolidated Net Income excludes net income (loss) of any Unrestricted Subsidiary, confirming a restricted/unrestricted subsidiary construct exists. The full designation mechanics and any investment/value caps are not contained in the excerpted text and cannot be quantified from the provided pages.",
+      "lme_risk_notes": "This is a Fourth Amendment establishing $1,451,333,333.35 of 2026 Incremental Revolving Commitments (replacing terminated existing revolver/LC commitments) for American Airlines, Inc. / American Airlines Group Inc.; it is a secured facility (guaranties plus Collateral, Collateral Trustee, SGR Security Agreement covering Route Authorities, Slots, Foreign Gate Leaseholds). Key structural feature: obligations are secured on a defined Collateral pool with a hard 1.6:1.0 Collateral Coverage Ratio maintenance test plus a minimum Liquidity covenant (Sections 6.08/6.09), so priming/drop-down risk turns primarily on collateral leakage rather than a leverage covenant. LME watch-items: (1) Section 5.05 unrestricted-subsidiary designation combined with CNI excluding Unrestricted Subsidiary income creates a J.Crew-style drop-down channel — the presence/absence of an IP/asset-transfer blocker is NOT determinable from the excerpted pages (set to null). (2) Incremental facility capacity is expressly contemplated (Section 2.27 incremental mechanics; Pari Passu Senior Secured Debt is included in the Collateral Coverage Ratio denominator), indicating the structure permits additional pari passu secured debt against the same collateral — a potential dilution/priming vector. (3) No leverage-based maintenance covenant and no observable MFN protection in the provided text; verification of RP baskets, uptier/sacred-rights amendment provisions and J.Crew blocker requires the full Credit Agreement (Sections 6.01, 6.04, 9.x) not included here.",
       "citation": {
         "accession_no": "0001193125-26-098647",
         "form_type": "8-K",
@@ -1903,7 +1892,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312526098647/d35934dex103.htm",
-        "quote": "\"'Collateral Coverage Ratio Failure' shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.\""
+        "quote": "\"Collateral Coverage Ratio Failure\" shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
       }
     }
   ],
@@ -1924,19 +1913,19 @@
       "period_end": "2024-09-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.1878,
-      "liquidity_tone_score": 11.0
+      "liquidity_tone_score": 12.0
     },
     {
       "period_end": "2024-12-31",
       "form_type": "10-K",
       "drift_from_prior": 0.3398,
-      "liquidity_tone_score": 14.0
+      "liquidity_tone_score": 18.0
     },
     {
       "period_end": "2025-03-31",
       "form_type": "10-Q",
       "drift_from_prior": 0.4045,
-      "liquidity_tone_score": 16.0
+      "liquidity_tone_score": 20.0
     },
     {
       "period_end": "2025-06-30",
@@ -1948,19 +1937,19 @@
       "period_end": "2025-09-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.192,
-      "liquidity_tone_score": 14.0
+      "liquidity_tone_score": 18.0
     },
     {
       "period_end": "2025-12-31",
       "form_type": "10-K",
       "drift_from_prior": 0.3194,
-      "liquidity_tone_score": 15.0
+      "liquidity_tone_score": 20.0
     },
     {
       "period_end": "2026-03-31",
       "form_type": "10-Q",
       "drift_from_prior": 0.4086,
-      "liquidity_tone_score": 22.0
+      "liquidity_tone_score": 30.0
     }
   ],
   "subsidiaries": [
@@ -3380,5 +3369,6 @@
   ],
   "warnings": [
     "XBRL tie-out: Leases (operating + finance) — footnote $6,963M vs XBRL $7,690M (-9.5%), above the 5% threshold."
-  ]
+  ],
+  "llm_fallback_note": null
 }

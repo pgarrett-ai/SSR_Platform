@@ -1,0 +1,3883 @@
+{
+  "header": {
+    "issuer": "Penguin Solutions, Inc.",
+    "ticker": "PENG",
+    "resolved_ticker": "PENG",
+    "cik": "1616533",
+    "years": 10,
+    "n_filings": 162,
+    "last_updated": "2026-07-08T14:58:51.427878+00:00",
+    "from_cache": false,
+    "llm_enabled": false
+  },
+  "economic_debt_bridge": null,
+  "debt_schedule": [],
+  "forensic_table": [
+    {
+      "fiscal_year": 2016,
+      "period_end": "2016-08-26",
+      "total_debt": {
+        "value": 242703000.0,
+        "display": "$243M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$226M + lt_debt_current=$17M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 58634000.0,
+        "display": "$59M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-17-019480",
+          "form_type": "10-K",
+          "filing_date": "2017-10-13",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459017019480/0001564590-17-019480-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $59M (as of 2016-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 1206000.0,
+        "display": "$1M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($15M) - capex ($14M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 13844000.0,
+        "display": "$14M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-18-025456",
+          "form_type": "10-K",
+          "filing_date": "2018-10-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459018025456/0001564590-18-025456-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $14M (for the period ending 2016-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 197976000.0,
+        "display": "$198M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-17-019480",
+          "form_type": "10-K",
+          "filing_date": "2017-10-13",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459017019480/0001564590-17-019480-index.htm",
+          "quote": "Accounts Payable, Current = $198M (as of 2016-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 103066000.0,
+        "display": "$103M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-17-019480",
+          "form_type": "10-K",
+          "filing_date": "2017-10-13",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459017019480/0001564590-17-019480-index.htm",
+          "quote": "Inventory, Net = $103M (as of 2016-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 534423000.0,
+        "display": "$534M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-18-025456",
+          "form_type": "10-K",
+          "filing_date": "2018-10-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459018025456/0001564590-18-025456-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $534M (for the period ending 2016-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 427491000.0,
+        "display": "$427M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-18-025456",
+          "form_type": "10-K",
+          "filing_date": "2018-10-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459018025456/0001564590-18-025456-index.htm",
+          "quote": "Cost of Goods and Services Sold = $427M (for the period ending 2016-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 37665000.0,
+        "display": "$38M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($6M) + D&A ($31M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 15050000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-18-025456",
+          "form_type": "10-K",
+          "filing_date": "2018-10-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459018025456/0001564590-18-025456-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $15M (for the period ending 2016-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 169.0356989971719,
+        "display": "169 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2017,
+      "period_end": "2017-08-25",
+      "total_debt": {
+        "value": 177291000.0,
+        "display": "$177M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$154M + lt_debt_current=$23M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 22436000.0,
+        "display": "$22M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-19-041109",
+          "form_type": "10-K",
+          "filing_date": "2019-11-06",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459019041109/0001564590-19-041109-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $22M (as of 2017-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": -19611000.0,
+        "display": "-$20M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF (-$1M) - capex ($19M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 18678000.0,
+        "display": "$19M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-19-041109",
+          "form_type": "10-K",
+          "filing_date": "2019-11-06",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459019041109/0001564590-19-041109-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $19M (for the period ending 2017-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 189717000.0,
+        "display": "$190M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-18-025456",
+          "form_type": "10-K",
+          "filing_date": "2018-10-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459018025456/0001564590-18-025456-index.htm",
+          "quote": "Accounts Payable, Current = $190M (as of 2017-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 127135000.0,
+        "display": "$127M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-18-025456",
+          "form_type": "10-K",
+          "filing_date": "2018-10-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459018025456/0001564590-18-025456-index.htm",
+          "quote": "Inventory, Net = $127M (as of 2017-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 761291000.0,
+        "display": "$761M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-19-041109",
+          "form_type": "10-K",
+          "filing_date": "2019-11-06",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459019041109/0001564590-19-041109-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $761M (for the period ending 2017-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 599041000.0,
+        "display": "$599M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-19-041109",
+          "form_type": "10-K",
+          "filing_date": "2019-11-06",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459019041109/0001564590-19-041109-index.htm",
+          "quote": "Cost of Goods and Services Sold = $599M (for the period ending 2017-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 87112000.0,
+        "display": "$87M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($54M) + D&A ($33M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": -933000.0,
+        "display": "-$1M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-19-041109",
+          "form_type": "10-K",
+          "filing_date": "2019-11-06",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459019041109/0001564590-19-041109-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = -$1M (for the period ending 2017-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 115.59593583744686,
+        "display": "116 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2018,
+      "period_end": "2018-08-31",
+      "total_debt": {
+        "value": 211599000.0,
+        "display": "$212M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$184M + lt_debt_current=$27M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 31375000.0,
+        "display": "$31M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-19-041109",
+          "form_type": "10-K",
+          "filing_date": "2019-11-06",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459019041109/0001564590-19-041109-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $31M (as of 2018-08-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 42169000.0,
+        "display": "$42M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($68M) - capex ($26M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 25738000.0,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-20-047291",
+          "form_type": "10-K",
+          "filing_date": "2020-10-22",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459020047291/0001564590-20-047291-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $26M (for the period ending 2018-08-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 223186000.0,
+        "display": "$223M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-19-041109",
+          "form_type": "10-K",
+          "filing_date": "2019-11-06",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459019041109/0001564590-19-041109-index.htm",
+          "quote": "Accounts Payable, Current = $223M (as of 2018-08-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 221419000.0,
+        "display": "$221M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-19-041109",
+          "form_type": "10-K",
+          "filing_date": "2019-11-06",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459019041109/0001564590-19-041109-index.htm",
+          "quote": "Inventory, Net = $221M (as of 2018-08-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 1288821000.0,
+        "display": "$1,289M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-20-047291",
+          "form_type": "10-K",
+          "filing_date": "2020-10-22",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459020047291/0001564590-20-047291-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $1,289M (for the period ending 2018-08-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 997235000.0,
+        "display": "$997M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-20-047291",
+          "form_type": "10-K",
+          "filing_date": "2020-10-22",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459020047291/0001564590-20-047291-index.htm",
+          "quote": "Cost of Goods and Services Sold = $997M (for the period ending 2018-08-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 196403000.0,
+        "display": "$196M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($170M) + D&A ($26M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 67907000.0,
+        "display": "$68M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-20-047291",
+          "form_type": "10-K",
+          "filing_date": "2020-10-22",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459020047291/0001564590-20-047291-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $68M (for the period ending 2018-08-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 81.68875941979574,
+        "display": "82 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2019,
+      "period_end": "2019-08-30",
+      "total_debt": {
+        "value": 206504000.0,
+        "display": "$207M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$182M + lt_debt_current=$24M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 98139000.0,
+        "display": "$98M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-20-047291",
+          "form_type": "10-K",
+          "filing_date": "2020-10-22",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459020047291/0001564590-20-047291-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $98M (as of 2019-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 136224000.0,
+        "display": "$136M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($170M) - capex ($33M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 33433000.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-21-051710",
+          "form_type": "10-K",
+          "filing_date": "2021-10-25",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459021051710/0001564590-21-051710-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $33M (for the period ending 2019-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 164866000.0,
+        "display": "$165M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-20-047291",
+          "form_type": "10-K",
+          "filing_date": "2020-10-22",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459020047291/0001564590-20-047291-index.htm",
+          "quote": "Accounts Payable, Current = $165M (as of 2019-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 118738000.0,
+        "display": "$119M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-20-047291",
+          "form_type": "10-K",
+          "filing_date": "2020-10-22",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459020047291/0001564590-20-047291-index.htm",
+          "quote": "Inventory, Net = $119M (as of 2019-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 1211999000.0,
+        "display": "$1,212M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-21-051710",
+          "form_type": "10-K",
+          "filing_date": "2021-10-25",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459021051710/0001564590-21-051710-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $1,212M (for the period ending 2019-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 974472000.0,
+        "display": "$974M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-21-051710",
+          "form_type": "10-K",
+          "filing_date": "2021-10-25",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459021051710/0001564590-21-051710-index.htm",
+          "quote": "Cost of Goods and Services Sold = $974M (for the period ending 2019-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 118287000.0,
+        "display": "$118M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($89M) + D&A ($29M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 169657000.0,
+        "display": "$170M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-21-051710",
+          "form_type": "10-K",
+          "filing_date": "2021-10-25",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459021051710/0001564590-21-051710-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $170M (for the period ending 2019-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 61.75250802485859,
+        "display": "62 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2020,
+      "period_end": "2020-08-28",
+      "total_debt": {
+        "value": 195573000.0,
+        "display": "$196M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$196M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 150811000.0,
+        "display": "$151M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-21-051710",
+          "form_type": "10-K",
+          "filing_date": "2021-10-25",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459021051710/0001564590-21-051710-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $151M (as of 2020-08-28) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 54760000.0,
+        "display": "$55M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($87M) - capex ($32M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 32445000.0,
+        "display": "$32M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-22-026409",
+          "form_type": "10-K",
+          "filing_date": "2022-10-14",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828022026409/0001628280-22-026409-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $32M (for the period ending 2020-08-28) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 224660000.0,
+        "display": "$225M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-21-051710",
+          "form_type": "10-K",
+          "filing_date": "2021-10-25",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459021051710/0001564590-21-051710-index.htm",
+          "quote": "Accounts Payable, Current = $225M (as of 2020-08-28) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 162991000.0,
+        "display": "$163M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001564590-21-051710",
+          "form_type": "10-K",
+          "filing_date": "2021-10-25",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000156459021051710/0001564590-21-051710-index.htm",
+          "quote": "Inventory, Net = $163M (as of 2020-08-28) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 1122377000.0,
+        "display": "$1,122M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-22-026409",
+          "form_type": "10-K",
+          "filing_date": "2022-10-14",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828022026409/0001628280-22-026409-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $1,122M (for the period ending 2020-08-28) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 905981000.0,
+        "display": "$906M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-22-026409",
+          "form_type": "10-K",
+          "filing_date": "2022-10-14",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828022026409/0001628280-22-026409-index.htm",
+          "quote": "Cost of Goods and Services Sold = $906M (for the period ending 2020-08-28) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 77760000.0,
+        "display": "$78M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($41M) + D&A ($36M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 87205000.0,
+        "display": "$87M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-22-026409",
+          "form_type": "10-K",
+          "filing_date": "2022-10-14",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828022026409/0001628280-22-026409-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $87M (for the period ending 2020-08-28) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 90.51061777233738,
+        "display": "91 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2021,
+      "period_end": "2021-08-27",
+      "total_debt": {
+        "value": 365838000.0,
+        "display": "$366M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$340M + lt_debt_current=$25M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 222986000.0,
+        "display": "$223M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-22-026409",
+          "form_type": "10-K",
+          "filing_date": "2022-10-14",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828022026409/0001628280-22-026409-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $223M (as of 2021-08-27) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 136681000.0,
+        "display": "$137M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($153M) - capex ($17M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 16669000.0,
+        "display": "$17M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-23-034807",
+          "form_type": "10-K",
+          "filing_date": "2023-10-20",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828023034807/0001628280-23-034807-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $17M (for the period ending 2021-08-27) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 429640000.0,
+        "display": "$430M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-22-026409",
+          "form_type": "10-K",
+          "filing_date": "2022-10-14",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828022026409/0001628280-22-026409-index.htm",
+          "quote": "Accounts Payable, Current = $430M (as of 2021-08-27) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 363601000.0,
+        "display": "$364M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-22-026409",
+          "form_type": "10-K",
+          "filing_date": "2022-10-14",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828022026409/0001628280-22-026409-index.htm",
+          "quote": "Inventory, Net = $364M (as of 2021-08-27) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 1055529000.0,
+        "display": "$1,056M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-23-034807",
+          "form_type": "10-K",
+          "filing_date": "2023-10-20",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828023034807/0001628280-23-034807-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $1,056M (for the period ending 2021-08-27) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 817556000.0,
+        "display": "$818M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-23-034807",
+          "form_type": "10-K",
+          "filing_date": "2023-10-20",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828023034807/0001628280-23-034807-index.htm",
+          "quote": "Cost of Goods and Services Sold = $818M (for the period ending 2021-08-27) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 19231000.0,
+        "display": "$19M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income (-$16M) + D&A ($35M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 153350000.0,
+        "display": "$153M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-23-034807",
+          "form_type": "10-K",
+          "filing_date": "2023-10-20",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828023034807/0001628280-23-034807-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $153M (for the period ending 2021-08-27) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 191.81389409410488,
+        "display": "192 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2022,
+      "period_end": "2022-08-26",
+      "total_debt": {
+        "value": 584151000.0,
+        "display": "$584M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$576M + lt_debt_current=$8M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 313328000.0,
+        "display": "$313M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-23-034807",
+          "form_type": "10-K",
+          "filing_date": "2023-10-20",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828023034807/0001628280-23-034807-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $313M (as of 2022-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 84572000.0,
+        "display": "$85M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($105M) - capex ($20M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 20359000.0,
+        "display": "$20M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-24-043646",
+          "form_type": "10-K",
+          "filing_date": "2024-10-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828024043646/0001628280-24-043646-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $20M (for the period ending 2022-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 293165000.0,
+        "display": "$293M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-23-034807",
+          "form_type": "10-K",
+          "filing_date": "2023-10-20",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828023034807/0001628280-23-034807-index.htm",
+          "quote": "Accounts Payable, Current = $293M (as of 2022-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 263768000.0,
+        "display": "$264M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-23-034807",
+          "form_type": "10-K",
+          "filing_date": "2023-10-20",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828023034807/0001628280-23-034807-index.htm",
+          "quote": "Inventory, Net = $264M (as of 2022-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 1395876000.0,
+        "display": "$1,396M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-24-043646",
+          "form_type": "10-K",
+          "filing_date": "2024-10-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828024043646/0001628280-24-043646-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $1,396M (for the period ending 2022-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 1004831000.0,
+        "display": "$1,005M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-24-043646",
+          "form_type": "10-K",
+          "filing_date": "2024-10-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828024043646/0001628280-24-043646-index.htm",
+          "quote": "Cost of Goods and Services Sold = $1,005M (for the period ending 2022-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 113841000.0,
+        "display": "$114M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($67M) + D&A ($47M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 104931000.0,
+        "display": "$105M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-24-043646",
+          "form_type": "10-K",
+          "filing_date": "2024-10-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828024043646/0001628280-24-043646-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $105M (for the period ending 2022-08-26) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 106.49076809931223,
+        "display": "106 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2023,
+      "period_end": "2023-08-25",
+      "total_debt": {
+        "value": 790438000.0,
+        "display": "$790M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$755M + lt_debt_current=$36M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 365563000.0,
+        "display": "$366M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-24-043646",
+          "form_type": "10-K",
+          "filing_date": "2024-10-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828024043646/0001628280-24-043646-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $366M (as of 2023-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 64966000.0,
+        "display": "$65M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($104M) - capex ($39M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 39421000.0,
+        "display": "$39M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $39M (for the period ending 2023-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 134980000.0,
+        "display": "$135M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-24-043646",
+          "form_type": "10-K",
+          "filing_date": "2024-10-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828024043646/0001628280-24-043646-index.htm",
+          "quote": "Accounts Payable, Current = $135M (as of 2023-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 174977000.0,
+        "display": "$175M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-24-043646",
+          "form_type": "10-K",
+          "filing_date": "2024-10-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000162828024043646/0001628280-24-043646-index.htm",
+          "quote": "Inventory, Net = $175M (as of 2023-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 1441250000.0,
+        "display": "$1,441M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $1,441M (for the period ending 2023-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 1026079000.0,
+        "display": "$1,026M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Cost of Goods and Services Sold = $1,026M (for the period ending 2023-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 80377000.0,
+        "display": "$80M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($9M) + D&A ($72M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 104387000.0,
+        "display": "$104M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $104M (for the period ending 2023-08-25) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 48.01550367954125,
+        "display": "48 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2024,
+      "period_end": "2024-08-30",
+      "total_debt": {
+        "value": 657347000.0,
+        "display": "$657M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$657M + lt_debt_current=$0M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 383147000.0,
+        "display": "$383M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $383M (as of 2024-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 57761000.0,
+        "display": "$58M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($77M) - capex ($19M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 19424000.0,
+        "display": "$19M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $19M (for the period ending 2024-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 182037000.0,
+        "display": "$182M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Accounts Payable, Current = $182M (as of 2024-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 151213000.0,
+        "display": "$151M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Inventory, Net = $151M (as of 2024-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 1170796000.0,
+        "display": "$1,171M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $1,171M (for the period ending 2024-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 830020000.0,
+        "display": "$830M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Cost of Goods and Services Sold = $830M (for the period ending 2024-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 84011000.0,
+        "display": "$84M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($18M) + D&A ($66M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 77185000.0,
+        "display": "$77M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $77M (for the period ending 2024-08-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 80.0504867352594,
+        "display": "80 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    },
+    {
+      "fiscal_year": 2025,
+      "period_end": "2025-08-29",
+      "total_debt": {
+        "value": 461838000.0,
+        "display": "$462M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$442M + lt_debt_current=$20M",
+        "note": "Sum of reported debt components (each cited).",
+        "tie_out": null
+      },
+      "cash": {
+        "value": 453754000.0,
+        "display": "$454M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $454M (as of 2025-08-29) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "free_cash_flow": {
+        "value": 100072000.0,
+        "display": "$100M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF ($109M) - capex ($9M)",
+        "note": null,
+        "tie_out": null
+      },
+      "capex": {
+        "value": 9012000.0,
+        "display": "$9M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Payments to Acquire Property, Plant, and Equipment = $9M (for the period ending 2025-08-29) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "accounts_payable": {
+        "value": 267498000.0,
+        "display": "$267M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Accounts Payable, Current = $267M (as of 2025-08-29) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "inventory": {
+        "value": 255182000.0,
+        "display": "$255M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Inventory, Net = $255M (as of 2025-08-29) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "revenue": {
+        "value": 1368794000.0,
+        "display": "$1,369M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Revenue from Contract with Customer, Excluding Assessed Tax = $1,369M (for the period ending 2025-08-29) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "cogs": {
+        "value": 974520000.0,
+        "display": "$975M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CostOfGoodsAndServicesSold",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Cost of Goods and Services Sold = $975M (for the period ending 2025-08-29) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "ebitda": {
+        "value": 114351000.0,
+        "display": "$114M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income ($58M) + D&A ($56M)",
+        "note": "Proxy EBITDA = operating income + D&A.",
+        "tie_out": null
+      },
+      "operating_cash_flow": {
+        "value": 109084000.0,
+        "display": "$109M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001616533-25-000061",
+          "form_type": "10-K",
+          "filing_date": "2025-10-21",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:NetCashProvidedByUsedInOperatingActivities",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1616533/000161653325000061/0001616533-25-000061-index.htm",
+          "quote": "Net Cash Provided by (Used in) Operating Activities = $109M (for the period ending 2025-08-29) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null,
+        "tie_out": null
+      },
+      "dpo": {
+        "value": 100.18960103435536,
+        "display": "100 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable / COGS x 365",
+        "note": "Days payable outstanding (denominator: COGS).",
+        "tie_out": null
+      }
+    }
+  ],
+  "forensic_flags": [
+    {
+      "flag_type": "ap_outrunning_revenue",
+      "severity": "watch",
+      "fiscal_year": 2025,
+      "metrics": {
+        "ap_growth_pct": 35.1,
+        "revenue_growth_pct": 156.1,
+        "dpo_first": 169.0,
+        "dpo_last": 100.2,
+        "dpo_change_days": -68.8,
+        "window": "FY2016->FY2025"
+      },
+      "narrative": "Days-payable of ~100 days (FY2025) is far above the ~30-60 day norm for most industries — a hallmark of supply-chain finance / reverse factoring, where supplier payment terms are extended through a bank facility but the balance is booked as trade payables, not debt. This is effectively a callable bank facility that can vanish overnight, so it belongs in economic debt even though the face of the balance sheet shows none of it.",
+      "pointer": "Read the accounts-payable footnote and any 'supplier finance program' / 'supply-chain finance' disclosure (ASU 2022-04, ASC 405-50), plus MD&A liquidity."
+    }
+  ],
+  "obs_items": [],
+  "covenants": [],
+  "mdna_drift": [
+    {
+      "period_end": "2024-05-31",
+      "form_type": "10-Q",
+      "drift_from_prior": null,
+      "liquidity_tone_score": null
+    },
+    {
+      "period_end": "2024-08-30",
+      "form_type": "10-K",
+      "drift_from_prior": 0.2355,
+      "liquidity_tone_score": null
+    },
+    {
+      "period_end": "2024-11-29",
+      "form_type": "10-Q",
+      "drift_from_prior": 0.2173,
+      "liquidity_tone_score": null
+    },
+    {
+      "period_end": "2025-02-28",
+      "form_type": "10-Q",
+      "drift_from_prior": 0.0956,
+      "liquidity_tone_score": null
+    },
+    {
+      "period_end": "2025-05-30",
+      "form_type": "10-Q",
+      "drift_from_prior": 0.1467,
+      "liquidity_tone_score": null
+    },
+    {
+      "period_end": "2025-08-29",
+      "form_type": "10-K",
+      "drift_from_prior": 0.1645,
+      "liquidity_tone_score": null
+    },
+    {
+      "period_end": "2025-11-28",
+      "form_type": "10-Q",
+      "drift_from_prior": 0.2088,
+      "liquidity_tone_score": null
+    },
+    {
+      "period_end": "2026-02-27",
+      "form_type": "10-Q",
+      "drift_from_prior": 0.0968,
+      "liquidity_tone_score": null
+    },
+    {
+      "period_end": "2026-05-29",
+      "form_type": "10-Q",
+      "drift_from_prior": 0.0445,
+      "liquidity_tone_score": null
+    }
+  ],
+  "subsidiaries": [],
+  "xbrl_tie_outs": [],
+  "leverage_timeline": [
+    {
+      "fiscal_year": 2016,
+      "label": "Q3 2016",
+      "period_end": "2016-08-26",
+      "reported_debt": 242703000.0,
+      "ebitda": 37665000.0,
+      "leverage": 6.4437275985663085
+    },
+    {
+      "fiscal_year": 2016,
+      "label": "Q4 2016",
+      "period_end": "2016-11-25",
+      "reported_debt": null,
+      "ebitda": 12389000.0,
+      "leverage": null
+    },
+    {
+      "fiscal_year": 2017,
+      "label": "Q1 2017",
+      "period_end": "2017-02-24",
+      "reported_debt": null,
+      "ebitda": null,
+      "leverage": null
+    },
+    {
+      "fiscal_year": 2017,
+      "label": "Q2 2017",
+      "period_end": "2017-05-26",
+      "reported_debt": 210934000.0,
+      "ebitda": 70794000.0,
+      "leverage": 2.979546289233551
+    },
+    {
+      "fiscal_year": 2017,
+      "label": "Q3 2017",
+      "period_end": "2017-08-25",
+      "reported_debt": 177291000.0,
+      "ebitda": 87112000.0,
+      "leverage": 2.0352075489025623
+    },
+    {
+      "fiscal_year": 2017,
+      "label": "Q4 2017",
+      "period_end": "2017-11-24",
+      "reported_debt": 170749000.0,
+      "ebitda": 112671000.0,
+      "leverage": 1.5154653815089951
+    },
+    {
+      "fiscal_year": 2018,
+      "label": "Q1 2018",
+      "period_end": "2018-02-23",
+      "reported_debt": 165706000.0,
+      "ebitda": 145812000.0,
+      "leverage": 1.1364359586316626
+    },
+    {
+      "fiscal_year": 2018,
+      "label": "Q2 2018",
+      "period_end": "2018-05-25",
+      "reported_debt": 158679000.0,
+      "ebitda": 172303000.0,
+      "leverage": 0.9209299896113242
+    },
+    {
+      "fiscal_year": 2018,
+      "label": "Q3 2018",
+      "period_end": "2018-08-31",
+      "reported_debt": 211599000.0,
+      "ebitda": 196403000.0,
+      "leverage": 1.0773715269115034
+    },
+    {
+      "fiscal_year": 2018,
+      "label": "Q4 2018",
+      "period_end": "2018-11-30",
+      "reported_debt": 210400000.0,
+      "ebitda": 212872000.0,
+      "leverage": 0.9883873877259574
+    },
+    {
+      "fiscal_year": 2019,
+      "label": "Q1 2019",
+      "period_end": "2019-03-01",
+      "reported_debt": 209231000.0,
+      "ebitda": 190814000.0,
+      "leverage": 1.096518075193644
+    },
+    {
+      "fiscal_year": 2019,
+      "label": "Q2 2019",
+      "period_end": "2019-05-31",
+      "reported_debt": 207515000.0,
+      "ebitda": 150308000.0,
+      "leverage": 1.3805985044042899
+    },
+    {
+      "fiscal_year": 2019,
+      "label": "Q3 2019",
+      "period_end": "2019-08-30",
+      "reported_debt": 206504000.0,
+      "ebitda": 118287000.0,
+      "leverage": 1.745787787330814
+    },
+    {
+      "fiscal_year": 2019,
+      "label": "Q4 2019",
+      "period_end": "2019-11-29",
+      "reported_debt": 200342000.0,
+      "ebitda": 79505000.0,
+      "leverage": 2.5198666750518837
+    },
+    {
+      "fiscal_year": 2020,
+      "label": "Q1 2020",
+      "period_end": "2020-02-28",
+      "reported_debt": 193139000.0,
+      "ebitda": 67718000.0,
+      "leverage": 2.852107268377684
+    },
+    {
+      "fiscal_year": 2020,
+      "label": "Q2 2020",
+      "period_end": "2020-05-29",
+      "reported_debt": 194155000.0,
+      "ebitda": 72384000.0,
+      "leverage": 2.6822916666666665
+    },
+    {
+      "fiscal_year": 2020,
+      "label": "Q3 2020",
+      "period_end": "2020-08-28",
+      "reported_debt": 195573000.0,
+      "ebitda": 77760000.0,
+      "leverage": 2.51508487654321
+    },
+    {
+      "fiscal_year": 2020,
+      "label": "Q3 2020",
+      "period_end": "2020-08-31",
+      "reported_debt": null,
+      "ebitda": 77760000.0,
+      "leverage": null
+    },
+    {
+      "fiscal_year": 2020,
+      "label": "Q4 2020",
+      "period_end": "2020-11-27",
+      "reported_debt": 197634000.0,
+      "ebitda": 78326000.0,
+      "leverage": 2.5232234507060234
+    },
+    {
+      "fiscal_year": 2021,
+      "label": "Q1 2021",
+      "period_end": "2021-02-26",
+      "reported_debt": 210811000.0,
+      "ebitda": 82467000.0,
+      "leverage": 2.5563073714334217
+    },
+    {
+      "fiscal_year": 2021,
+      "label": "Q2 2021",
+      "period_end": "2021-05-28",
+      "reported_debt": 338047000.0,
+      "ebitda": 81787000.0,
+      "leverage": 4.133260787166664
+    },
+    {
+      "fiscal_year": 2021,
+      "label": "Q3 2021",
+      "period_end": "2021-08-27",
+      "reported_debt": 365838000.0,
+      "ebitda": 19231000.0,
+      "leverage": 19.023347719827363
+    },
+    {
+      "fiscal_year": 2021,
+      "label": "Q4 2021",
+      "period_end": "2021-11-26",
+      "reported_debt": 376952000.0,
+      "ebitda": 35412000.0,
+      "leverage": 10.644753191008698
+    },
+    {
+      "fiscal_year": 2022,
+      "label": "Q1 2022",
+      "period_end": "2022-02-25",
+      "reported_debt": 490336000.0,
+      "ebitda": 64997000.0,
+      "leverage": 7.543978952874748
+    },
+    {
+      "fiscal_year": 2022,
+      "label": "Q2 2022",
+      "period_end": "2022-05-27",
+      "reported_debt": 493821000.0,
+      "ebitda": 98675000.0,
+      "leverage": 5.004519888522929
+    },
+    {
+      "fiscal_year": 2022,
+      "label": "Q3 2022",
+      "period_end": "2022-08-26",
+      "reported_debt": 584151000.0,
+      "ebitda": 113841000.0,
+      "leverage": 5.131288375892693
+    },
+    {
+      "fiscal_year": 2022,
+      "label": "Q4 2022",
+      "period_end": "2022-11-25",
+      "reported_debt": 825420000.0,
+      "ebitda": 113565000.0,
+      "leverage": 7.268260467573636
+    },
+    {
+      "fiscal_year": 2023,
+      "label": "Q1 2023",
+      "period_end": "2023-02-24",
+      "reported_debt": 821505000.0,
+      "ebitda": 75024000.0,
+      "leverage": 10.949896033269354
+    },
+    {
+      "fiscal_year": 2023,
+      "label": "Q2 2023",
+      "period_end": "2023-05-26",
+      "reported_debt": 814511000.0,
+      "ebitda": 32896000.0,
+      "leverage": 24.760183608949415
+    },
+    {
+      "fiscal_year": 2023,
+      "label": "Q3 2023",
+      "period_end": "2023-08-25",
+      "reported_debt": 790438000.0,
+      "ebitda": 80377000.0,
+      "leverage": 9.834131654577803
+    },
+    {
+      "fiscal_year": 2023,
+      "label": "Q4 2023",
+      "period_end": "2023-12-01",
+      "reported_debt": 776810000.0,
+      "ebitda": 67440000.0,
+      "leverage": 11.518534994068801
+    },
+    {
+      "fiscal_year": 2024,
+      "label": "Q1 2024",
+      "period_end": "2024-03-01",
+      "reported_debt": 740663000.0,
+      "ebitda": 68508000.0,
+      "leverage": 10.811335902376365
+    },
+    {
+      "fiscal_year": 2024,
+      "label": "Q2 2024",
+      "period_end": "2024-05-31",
+      "reported_debt": 667042000.0,
+      "ebitda": 85792000.0,
+      "leverage": 7.775107236105931
+    },
+    {
+      "fiscal_year": 2024,
+      "label": "Q3 2024",
+      "period_end": "2024-08-30",
+      "reported_debt": 657347000.0,
+      "ebitda": 84011000.0,
+      "leverage": 7.824534882336837
+    },
+    {
+      "fiscal_year": 2024,
+      "label": "Q4 2024",
+      "period_end": "2024-11-29",
+      "reported_debt": 658070000.0,
+      "ebitda": 97369000.0,
+      "leverage": 6.758516570982551
+    },
+    {
+      "fiscal_year": 2025,
+      "label": "Q1 2025",
+      "period_end": "2025-02-28",
+      "reported_debt": 658791000.0,
+      "ebitda": 116050000.0,
+      "leverage": 5.676785868160276
+    },
+    {
+      "fiscal_year": 2025,
+      "label": "Q2 2025",
+      "period_end": "2025-05-30",
+      "reported_debt": 659478000.0,
+      "ebitda": 112869000.0,
+      "leverage": 5.842862079047391
+    },
+    {
+      "fiscal_year": 2025,
+      "label": "Q3 2025",
+      "period_end": "2025-08-29",
+      "reported_debt": 461838000.0,
+      "ebitda": 114351000.0,
+      "leverage": 4.0387753495815515
+    },
+    {
+      "fiscal_year": 2025,
+      "label": "Q4 2025",
+      "period_end": "2025-11-28",
+      "reported_debt": 462307000.0,
+      "ebitda": 114435000.0,
+      "leverage": 4.03990911871368
+    },
+    {
+      "fiscal_year": 2026,
+      "label": "Q1 2026",
+      "period_end": "2026-02-27",
+      "reported_debt": 442777000.0,
+      "ebitda": 120350000.0,
+      "leverage": 3.6790776900706272
+    },
+    {
+      "fiscal_year": 2026,
+      "label": "Q2 2026",
+      "period_end": "2026-05-29",
+      "reported_debt": 443164000.0,
+      "ebitda": 159665000.0,
+      "leverage": 2.7755863839914823
+    }
+  ],
+  "maturity_wall": [],
+  "what_changed": [
+    {
+      "metric": "Free cash flow (TTM)",
+      "unit": "USD",
+      "prior": 99101000.0,
+      "latest": -69433000.0,
+      "delta_pct": -170.1,
+      "direction": "worse",
+      "prior_fy": 2026,
+      "latest_fy": 2026,
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
+    },
+    {
+      "metric": "EBITDA (TTM)",
+      "unit": "USD",
+      "prior": 120350000.0,
+      "latest": 159665000.0,
+      "delta_pct": 32.7,
+      "direction": "better",
+      "prior_fy": 2026,
+      "latest_fy": 2026,
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
+    },
+    {
+      "metric": "Leverage (debt/EBITDA TTM)",
+      "unit": "x",
+      "prior": 3.6790776900706272,
+      "latest": 2.7755863839914823,
+      "delta_pct": -24.6,
+      "direction": "better",
+      "prior_fy": 2026,
+      "latest_fy": 2026,
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
+    },
+    {
+      "metric": "Revenue (TTM)",
+      "unit": "USD",
+      "prior": 1348243000.0,
+      "latest": 1502705000.0,
+      "delta_pct": 11.5,
+      "direction": "better",
+      "prior_fy": 2026,
+      "latest_fy": 2026,
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
+    },
+    {
+      "metric": "Cash & equivalents",
+      "unit": "USD",
+      "prior": 489172000.0,
+      "latest": 440301000.0,
+      "delta_pct": -10.0,
+      "direction": "worse",
+      "prior_fy": 2026,
+      "latest_fy": 2026,
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
+    }
+  ],
+  "sources": [
+    {
+      "accession_no": "0001616533-26-000043",
+      "form_type": "10-Q",
+      "filing_date": "2026-07-07",
+      "period_of_report": "2026-05-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000043-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000043-index.html",
+      "n_exhibits": 94,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001616533-26-000041",
+      "form_type": "8-K",
+      "filing_date": "2026-07-07",
+      "period_of_report": "2026-07-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000041-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000041-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-26-292527",
+      "form_type": "8-K/A",
+      "filing_date": "2026-07-01",
+      "period_of_report": "2026-05-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-292527-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-292527-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-26-251467",
+      "form_type": "8-K",
+      "filing_date": "2026-06-01",
+      "period_of_report": "2026-05-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-251467-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-251467-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001616533-26-000036",
+      "form_type": "8-K",
+      "filing_date": "2026-05-18",
+      "period_of_report": "2026-05-18",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000036-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000036-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001616533-26-000030",
+      "form_type": "10-Q",
+      "filing_date": "2026-04-01",
+      "period_of_report": "2026-02-27",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000030-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000030-index.html",
+      "n_exhibits": 96,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0001616533-26-000028",
+      "form_type": "8-K",
+      "filing_date": "2026-04-01",
+      "period_of_report": "2026-04-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000028-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000028-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-26-135770",
+      "form_type": "8-K",
+      "filing_date": "2026-04-01",
+      "period_of_report": "2026-03-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-135770-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-135770-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001616533-26-000013",
+      "form_type": "8-K",
+      "filing_date": "2026-02-11",
+      "period_of_report": "2026-02-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000013-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000013-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-26-033616",
+      "form_type": "8-K",
+      "filing_date": "2026-02-02",
+      "period_of_report": "2026-01-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-033616-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-26-033616-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001616533-26-000010",
+      "form_type": "10-Q",
+      "filing_date": "2026-01-06",
+      "period_of_report": "2025-11-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000010-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000010-index.html",
+      "n_exhibits": 97,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0001616533-26-000008",
+      "form_type": "8-K",
+      "filing_date": "2026-01-06",
+      "period_of_report": "2026-01-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000008-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-26-000008-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-25-337077",
+      "form_type": "8-K",
+      "filing_date": "2025-12-30",
+      "period_of_report": "2025-12-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-337077-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-337077-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001616533-25-000061",
+      "form_type": "10-K",
+      "filing_date": "2025-10-21",
+      "period_of_report": "2025-08-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-25-000061-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-25-000061-index.html",
+      "n_exhibits": 141,
+      "n_credit_docs": 3
+    },
+    {
+      "accession_no": "0001616533-25-000057",
+      "form_type": "8-K",
+      "filing_date": "2025-10-07",
+      "period_of_report": "2025-10-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-25-000057-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001616533-25-000057-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-25-167288",
+      "form_type": "8-K",
+      "filing_date": "2025-07-29",
+      "period_of_report": "2025-07-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-167288-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-167288-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-25-034541",
+      "form_type": "10-Q",
+      "filing_date": "2025-07-08",
+      "period_of_report": "2025-05-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-034541-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-034541-index.html",
+      "n_exhibits": 104,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001628280-25-034510",
+      "form_type": "8-K",
+      "filing_date": "2025-07-08",
+      "period_of_report": "2025-07-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-034510-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-034510-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-25-147869",
+      "form_type": "8-K",
+      "filing_date": "2025-06-26",
+      "period_of_report": "2025-06-24",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-147869-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-147869-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001193125-25-142059",
+      "form_type": "8-K",
+      "filing_date": "2025-06-17",
+      "period_of_report": "2025-06-16",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-142059-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-142059-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-25-016182",
+      "form_type": "10-Q",
+      "filing_date": "2025-04-02",
+      "period_of_report": "2025-02-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-016182-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-016182-index.html",
+      "n_exhibits": 101,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0001628280-25-016180",
+      "form_type": "8-K",
+      "filing_date": "2025-04-02",
+      "period_of_report": "2025-04-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-016180-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-016180-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-25-060907",
+      "form_type": "8-K",
+      "filing_date": "2025-03-24",
+      "period_of_report": "2025-03-24",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-060907-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-25-060907-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-25-005193",
+      "form_type": "8-K",
+      "filing_date": "2025-02-12",
+      "period_of_report": "2025-02-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-005193-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-005193-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-25-000944",
+      "form_type": "10-Q",
+      "filing_date": "2025-01-08",
+      "period_of_report": "2024-11-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-000944-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-000944-index.html",
+      "n_exhibits": 96,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-25-000939",
+      "form_type": "8-K",
+      "filing_date": "2025-01-08",
+      "period_of_report": "2025-01-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-000939-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-25-000939-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-24-279100",
+      "form_type": "8-K",
+      "filing_date": "2024-12-16",
+      "period_of_report": "2024-12-13",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-279100-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-279100-index.html",
+      "n_exhibits": 10,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001628280-24-043646",
+      "form_type": "10-K",
+      "filing_date": "2024-10-24",
+      "period_of_report": "2024-08-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-043646-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-043646-index.html",
+      "n_exhibits": 140,
+      "n_credit_docs": 4
+    },
+    {
+      "accession_no": "0001628280-24-042888",
+      "form_type": "8-K/A",
+      "filing_date": "2024-10-16",
+      "period_of_report": "2024-10-15",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-042888-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-042888-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-24-042831",
+      "form_type": "8-K",
+      "filing_date": "2024-10-15",
+      "period_of_report": "2024-10-15",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-042831-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-042831-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-24-042166",
+      "form_type": "8-K",
+      "filing_date": "2024-10-03",
+      "period_of_report": "2024-09-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-042166-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-042166-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-24-207764",
+      "form_type": "8-K",
+      "filing_date": "2024-08-27",
+      "period_of_report": "2024-08-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-207764-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-207764-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-24-206170",
+      "form_type": "8-K",
+      "filing_date": "2024-08-23",
+      "period_of_report": "2024-08-21",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-206170-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-206170-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-24-200635",
+      "form_type": "8-K",
+      "filing_date": "2024-08-14",
+      "period_of_report": "2024-08-12",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-200635-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-200635-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001193125-24-194920",
+      "form_type": "8-K",
+      "filing_date": "2024-08-06",
+      "period_of_report": "2024-07-31",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-194920-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-194920-index.html",
+      "n_exhibits": 11,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0001193125-24-179141",
+      "form_type": "8-K",
+      "filing_date": "2024-07-16",
+      "period_of_report": "2024-07-14",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-179141-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-179141-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001628280-24-031519",
+      "form_type": "10-Q",
+      "filing_date": "2024-07-09",
+      "period_of_report": "2024-05-31",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-031519-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-031519-index.html",
+      "n_exhibits": 100,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0001628280-24-031486",
+      "form_type": "8-K",
+      "filing_date": "2024-07-09",
+      "period_of_report": "2024-07-09",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-031486-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-031486-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-24-029986",
+      "form_type": "8-K",
+      "filing_date": "2024-06-26",
+      "period_of_report": "2024-06-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-029986-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-029986-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-24-138236",
+      "form_type": "8-K",
+      "filing_date": "2024-05-14",
+      "period_of_report": "2024-05-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-138236-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-24-138236-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-24-015494",
+      "form_type": "10-Q",
+      "filing_date": "2024-04-09",
+      "period_of_report": "2024-03-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-015494-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-015494-index.html",
+      "n_exhibits": 99,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001628280-24-015443",
+      "form_type": "8-K",
+      "filing_date": "2024-04-09",
+      "period_of_report": "2024-04-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-015443-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-015443-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-24-004473",
+      "form_type": "8-K",
+      "filing_date": "2024-02-13",
+      "period_of_report": "2024-02-09",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-004473-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-004473-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-24-000961",
+      "form_type": "10-Q",
+      "filing_date": "2024-01-09",
+      "period_of_report": "2023-12-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-000961-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-000961-index.html",
+      "n_exhibits": 104,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-24-000948",
+      "form_type": "8-K",
+      "filing_date": "2024-01-09",
+      "period_of_report": "2024-01-09",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-000948-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-24-000948-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-23-285726",
+      "form_type": "8-K",
+      "filing_date": "2023-11-30",
+      "period_of_report": "2023-11-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-285726-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-285726-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-23-034807",
+      "form_type": "10-K",
+      "filing_date": "2023-10-20",
+      "period_of_report": "2023-08-25",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-034807-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-034807-index.html",
+      "n_exhibits": 131,
+      "n_credit_docs": 3
+    },
+    {
+      "accession_no": "0001628280-23-034285",
+      "form_type": "8-K",
+      "filing_date": "2023-10-12",
+      "period_of_report": "2023-10-12",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-034285-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-034285-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-23-245627",
+      "form_type": "8-K",
+      "filing_date": "2023-09-28",
+      "period_of_report": "2023-09-25",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-245627-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-245627-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-23-191480",
+      "form_type": "8-K",
+      "filing_date": "2023-07-21",
+      "period_of_report": "2023-07-18",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-191480-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-191480-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-23-189623",
+      "form_type": "8-K",
+      "filing_date": "2023-07-19",
+      "period_of_report": "2023-07-15",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-189623-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-189623-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-23-023925",
+      "form_type": "10-Q",
+      "filing_date": "2023-06-30",
+      "period_of_report": "2023-05-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-023925-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-023925-index.html",
+      "n_exhibits": 102,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-23-178611",
+      "form_type": "8-K",
+      "filing_date": "2023-06-29",
+      "period_of_report": "2023-06-27",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-178611-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-178611-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-23-023899",
+      "form_type": "8-K",
+      "filing_date": "2023-06-29",
+      "period_of_report": "2023-06-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-023899-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-023899-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-23-165699",
+      "form_type": "8-K",
+      "filing_date": "2023-06-13",
+      "period_of_report": "2023-06-13",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-165699-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-165699-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-23-010675",
+      "form_type": "10-Q",
+      "filing_date": "2023-04-04",
+      "period_of_report": "2023-02-24",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-010675-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-010675-index.html",
+      "n_exhibits": 98,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-23-010584",
+      "form_type": "8-K",
+      "filing_date": "2023-04-04",
+      "period_of_report": "2023-04-04",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-010584-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-010584-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-23-035771",
+      "form_type": "8-K",
+      "filing_date": "2023-02-13",
+      "period_of_report": "2023-02-10",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-035771-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-035771-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-23-013259",
+      "form_type": "8-K",
+      "filing_date": "2023-01-23",
+      "period_of_report": "2023-01-18",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-013259-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-013259-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0001193125-23-010617",
+      "form_type": "8-K",
+      "filing_date": "2023-01-19",
+      "period_of_report": "2023-01-18",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-010617-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-23-010617-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-23-000100",
+      "form_type": "10-Q",
+      "filing_date": "2023-01-03",
+      "period_of_report": "2022-11-25",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-000100-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-000100-index.html",
+      "n_exhibits": 96,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-23-000078",
+      "form_type": "8-K",
+      "filing_date": "2023-01-03",
+      "period_of_report": "2023-01-03",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-000078-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-23-000078-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-22-028472",
+      "form_type": "8-K/A",
+      "filing_date": "2022-11-04",
+      "period_of_report": "2022-08-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-028472-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-028472-index.html",
+      "n_exhibits": 11,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-22-026409",
+      "form_type": "10-K",
+      "filing_date": "2022-10-14",
+      "period_of_report": "2022-08-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-026409-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-026409-index.html",
+      "n_exhibits": 123,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001628280-22-025940",
+      "form_type": "8-K",
+      "filing_date": "2022-10-04",
+      "period_of_report": "2022-10-04",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-025940-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-025940-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-22-255491",
+      "form_type": "8-K",
+      "filing_date": "2022-09-30",
+      "period_of_report": "2022-09-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-255491-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-255491-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-22-232772",
+      "form_type": "8-K",
+      "filing_date": "2022-08-29",
+      "period_of_report": "2022-08-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-232772-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-232772-index.html",
+      "n_exhibits": 10,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0001193125-22-227504",
+      "form_type": "8-K",
+      "filing_date": "2022-08-23",
+      "period_of_report": "2022-08-22",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-227504-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-227504-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-22-222916",
+      "form_type": "8-K",
+      "filing_date": "2022-08-17",
+      "period_of_report": "2022-08-16",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-222916-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-222916-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-22-018285",
+      "form_type": "10-Q",
+      "filing_date": "2022-06-30",
+      "period_of_report": "2022-05-27",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-018285-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-018285-index.html",
+      "n_exhibits": 89,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-22-185065",
+      "form_type": "8-K",
+      "filing_date": "2022-06-29",
+      "period_of_report": "2022-06-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-185065-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-185065-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-22-018218",
+      "form_type": "8-K",
+      "filing_date": "2022-06-29",
+      "period_of_report": "2022-06-24",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-018218-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-018218-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001628280-22-008434",
+      "form_type": "10-Q",
+      "filing_date": "2022-04-05",
+      "period_of_report": "2022-02-25",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-008434-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-008434-index.html",
+      "n_exhibits": 89,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-22-008376",
+      "form_type": "8-K",
+      "filing_date": "2022-04-05",
+      "period_of_report": "2022-04-05",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-008376-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001628280-22-008376-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-22-041641",
+      "form_type": "8-K",
+      "filing_date": "2022-02-14",
+      "period_of_report": "2022-02-11",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-041641-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-041641-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-22-029964",
+      "form_type": "8-K",
+      "filing_date": "2022-02-08",
+      "period_of_report": "2022-02-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-029964-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-22-029964-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-22-000310",
+      "form_type": "10-Q",
+      "filing_date": "2022-01-04",
+      "period_of_report": "2021-11-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-22-000310-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-22-000310-index.html",
+      "n_exhibits": 90,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-22-000288",
+      "form_type": "8-K",
+      "filing_date": "2022-01-04",
+      "period_of_report": "2022-01-03",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-22-000288-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-22-000288-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-21-356865",
+      "form_type": "8-K",
+      "filing_date": "2021-12-14",
+      "period_of_report": "2021-12-09",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-21-356865-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-21-356865-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-21-051710",
+      "form_type": "10-K",
+      "filing_date": "2021-10-25",
+      "period_of_report": "2021-08-27",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-051710-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-051710-index.html",
+      "n_exhibits": 122,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-21-050638",
+      "form_type": "8-K",
+      "filing_date": "2021-10-12",
+      "period_of_report": "2021-10-12",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-050638-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-050638-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-21-284987",
+      "form_type": "8-K",
+      "filing_date": "2021-09-28",
+      "period_of_report": "2021-09-24",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-21-284987-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-21-284987-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-21-214096",
+      "form_type": "8-K",
+      "filing_date": "2021-07-13",
+      "period_of_report": "2021-07-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-21-214096-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-21-214096-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-21-035883",
+      "form_type": "10-Q",
+      "filing_date": "2021-07-06",
+      "period_of_report": "2021-05-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-035883-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-035883-index.html",
+      "n_exhibits": 108,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-21-035862",
+      "form_type": "8-K",
+      "filing_date": "2021-07-06",
+      "period_of_report": "2021-07-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-035862-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-035862-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-21-027596",
+      "form_type": "8-K/A",
+      "filing_date": "2021-05-13",
+      "period_of_report": "2021-03-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-027596-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-027596-index.html",
+      "n_exhibits": 11,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-21-005867",
+      "form_type": "8-K",
+      "filing_date": "2021-04-21",
+      "period_of_report": "2021-04-20",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-005867-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-005867-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-21-017805",
+      "form_type": "10-Q",
+      "filing_date": "2021-04-06",
+      "period_of_report": "2021-02-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-017805-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-017805-index.html",
+      "n_exhibits": 103,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0000950103-21-005278",
+      "form_type": "10-K/A",
+      "filing_date": "2021-04-06",
+      "period_of_report": "2020-08-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-005278-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-005278-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-21-017800",
+      "form_type": "8-K",
+      "filing_date": "2021-04-06",
+      "period_of_report": "2021-04-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-017800-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-017800-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-21-005235",
+      "form_type": "8-K",
+      "filing_date": "2021-04-05",
+      "period_of_report": "2021-03-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-005235-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-005235-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-21-003470",
+      "form_type": "8-K",
+      "filing_date": "2021-03-03",
+      "period_of_report": "2021-03-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-003470-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-003470-index.html",
+      "n_exhibits": 11,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0000950103-21-002576",
+      "form_type": "8-K",
+      "filing_date": "2021-02-19",
+      "period_of_report": "2021-02-12",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-002576-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-002576-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-21-001561",
+      "form_type": "8-K",
+      "filing_date": "2021-02-02",
+      "period_of_report": "2021-02-02",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-001561-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-001561-index.html",
+      "n_exhibits": 9,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0000950103-21-000812",
+      "form_type": "8-K",
+      "filing_date": "2021-01-22",
+      "period_of_report": "2021-01-19",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-000812-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-000812-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-21-000211",
+      "form_type": "8-K",
+      "filing_date": "2021-01-07",
+      "period_of_report": "2021-01-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-000211-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-21-000211-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-21-000281",
+      "form_type": "10-Q",
+      "filing_date": "2021-01-05",
+      "period_of_report": "2020-11-27",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-000281-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-000281-index.html",
+      "n_exhibits": 103,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-21-000278",
+      "form_type": "8-K",
+      "filing_date": "2021-01-05",
+      "period_of_report": "2021-01-05",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-000278-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-21-000278-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-20-024864",
+      "form_type": "8-K",
+      "filing_date": "2020-12-29",
+      "period_of_report": "2020-12-23",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-024864-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-024864-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-20-047291",
+      "form_type": "10-K",
+      "filing_date": "2020-10-22",
+      "period_of_report": "2020-08-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-047291-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-047291-index.html",
+      "n_exhibits": 113,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0000950103-20-020209",
+      "form_type": "8-K",
+      "filing_date": "2020-10-19",
+      "period_of_report": "2020-10-18",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-020209-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-020209-index.html",
+      "n_exhibits": 3,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-20-020027",
+      "form_type": "8-K",
+      "filing_date": "2020-10-14",
+      "period_of_report": "2020-10-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-020027-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-020027-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-20-019568",
+      "form_type": "8-K",
+      "filing_date": "2020-10-02",
+      "period_of_report": "2020-09-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-019568-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-019568-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-20-045535",
+      "form_type": "8-K",
+      "filing_date": "2020-10-01",
+      "period_of_report": "2020-10-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-045535-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-045535-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-20-017431",
+      "form_type": "8-K",
+      "filing_date": "2020-09-03",
+      "period_of_report": "2020-08-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-017431-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-017431-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-20-015787",
+      "form_type": "8-K",
+      "filing_date": "2020-08-13",
+      "period_of_report": "2020-08-12",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-015787-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-015787-index.html",
+      "n_exhibits": 3,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-20-031962",
+      "form_type": "10-Q",
+      "filing_date": "2020-07-07",
+      "period_of_report": "2020-05-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-031962-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-031962-index.html",
+      "n_exhibits": 103,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-20-031956",
+      "form_type": "8-K",
+      "filing_date": "2020-07-07",
+      "period_of_report": "2020-07-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-031956-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-031956-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-20-015742",
+      "form_type": "10-Q",
+      "filing_date": "2020-04-07",
+      "period_of_report": "2020-02-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-015742-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-015742-index.html",
+      "n_exhibits": 103,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-20-015715",
+      "form_type": "8-K",
+      "filing_date": "2020-04-07",
+      "period_of_report": "2020-04-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-015715-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-20-015715-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-20-092828",
+      "form_type": "8-K",
+      "filing_date": "2020-03-31",
+      "period_of_report": "2020-03-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-092828-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-092828-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-20-005064",
+      "form_type": "8-K",
+      "filing_date": "2020-03-11",
+      "period_of_report": "2020-03-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-005064-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-005064-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0000950103-20-002815",
+      "form_type": "8-K",
+      "filing_date": "2020-02-14",
+      "period_of_report": "2020-02-13",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-002815-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-20-002815-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-20-031315",
+      "form_type": "8-K",
+      "filing_date": "2020-02-11",
+      "period_of_report": "2020-02-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-031315-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-031315-index.html",
+      "n_exhibits": 4,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001193125-20-028170",
+      "form_type": "8-K/A",
+      "filing_date": "2020-02-07",
+      "period_of_report": "2020-02-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-028170-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-028170-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-20-027303",
+      "form_type": "8-K",
+      "filing_date": "2020-02-07",
+      "period_of_report": "2020-02-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-027303-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-027303-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-20-026854",
+      "form_type": "8-K",
+      "filing_date": "2020-02-06",
+      "period_of_report": "2020-02-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-026854-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-20-026854-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-046559",
+      "form_type": "10-Q",
+      "filing_date": "2019-12-20",
+      "period_of_report": "2019-11-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-046559-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-046559-index.html",
+      "n_exhibits": 98,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-046395",
+      "form_type": "8-K",
+      "filing_date": "2019-12-19",
+      "period_of_report": "2019-12-19",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-046395-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-046395-index.html",
+      "n_exhibits": 3,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-041109",
+      "form_type": "10-K",
+      "filing_date": "2019-11-06",
+      "period_of_report": "2019-08-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-041109-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-041109-index.html",
+      "n_exhibits": 111,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-19-036386",
+      "form_type": "8-K",
+      "filing_date": "2019-10-03",
+      "period_of_report": "2019-10-03",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-036386-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-036386-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-19-009322",
+      "form_type": "8-K",
+      "filing_date": "2019-07-12",
+      "period_of_report": "2019-07-09",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-19-009322-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-19-009322-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-19-009321",
+      "form_type": "8-K",
+      "filing_date": "2019-07-12",
+      "period_of_report": "2019-07-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-19-009321-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-19-009321-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-023864",
+      "form_type": "10-Q",
+      "filing_date": "2019-06-27",
+      "period_of_report": "2019-05-31",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-023864-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-023864-index.html",
+      "n_exhibits": 100,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-023838",
+      "form_type": "8-K",
+      "filing_date": "2019-06-27",
+      "period_of_report": "2019-06-27",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-023838-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-023838-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-19-004476",
+      "form_type": "8-K",
+      "filing_date": "2019-04-02",
+      "period_of_report": "2019-04-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-19-004476-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-19-004476-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-009858",
+      "form_type": "10-Q",
+      "filing_date": "2019-03-28",
+      "period_of_report": "2019-03-01",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-009858-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-009858-index.html",
+      "n_exhibits": 99,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-009837",
+      "form_type": "8-K",
+      "filing_date": "2019-03-28",
+      "period_of_report": "2019-03-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-009837-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-009837-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-19-001103",
+      "form_type": "8-K",
+      "filing_date": "2019-01-30",
+      "period_of_report": "2019-01-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-19-001103-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-19-001103-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-000402",
+      "form_type": "10-Q",
+      "filing_date": "2019-01-08",
+      "period_of_report": "2018-11-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-000402-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-000402-index.html",
+      "n_exhibits": 97,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-19-000400",
+      "form_type": "8-K",
+      "filing_date": "2019-01-08",
+      "period_of_report": "2019-01-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-000400-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-19-000400-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-18-025456",
+      "form_type": "10-K",
+      "filing_date": "2018-10-30",
+      "period_of_report": "2018-08-31",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-025456-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-025456-index.html",
+      "n_exhibits": 105,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-18-023975",
+      "form_type": "8-K",
+      "filing_date": "2018-10-04",
+      "period_of_report": "2018-10-04",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-023975-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-023975-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-18-011546",
+      "form_type": "8-K",
+      "filing_date": "2018-10-03",
+      "period_of_report": "2018-10-02",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-011546-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-011546-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-18-022301",
+      "form_type": "8-K/A",
+      "filing_date": "2018-08-24",
+      "period_of_report": "2018-06-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-022301-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-022301-index.html",
+      "n_exhibits": 5,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-18-015964",
+      "form_type": "10-Q",
+      "filing_date": "2018-06-21",
+      "period_of_report": "2018-05-25",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-015964-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-015964-index.html",
+      "n_exhibits": 83,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-18-015946",
+      "form_type": "8-K",
+      "filing_date": "2018-06-21",
+      "period_of_report": "2018-06-21",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-015946-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-015946-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-18-007302",
+      "form_type": "8-K",
+      "filing_date": "2018-06-11",
+      "period_of_report": "2018-06-08",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-007302-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-007302-index.html",
+      "n_exhibits": 4,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0000950103-18-004571",
+      "form_type": "8-K",
+      "filing_date": "2018-04-09",
+      "period_of_report": "2018-04-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-004571-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-004571-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-18-006586",
+      "form_type": "10-Q",
+      "filing_date": "2018-03-22",
+      "period_of_report": "2018-02-23",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-006586-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-006586-index.html",
+      "n_exhibits": 84,
+      "n_credit_docs": 2
+    },
+    {
+      "accession_no": "0001564590-18-006569",
+      "form_type": "8-K",
+      "filing_date": "2018-03-22",
+      "period_of_report": "2018-03-22",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-006569-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-18-006569-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-18-003366",
+      "form_type": "8-K",
+      "filing_date": "2018-03-14",
+      "period_of_report": "2018-03-14",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-003366-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-003366-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-18-001479",
+      "form_type": "8-K",
+      "filing_date": "2018-02-02",
+      "period_of_report": "2018-01-29",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-001479-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-001479-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0000950103-18-001072",
+      "form_type": "8-K",
+      "filing_date": "2018-01-30",
+      "period_of_report": "2018-01-24",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-001072-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-001072-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-18-000677",
+      "form_type": "8-K",
+      "filing_date": "2018-01-22",
+      "period_of_report": "2018-01-19",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-000677-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-18-000677-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-17-025238",
+      "form_type": "10-Q",
+      "filing_date": "2017-12-21",
+      "period_of_report": "2017-11-24",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-025238-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-025238-index.html",
+      "n_exhibits": 80,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-17-025229",
+      "form_type": "8-K",
+      "filing_date": "2017-12-21",
+      "period_of_report": "2017-12-21",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-025229-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-025229-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-17-353040",
+      "form_type": "S-1/A",
+      "filing_date": "2017-11-28",
+      "period_of_report": null,
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-353040-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-353040-index.html",
+      "n_exhibits": 4,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-17-352500",
+      "form_type": "S-1",
+      "filing_date": "2017-11-27",
+      "period_of_report": null,
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-352500-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-352500-index.html",
+      "n_exhibits": 93,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-17-011030",
+      "form_type": "8-K",
+      "filing_date": "2017-11-09",
+      "period_of_report": "2017-11-07",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-17-011030-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-17-011030-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-17-010166",
+      "form_type": "8-K",
+      "filing_date": "2017-10-23",
+      "period_of_report": "2017-10-17",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-17-010166-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-17-010166-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-17-019480",
+      "form_type": "10-K",
+      "filing_date": "2017-10-13",
+      "period_of_report": "2017-08-25",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-019480-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-019480-index.html",
+      "n_exhibits": 94,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001564590-17-019049",
+      "form_type": "8-K",
+      "filing_date": "2017-09-28",
+      "period_of_report": "2017-09-28",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-019049-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-019049-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-17-009073",
+      "form_type": "8-K",
+      "filing_date": "2017-09-21",
+      "period_of_report": "2017-09-18",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-17-009073-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-17-009073-index.html",
+      "n_exhibits": 1,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0000950103-17-007821",
+      "form_type": "8-K",
+      "filing_date": "2017-08-11",
+      "period_of_report": "2017-08-11",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-17-007821-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0000950103-17-007821-index.html",
+      "n_exhibits": 3,
+      "n_credit_docs": 1
+    },
+    {
+      "accession_no": "0001564590-17-013116",
+      "form_type": "10-Q",
+      "filing_date": "2017-06-29",
+      "period_of_report": "2017-05-26",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-013116-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-013116-index.html",
+      "n_exhibits": 86,
+      "n_credit_docs": 3
+    },
+    {
+      "accession_no": "0001564590-17-012882",
+      "form_type": "8-K",
+      "filing_date": "2017-06-22",
+      "period_of_report": "2017-06-22",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-012882-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001564590-17-012882-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-17-179704",
+      "form_type": "S-1/A",
+      "filing_date": "2017-05-23",
+      "period_of_report": null,
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-179704-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-179704-index.html",
+      "n_exhibits": 2,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001193125-17-178802",
+      "form_type": "S-1/A",
+      "filing_date": "2017-05-23",
+      "period_of_report": null,
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-178802-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-178802-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 3
+    },
+    {
+      "accession_no": "0001193125-17-177157",
+      "form_type": "S-1/A",
+      "filing_date": "2017-05-22",
+      "period_of_report": null,
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-177157-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-177157-index.html",
+      "n_exhibits": 12,
+      "n_credit_docs": 8
+    },
+    {
+      "accession_no": "0001193125-17-167296",
+      "form_type": "S-1/A",
+      "filing_date": "2017-05-11",
+      "period_of_report": null,
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-167296-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-167296-index.html",
+      "n_exhibits": 17,
+      "n_credit_docs": 11
+    },
+    {
+      "accession_no": "0001193125-17-148091",
+      "form_type": "S-1",
+      "filing_date": "2017-04-28",
+      "period_of_report": null,
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-148091-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1616533/0001193125-17-148091-index.html",
+      "n_exhibits": 18,
+      "n_credit_docs": 15
+    }
+  ],
+  "warnings": [
+    "LLM analysis is off — re-enable to analyze."
+  ],
+  "llm_fallback_note": "LLM analysis is off — re-enable to analyze."
+}

@@ -28,34 +28,23 @@ Thumbs.db
 .obsidian/
 .~lock*#
 
-# local working material — session handoffs, plans, prompts, office docs (never public)
-SESSION_HANDOFF.md
-PLATFORM_PLAN.md
-TODO.md
-/Fulcrum MVP Audit & Repair.md
-/claude_code_prompt_capital_structure_mvp.md
-/distressed-debt-metrics-guide.md
-/distressed-debt-ml-implementation-guide.md
-*.docx
-*.xlsx
+# project instructions (local, not part of the public product)
+/CLAUDE.md
+
+# internal working material — never public (see memory: repo = product only)
+#   docs/      cheatsheets, workflows, plans, handoffs, guides
+#   research/  memos, daily sweeps, watchlist + tracker
+#   archive/   git bundles, source office docs
+/docs/
+/research/
+/archive/
 
 # pre-platform legacy apps (superseded by platform/; kept on disk for reference only)
 /capstack/
 /hazard/
 /fulcrum/
 
-# ---- local-only ignores (uncommitted; candidates to commit via next PR) ----
-/PLATFORM_GUIDE.md
-/CLAUDE.md
-/SPECIAL_SITUATIONS_PLAN.md
-/ROUND_*_HANDOFF.md
-/PR1_RESULTS_COMMENT.md
-/PR2_BODY.md
-/DAILY_WORKFLOW.md
-/AGENT_WORKFLOW.md
-/GIT_CHEATSHEET.md
-/sweeps/
-/research/
-/ssr-pre-oss.bundle
+# stray office docs / bundles anywhere (belt-and-suspenders over the dir ignores above)
+*.docx
+*.xlsx
 *.bundle
-/*_CHEATSHEET.md
