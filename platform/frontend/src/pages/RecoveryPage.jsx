@@ -3,8 +3,8 @@ import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer,
   Tooltip, XAxis, YAxis,
 } from "recharts";
-import Section from "./Section.jsx";
-import CitedNumber from "./CitedNumber.jsx";
+import CitedNumber from "../components/CitedNumber.jsx";
+import { ACCENT, INK, LINE_COLORS, RISK, Section, Th, chartTooltipStyle, fmt } from "../ui/index.jsx";
 import {
   deleteScenario, fetchRecoveryStructure, listScenarios, saveScenario, simulateRecovery,
 } from "../api.js";
@@ -24,11 +24,6 @@ const SIM_DEFAULTS = {
   distress_multiple: 4.5, multiple_vol: 0.18, corr: 0.55, accrual_years: 0.25,
   n_draws: 50000, seed: 42,
 };
-
-const LINE_COLORS = ["#5e7bff", "#34d399", "#fbbf24", "#f87171", "#a78bfa", "#22d3ee", "#fb923c", "#e879f9"];
-
-const fmt = (v, d = 1) =>
-  v == null || Number.isNaN(v) ? "–" : Number(v).toLocaleString("en-US", { maximumFractionDigits: d });
 
 function NumCell({ value, onChange, step = 1, className = "" }) {
   return (
@@ -75,12 +70,6 @@ function NumField({ label, value, onChange, step }) {
   );
 }
 
-const TH = ({ children, right }) => (
-  <th className={`px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 ${right ? "text-right" : "text-left"}`}>
-    {children}
-  </th>
-);
-
 export default function RecoveryPage({ ticker, years }) {
   const [structure, setStructure] = useState(null); // {name, entities, tranches, admin_fees}
   const [source, setSource] = useState(null);
@@ -120,7 +109,7 @@ export default function RecoveryPage({ ticker, years }) {
         pool: `${e.name} all assets`,
         ev_share: e.ev_share,
         secured_face: sec.reduce((a, t) => a + (t.face || 0), 0),
-        tranches: sec.map((t) => t.name).join(", ") || "–",
+        tranches: sec.map((t) => t.name).join(", ") || "—",
       };
     });
   }, [structure]);
@@ -193,7 +182,7 @@ export default function RecoveryPage({ ticker, years }) {
   if (!ticker)
     return (
       <div className="rounded-xl border border-dashed border-ink-700 p-10 text-center text-slate-500">
-        Enter a ticker above — the cap table loads from the same filings CapStack extracted.
+        Enter a ticker above — the cap table loads from the filed debt schedule.
       </div>
     );
   if (loading)
@@ -215,13 +204,13 @@ export default function RecoveryPage({ ticker, years }) {
             <span>{structure.tranches.length} tranches</span>
           </div>
 
-          <Section title="Debt tranches" subtitle="faces in $mm · same lien rank = pari passu · preferred ranks after all debt">
+          <Section title="Debt tranches" subtitle="faces in $mm · ranked by lien">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr className="border-b border-ink-600">
-                    <TH>Tranche</TH><TH>Entity</TH><TH right>Face $mm</TH><TH>Secured</TH>
-                    <TH right>Lien</TH><TH>Preferred</TH><TH right>Coupon %</TH><TH right>Make-whole $mm</TH><TH>Maturity</TH><TH />
+                    <Th>Tranche</Th><Th>Entity</Th><Th right>Face $mm</Th><Th>Secured</Th>
+                    <Th right>Lien</Th><Th>Preferred</Th><Th right>Coupon %</Th><Th right>Make-whole $mm</Th><Th>Maturity</Th><Th />
                   </tr>
                 </thead>
                 <tbody>
@@ -263,11 +252,11 @@ export default function RecoveryPage({ ticker, years }) {
             </button>
           </Section>
 
-          <div className="grid gap-0 md:grid-cols-2 md:gap-6">
+          <div className="grid md:grid-cols-2 md:gap-x-6">
             <Section title="Legal entities" subtitle="ev_share must sum to 1.0 · empty parent = top">
               <table className="w-full border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-ink-600"><TH>Entity</TH><TH right>EV share</TH><TH>Parent</TH><TH /></tr>
+                  <tr className="border-b border-ink-600"><Th>Entity</Th><Th right>EV share</Th><Th>Parent</Th><Th /></tr>
                 </thead>
                 <tbody>
                   {structure.entities.map((e, i) => (
@@ -314,7 +303,7 @@ export default function RecoveryPage({ ticker, years }) {
             <Section title="Collateral pools" subtitle="derived · v1: all-asset pledge per entity">
               <table className="w-full border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-ink-600"><TH>Pool</TH><TH right>EV share</TH><TH right>Secured face</TH><TH>Secured tranches</TH></tr>
+                  <tr className="border-b border-ink-600"><Th>Pool</Th><Th right>EV share</Th><Th right>Secured face</Th><Th>Secured tranches</Th></tr>
                 </thead>
                 <tbody>
                   {collateral.map((r, i) => (
@@ -373,15 +362,15 @@ export default function RecoveryPage({ ticker, years }) {
             <table className="w-full border-collapse text-xs">
               <thead>
                 <tr className="border-b border-ink-600">
-                  <TH>Name</TH><TH>Fulcrum</TH><TH right>EV median</TH><TH right>Total face</TH>
-                  <TH right>Mean recovery by tranche</TH><TH>Saved</TH><TH />
+                  <Th>Name</Th><Th>Fulcrum</Th><Th right>EV median</Th><Th right>Total face</Th>
+                  <Th right>Mean recovery by tranche</Th><Th>Saved</Th><Th />
                 </tr>
               </thead>
               <tbody>
                 {scenarios.map((sc) => (
                   <tr key={sc.id} className="border-b border-ink-700/60 text-slate-300">
                     <td className="px-2 py-1.5 font-semibold text-slate-100">{sc.name}</td>
-                    <td className="px-2 py-1.5">{sc.results?.fulcrum || "–"}</td>
+                    <td className="px-2 py-1.5">{sc.results?.fulcrum || "—"}</td>
                     <td className="px-2 py-1.5 text-right font-mono">{fmt(sc.results?.ev_median, 0)}</td>
                     <td className="px-2 py-1.5 text-right font-mono">{fmt(sc.results?.total_face, 0)}</td>
                     <td className="px-2 py-1.5 text-right font-mono text-slate-400">
@@ -422,11 +411,10 @@ function Results({ result, citations = {} }) {
       <div className={`mb-6 rounded-xl border p-4 text-sm ${result.fulcrum ? "border-rose-500/50 bg-rose-500/10 text-rose-100" : "border-emerald-500/40 bg-emerald-500/10 text-emerald-100"}`}>
         {result.fulcrum ? (
           <>
-            <span className="font-bold">Fulcrum security: {result.fulcrum}</span> — the most-senior class not made
-            whole at the median; the likely reorg-equity convertor.
+            <span className="font-bold">Fulcrum: {result.fulcrum}</span> — first impaired class at median EV.
           </>
         ) : (
-          "No fulcrum: every class is made whole in the median scenario."
+          "No fulcrum — all classes covered at median EV."
         )}
       </div>
 
@@ -449,9 +437,9 @@ function Results({ result, citations = {} }) {
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
-                <TH>Tranche</TH><TH>Entity</TH><TH right>Face</TH><TH right>Claim</TH><TH right>Mean %</TH><TH right>Mean $</TH>
-                <TH right>Median %</TH><TH right>P10 %</TH><TH right>P90 %</TH><TH right>LGD %</TH>
-                <TH right>P(impaired)</TH><TH right>P(zero)</TH>
+                <Th>Tranche</Th><Th>Entity</Th><Th right>Face</Th><Th right>Claim</Th><Th right>Mean %</Th><Th right>Mean $</Th>
+                <Th right>Median %</Th><Th right>P10 %</Th><Th right>P90 %</Th><Th right>LGD %</Th>
+                <Th right>P(impaired)</Th><Th right>P(zero)</Th>
               </tr>
             </thead>
             <tbody>
@@ -482,11 +470,11 @@ function Results({ result, citations = {} }) {
       <Section title="Enterprise-value distribution" subtitle={`${fmt(result.sim?.n_draws ?? 0, 0)} draws`}>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={evHist} margin={{ top: 4, right: 8, bottom: 4, left: 8 }}>
-            <CartesianGrid stroke="#263041" strokeDasharray="3 3" />
+            <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
             <XAxis dataKey="ev" tick={{ fill: "#94a3b8", fontSize: 10 }} />
             <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} />
-            <Tooltip contentStyle={{ background: "#111827", border: "1px solid #263041" }} labelFormatter={(v) => `EV ≈ ${fmt(v, 0)} $mm`} />
-            <Bar dataKey="n" fill="#5e7bff" />
+            <Tooltip contentStyle={chartTooltipStyle} labelFormatter={(v) => `EV ≈ ${fmt(v, 0)} $mm`} />
+            <Bar dataKey="n" fill={ACCENT} />
           </BarChart>
         </ResponsiveContainer>
       </Section>
@@ -506,8 +494,8 @@ function Results({ result, citations = {} }) {
                   <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: -18 }}>
                     <XAxis dataKey="pct" tick={{ fill: "#64748b", fontSize: 9 }} />
                     <YAxis tick={{ fill: "#64748b", fontSize: 9 }} />
-                    <Tooltip contentStyle={{ background: "#111827", border: "1px solid #263041" }} labelFormatter={(v) => `${v}% of claim`} />
-                    <Bar dataKey="n" fill={isFulcrum ? "#f87171" : LINE_COLORS[idx % LINE_COLORS.length]} />
+                    <Tooltip contentStyle={chartTooltipStyle} labelFormatter={(v) => `${v}% of claim`} />
+                    <Bar dataKey="n" fill={isFulcrum ? RISK.high : LINE_COLORS[idx % LINE_COLORS.length]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -519,10 +507,10 @@ function Results({ result, citations = {} }) {
       <Section title="Recovery CDF" subtitle="P(recovery ≤ x% of allowed claim)">
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={cdfData} margin={{ top: 4, right: 8, bottom: 4, left: 8 }}>
-            <CartesianGrid stroke="#263041" strokeDasharray="3 3" />
+            <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
             <XAxis dataKey="pct" tick={{ fill: "#94a3b8", fontSize: 10 }} unit="%" />
             <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} unit="%" />
-            <Tooltip contentStyle={{ background: "#111827", border: "1px solid #263041" }} formatter={(v) => `${fmt(v, 1)}%`} />
+            <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${fmt(v, 1)}%`} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
             {histTranches.map((name, i) => (
               <Line key={name} dataKey={name} stroke={LINE_COLORS[i % LINE_COLORS.length]} dot={false} strokeWidth={name === result.fulcrum ? 2.5 : 1.5} />
@@ -534,7 +522,7 @@ function Results({ result, citations = {} }) {
       <Section title="Waterfall at median EV" subtitle="single-path allocation at the median draw · recovery % of allowed claim">
         <table className="w-full border-collapse text-xs">
           <thead>
-            <tr className="border-b border-ink-600"><TH>Tranche</TH><TH right>Face $mm</TH><TH right>Claim $mm</TH><TH right>Recovery $mm</TH><TH right>Recovery %</TH></tr>
+            <tr className="border-b border-ink-600"><Th>Tranche</Th><Th right>Face $mm</Th><Th right>Claim $mm</Th><Th right>Recovery $mm</Th><Th right>Recovery %</Th></tr>
           </thead>
           <tbody>
             {result.waterfall_at_median.map((r) => (
@@ -543,7 +531,7 @@ function Results({ result, citations = {} }) {
                 <td className="px-2 py-1.5 text-right">{fmt(r.face, 0)}</td>
                 <td className="px-2 py-1.5 text-right">{fmt(r.claim, 0)}</td>
                 <td className="px-2 py-1.5 text-right">{fmt(r.recovery, 0)}</td>
-                <td className="px-2 py-1.5 text-right">{r.recovery_pct == null ? "–" : fmt(r.recovery_pct)}</td>
+                <td className="px-2 py-1.5 text-right">{r.recovery_pct == null ? "—" : fmt(r.recovery_pct)}</td>
               </tr>
             ))}
           </tbody>

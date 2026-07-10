@@ -1,5 +1,5 @@
 import React from "react";
-import { Section, Card } from "./ui.jsx";
+import { Card, Section } from "../../ui/index.jsx";
 
 const BADGE = {
   "10-K": "bg-blue-500/20 text-blue-300",
@@ -11,7 +11,7 @@ export default function EventTimeline({ data }) {
   const filings = (data.filings || []).slice(0, 40);
   if (filings.length === 0) return null;
   return (
-    <Section title="SEC filing timeline" subtitle="10-K / 10-Q / 8-K — 8-K Item 1.03 is the future bankruptcy-label source">
+    <Section flush title="SEC filing timeline" subtitle="10-K / 10-Q / 8-K">
       <Card className="max-h-72 overflow-y-auto">
         <ul className="space-y-1">
           {filings.map((f) => (

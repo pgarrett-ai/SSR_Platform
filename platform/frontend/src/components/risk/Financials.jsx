@@ -1,13 +1,13 @@
 import React from "react";
 import { LineChart, Line, YAxis, ResponsiveContainer, Tooltip } from "recharts";
-import { Section, Card, fmtX, fmtPct, fmtMoney, fmtNum } from "./ui.jsx";
+import { ACCENT, Card, Section, chartTooltipStyle, fmtX, fmtPct, fmtMoney } from "../../ui/index.jsx";
 import CitedNumber from "../CitedNumber.jsx";
 
 function Sparkline({ label, rows, dataKey, fmt }) {
   const series = rows.filter((r) => r[dataKey] != null);
   const last = series.length ? series[series.length - 1][dataKey] : null;
   return (
-    <Card className="p-3">
+    <Card pad="p-3">
       <div className="flex items-baseline justify-between">
         <span className="text-xs text-slate-400">{label}</span>
         <span className="text-sm font-semibold text-slate-100">{fmt(last)}</span>
@@ -16,11 +16,11 @@ function Sparkline({ label, rows, dataKey, fmt }) {
         <LineChart data={series}>
           <YAxis hide domain={["auto", "auto"]} />
           <Tooltip
-            contentStyle={{ background: "#111827", border: "1px solid #263041", borderRadius: 6, fontSize: 11 }}
+            contentStyle={chartTooltipStyle}
             formatter={(v) => [fmt(v), label]}
             labelFormatter={(_, p) => `FY${p?.[0]?.payload?.fiscal_year ?? ""}`}
           />
-          <Line type="monotone" dataKey={dataKey} stroke="#5e7bff" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey={dataKey} stroke={ACCENT} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </Card>
@@ -52,7 +52,7 @@ function Table({ rows, cols }) {
     <div className="overflow-x-auto">
       <table className="w-full text-xs">
         <thead>
-          <tr className="text-slate-500 border-b border-ink-600">
+          <tr className="border-b border-ink-600 text-[10px] font-medium uppercase tracking-wide text-slate-500">
             <th className="text-left py-1.5 pr-3 sticky left-0 bg-ink-800/60">FY</th>
             {cols.map(([, label]) => (
               <th key={label} className="text-right py-1.5 px-2">{label}</th>
@@ -80,7 +80,7 @@ export default function Financials({ data }) {
   const rows = data.features_timeline || [];
   if (rows.length === 0) return null;
   return (
-    <Section title="Financials" subtitle="History from EDGAR XBRL (10-K)">
+    <Section flush title="Financials" subtitle="history from EDGAR XBRL (10-K)">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
         <Sparkline label="NetDebt/EBITDA" rows={rows} dataKey="net_debt_to_ebitda" fmt={fmtX} />
         <Sparkline label="Interest coverage" rows={rows} dataKey="interest_coverage" fmt={fmtX} />

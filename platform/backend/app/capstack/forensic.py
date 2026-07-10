@@ -163,18 +163,15 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
         if dpo_elevated:
             severity = "high" if dpo_extreme else "watch"
             lead = (
-                f"Days-payable of ~{round(dpo_last)} days (FY{last.fiscal_year}) is far above the "
-                f"~30-60 day norm for most industries — a hallmark of supply-chain finance / reverse "
-                f"factoring, where supplier payment terms are extended through a bank facility but the "
-                f"balance is booked as trade payables, not debt."
+                f"DPO ~{round(dpo_last)} days (FY{last.fiscal_year}) vs a ~30-60 day norm — "
+                f"consistent with supplier finance booked in trade payables."
             )
         else:
             severity = "high" if (ap_outruns and dpo_climbs_strong) else "watch"
             lead = (
-                f"Accounts payable grew {round((ap_change or 0)*100)}% vs revenue "
-                f"{round((rev_change or 0)*100)}% over FY{first.fiscal_year}-FY{last.fiscal_year}, with "
-                f"days-payable up ~{round(dpo_delta_days)} days. Payables stretching this far ahead of "
-                f"the business is the classic reverse-factoring tell (the Carillion/Abengoa pattern)."
+                f"AP {round((ap_change or 0)*100):+d}% vs revenue {round((rev_change or 0)*100):+d}% "
+                f"(FY{first.fiscal_year}-FY{last.fiscal_year}); DPO up ~{round(dpo_delta_days)} days — "
+                f"payables stretching well ahead of the business."
             )
         flags.append(ForensicFlag(
             flag_type="ap_outrunning_revenue",
@@ -188,12 +185,8 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
                 "dpo_change_days": round(dpo_delta_days, 1) if dpo_delta_days else None,
                 "window": f"FY{first.fiscal_year}->FY{last.fiscal_year}",
             },
-            narrative=(
-                lead + " This is effectively a callable bank facility that can vanish overnight, so "
-                "it belongs in economic debt even though the face of the balance sheet shows none of it."
-            ),
-            pointer="Read the accounts-payable footnote and any 'supplier finance program' / "
-                    "'supply-chain finance' disclosure (ASU 2022-04, ASC 405-50), plus MD&A liquidity.",
+            narrative=lead + " Included in economic debt — behaves like a callable facility.",
+            pointer="AP footnote; supplier-finance disclosure (ASU 2022-04, ASC 405-50); MD&A liquidity.",
         ))
 
     # 2) EBITDA growing while operating cash flow lags -> earnings not converting to cash
@@ -215,14 +208,12 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
                     "cash_conversion": round(conversion, 2),
                 },
                 narrative=(
-                    f"Cumulative proxy EBITDA ({fmt_money_millions(cum_ebitda)}) over the window converted "
-                    f"to only {round(conversion*100)}% in operating cash flow "
-                    f"({fmt_money_millions(cum_ocf)}). A persistent EBITDA-to-cash wedge can signal "
-                    f"receivables financing, aggressive revenue recognition, or working-capital games — "
-                    f"dangerous because covenants are EBITDA-based while default is cash-based."
+                    f"Cumulative proxy EBITDA {fmt_money_millions(cum_ebitda)} converted to "
+                    f"{round(conversion*100)}% in OCF ({fmt_money_millions(cum_ocf)}). "
+                    f"Covenants are EBITDA-based; default is cash-based."
                 ),
-                pointer="Read the cash-flow working-capital lines, receivables securitization / "
-                        "'transfer of financial assets' footnotes, and the revenue-recognition policy.",
+                pointer="CF working-capital lines; receivables securitization / transfer-of-financial-assets "
+                        "footnotes; revenue-recognition policy.",
             ))
 
     # 3) Cash rising without a rise in reported debt -> off-balance-sheet financing
@@ -240,13 +231,11 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
                 "debt_change_pct": round((debt_change or 0) * 100, 1),
             },
             narrative=(
-                f"Cash rose {round(cash_change*100)}% in FY{curr.fiscal_year} while reported debt was "
-                f"{('down ' + str(abs(round((debt_change or 0)*100))) + '%') if (debt_change or 0) < 0 else 'roughly flat'}. "
-                f"Cash building without new on-balance-sheet borrowing is worth tracing — it can come from "
-                f"factoring, receivables securitization, sale-leasebacks, or VIE financing rather than operations."
+                f"Cash +{round(cash_change*100)}% in FY{curr.fiscal_year}, reported debt "
+                f"{('down ' + str(abs(round((debt_change or 0)*100))) + '%') if (debt_change or 0) < 0 else 'roughly flat'} — "
+                f"trace the source (factoring, securitization, sale-leaseback, VIE)."
             ),
-            pointer="Reconcile the financing & investing sections of the cash-flow statement; read "
-                    "VIE / securitization / sale-leaseback footnotes.",
+            pointer="CF financing / investing sections; VIE, securitization and sale-leaseback footnotes.",
         ))
 
     # 4) Sustained negative free cash flow -> liquidity runway / cash burn
@@ -256,7 +245,7 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
         runway_note = ""
         if cash_last and fcf_last < 0:
             months = cash_last / (abs(fcf_last) / 12.0)
-            runway_note = f" At the FY{last.fiscal_year} burn rate, reported cash alone covers ~{months:.0f} months."
+            runway_note = f" Cash covers ~{months:.0f} months at this burn."
         flags.append(ForensicFlag(
             flag_type="negative_fcf_burn",
             severity="watch" if fcf_last > -1e9 else "high",
@@ -266,12 +255,11 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
                 "cash": fmt_money_millions(cash_last) if cash_last else None,
             },
             narrative=(
-                f"Free cash flow was {fmt_money_millions(fcf_last)} in FY{last.fiscal_year} "
-                f"(OCF minus capex). Sustained negative FCF is the clock on the wall — it sets how fast "
-                f"liquidity is consumed and how soon a refinancing or restructuring is forced.{runway_note}"
+                f"Free cash flow {fmt_money_millions(fcf_last)} in FY{last.fiscal_year} "
+                f"(OCF − capex).{runway_note}"
             ),
-            pointer="Read the liquidity & capital-resources MD&A, revolver availability/borrowing base, "
-                    "and the maturity schedule.",
+            pointer="MD&A liquidity & capital resources; revolver availability / borrowing base; "
+                    "maturity schedule.",
         ))
 
     return flags

@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { overviewJsonUrl, streamOverview } from "../api.js";
 import { getCached, setCached } from "../cache.js";
 import Header from "../components/Header.jsx";
-import Section from "../components/Section.jsx";
+import { ACCENT, INK, Section, chartTooltipStyle } from "../ui/index.jsx";
 import ProgressLog from "../components/ProgressLog.jsx";
 import ForensicTable from "../components/ForensicTable.jsx";
 import FlagCard from "../components/FlagCard.jsx";
@@ -32,14 +32,14 @@ function MaturityWall({ wall }) {
       <div className="mb-1 text-xs text-slate-500">Maturity wall — face due per year ($B)</div>
       <ResponsiveContainer width="100%" height={160}>
         <BarChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -18 }}>
-          <CartesianGrid stroke="#263041" strokeDasharray="3 3" />
+          <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
           <XAxis dataKey="year" tick={{ fill: "#94a3b8", fontSize: 10 }} />
           <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} />
           <Tooltip
-            contentStyle={{ background: "#111827", border: "1px solid #263041", fontSize: 11 }}
+            contentStyle={chartTooltipStyle}
             formatter={(v, _n, p) => [`$${v}B — ${p.payload.instruments}`, null]}
           />
-          <Bar dataKey="face" fill="#5e7bff" />
+          <Bar dataKey="face" fill={ACCENT} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -148,7 +148,7 @@ export default function CapitalPage({ ticker, years, health }) {
           )}
 
           <Section
-            title="Economic Debt Bridge"
+            title="Economic debt bridge"
             subtitle="reported debt → economic (adjusted) debt"
             badge={llmBadge}
           >
@@ -173,7 +173,7 @@ export default function CapitalPage({ ticker, years, health }) {
             </Section>
           )}
 
-          <Section title="Forensic cash-vs-debt test" subtitle="where is the cash coming from?">
+          <Section title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">
             <ForensicTable rows={overview.forensic_table} />
             {flags.length > 0 && (
               <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -194,8 +194,8 @@ export default function CapitalPage({ ticker, years, health }) {
 
           {overview.subsidiaries?.length > 0 && (
             <Section
-              title="Legal entities (Exhibit 21)"
-              subtitle={`${overview.subsidiaries.length} subsidiaries — seeds Fulcrum's entity tree`}
+              title="Legal entities"
+              subtitle={`${overview.subsidiaries.length} entities from Exhibit 21`}
             >
               <SubsidiariesList subsidiaries={overview.subsidiaries} />
             </Section>

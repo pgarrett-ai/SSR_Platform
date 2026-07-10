@@ -5,8 +5,8 @@
     "resolved_ticker": "OPTU",
     "cik": "1702780",
     "years": 3,
-    "n_filings": 44,
-    "last_updated": "2026-06-26T13:31:45.421666+00:00",
+    "n_filings": 45,
+    "last_updated": "2026-07-10T13:08:59.636735+00:00",
     "from_cache": false,
     "llm_enabled": true
   },
@@ -89,6 +89,69 @@
           "tie_out": null
         },
         "is_total": true
+      },
+      {
+        "key": "cash_offset",
+        "label": "Less: cash & equivalents",
+        "amount": {
+          "value": -1012201000.0,
+          "display": "-$1,012M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001702780-26-000013",
+            "form_type": "10-K",
+            "filing_date": "2026-02-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+            "quote": "Cash and Cash Equivalents, at Carrying Value (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": "Offset to reach net economic debt.",
+          "tie_out": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "restricted_cash_offset",
+        "label": "Less: restricted cash",
+        "amount": {
+          "value": -107384000.0,
+          "display": "-$107M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001702780-26-000013",
+            "form_type": "10-K",
+            "filing_date": "2026-02-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:RestrictedCashCurrent",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+            "quote": "Restricted Cash, Current (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": "Restricted cash offset. Availability in distress varies — often collateral; treat as best case.",
+          "tie_out": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "net_economic_debt",
+        "label": "Net economic (adjusted) debt",
+        "amount": {
+          "value": 25482259000.0,
+          "display": "$25,482M",
+          "unit": "USD",
+          "citation": null,
+          "derived": true,
+          "formula": "economic debt $26,602M − cash offsets $1,120M",
+          "note": "Net economic debt = economic debt − cash − restricted cash.",
+          "tie_out": null
+        },
+        "is_total": true
       }
     ],
     "reported_debt": {
@@ -111,7 +174,16 @@
       "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above.",
       "tie_out": null
     },
-    "net_economic_debt": null,
+    "net_economic_debt": {
+      "value": 25482259000.0,
+      "display": "$25,482M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "economic debt $26,602M − cash offsets $1,120M",
+      "note": "Net economic debt = economic debt − cash − restricted cash.",
+      "tie_out": null
+    },
     "ebitda": {
       "value": 1584416000.0,
       "display": "$1,584M",
@@ -140,7 +212,7 @@
       "citation": null,
       "derived": true,
       "formula": "economic debt $26,602M / EBITDA $1,584M",
-      "note": "Simplified: uses proxy EBITDA (not lease-adjusted EBITDAR).",
+      "note": "Simplified: proxy EBITDA (operating lease cost not found in XBRL, so no EBITDAR adjustment).",
       "tie_out": null
     }
   },
@@ -796,8 +868,8 @@
         "dpo_change_days": -25.1,
         "window": "FY2022->FY2025"
       },
-      "narrative": "Days-payable of ~113 days (FY2025) is far above the ~30-60 day norm for most industries — a hallmark of supply-chain finance / reverse factoring, where supplier payment terms are extended through a bank facility but the balance is booked as trade payables, not debt. This is effectively a callable bank facility that can vanish overnight, so it belongs in economic debt even though the face of the balance sheet shows none of it.",
-      "pointer": "Read the accounts-payable footnote and any 'supplier finance program' / 'supply-chain finance' disclosure (ASU 2022-04, ASC 405-50), plus MD&A liquidity."
+      "narrative": "DPO ~113 days (FY2025) vs a ~30-60 day norm — consistent with supplier finance booked in trade payables. Included in economic debt — behaves like a callable facility.",
+      "pointer": "AP footnote; supplier-finance disclosure (ASU 2022-04, ASC 405-50); MD&A liquidity."
     },
     {
       "flag_type": "ebitda_vs_ocf_divergence",
@@ -808,8 +880,8 @@
         "cumulative_ocf": "$7,004M",
         "cash_conversion": 0.59
       },
-      "narrative": "Cumulative proxy EBITDA ($11,829M) over the window converted to only 59% in operating cash flow ($7,004M). A persistent EBITDA-to-cash wedge can signal receivables financing, aggressive revenue recognition, or working-capital games — dangerous because covenants are EBITDA-based while default is cash-based.",
-      "pointer": "Read the cash-flow working-capital lines, receivables securitization / 'transfer of financial assets' footnotes, and the revenue-recognition policy."
+      "narrative": "Cumulative proxy EBITDA $11,829M converted to 59% in OCF ($7,004M). Covenants are EBITDA-based; default is cash-based.",
+      "pointer": "CF working-capital lines; receivables securitization / transfer-of-financial-assets footnotes; revenue-recognition policy."
     },
     {
       "flag_type": "negative_fcf_burn",
@@ -819,24 +891,66 @@
         "free_cash_flow": "-$119M",
         "cash": "$1,012M"
       },
-      "narrative": "Free cash flow was -$119M in FY2025 (OCF minus capex). Sustained negative FCF is the clock on the wall — it sets how fast liquidity is consumed and how soon a refinancing or restructuring is forced. At the FY2025 burn rate, reported cash alone covers ~102 months.",
-      "pointer": "Read the liquidity & capital-resources MD&A, revolver availability/borrowing base, and the maturity schedule."
+      "narrative": "Free cash flow -$119M in FY2025 (OCF − capex). Cash covers ~102 months at this burn.",
+      "pointer": "MD&A liquidity & capital resources; revolver availability / borrowing base; maturity schedule."
     }
   ],
   "obs_items": [],
   "covenants": [
     {
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "No maintenance financial covenant identified in the provided text (covenant-lite). The agreement uses incurrence-based leverage tests (Combined Gross Pari Passu Leverage Ratio, Combined Net Leverage Ratio) and an Amortization Period trigger keyed to the Combined Gross Pari Passu Leverage Ratio exceeding 2.50:1.00, but no springing/maintenance leverage covenant is present in the excerpts provided.",
-      "leverage_ratio_threshold": "No maintenance leverage threshold. Incurrence/amortization reference: Combined Gross Pari Passu Leverage Ratio of 2.50:1.00 (defines the \"Amortization Period\")",
+      "leverage_covenant_type": "Incurrence-based leverage ratios only; no traditional maintenance financial covenant found in the covenant package. The agreement uses a Combined Gross Pari Passu Leverage Ratio trigger (2.50:1.00) to define an \"Amortization Period,\" and a Combined Net Leverage Ratio as an incurrence test, rather than a maintenance leverage covenant tested each period.",
+      "leverage_ratio_threshold": "Combined Gross Pari Passu Leverage Ratio of 2.50:1.00 (springing trigger for an \"Amortization Period\"); Combined Net Leverage Ratio used as an incurrence test under Section 6.04(b). No numerically capped maintenance leverage covenant threshold is stated in the provided text.",
       "ebitda_addback_categories": [
-        "Business optimization costs, charges or expenses\", \"New product design, development and introduction costs\", \"Intellectual property development and new systems design costs\", \"Implementation/replacement/development/upgrade of operational, reporting and IT systems and technology initiative costs\", \"Costs/expenses/charges relating to governmental investigations, litigation or other disputes (including with customers)\", \"Warranty payments and product recall / field service campaign liabilities\", \"Fees, charges, losses, costs and expenses (or amortization thereof) in connection with acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuance/incurrence/repayment/modification of Indebtedness, issuance/offering of Capital Stock, refinancing transactions, amendments/modifications/waivers, and non-recurring merger costs\", \"Cumulative effect of a change in accounting principles\", \"Non-cash compensation charges from stock/stock options/equity-based awards and non-cash deemed finance charges on pensions\", \"One-time non-cash charges or increases in amortization/depreciation resulting from purchase accounting in acquisitions or reorganizations/restructurings\", \"Goodwill or other intangible asset impairment charges or write-offs"
+        "Restructuring/new product design, development and introduction costs and expenses",
+        "Intellectual property development and new systems design costs",
+        "IT systems implementation, replacement, development or upgrade costs and technology initiatives",
+        "Governmental investigation, litigation or other dispute costs (including customer disputes)",
+        "Warranty payments and product recall / field service campaign liabilities",
+        "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/registration/repayment or modification of Indebtedness, equity issuances, refinancings, amendments/waivers) and non-recurring merger costs",
+        "Cumulative effect of a change in accounting principles",
+        "Non-cash compensation charges from equity-based awards and non-cash deemed finance charges on pension liabilities",
+        "One-time non-cash charges or increases in amortization/depreciation from purchase accounting or reorganization/restructuring",
+        "Goodwill or other intangible asset impairment charges or write-offs"
       ],
-      "restricted_payments_basket_size": "Not specified in the provided text. Section 6.05 (\"Limitation on Restricted Payments\") is referenced but the basket amounts/builder are not included in the excerpts.",
-      "mfn_sunset_period": "Not present in the provided excerpts. No MFN (most-favored-nation) interest-rate protection clause or sunset period was located in the supplied definitions/clauses.",
+      "restricted_payments_basket_size": "Section 6.05 (Limitation on Restricted Payments) governs; specific basket dollar amount not set out in the provided excerpt. Asset Disposition de minimis basket is $5 million per calendar year (clause (g)).",
+      "mfn_sunset_period": "Not present in the provided text (no MFN / most-favored-nation pricing protection clause located).",
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "No \"Unrestricted Subsidiary\" designation regime appears in the provided text. Instead, the agreement opens Article VI with Section 6.01 \"Prohibition on Liability Management Exercises\" — an express anti-LME covenant — which materially constrains the customary drop-down/uptier flexibility that unrestricted-subsidiary designation would otherwise provide.",
-      "lme_risk_notes": "This agreement is unusually LME-defensive. Article VI leads with Section 6.01 \"Prohibition on Liability Management Exercises,\" signaling an express contractual bar on uptier/drop-down/priming transactions, reinforced by Section 6.02 \"Prohibition on Outside Accounts.\" Other structural protections: (a) a J.Crew-style blocker via \"Material Assets\"/\"Material Intellectual Property\" definitions plus Section 3.28 \"Material Assets\" and Asset Disposition limits (Section 6.08), which restrict moving material IP/assets out of the credit group; (b) no apparent Unrestricted Subsidiary designation regime, foreclosing the classic drop-down sandbox; (c) the deal sits within an existing ABS/receivables structure (ABS Borrower/ABS InfraCos, Receivables Facility) — non-LME but relevant to structural subordination/asset ring-fencing. Residual risk: capacity is gated by the referenced 2.50:1.00 Combined Gross Pari Passu Leverage Ratio (Amortization Period trigger), and the broad, open-ended EBITDA add-back menu (note the catch-all clause (m) left blank) inflates EBITDA and thus debt/RP/investment capacity that could indirectly fund a workaround. Short tenor (Maturity Date Nov 25, 2028) and 9.00% fixed Applicable Rate with a make-whole Applicable Premium reduce refinancing-LME pressure near term. Full RP/debt baskets (Sections 6.04/6.05) not in excerpts — confirm before opining.",
+      "unrestricted_subsidiary_designation_flexibility": "Notably constrained relative to typical sponsor deals. The agreement contains Section 6.01 \"Prohibition on Liability Management Exercises,\" which is an express anti-LME covenant. The \"Designation\" defined term refers only to designating the Loan Parties as \"unrestricted subsidiaries\" under the Existing Debt Documents (i.e., in relation to a separate debt stack), not a broad borrower right to designate unrestricted subsidiaries here. Section 6.17 (Delaware LLC Divisions) further restricts division-type maneuvers. No open-ended unrestricted-subsidiary designation basket is granted in the provided text.",
+      "lme_risk_notes": "This agreement appears purpose-built to resist liability-management exercises, reflecting its post-Original/A&R restructuring posture. Key protections: (1) Section 6.01 is an express \"Prohibition on Liability Management Exercises\" — a direct anti-uptier/anti-drop-down covenant, unusual and highly protective; (2) Section 9.23 \"Prohibition Regarding Cooperation Agreements\" cuts against coordinated lender-group priming maneuvers; (3) Section 6.17 restricts Delaware LLC divisions (anti-Serta/anti-drop-down division play); (4) Section 6.02 \"Prohibition on Outside Accounts\" and Sections 6.12–6.13 (Impairment of Security Interests; Intercreditor Agreements) tighten collateral leakage. The ABS/InfraCo structure and IP License Agreement (Section 6.15 governs amendments to Shared Services / IP arrangements) is the principal residual value-leakage vector to watch, given prior \"Designation\" of Loan Parties as unrestricted subsidiaries under Existing Debt Documents. Net: low drop-down/uptier vulnerability by design; the residual risk is structural subordination via the separately-financed ABS Loan Parties and CSC-affiliate IP/shared-services arrangements rather than in-agreement priming.",
+      "citation": {
+        "accession_no": "0001104659-26-080797",
+        "form_type": "8-K",
+        "filing_date": "2026-07-06",
+        "exhibit": "EX-10.1",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465926080797/tm2619807d1_ex10-1.htm",
+        "quote": "\"Section 6.01. Prohibition on Liability Management Exercises\""
+      }
+    },
+    {
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "No maintenance leverage covenant identified in the provided text. The agreement uses incurrence-style ratio tests (Combined Gross Pari Passu Leverage Ratio, Combined Net Leverage Ratio) rather than a stated maintenance financial covenant. There is a springing \"Amortization Period\" mechanic tied to the Combined Gross Pari Passu Leverage Ratio exceeding 2.50:1.00, but no maintenance leverage covenant threshold is stated in the excerpted clauses.",
+      "leverage_ratio_threshold": "Not stated as a maintenance covenant. Relevant ratio trigger: Amortization Period commences when Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 (and ends when it no longer exceeds 2.50:1.00).",
+      "ebitda_addback_categories": [
+        "Business optimization costs, charges or expenses",
+        "New product design, development and introduction costs",
+        "Intellectual property development and new systems design costs",
+        "Operational, reporting and IT systems implementation/replacement/development/upgrade costs and technology initiatives",
+        "Costs/expenses/charges relating to any governmental investigation, litigation or other dispute (including with any customer)",
+        "Warranty payments and product recall / field service campaign liabilities",
+        "Fees, charges, losses, costs and expenses (or amortization thereof) in connection with acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuance/incurrence/repayment or modification of Indebtedness, equity issuances, refinancing transactions and related amendments/waivers, and non-recurring merger costs",
+        "Cumulative effect of a change in accounting principles",
+        "Non-cash equity-based compensation charges (stock, options, other equity awards) and non-cash deemed finance charges on pensions",
+        "One-time non-cash charges or increases in amortization/depreciation resulting from purchase accounting (acquisitions, reorganizations, restructurings)",
+        "Goodwill or other intangible asset impairment charges or write-offs"
+      ],
+      "restricted_payments_basket_size": "Not specified in the provided excerpts. Section 6.05 (\"Limitation on Restricted Payments\") is referenced with a Schedule 6.05 of Existing Investments, but no builder/starter basket dollar amount is set out in the text provided.",
+      "mfn_sunset_period": "No MFN (most-favored-nation) pricing protection clause or sunset is present in the excerpted text.",
+      "j_crew_blocker_present": true,
+      "unrestricted_subsidiary_designation_flexibility": "The provided excerpts do not include an \"Unrestricted Subsidiary\" definition or a designation mechanic; the structure is built around Loan Parties, Subsidiaries, Group Members and a discrete set of ABS Transaction Parties (a ring-fenced receivables/ABS structure). No unrestricted-subsidiary designation flexibility is evidenced in the text provided.",
+      "lme_risk_notes": "This is an atypically LME-defensive package. Article VI opens with Section 6.01 \"Prohibition on Liability Management Exercises\" and Section 6.02 \"Prohibition on Outside Accounts,\" signaling express anti-LME drafting to curb uptier/drop-down structures. Section 3.28 \"Material Assets\" plus the \"Material Assets\" definition (any property/assets, including IP, material to the business of the Loan Parties taken as a whole) supports a J.Crew-style asset/IP transfer blocker. Note residual leakage vectors: (i) the ring-fenced ABS/receivables structure (ABS Borrower, ABS Holdings, ABS InfraCos, ABS Transaction Parties) with a Trademark License to CSC and shared-services agreements sits outside the Group Member perimeter and could be a value-transfer channel; (ii) Asset Disposition exclusions permit up to $5 million/year of dispositions and Section 1031 like-kind exchanges without falling into Section 6.08; (iii) short-dated Maturity Date (Nov 25, 2028) and high 9.00% Applicable Rate suggest stressed/rescue-financing context. No maintenance leverage covenant means limited early lender leverage absent the incurrence/Amortization Period triggers.",
       "citation": {
         "accession_no": "0001213900-26-063161",
         "form_type": "8-K",
@@ -845,32 +959,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000121390026063161/ea029287101ex10-1.htm",
-        "quote": "SECTION 6.01. Prohibition on Liability Management Exercises."
-      }
-    },
-    {
-      "agreement_type": "Base Indenture (securitization / whole-business ABS) — Secured Fiber Network Revenue Notes, Series 2026-1 (Lightpath Fiber Issuer LLC)",
-      "leverage_covenant_type": "None (no maintenance financial covenant in the traditional leveraged-loan sense). This is a securitization indenture governed by cash-trap / cash-sweep / rapid-amortization triggers rather than a maintenance leverage covenant. Performance is policed through (i) a DSCR-based Cash Trap Period, (ii) a Leverage Ratio / DSCR-based Cash Sweep Period, and (iii) the Senior DSCR.",
-      "leverage_ratio_threshold": "Cash Sweep Trigger Leverage Ratio = \"the greater of (A) 8.40x and (B) the sum of the Leverage Ratio as of the most recent Closing Date and 1.0x.\" Leverage Ratio is defined as the ratio of (i) aggregate outstanding principal balance of all Notes (other than Liquidity Funding Notes) divided by (ii) Aggregate Annualized Net Operating Income. Senior Cash Trap DSCR = 1.50x (DSCR = Aggregate Annualized Net Operating Income / debt service). Cash Sweep Percentage: 50% if triggered under clause (I)(a); 100% if triggered under clause (I)(b); 100% if both.",
-      "ebitda_addback_categories": [
-        "No EBITDA construct — uses Aggregate Annualized Net Operating Income / Annualized Net Operating Income (revenue payable to Obligors with respect to all Fiber Networks for the related Collection Period, less Excluded Amounts)",
-        "Excluded Amounts (carve-outs that reduce the revenue measure, e.g., amounts on non-Collateral networks, pass-through taxes/franchise fees, CAIC payments, coaxial-cable revenue, Parent Access Agreement amounts)",
-        "Permitted Amendment can amend the definitions of Aggregate Annualized Net Operating Income / Annualized Net Operating Income / Monthly Recurring Revenue / DSCR / Senior DSCR to include revenue from executed-but-unbilled Customer Agreements"
-      ],
-      "restricted_payments_basket_size": "Not expressed as an RP basket; distributions are governed by the Priority of Payments and trapped during a Cash Trap Period (cash accumulated in the Cash Trap Reserve Account) and swept during a Cash Sweep Period (50% or 100% Cash Sweep Percentage of excess cash). No traditional builder/RP basket present in the provided text.",
-      "mfn_sunset_period": "None — no MFN pricing protection in this ABS indenture (not applicable to a whole-business securitization structure).",
-      "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "No \"unrestricted subsidiary\" designation mechanic — this is a bankruptcy-remote securitization. The structure instead distinguishes Obligors/Guarantor (within the securitization, the Collateral pool) from \"Non-Securitization Entities\" (the Parent and its Affiliates other than the Obligors and the Guarantor). Asset value can leave the box only through \"Disposition\" carve-outs (e.g., substitutions of Fiber Networks, exchanges for replacement Fiber Network Assets, payoff-related dispositions) and a defined Release Price (Allocated Note Amount x 125%). Single-purpose/bankruptcy-remoteness provisions constrain leakage. A Permitted Amendment may, among other things, increase the Cash Sweep Trigger Leverage Ratio or decrease the Senior Cash Trap DSCR / Required Liquidity Amount, which is a quiet flexibility item to monitor.",
-      "lme_risk_notes": "Securitization (whole-business ABS) structure rather than a corporate credit agreement, so classic drop-down (J.Crew) and uptier (Serta) maneuvers do not map directly; the relevant leakage vectors are: (1) Disposition carve-outs allowing Fiber Network Assets, Customer Agreements or Asset Entities to leave the Collateral, mitigated by the Release Price = Allocated Note Amount x 125%; (2) substitution rights for Fiber Networks/related assets and Customer Agreements; (3) Excluded Amounts definition diverting Customer cash (including CAIC payments and Parent Access Agreement amounts) away from the Collection Account and out of the NOI calc; (4) Permitted Amendment mechanics that can increase the Cash Sweep Trigger Leverage Ratio or decrease the Senior Cash Trap DSCR/Required Liquidity Amount (subject only to Rating Agency Confirmation, not noteholder consent), effectively loosening the cash-trap/sweep protections without an LME vote; (5) the Management Fee formula can be redesignated by the Issuer (with Back-Up Manager consultation and Rating Agency Confirmation), a structurally senior leakage to the Manager. Controlling Class voting is the Class with the lowest alphanumerical designation holding >=25% of Initial Class Principal Balance, which concentrates control with senior Class A holders. No maintenance leverage covenant means investors rely entirely on DSCR-driven cash traps and the Leverage Ratio-based cash sweep for protection.",
-      "citation": {
-        "accession_no": "0001104659-26-024969",
-        "form_type": "8-K",
-        "filing_date": "2026-03-09",
-        "exhibit": "EX-4.1",
-        "section": "Negative covenants / Definitions",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465926024969/tm268204d1_ex4-1.htm",
-        "quote": "\"Cash Sweep Trigger Leverage Ratio\" shall mean the greater of (A) 8.40x and (B) the sum of the Leverage Ratio as of the most recent Closing Date and 1.0x."
+        "quote": "\"Amortization Period\" shall mean each period commencing on the first date on which the Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 and ending on the first date thereafter when the Combined Gross Pari Passu Leverage Ratio on such date does not exceed 2.50:1.00."
       }
     }
   ],
@@ -879,55 +968,55 @@
       "period_end": "2024-03-31",
       "form_type": "10-Q",
       "drift_from_prior": null,
-      "liquidity_tone_score": 30.0
+      "liquidity_tone_score": 35.0
     },
     {
       "period_end": "2024-06-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.3997,
-      "liquidity_tone_score": 30.0
+      "liquidity_tone_score": 35.0
     },
     {
       "period_end": "2024-09-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.3371,
-      "liquidity_tone_score": 30.0
+      "liquidity_tone_score": 35.0
     },
     {
       "period_end": "2024-12-31",
       "form_type": "10-K",
       "drift_from_prior": 0.4814,
-      "liquidity_tone_score": 32.0
+      "liquidity_tone_score": 36.0
     },
     {
       "period_end": "2025-03-31",
       "form_type": "10-Q",
       "drift_from_prior": 0.3996,
-      "liquidity_tone_score": 30.0
+      "liquidity_tone_score": 35.0
     },
     {
       "period_end": "2025-06-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.4311,
-      "liquidity_tone_score": 30.0
+      "liquidity_tone_score": 35.0
     },
     {
       "period_end": "2025-09-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.3719,
-      "liquidity_tone_score": 30.0
+      "liquidity_tone_score": 35.0
     },
     {
       "period_end": "2025-12-31",
       "form_type": "10-K",
       "drift_from_prior": 0.481,
-      "liquidity_tone_score": 45.0
+      "liquidity_tone_score": 48.0
     },
     {
       "period_end": "2026-03-31",
       "form_type": "10-Q",
       "drift_from_prior": 0.3927,
-      "liquidity_tone_score": 72.0
+      "liquidity_tone_score": 78.0
     }
   ],
   "subsidiaries": [],
@@ -1062,6 +1151,16 @@
     }
   ],
   "sources": [
+    {
+      "accession_no": "0001104659-26-080797",
+      "form_type": "8-K",
+      "filing_date": "2026-07-06",
+      "period_of_report": "2026-07-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1702780/0001104659-26-080797-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1702780/0001104659-26-080797-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 1
+    },
     {
       "accession_no": "0001702780-26-000040",
       "form_type": "8-K",
@@ -1503,5 +1602,6 @@
       "n_credit_docs": 0
     }
   ],
-  "warnings": []
+  "warnings": [],
+  "llm_fallback_note": null
 }

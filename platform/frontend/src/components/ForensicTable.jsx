@@ -1,7 +1,8 @@
 import React from "react";
 import CitedNumber from "./CitedNumber.jsx";
+import { Td, Th, rowClass } from "../ui/index.jsx";
 
-// The §6a "where is the cash coming from?" table. Every cell is citation- or formula-linked.
+// The §6a cash-vs-debt table. Every cell is citation- or formula-linked.
 const ROWS = [
   ["total_debt", "Total reported debt"],
   ["cash", "Cash & equivalents"],
@@ -23,12 +24,10 @@ export default function ForensicTable({ rows }) {
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="border-b border-ink-600 text-slate-400">
-            <th className="py-2 pr-4 text-left font-medium">Metric</th>
+          <tr className="border-b border-ink-600">
+            <Th>Metric</Th>
             {rows.map((r) => (
-              <th key={r.fiscal_year} className="px-3 py-2 text-right font-medium">
-                FY{r.fiscal_year}
-              </th>
+              <Th key={r.fiscal_year} right>FY{r.fiscal_year}</Th>
             ))}
           </tr>
         </thead>
@@ -37,12 +36,12 @@ export default function ForensicTable({ rows }) {
             const anyPresent = rows.some((r) => r[key]);
             if (!anyPresent) return null;
             return (
-              <tr key={key} className="border-b border-ink-700/60 hover:bg-ink-700/30">
-                <td className="py-2 pr-4 text-left text-slate-300">{label}</td>
+              <tr key={key} className={rowClass}>
+                <Td className="text-slate-300">{label}</Td>
                 {rows.map((r) => (
-                  <td key={r.fiscal_year} className="px-3 py-2 text-right">
+                  <Td key={r.fiscal_year} right>
                     <CitedNumber cv={r[key]} />
-                  </td>
+                  </Td>
                 ))}
               </tr>
             );
@@ -50,8 +49,7 @@ export default function ForensicTable({ rows }) {
         </tbody>
       </table>
       <p className="mt-2 text-[11px] text-slate-500">
-        Hover any number for its source filing (or <span className="text-amber-400/80">ƒ</span> for the
-        formula on derived figures). EBITDA = operating income + D&A; FCF = OCF − capex.
+        EBITDA and FCF are XBRL proxies (op. income + D&A; OCF − capex).
       </p>
     </div>
   );

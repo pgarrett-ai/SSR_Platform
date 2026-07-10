@@ -1,6 +1,6 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { Section, Card, fmtPct, fmtNum, fmtMoney, riskColor } from "./ui.jsx";
+import { Card, RISK, Section, chartTooltipStyle, fmtPct, fmtNum, fmtMoney, riskColor } from "../../ui/index.jsx";
 
 function Indicator({ label, value }) {
   return (
@@ -17,11 +17,11 @@ export default function MarketPanel({ data }) {
   const cb = data.credit_backdrop || {};
   const ib = data.issuer_bonds || {};
   const pd = merton.pd || {};
-  const SIGNAL_COLOR = { "risk-off": "#f43f5e", neutral: "#f59e0b", "risk-on": "#10b981" };
+  const SIGNAL_COLOR = { "risk-off": RISK.high, neutral: RISK.watch, "risk-on": RISK.ok };
   const pdRows = ["3m", "6m", "12m"].filter((h) => pd[h] != null).map((h) => ({ h, pd: pd[h] * 100 }));
 
   return (
-    <Section title="Market & Merton" subtitle="Equity-implied default risk and traded levels">
+    <Section flush title="Market & Merton" subtitle="equity-implied default risk and traded levels">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <Card>
           <div className="text-xs text-slate-500 mb-2">Market indicators</div>
@@ -47,7 +47,7 @@ export default function MarketPanel({ data }) {
                   <XAxis dataKey="h" stroke="#64748b" fontSize={12} />
                   <YAxis stroke="#64748b" fontSize={11} unit="%" />
                   <Tooltip
-                    contentStyle={{ background: "#111827", border: "1px solid #263041", borderRadius: 8 }}
+                    contentStyle={chartTooltipStyle}
                     formatter={(v) => [`${v.toFixed(3)}%`, "PD"]}
                   />
                   <Bar dataKey="pd">

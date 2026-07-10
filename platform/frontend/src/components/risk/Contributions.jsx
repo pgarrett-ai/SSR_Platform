@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine,
 } from "recharts";
-import { Section, Card } from "./ui.jsx";
+import { Card, RISK, Section, chartTooltipStyle } from "../../ui/index.jsx";
 
 // Higher score is *safer* for Altman; higher logit is *riskier* for CHS.
 const SAFER_UP = { "Altman Z''": true };
@@ -38,13 +38,14 @@ export default function Contributions({ data }) {
   // Green = pushes toward safety, Red = pushes toward distress.
   const colorOf = (v) => {
     const helpful = saferUp ? v > 0 : v < 0;
-    return helpful ? "#10b981" : "#f43f5e";
+    return helpful ? RISK.ok : RISK.high;
   };
 
   return (
     <Section
-      title="What's driving the score"
-      subtitle={`Exact additive contributions — ${saferUp ? "higher bars = safer" : "red bars push toward distress"}`}
+      flush
+      title="Score contributions"
+      subtitle={`additive contributions — ${saferUp ? "higher = safer" : "red = toward distress"}`}
       right={
         names.length > 1 && (
           <div className="flex gap-1">
@@ -70,7 +71,7 @@ export default function Contributions({ data }) {
             <YAxis type="category" dataKey="feature" width={150} stroke="#94a3b8" fontSize={11} />
             <ReferenceLine x={0} stroke="#475569" />
             <Tooltip
-              contentStyle={{ background: "#111827", border: "1px solid #263041", borderRadius: 8 }}
+              contentStyle={chartTooltipStyle}
               formatter={(v) => [v.toFixed(3), "contribution"]}
             />
             <Bar dataKey="value">

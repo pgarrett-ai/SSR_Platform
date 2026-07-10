@@ -283,9 +283,8 @@ def run_overview(
         warnings.append(llm_fallback_note)
         if not settings.llm_key_set:
             warnings.append(
-                "ANTHROPIC_API_KEY not set — covenant and footnote/OBS LLM extraction are "
-                "skipped. EDGAR retrieval, the XBRL debt schedule, and the forensic "
-                "cash-vs-debt flags still run."
+                "ANTHROPIC_API_KEY not set — covenant/OBS extraction skipped; XBRL debt "
+                "schedule and forensic flags still run."
             )
 
     header = IssuerHeader(

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
+import { Td, Th, rowClass } from "../ui/index.jsx";
 
-// Phase 4.5: legal-entity list parsed from Exhibit 21. Seeds Fulcrum entities (Recovery tab).
+// Legal-entity list parsed from Exhibit 21. Seeds the Recovery entity tree.
 export default function SubsidiariesList({ subsidiaries }) {
   const [showAll, setShowAll] = useState(false);
   if (!subsidiaries || subsidiaries.length === 0) {
     return (
       <p className="text-sm text-slate-400">
-        The legal-entity list is parsed from the 10-K's Exhibit 21 when an Anthropic API key is set.
+        No Exhibit 21 entity list — LLM extraction off.
       </p>
     );
   }
@@ -17,22 +18,22 @@ export default function SubsidiariesList({ subsidiaries }) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-ink-600 text-slate-400">
-              <th className="py-2 pr-3 text-left font-medium">Subsidiary</th>
-              <th className="py-2 px-3 text-left font-medium">Jurisdiction</th>
-              <th className="py-2 px-3 text-left font-medium">Parent</th>
-              <th className="py-2 px-3 text-right font-medium">% owned</th>
+            <tr className="border-b border-ink-600">
+              <Th>Entity</Th>
+              <Th>Jurisdiction</Th>
+              <Th>Parent</Th>
+              <Th right>% owned</Th>
             </tr>
           </thead>
           <tbody>
             {shown.map((s, i) => (
-              <tr key={i} className="border-b border-ink-700/60">
-                <td className="py-1.5 pr-3 text-slate-200">{s.name}</td>
-                <td className="py-1.5 px-3 text-slate-400">{s.jurisdiction || "—"}</td>
-                <td className="py-1.5 px-3 text-slate-500">{s.parent || "—"}</td>
-                <td className="py-1.5 px-3 text-right font-mono text-slate-400">
+              <tr key={i} className={rowClass}>
+                <Td className="text-slate-200">{s.name}</Td>
+                <Td className="text-slate-400">{s.jurisdiction || "—"}</Td>
+                <Td className="text-slate-500">{s.parent || "—"}</Td>
+                <Td right mono className="text-slate-400">
                   {s.percent_owned == null ? "—" : `${s.percent_owned}%`}
-                </td>
+                </Td>
               </tr>
             ))}
           </tbody>
@@ -40,7 +41,7 @@ export default function SubsidiariesList({ subsidiaries }) {
       </div>
       <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
         <span>
-          {subsidiaries.length} legal entities · seed Fulcrum entities on the Recovery tab
+          {subsidiaries.length} legal entities · seeds the Recovery entity tree
           {src?.source_url && (
             <>
               {" · "}
