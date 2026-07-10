@@ -1,5 +1,6 @@
 import React from "react";
 import CitedNumber from "./CitedNumber.jsx";
+import { NEUTRAL, RISK } from "../ui/colors.js";
 
 const B = (v) => (v == null ? null : `${v < 0 ? "−" : ""}$${Math.abs(v / 1e9).toFixed(1)}B`);
 
@@ -10,7 +11,7 @@ function LeverageCallout({ bridge }) {
   const e = bridge.economic_leverage;
   if (!r && !e) return null;
   return (
-    <div className="mb-5 flex flex-wrap items-center gap-4 rounded-lg border border-ink-700 bg-ink-900/60 p-4">
+    <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-ink-700 bg-ink-900/60 p-4">
       <div className="flex items-baseline gap-2">
         <span className="text-[11px] uppercase tracking-wide text-slate-500">Reported lev</span>
         <CitedNumber cv={r} className="text-2xl font-bold text-slate-200" />
@@ -59,13 +60,13 @@ function WaterfallSvg({ lines }) {
       yBot = baseline;
       yTop = baseline - v * scale;
       running = v;
-      fill = i === 0 ? "#64748b" : "#fb7185";
+      fill = i === 0 ? NEUTRAL : RISK.high;
     } else {
       const start = running;
       running += v;
       yBot = baseline - start * scale;
       yTop = baseline - running * scale;
-      fill = v < 0 ? "#34d399" : "#f59e0b";
+      fill = v < 0 ? RISK.ok : RISK.watch;
     }
     return { ln, v, cx, x: cx - barW / 2, yTop, yBot, fill, isTotal: ln.is_total };
   });
@@ -130,9 +131,7 @@ export default function EconomicDebtBridge({ bridge }) {
   if (!bridge || !bridge.lines || bridge.lines.length === 0) {
     return (
       <p className="text-sm text-slate-400">
-        The economic-debt bridge populates from footnote/OBS extraction. Run with an Anthropic API
-        key set to add leases, pension/OPEB deficit, supplier finance, guarantees, securitizations
-        and take-or-pay to reported debt — each line citation-linked.
+        Bridge unpopulated — requires footnote/OBS extraction (LLM off).
       </p>
     );
   }
@@ -168,13 +167,11 @@ export default function EconomicDebtBridge({ bridge }) {
       </table>
       {bridge.ebitda && (
         <p className="mt-2 text-[11px] text-slate-500">
-          Reported leverage vs EBITDA <CitedNumber cv={bridge.ebitda} /> (proxy).{" "}
+          Reported leverage vs EBITDA <CitedNumber cv={bridge.ebitda} /> (proxy)
           {bridge.ebitdar ? (
-            <>Economic leverage vs EBITDAR <CitedNumber cv={bridge.ebitdar} /> — lease cost added
-            back since lease liabilities sit in economic debt. </>
+            <>; economic leverage vs EBITDAR <CitedNumber cv={bridge.ebitdar} /></>
           ) : null}
-          Lease amounts are from XBRL; pension, supplier finance and other lines are from the
-          footnotes (hover for the quote).
+          . Leases from XBRL; other lines from footnotes.
         </p>
       )}
     </div>

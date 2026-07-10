@@ -1,13 +1,5 @@
 import React from "react";
-
-function Stat({ label, value }) {
-  return (
-    <div className="flex flex-col">
-      <span className="text-[10px] uppercase tracking-wide text-slate-500">{label}</span>
-      <span className="font-mono text-sm text-slate-200">{value ?? "—"}</span>
-    </div>
-  );
-}
+import { Badge, Stat } from "../ui/index.jsx";
 
 export default function Header({ header }) {
   if (!header) return null;
@@ -19,11 +11,7 @@ export default function Header({ header }) {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-white">{header.issuer || header.ticker}</h1>
-            {header.from_cache && (
-              <span className="rounded bg-emerald-500/15 px-2 py-0.5 text-[10px] uppercase text-emerald-300">
-                cached
-              </span>
-            )}
+            {header.from_cache && <Badge tone="ok">cached</Badge>}
           </div>
           <div className="mt-1 text-sm text-slate-400">
             <span className="font-mono text-slate-300">{header.ticker}</span>
@@ -35,13 +23,10 @@ export default function Header({ header }) {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-4">
-          <Stat label="Lookback" value={`${header.years}y`} />
-          <Stat label="Filings" value={header.n_filings} />
-          <Stat label="LLM extraction" value={header.llm_enabled ? "on" : "off"} />
-          <Stat
-            label="Updated"
-            value={header.last_updated ? header.last_updated.slice(0, 10) : "—"}
-          />
+          <Stat bare label="Lookback" value={`${header.years}y`} />
+          <Stat bare label="Filings" value={header.n_filings} />
+          <Stat bare label="LLM extraction" value={header.llm_enabled ? "on" : "off"} />
+          <Stat bare label="Updated" value={header.last_updated ? header.last_updated.slice(0, 10) : "—"} />
         </div>
       </div>
     </div>

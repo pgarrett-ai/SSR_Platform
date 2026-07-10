@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchHazard } from "../api.js";
 import { getCached, setCached } from "../cache.js";
-import { Card, ZONE_COLOR, fmtPct, fmtNum } from "../components/risk/ui.jsx";
+import { Badge, Card, ZONE_COLOR, fmtPct, fmtNum } from "../ui/index.jsx";
 import ExecutiveSummary from "../components/risk/ExecutiveSummary.jsx";
 import RiskTimeline from "../components/risk/RiskTimeline.jsx";
 import Contributions from "../components/risk/Contributions.jsx";
@@ -35,8 +35,8 @@ function ScoreChip({ name, sc }) {
     <div className="rounded-lg bg-ink-700 px-3 py-2 text-xs" title={sc.note || undefined}>
       <span className="text-slate-500">{name}: </span>
       {body}
-      {sc.real_labels && <span className="ml-1.5 rounded bg-emerald-500/15 px-1 py-0.5 text-[9px] uppercase text-emerald-300">real labels</span>}
-      {sc.trained && !sc.real_labels && <span className="ml-1.5 rounded bg-amber-500/15 px-1 py-0.5 text-[9px] uppercase text-amber-300">demo</span>}
+      {sc.real_labels && <Badge tone="ok" className="ml-1.5">real labels</Badge>}
+      {sc.trained && !sc.real_labels && <Badge tone="watch" className="ml-1.5">demo</Badge>}
     </div>
   );
 }
@@ -65,7 +65,7 @@ export default function RiskPage({ ticker }) {
   if (loading)
     return (
       <div className="py-16 text-center text-sm text-slate-400">
-        Pulling EDGAR + market data for {ticker}… (a first run can take ~30–60s)
+        Pulling EDGAR + market data for {ticker}… first run ~30–60 s
       </div>
     );
   if (error)
@@ -102,13 +102,10 @@ export default function RiskPage({ ticker }) {
       <MarketPanel data={data} />
       <EventTimeline data={data} />
       <p className="mt-6 text-xs text-slate-600">
-        Scores from published-coefficient models (Altman Z″, Merton, CHS). * CHS is an
-        experimental point-in-time approximation.
+        Altman Z″, Merton, CHS — published coefficients. * CHS is a point-in-time approximation.
         {data.scores?.["Trained hazard"]?.real_labels && (
-          <> Trained hazard: fitted on real EDGAR 8-K Item 1.03 bankruptcy labels,
-          walk-forward validated — hover the chip for provenance.</>
-        )}{" "}
-        Not investment advice.
+          <> Trained hazard fitted on EDGAR 8-K Item 1.03 bankruptcy labels, walk-forward validated.</>
+        )}
       </p>
     </div>
   );

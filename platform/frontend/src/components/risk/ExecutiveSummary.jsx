@@ -1,11 +1,11 @@
 import React from "react";
-import { Card, Gauge, Stat, fmtPct, fmtNum, riskColor } from "./ui.jsx";
+import { Card, Gauge, NEUTRAL, RISK, Stat, fmtPct, fmtNum, riskColor } from "../../ui/index.jsx";
 
 const TREND = {
-  worsening: { icon: "▲", color: "#f43f5e", label: "Worsening" },
-  improving: { icon: "▼", color: "#10b981", label: "Improving" },
+  worsening: { icon: "▲", color: RISK.high, label: "Worsening" },
+  improving: { icon: "▼", color: RISK.ok, label: "Improving" },
   stable: { icon: "▬", color: "#94a3b8", label: "Stable" },
-  "n/a": { icon: "–", color: "#64748b", label: "n/a" },
+  "n/a": { icon: "–", color: NEUTRAL, label: "n/a" },
 };
 
 export default function ExecutiveSummary({ data }) {
@@ -15,8 +15,8 @@ export default function ExecutiveSummary({ data }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-      <Card className="flex items-center gap-3">
-        <Gauge value={es.overall_risk} />
+      <Card className="flex flex-wrap items-center gap-3">
+        <div className="shrink-0"><Gauge value={es.overall_risk} size={110} /></div>
         <div>
           <div className="text-xs uppercase tracking-wide text-slate-500">Overall risk</div>
           <div className="text-2xl font-semibold" style={{ color: riskColor(es.overall_risk) }}>

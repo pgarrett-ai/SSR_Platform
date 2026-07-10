@@ -1,4 +1,5 @@
 import React from "react";
+import { ACCENT, RISK } from "../ui/colors.js";
 
 // Dependency-free SVG dual-line chart: semantic drift (left axis) + liquidity-stress tone
 // (right axis, 0-100). Marked experimental — we read the trend, not the absolute level.
@@ -63,20 +64,20 @@ export default function MdnaDrift({ points }) {
         <text x={padL - 6} y={padT + plotH} textAnchor="end" fill="#64748b" fontSize="9">
           0
         </text>
-        <text x={W - padR + 6} y={padT + 4} textAnchor="start" fill="#fb7185" fontSize="9">
+        <text x={W - padR + 6} y={padT + 4} textAnchor="start" fill={RISK.high} fontSize="9">
           100
         </text>
-        <text x={W - padR + 6} y={padT + plotH} textAnchor="start" fill="#fb7185" fontSize="9">
+        <text x={W - padR + 6} y={padT + plotH} textAnchor="start" fill={RISK.high} fontSize="9">
           0
         </text>
 
         {/* tone (stress) line — right axis */}
         {tonePts.length > 1 && (
-          <path d={path(tonePts.map(([a, b]) => [a, b]))} fill="none" stroke="#fb7185" strokeWidth="2" />
+          <path d={path(tonePts.map(([a, b]) => [a, b]))} fill="none" stroke={RISK.high} strokeWidth="2" />
         )}
         {tonePts.map(([px, py, i]) => (
           <g key={`t${i}`}>
-            <circle cx={px} cy={py} r="3.5" fill="#fb7185" />
+            <circle cx={px} cy={py} r="3.5" fill={RISK.high} />
             <text x={px} y={py - 7} textAnchor="middle" fill="#fda4af" fontSize="9" fontFamily="monospace">
               {Math.round(points[i].liquidity_tone_score)}
             </text>
@@ -85,11 +86,11 @@ export default function MdnaDrift({ points }) {
 
         {/* drift line — left axis */}
         {driftPts.length > 1 && (
-          <path d={path(driftPts)} fill="none" stroke="#5e7bff" strokeWidth="2" strokeDasharray="1 0" />
+          <path d={path(driftPts)} fill="none" stroke={ACCENT} strokeWidth="2" strokeDasharray="1 0" />
         )}
         {points.map((p, i) =>
           p.drift_from_prior == null ? null : (
-            <circle key={`d${i}`} cx={x(i)} cy={yD(p.drift_from_prior)} r="3" fill="#5e7bff" />
+            <circle key={`d${i}`} cx={x(i)} cy={yD(p.drift_from_prior)} r="3" fill={ACCENT} />
           )
         )}
 
@@ -111,13 +112,12 @@ export default function MdnaDrift({ points }) {
           (TF-IDF cosine)
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2 w-4 rounded bg-rose-400" /> liquidity / going-concern
-          stress (Claude, 0–100)
+          <span className="inline-block h-2 w-4 rounded" style={{ background: RISK.high }} /> liquidity / going-concern
+          stress (LLM, 0–100)
         </span>
       </div>
       <p className="mt-1 text-[11px] text-slate-500">
-        Read the <em>trend</em>, not the level: a jump in drift or a rising stress line often precedes
-        guidance cuts. Local TF-IDF embedding (no paid vendor).
+        Directional only — read the trend, not the level.
       </p>
     </div>
   );

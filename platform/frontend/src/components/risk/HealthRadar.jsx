@@ -2,7 +2,7 @@ import React from "react";
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip,
 } from "recharts";
-import { Section, Card } from "./ui.jsx";
+import { ACCENT, Card, INK, Section, chartTooltipStyle } from "../../ui/index.jsx";
 
 const clamp01 = (x) => Math.max(0, Math.min(1, x));
 
@@ -28,16 +28,16 @@ export default function HealthRadar({ data }) {
   if (rows.length < 3) return null;
 
   return (
-    <Section title="Financial health" subtitle={`Latest fiscal year (FY${latest.fiscal_year}); 100 = healthiest`}>
+    <Section flush title="Financial health" subtitle={`FY${latest.fiscal_year} · 100 = healthiest`}>
       <Card>
         <ResponsiveContainer width="100%" height={260}>
           <RadarChart data={rows} outerRadius="72%">
-            <PolarGrid stroke="#263041" />
+            <PolarGrid stroke={INK[600]} />
             <PolarAngleAxis dataKey="dim" tick={{ fill: "#94a3b8", fontSize: 12 }} />
             <PolarRadiusAxis domain={[0, 100]} tick={{ fill: "#475569", fontSize: 10 }} />
-            <Radar dataKey="health" stroke="#5e7bff" fill="#5e7bff" fillOpacity={0.35} />
+            <Radar dataKey="health" stroke={ACCENT} fill={ACCENT} fillOpacity={0.35} />
             <Tooltip
-              contentStyle={{ background: "#111827", border: "1px solid #263041", borderRadius: 8 }}
+              contentStyle={chartTooltipStyle}
               formatter={(v) => [`${v}/100`, "health"]}
             />
           </RadarChart>

@@ -1,10 +1,11 @@
 import React from "react";
+import { Card } from "../ui/index.jsx";
 
 export default function ProgressLog({ events, done }) {
   if (!events || events.length === 0) return null;
   const pct = events[events.length - 1]?.pct ?? 0;
   return (
-    <div className="mb-8 rounded-xl border border-ink-700 bg-ink-800/50 p-4">
+    <Card className="mb-8">
       <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-ink-700">
         <div
           className="h-full rounded-full bg-accent transition-all duration-300"
@@ -19,6 +20,6 @@ export default function ProgressLog({ events, done }) {
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

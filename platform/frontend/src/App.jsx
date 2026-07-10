@@ -7,7 +7,7 @@ import ScreenTable from "./components/ScreenTable.jsx";
 import OverviewPage from "./pages/OverviewPage.jsx";
 import CapitalPage from "./pages/CapitalPage.jsx";
 import RiskPage from "./pages/RiskPage.jsx";
-import RecoveryPage from "./components/RecoveryPage.jsx";
+import RecoveryPage from "./pages/RecoveryPage.jsx";
 
 const HEROES = [
   { t: "AAL", note: "airline · leases + pension" },
@@ -197,25 +197,26 @@ export default function App() {
 
 function Landing({ onPick }) {
   return (
-    <div className="mx-auto max-w-2xl py-16 text-center">
-      <h1 className="mb-2 text-2xl font-semibold text-slate-100">
-        Given everything we know about this company, what is the true credit risk,
-        where does it fail, and what is each security worth?
-      </h1>
-      <p className="mb-8 text-sm text-slate-500">
-        Search an issuer, or open a pre-cached example. Every number traces to an EDGAR filing.
-      </p>
-      <div className="flex justify-center gap-3">
-        {HEROES.map((h) => (
-          <button
-            key={h.t}
-            onClick={() => onPick(h.t)}
-            className="rounded-full border border-ink-600 px-4 py-2 text-sm text-slate-300 hover:border-accent hover:text-white"
-          >
-            <span className="font-mono">{h.t}</span>
-            <span className="ml-2 text-slate-500">{h.note}</span>
-          </button>
-        ))}
+    <div className="mx-auto max-w-4xl py-12">
+      <div className="mx-auto mb-4 max-w-2xl text-center">
+        <h1 className="mb-2 text-2xl font-semibold text-slate-100">
+          Default risk · capital structure · recovery
+        </h1>
+        <p className="mb-8 text-sm text-slate-500">
+          Search any SEC issuer. Every number traces to an EDGAR filing.
+        </p>
+        <div className="flex justify-center gap-3">
+          {HEROES.map((h) => (
+            <button
+              key={h.t}
+              onClick={() => onPick(h.t)}
+              className="rounded-full border border-ink-600 px-4 py-2 text-sm text-slate-300 hover:border-accent hover:text-white"
+            >
+              <span className="font-mono">{h.t}</span>
+              <span className="ml-2 text-slate-500">{h.note}</span>
+            </button>
+          ))}
+        </div>
       </div>
       <ScreenTable onPick={onPick} />
     </div>

@@ -6,7 +6,7 @@
     "cik": "6201",
     "years": 3,
     "n_filings": 55,
-    "last_updated": "2026-07-08T14:11:41.626957+00:00",
+    "last_updated": "2026-07-10T13:06:14.169559+00:00",
     "from_cache": false,
     "llm_enabled": true
   },
@@ -265,7 +265,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "2013 Term Loan Facility, variable interest rate of 6.00%, installments until due in February 2028 (a) $970 $980"
+          "quote": "2013 Term Loan Facility, variable interest rate of 6.00%, installments until due in February 2028 (a)\n\n$970 $980"
         },
         "derived": false,
         "formula": null,
@@ -284,7 +284,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "2013 Term Loan Facility, variable interest rate of 6.00%, installments until due in February 2028 (a) $970 $980"
+        "quote": "2013 Term Loan Facility, variable interest rate of 6.00%, installments until due in February 2028 (a)\n\n$970 $980"
       }
     },
     {
@@ -302,7 +302,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "2014 Term Loan Facility, variable interest rate of 5.69%, installments until due in January 2027 (a) 1,159 1,171"
+          "quote": "2014 Term Loan Facility, variable interest rate of 5.69%, installments until due in January 2027 (a)\n\n1,159 1,171"
         },
         "derived": false,
         "formula": null,
@@ -321,7 +321,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "2014 Term Loan Facility, variable interest rate of 5.69%, installments until due in January 2027 (a) 1,159 1,171"
+        "quote": "2014 Term Loan Facility, variable interest rate of 5.69%, installments until due in January 2027 (a)\n\n1,159 1,171"
       }
     },
     {
@@ -339,7 +339,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "2023 Term Loan Facility, variable interest rate of 6.26%, installments until due in June 2029 (a) 1,078 1,089"
+          "quote": "2023 Term Loan Facility, variable interest rate of 6.26%, installments until due in June 2029 (a)\n\n1,078 1,089"
         },
         "derived": false,
         "formula": null,
@@ -358,7 +358,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "2023 Term Loan Facility, variable interest rate of 6.26%, installments until due in June 2029 (a) 1,078 1,089"
+        "quote": "2023 Term Loan Facility, variable interest rate of 6.26%, installments until due in June 2029 (a)\n\n1,078 1,089"
       }
     },
     {
@@ -376,7 +376,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "10.75% senior secured IP notes (b) — 781"
+          "quote": "10.75% senior secured IP notes (b)\n\n— 781"
         },
         "derived": false,
         "formula": null,
@@ -395,7 +395,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "10.75% senior secured IP notes (b) — 781"
+        "quote": "10.75% senior secured IP notes (b)\n\n— 781"
       }
     },
     {
@@ -413,7 +413,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "10.75% senior secured LGA/DCA notes (b) — 156"
+          "quote": "10.75% senior secured LGA/DCA notes (b)\n\n— 156"
         },
         "derived": false,
         "formula": null,
@@ -432,7 +432,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "10.75% senior secured LGA/DCA notes (b) — 156"
+        "quote": "10.75% senior secured LGA/DCA notes (b)\n\n— 156"
       }
     },
     {
@@ -450,7 +450,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "7.25% senior secured notes, interest only payments until due in February 2028 (b) 750 750"
+          "quote": "7.25% senior secured notes, interest only payments until due in February 2028 (b)\n\n750 750"
         },
         "derived": false,
         "formula": null,
@@ -469,7 +469,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "7.25% senior secured notes, interest only payments until due in February 2028 (b) 750 750"
+        "quote": "7.25% senior secured notes, interest only payments until due in February 2028 (b)\n\n750 750"
       }
     },
     {
@@ -487,7 +487,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "8.50% senior secured notes, interest only payments until due in May 2029 (b) 1,000 1,000"
+          "quote": "8.50% senior secured notes, interest only payments until due in May 2029 (b)\n\n1,000 1,000"
         },
         "derived": false,
         "formula": null,
@@ -506,7 +506,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "8.50% senior secured notes, interest only payments until due in May 2029 (b) 1,000 1,000"
+        "quote": "8.50% senior secured notes, interest only payments until due in May 2029 (b)\n\n1,000 1,000"
       }
     },
     {
@@ -524,7 +524,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "5.50% senior secured notes, installments until due in April 2026 (c) 583 1,750"
+          "quote": "5.50% senior secured notes, installments until due in April 2026 (c)\n\n583 1,750"
         },
         "derived": false,
         "formula": null,
@@ -543,7 +543,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "5.50% senior secured notes, installments until due in April 2026 (c) 583 1,750"
+        "quote": "5.50% senior secured notes, installments until due in April 2026 (c)\n\n583 1,750"
       }
     },
     {
@@ -561,7 +561,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "5.75% senior secured notes, installments beginning in July 2026 until due in April 2029 (c) 3,000 3,000"
+          "quote": "5.75% senior secured notes, installments beginning in July 2026 until due in April 2029 (c)\n\n3,000 3,000"
         },
         "derived": false,
         "formula": null,
@@ -580,7 +580,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "5.75% senior secured notes, installments beginning in July 2026 until due in April 2029 (c) 3,000 3,000"
+        "quote": "5.75% senior secured notes, installments beginning in July 2026 until due in April 2029 (c)\n\n3,000 3,000"
       }
     },
     {
@@ -598,7 +598,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "2021 AAdvantage Term Loan Facility, variable interest rate of 6.13%, installments until due in April 2028 (c) 2,264 2,450"
+          "quote": "2021 AAdvantage Term Loan Facility, variable interest rate of 6.13%, installments until due in April 2028 (c)\n\n2,264 2,450"
         },
         "derived": false,
         "formula": null,
@@ -608,7 +608,7 @@
       "coupon": "variable interest rate of 6.13%",
       "maturity": "April 2028",
       "secured": true,
-      "seniority": "senior secured",
+      "seniority": "senior secured (loyalty program collateral)",
       "citation": {
         "accession_no": "0000006201-26-000014",
         "form_type": "10-K",
@@ -617,7 +617,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "2021 AAdvantage Term Loan Facility, variable interest rate of 6.13%, installments until due in April 2028 (c) 2,264 2,450"
+        "quote": "2021 AAdvantage Term Loan Facility, variable interest rate of 6.13%, installments until due in April 2028 (c)\n\n2,264 2,450"
       }
     },
     {
@@ -635,7 +635,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "2025 AAdvantage Term Loan Facility, variable interest rate of 7.13%, installments until due in May 2032 (c) 995 —"
+          "quote": "2025 AAdvantage Term Loan Facility, variable interest rate of 7.13%, installments until due in May 2032 (c)\n\n995 —"
         },
         "derived": false,
         "formula": null,
@@ -645,7 +645,7 @@
       "coupon": "variable interest rate of 7.13%",
       "maturity": "May 2032",
       "secured": true,
-      "seniority": "senior secured",
+      "seniority": "senior secured (loyalty program collateral)",
       "citation": {
         "accession_no": "0000006201-26-000014",
         "form_type": "10-K",
@@ -654,7 +654,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "2025 AAdvantage Term Loan Facility, variable interest rate of 7.13%, installments until due in May 2032 (c) 995 —"
+        "quote": "2025 AAdvantage Term Loan Facility, variable interest rate of 7.13%, installments until due in May 2032 (c)\n\n995 —"
       }
     },
     {
@@ -672,7 +672,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Enhanced equipment trust certificates (EETCs), fixed interest rates ranging from 2.88% to 7.15%, averaging 3.95%, maturing from 2026 to 2038 (d) 6,912 7,271"
+          "quote": "Enhanced equipment trust certificates (EETCs), fixed interest rates ranging from 2.88% to 7.15%, averaging 3.95%, maturing from 2026 to 2038 (d)\n\n6,912 7,271"
         },
         "derived": false,
         "formula": null,
@@ -680,9 +680,9 @@
         "tie_out": null
       },
       "coupon": "fixed interest rates ranging from 2.88% to 7.15%, averaging 3.95%",
-      "maturity": "maturing from 2026 to 2038",
+      "maturity": "2026 to 2038",
       "secured": true,
-      "seniority": "secured (equipment trust)",
+      "seniority": "secured (equipment collateral)",
       "citation": {
         "accession_no": "0000006201-26-000014",
         "form_type": "10-K",
@@ -691,7 +691,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "Enhanced equipment trust certificates (EETCs), fixed interest rates ranging from 2.88% to 7.15%, averaging 3.95%, maturing from 2026 to 2038 (d) 6,912 7,271"
+        "quote": "Enhanced equipment trust certificates (EETCs), fixed interest rates ranging from 2.88% to 7.15%, averaging 3.95%, maturing from 2026 to 2038 (d)\n\n6,912 7,271"
       }
     },
     {
@@ -709,7 +709,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Equipment loans and other notes payable, fixed and variable interest rates ranging from 2.55% to 6.56%, averaging 5.57%, maturing from 2026 to 2037 (e) 4,719 4,094"
+          "quote": "Equipment loans and other notes payable, fixed and variable interest rates ranging from 2.55% to 6.56%, averaging 5.57%, maturing from 2026 to 2037 (e)\n\n4,719 4,094"
         },
         "derived": false,
         "formula": null,
@@ -717,9 +717,9 @@
         "tie_out": null
       },
       "coupon": "fixed and variable interest rates ranging from 2.55% to 6.56%, averaging 5.57%",
-      "maturity": "maturing from 2026 to 2037",
+      "maturity": "2026 to 2037",
       "secured": true,
-      "seniority": "secured",
+      "seniority": "secured (equipment collateral)",
       "citation": {
         "accession_no": "0000006201-26-000014",
         "form_type": "10-K",
@@ -728,7 +728,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "Equipment loans and other notes payable, fixed and variable interest rates ranging from 2.55% to 6.56%, averaging 5.57%, maturing from 2026 to 2037 (e) 4,719 4,094"
+        "quote": "Equipment loans and other notes payable, fixed and variable interest rates ranging from 2.55% to 6.56%, averaging 5.57%, maturing from 2026 to 2037 (e)\n\n4,719 4,094"
       }
     },
     {
@@ -746,7 +746,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Special facility revenue bonds, fixed interest rates ranging from 2.25% to 5.38%, maturing from 2026 to 2036 789 880"
+          "quote": "Special facility revenue bonds, fixed interest rates ranging from 2.25% to 5.38%, maturing from 2026 to 2036\n\n789 880"
         },
         "derived": false,
         "formula": null,
@@ -754,7 +754,7 @@
         "tie_out": null
       },
       "coupon": "fixed interest rates ranging from 2.25% to 5.38%",
-      "maturity": "maturing from 2026 to 2036",
+      "maturity": "2026 to 2036",
       "secured": true,
       "seniority": "secured",
       "citation": {
@@ -765,7 +765,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "Special facility revenue bonds, fixed interest rates ranging from 2.25% to 5.38%, maturing from 2026 to 2036 789 880"
+        "quote": "Special facility revenue bonds, fixed interest rates ranging from 2.25% to 5.38%, maturing from 2026 to 2036\n\n789 880"
       }
     },
     {
@@ -783,7 +783,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "PSP1 Promissory Note, variable interest rate of 5.92%, interest only payments until due in April 2030 (f) 1,757 1,757"
+          "quote": "PSP1 Promissory Note, variable interest rate of 5.92%, interest only payments until due in April 2030 (f)\n\n1,757 1,757"
         },
         "derived": false,
         "formula": null,
@@ -802,7 +802,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "PSP1 Promissory Note, variable interest rate of 5.92%, interest only payments until due in April 2030 (f) 1,757 1,757"
+        "quote": "PSP1 Promissory Note, variable interest rate of 5.92%, interest only payments until due in April 2030 (f)\n\n1,757 1,757"
       }
     },
     {
@@ -820,7 +820,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "PSP2 Promissory Note, interest only payments until due in January 2031 (f) 1,030 1,030"
+          "quote": "PSP2 Promissory Note, interest only payments until due in January 2031 (f)\n\n1,030 1,030"
         },
         "derived": false,
         "formula": null,
@@ -839,7 +839,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "PSP2 Promissory Note, interest only payments until due in January 2031 (f) 1,030 1,030"
+        "quote": "PSP2 Promissory Note, interest only payments until due in January 2031 (f)\n\n1,030 1,030"
       }
     },
     {
@@ -857,7 +857,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "PSP3 Promissory Note, interest only payments until due in April 2031 (f) 959 959"
+          "quote": "PSP3 Promissory Note, interest only payments until due in April 2031 (f)\n\n959 959"
         },
         "derived": false,
         "formula": null,
@@ -876,7 +876,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "PSP3 Promissory Note, interest only payments until due in April 2031 (f) 959 959"
+        "quote": "PSP3 Promissory Note, interest only payments until due in April 2031 (f)\n\n959 959"
       }
     },
     {
@@ -894,7 +894,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "6.50% convertible senior notes (g) — 1,000"
+          "quote": "6.50% convertible senior notes (g)\n\n— 1,000"
         },
         "derived": false,
         "formula": null,
@@ -904,7 +904,7 @@
       "coupon": "6.50%",
       "maturity": "2025",
       "secured": false,
-      "seniority": "unsecured",
+      "seniority": "unsecured (senior notes)",
       "citation": {
         "accession_no": "0000006201-26-000014",
         "form_type": "10-K",
@@ -913,7 +913,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "6.50% convertible senior notes (g) — 1,000"
+        "quote": "6.50% convertible senior notes (g)\n\n— 1,000"
       }
     },
     {
@@ -931,7 +931,7 @@
           "section": "Long-term debt footnote",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Senior short-term term loan facility, variable interest rate of 6.11%, interest only payments until due in January 2026 (h) 629 —"
+          "quote": "Senior short-term term loan facility, variable interest rate of 6.11%, interest only payments until due in January 2026 (h)\n\n629 —"
         },
         "derived": false,
         "formula": null,
@@ -950,7 +950,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "Senior short-term term loan facility, variable interest rate of 6.11%, interest only payments until due in January 2026 (h) 629 —"
+        "quote": "Senior short-term term loan facility, variable interest rate of 6.11%, interest only payments until due in January 2026 (h)\n\n629 —"
       }
     }
   ],
@@ -1601,69 +1601,14 @@
         "free_cash_flow": "-$680M",
         "cash": "$1,056M"
       },
-      "narrative": "Free cash flow was -$680M in FY2025 (OCF minus capex). Sustained negative FCF is the clock on the wall — it sets how fast liquidity is consumed and how soon a refinancing or restructuring is forced. At the FY2025 burn rate, reported cash alone covers ~19 months.",
-      "pointer": "Read the liquidity & capital-resources MD&A, revolver availability/borrowing base, and the maturity schedule."
+      "narrative": "Free cash flow -$680M in FY2025 (OCF − capex). Cash covers ~19 months at this burn.",
+      "pointer": "MD&A liquidity & capital resources; revolver availability / borrowing base; maturity schedule."
     }
   ],
   "obs_items": [
     {
-      "category": "supplier_finance",
-      "label": "Fuel financing facility (supply-chain/supplier finance)",
-      "amount": {
-        "value": 914000000.0,
-        "display": "$914M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0000006201-26-000014",
-          "form_type": "10-K",
-          "filing_date": "2026-02-18",
-          "exhibit": null,
-          "section": "Note 1(l) Fuel Financing",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "As of December 31, 2025 and 2024, we had $914 million and $74 million, respectively, in fuel financing obligations included on our consolidated balance sheets."
-        },
-        "derived": false,
-        "formula": null,
-        "note": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt.",
-        "tie_out": null
-      },
-      "tax_effect": {
-        "value": 376568000.0,
-        "display": "$377M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0000006201-26-000014",
-          "form_type": "10-K",
-          "filing_date": "2026-02-18",
-          "exhibit": null,
-          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
-          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
-        },
-        "derived": true,
-        "formula": "gross $914M × effective tax rate 41.2%",
-        "note": "Uniform tax effect (latest effective tax rate); refine per item later.",
-        "tie_out": null
-      },
-      "net": {
-        "value": 537432000.0,
-        "display": "$537M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "gross $914M − tax effect $377M",
-        "note": null,
-        "tie_out": null
-      },
-      "recourse": "recourse",
-      "include_in_bridge": true,
-      "notes": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt."
-    },
-    {
       "category": "pension_opeb",
-      "label": "Pension and postretirement benefits (underfunded, on balance sheet)",
+      "label": "Pension and postretirement benefits (net underfunded, balance sheet)",
       "amount": {
         "value": 1568000000.0,
         "display": "$1,568M",
@@ -1717,8 +1662,83 @@
       "notes": "Underfunded pension/OPEB deficit — a debt-like claim on the enterprise not included in the reported long-term-debt line."
     },
     {
+      "category": "supplier_finance",
+      "label": "Fuel financing facility (supplier/supply-chain financing)",
+      "amount": {
+        "value": 914000000.0,
+        "display": "$914M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000014",
+          "form_type": "10-K",
+          "filing_date": "2026-02-18",
+          "exhibit": null,
+          "section": "Note 1(l) Fuel Financing",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+          "quote": "As of December 31, 2025 and 2024, we had $914 million and $74 million, respectively, in fuel financing obligations included on our consolidated balance sheets."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt.",
+        "tie_out": null
+      },
+      "tax_effect": {
+        "value": 376568000.0,
+        "display": "$377M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000014",
+          "form_type": "10-K",
+          "filing_date": "2026-02-18",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $914M × effective tax rate 41.2%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later.",
+        "tie_out": null
+      },
+      "net": {
+        "value": 537432000.0,
+        "display": "$537M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $914M − tax effect $377M",
+        "note": null,
+        "tie_out": null
+      },
+      "recourse": "recourse",
+      "include_in_bridge": true,
+      "notes": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt."
+    },
+    {
+      "category": "take_or_pay",
+      "label": "Capacity purchase agreements with third-party regional carriers (e.g., Republic)",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "unknown",
+      "include_in_bridge": false,
+      "notes": "Capacity purchase agreements with third-party regional carriers are take-or-pay style commitments; the lease component is capitalized within operating/finance leases but the non-lease (crew/maintenance) service commitments represent ongoing contractual obligations. No aggregate future minimum commitment dollar amount is disclosed in the provided text (only annual expense of $658M under Republic CPA in 2025), so the incremental off-balance-sheet amount cannot be quantified; recorded with null amount and excluded from bridge."
+    },
+    {
+      "category": "guarantee",
+      "label": "AAG parent guarantee of American's Credit Facilities and Senior Secured Notes",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "recourse",
+      "include_in_bridge": false,
+      "notes": "AAG guarantees American's obligations under the Credit Facilities and the 7.25%/8.50% Senior Secured Notes. Because American is a consolidated wholly-owned subsidiary, the guaranteed debt is already reflected in consolidated reported long-term debt; the guarantee is not incremental at the consolidated level. Recorded with null amount, excluded from bridge."
+    },
+    {
       "category": "litigation_env",
-      "label": "Litigation reserve adjustments (special item)",
+      "label": "Litigation reserve adjustments (special items)",
       "amount": {
         "value": 77000000.0,
         "display": "$77M",
@@ -1735,7 +1755,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": "A $77M litigation reserve adjustment was recorded as a special item expense in 2025 and is reflected in accrued liabilities on the balance sheet. It is not a distinct off-balance-sheet obligation to add to reported debt; recorded for informational purposes. Full contingency detail (Note 11) not included in the provided text.",
+        "note": "A $77M litigation reserve adjustment was recognized in special items in 2025. This is an accrued/expensed reserve already reflected in the financial statements (within other accrued liabilities), not an incremental off-balance-sheet debt-like claim, and it is a P&L adjustment rather than a stated balance-sheet contingent amount. Excluded from bridge.",
         "tie_out": null
       },
       "tax_effect": {
@@ -1767,90 +1787,35 @@
         "note": null,
         "tie_out": null
       },
-      "recourse": "unknown",
+      "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "A $77M litigation reserve adjustment was recorded as a special item expense in 2025 and is reflected in accrued liabilities on the balance sheet. It is not a distinct off-balance-sheet obligation to add to reported debt; recorded for informational purposes. Full contingency detail (Note 11) not included in the provided text."
-    },
-    {
-      "category": "related_party",
-      "label": "Republic Airways capacity purchase agreement annual expense (related-party CPA)",
-      "amount": {
-        "value": 658000000.0,
-        "display": "$658M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0000006201-26-000014",
-          "form_type": "10-K",
-          "filing_date": "2026-02-18",
-          "exhibit": null,
-          "section": "Note 1(s) Regional Expenses",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "In 2025, 2024 and 2023, we recognized $658 million, $612 million and $636 million, respectively, of expense under our capacity purchase agreement with Republic Airways Inc. (Republic). We hold a 20.8% equity interest in Republic Airways Holdings Inc. (Republic Holdings), the parent company of Republic."
-        },
-        "derived": false,
-        "formula": null,
-        "note": "This is a related-party (20.8% equity interest) recurring capacity purchase commitment. The $658M figure is an annual income-statement expense, not a balance-sheet obligation or total future commitment, so it is not an incremental debt amount to add to the bridge. Recorded for informational completeness; no total future minimum commitment is quantified in the excerpt.",
-        "tie_out": null
-      },
-      "tax_effect": {
-        "value": 271096000.0,
-        "display": "$271M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0000006201-26-000014",
-          "form_type": "10-K",
-          "filing_date": "2026-02-18",
-          "exhibit": null,
-          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
-          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
-        },
-        "derived": true,
-        "formula": "gross $658M × effective tax rate 41.2%",
-        "note": "Uniform tax effect (latest effective tax rate); refine per item later.",
-        "tie_out": null
-      },
-      "net": {
-        "value": 386904000.0,
-        "display": "$387M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "gross $658M − tax effect $271M",
-        "note": null,
-        "tie_out": null
-      },
-      "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "This is a related-party (20.8% equity interest) recurring capacity purchase commitment. The $658M figure is an annual income-statement expense, not a balance-sheet obligation or total future commitment, so it is not an incremental debt amount to add to the bridge. Recorded for informational completeness; no total future minimum commitment is quantified in the excerpt."
+      "notes": "A $77M litigation reserve adjustment was recognized in special items in 2025. This is an accrued/expensed reserve already reflected in the financial statements (within other accrued liabilities), not an incremental off-balance-sheet debt-like claim, and it is a P&L adjustment rather than a stated balance-sheet contingent amount. Excluded from bridge."
     }
   ],
   "covenants": [
     {
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "None (no leverage-ratio maintenance covenant). This secured facility instead relies on a Collateral Coverage Ratio maintenance test and a Liquidity covenant (Sections 6.08 and 6.09).",
-      "leverage_ratio_threshold": "No leverage ratio. Collateral Coverage Ratio must be at least 1.6 to 1.0: a \"Collateral Coverage Ratio Failure\" is defined as failure of the ratio \"to be at least equal to 1.6 to 1.0.\" (Collateral Coverage Ratio = Appraised Value of Collateral / Total Obligations.)",
+      "leverage_covenant_type": "None (no leverage-ratio maintenance covenant); this secured facility instead relies on a Collateral Coverage Ratio maintenance covenant (Section 6.09) and a Liquidity covenant (Section 6.08)",
+      "leverage_ratio_threshold": "No leverage ratio. Collateral Coverage Ratio maintenance test: a \"Collateral Coverage Ratio Failure\" occurs if the ratio falls below 1.6 to 1.0 (Appraised Value of Collateral / Total Obligations)",
       "ebitda_addback_categories": [
-        "Extraordinary losses and net losses on Dispositions of assets",
-        "Provision for income/profit taxes",
-        "Fixed Charges (interest expense)",
-        "Foreign currency translation losses (including on Indebtedness remeasurement)",
-        "Depreciation, amortization of intangibles and other non-cash charges",
+        "Extraordinary loss and net loss on Disposition of assets",
+        "Provision for income/profits taxes",
+        "Fixed Charges (interest)",
+        "Foreign currency translation losses (including Indebtedness remeasurement)",
+        "Depreciation, amortization (including intangibles) and other non-cash charges/expenses",
         "Amortization of debt discount",
-        "Equity-based compensation / grants of Equity Interests to employees",
-        "Net loss on sale/disposition of capital assets (including inventory and securities sold with fixed assets)",
-        "Fuel hedging losses (pre-Closing arrangements and realized post-Closing losses)",
+        "Equity/Equity Interest grants to employees",
+        "Net loss on sale/exchange/disposition of capital assets",
+        "Losses under fuel hedging arrangements",
         "Business interruption insurance proceeds",
-        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt incurrence, equity issuance or investments",
-        "Other non-cash items increasing Consolidated Net Income (excluding ordinary-course revenue accruals)"
+        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions/mergers/dispositions/debt or equity issuances/investments",
+        "Non-cash items (other than accrual of revenue in Ordinary Course) that increased Consolidated Net Income (minus)"
       ],
-      "restricted_payments_basket_size": "Section 6.01 (Restricted Payments) governs; the specific basket dollar amounts/builder amounts are not set out in the excerpted text provided, so the RP basket size cannot be quoted verbatim from the pages furnished.",
-      "mfn_sunset_period": "Not addressed in the excerpted text. The MFN concept appears only via the \"All-In Initial Yield\" definition used for incremental facility yield calculation; no MFN protection level or sunset period is stated in the provided pages.",
+      "restricted_payments_basket_size": null,
+      "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "The agreement expressly contemplates Restricted/Unrestricted Subsidiary designation via Section 5.05 (\"Designation of Restricted and Unrestricted Subsidiaries\"). Consolidated Net Income excludes \"the net income (loss) of any Unrestricted Subsidiary,\" so earnings and assets can be moved outside the credit group by designating Unrestricted Subsidiaries. The detailed conditions/caps on designation are in Section 5.05, which is not reproduced in the excerpt.",
-      "lme_risk_notes": "This is the Eleventh Amendment to American Airlines' A&R Credit and Guaranty Agreement (SGR/route-authority-collateralized facility), establishing $362,833,333.30 of 2026 Incremental Revolving Commitments and $155,000,000 of new LC Commitments, with Barclays as Administrative Agent and Citi added as arranger. Key LME-relevant features: (1) The amendment contains a pre-baked serial-amendment/\"Specified Terms\" mechanism — the 2026 Incremental Revolving Lenders irrevocably consent in advance to a future \"Specified Amendment\" and agree no further consent or signature is required, with effectiveness on Required Lenders' consent (taking their pre-given consent into account) or upon repayment/repricing/replacement of the 2024 Replacement Term Loans. This is an uptier-style consent-harvesting structure that reduces minority-lender protection. (2) Protection here is collateral-based rather than leverage-based: value is governed by the 1.6x Collateral Coverage Ratio (Appraised Value of Collateral / Total Obligations, where Total Obligations includes revolver exposure, all Term Loans, Pari Passu Senior Secured Debt, and designated hedging/banking product obligations) plus a Liquidity covenant, with an Officer's Certificate condition certifying compliance. (3) Unrestricted Subsidiary designation (Section 5.05) plus CNI exclusion of Unrestricted Subsidiary income creates drop-down/asset-transfer capacity, but the excerpt does not reproduce the Section 5.05/6.04 (Disposition of Collateral) conditions needed to assess a J.Crew-style IP/asset drop-down blocker. (4) No maintenance leverage covenant, no stated MFN sunset in the excerpt.",
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries.\" Consolidated Net Income and Consolidated EBITDAR exclude the net income (loss) of any Unrestricted Subsidiary, confirming the restricted/unrestricted subsidiary architecture; specific designation conditions/caps are not reproduced in the provided text.",
+      "lme_risk_notes": "This document is the Eleventh Amendment establishing $362,833,333.30 of 2026 Incremental Revolving Commitments and $155,000,000 of LC Commitments, replacing terminated Existing Revolving/LC Commitments; it is not a new LME transaction. Notable feature: Section Three contains a broad pre-wired consent/authorization mechanism — the 2026 Incremental Revolving Lenders irrevocably consent to and authorize the Administrative Agent, Borrower and Guarantor to enter a future \"Specified Amendment\" implementing \"Specified Terms\" without further lender consent, effective upon Required Lenders consenting or, if earlier, upon repayment/repricing/replacement of the 2024 Replacement Term Loans; this reduces individual-lender control and is a coordination/uptier-type flexibility. This is a secured airline facility (SGR/route/slot/gate collateral) protected by a 1.6:1.0 Collateral Coverage Ratio and a Liquidity covenant rather than by a leverage covenant; priming risk is mitigated by the collateral-coverage maintenance test but drop-down/uptier protections are not evident in the excerpted text. J.Crew blocker and MFN sunset provisions are not addressed in the provided sections.",
       "citation": {
         "accession_no": "0001193125-26-098647",
         "form_type": "8-K",
@@ -1859,31 +1824,31 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312526098647/d35934dex102.htm",
-        "quote": "\"'Collateral Coverage Ratio Failure' shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.\""
+        "quote": "\"Collateral Coverage Ratio Failure\" shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
       }
     },
     {
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "None (no total-leverage maintenance covenant); the deal instead uses a Collateral Coverage Ratio and a minimum Liquidity covenant as its maintenance financial covenants",
-      "leverage_ratio_threshold": "No leverage-based threshold. Maintenance tests are: (i) Collateral Coverage Ratio must be at least 1.6 to 1.0 (a \"Collateral Coverage Ratio Failure\" is failure to be at least 1.6:1.0), tested per Section 6.09; and (ii) minimum Liquidity per Section 6.08.",
+      "leverage_covenant_type": "None (no total-leverage maintenance financial covenant); the deal instead uses a Collateral Coverage Ratio maintenance test and a Liquidity covenant",
+      "leverage_ratio_threshold": "No leverage ratio. Maintenance tests are: Collateral Coverage Ratio (Section 6.09) with a Collateral Coverage Ratio Failure defined as failure to be at least 1.6 to 1.0; plus a minimum Liquidity covenant (Section 6.08) — dollar threshold not stated in the excerpts provided.",
       "ebitda_addback_categories": [
-        "Extraordinary losses and net losses on dispositions of assets",
+        "Extraordinary loss / net loss on dispositions of assets",
         "Provision for income/profit taxes",
-        "Fixed Charges",
+        "Fixed Charges (interest, etc.)",
         "Foreign currency translation losses (including on Indebtedness remeasurement)",
-        "Depreciation, amortization (including of intangibles) and other non-cash charges/expenses",
+        "Depreciation and amortization (including intangibles) and other non-cash charges/expenses",
         "Amortization of debt discount",
-        "Non-cash equity/stock grant compensation to employees",
-        "Net losses on sale/exchange/disposition of capital assets",
+        "Equity-based compensation grants to employees",
+        "Net loss on sale/exchange/disposition of capital assets",
         "Losses under fuel hedging arrangements",
-        "Business interruption insurance proceeds",
-        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt incurrence, equity issuance or investments"
+        "Proceeds from business interruption insurance",
+        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt/equity issuances or investments"
       ],
-      "restricted_payments_basket_size": "Section 6.01 (\"Restricted Payments\") governs RPs, but the specific builder/general basket dollar amounts are not set out in the excerpted text and cannot be stated verbatim.",
-      "mfn_sunset_period": "Not present in the provided text. The definition of \"All-In/Initial Yield\" references OID and Adjusted Term SOFR floor mechanics for Incremental Term Loans, but no MFN margin-protection provision or its sunset is set out in the excerpted pages.",
+      "restricted_payments_basket_size": "Not specified in the excerpts (Section 6.01 Restricted Payments referenced but basket amounts not reproduced in the provided text).",
+      "mfn_sunset_period": "Not present in the provided excerpts. The agreement defines \"All-In/Initial Yield\" (relevant to MFN pricing on Incremental Term Loans referencing the Original Term Loans' Adjusted Term SOFR floor), but no MFN spread cushion or sunset period is stated in the text provided.",
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 governs \"Designation of Restricted and Unrestricted Subsidiaries\"; Consolidated Net Income excludes net income (loss) of any Unrestricted Subsidiary, confirming a restricted/unrestricted subsidiary construct exists. The full designation mechanics and any investment/value caps are not contained in the excerpted text and cannot be quantified from the provided pages.",
-      "lme_risk_notes": "This is a Fourth Amendment establishing $1,451,333,333.35 of 2026 Incremental Revolving Commitments (replacing terminated existing revolver/LC commitments) for American Airlines, Inc. / American Airlines Group Inc.; it is a secured facility (guaranties plus Collateral, Collateral Trustee, SGR Security Agreement covering Route Authorities, Slots, Foreign Gate Leaseholds). Key structural feature: obligations are secured on a defined Collateral pool with a hard 1.6:1.0 Collateral Coverage Ratio maintenance test plus a minimum Liquidity covenant (Sections 6.08/6.09), so priming/drop-down risk turns primarily on collateral leakage rather than a leverage covenant. LME watch-items: (1) Section 5.05 unrestricted-subsidiary designation combined with CNI excluding Unrestricted Subsidiary income creates a J.Crew-style drop-down channel — the presence/absence of an IP/asset-transfer blocker is NOT determinable from the excerpted pages (set to null). (2) Incremental facility capacity is expressly contemplated (Section 2.27 incremental mechanics; Pari Passu Senior Secured Debt is included in the Collateral Coverage Ratio denominator), indicating the structure permits additional pari passu secured debt against the same collateral — a potential dilution/priming vector. (3) No leverage-based maintenance covenant and no observable MFN protection in the provided text; verification of RP baskets, uptier/sacred-rights amendment provisions and J.Crew blocker requires the full Credit Agreement (Sections 6.01, 6.04, 9.x) not included here.",
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries\" and Consolidated Net Income excludes the net income (loss) of any Unrestricted Subsidiary, confirming an unrestricted-subsidiary construct exists. The specific designation mechanics/limitations are not reproduced in the provided excerpts.",
+      "lme_risk_notes": "This is a secured airline financing (American Airlines) collateralized by route authorities, slots, foreign gate leaseholds, aircraft/spare engines, ground equipment, spare parts and related assets held by a Collateral Trustee. Rather than a leverage covenant, credit protection runs through the Collateral Coverage Ratio (must stay ≥ 1.6:1.0) plus a Liquidity covenant and Collateral disposition controls (Section 6.04). The presence of an Unrestricted Subsidiary designation construct (Section 5.05) plus CNI exclusion of Unrestricted Subsidiary results creates potential drop-down/collateral-leakage capacity typical of J.Crew-style risk — though the excerpts do not reproduce a specific IP/asset-transfer blocker, so the strength of any drop-down protection cannot be confirmed from the text provided. The Fourth Amendment itself terminates existing revolver/LC commitments and establishes $1,451,333,333.35 of 2026 Incremental Revolving Commitments; incremental capacity (Section 2.27) is a priming/dilution vector. Uptier risk turns on amendment/voting provisions not included in these excerpts.",
       "citation": {
         "accession_no": "0001193125-26-098647",
         "form_type": "8-K",
@@ -1913,19 +1878,19 @@
       "period_end": "2024-09-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.1878,
-      "liquidity_tone_score": 12.0
+      "liquidity_tone_score": 11.0
     },
     {
       "period_end": "2024-12-31",
       "form_type": "10-K",
       "drift_from_prior": 0.3398,
-      "liquidity_tone_score": 18.0
+      "liquidity_tone_score": 15.0
     },
     {
       "period_end": "2025-03-31",
       "form_type": "10-Q",
       "drift_from_prior": 0.4045,
-      "liquidity_tone_score": 20.0
+      "liquidity_tone_score": 18.0
     },
     {
       "period_end": "2025-06-30",
@@ -1937,19 +1902,19 @@
       "period_end": "2025-09-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.192,
-      "liquidity_tone_score": 18.0
+      "liquidity_tone_score": 14.0
     },
     {
       "period_end": "2025-12-31",
       "form_type": "10-K",
       "drift_from_prior": 0.3194,
-      "liquidity_tone_score": 20.0
+      "liquidity_tone_score": 16.0
     },
     {
       "period_end": "2026-03-31",
       "form_type": "10-Q",
       "drift_from_prior": 0.4086,
-      "liquidity_tone_score": 30.0
+      "liquidity_tone_score": 22.0
     }
   ],
   "subsidiaries": [

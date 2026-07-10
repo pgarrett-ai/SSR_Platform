@@ -28,7 +28,7 @@ function Blocker({ present }) {
 function CovenantBlock({ cov }) {
   const [showQuote, setShowQuote] = useState(false);
   return (
-    <div className="rounded-lg border border-ink-700 bg-ink-800/60 p-4">
+    <div className="rounded-xl border border-ink-700 bg-ink-800/50 p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
         <h4 className="text-sm font-semibold text-slate-100">
           {cov.agreement_type || "Credit agreement"}
@@ -104,9 +104,7 @@ export default function CovenantCard({ covenants }) {
   if (!covenants || covenants.length === 0) {
     return (
       <p className="text-sm text-slate-400">
-        Covenant terms are extracted from the issuer's credit agreements / indentures (EX-10.x /
-        EX-4.x) when an Anthropic API key is set — leverage covenant, baskets, MFN, J.Crew blocker,
-        and unrestricted-subsidiary flexibility, each anchored to a verbatim clause.
+        No covenant terms extracted — requires LLM extraction (EX-10.x / EX-4.x).
       </p>
     );
   }

@@ -6,7 +6,7 @@
     "cik": "1519061",
     "years": 3,
     "n_filings": 70,
-    "last_updated": "2026-06-26T13:34:29.783656+00:00",
+    "last_updated": "2026-07-10T13:12:41.249871+00:00",
     "from_cache": false,
     "llm_enabled": true
   },
@@ -76,25 +76,25 @@
         "is_total": false
       },
       {
-        "key": "pension_opeb",
-        "label": "Pension / OPEB deficit (underfunded)",
+        "key": "other",
+        "label": "Other off-balance-sheet obligations",
         "amount": {
-          "value": 4617866.0,
-          "display": "$5M",
+          "value": 1304739.0,
+          "display": "$1M",
           "unit": "USD",
           "citation": {
             "accession_no": "0001104659-26-049440",
             "form_type": "10-K/A",
             "filing_date": "2026-04-27",
             "exhibit": null,
-            "section": "Pension and Other Postretirement Benefits - Supplemental Employee Retirement Benefit",
+            "section": "U.S. Non-Qualified Deferred Compensation Table",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-049440-index.html",
-            "quote": "Bee van Kessel ... Switzerland Retirement Plan ... 1,232,148 ... Francesca Reverberi Switzerland Retirement Plan ... 3,385,718"
+            "quote": "While the plan is unfunded, amounts deferred under the plan are credited with earnings based on the performance of selected investment vehicles that are available in the open market. ... Aggregate Balance as of December 31, 2025: Frank Bozich $581,659; David Stasse $307,842; Angelo N. Chaclas $415,238."
           },
           "derived": false,
           "formula": null,
-          "note": "Underfunded pension/OPEB deficit — a debt-like claim on the enterprise not included in the reported long-term-debt line.",
+          "note": "Debt-like obligation added to reach economic debt.",
           "tie_out": null
         },
         "is_total": false
@@ -103,13 +103,76 @@
         "key": "economic_debt",
         "label": "Economic (adjusted) debt",
         "amount": {
-          "value": 2613717866.0,
-          "display": "$2,614M",
+          "value": 2610404739.0,
+          "display": "$2,610M",
           "unit": "USD",
           "citation": null,
           "derived": true,
-          "formula": "reported debt $2,545M + $60M + $4M + $5M",
+          "formula": "reported debt $2,545M + $60M + $4M + $1M",
           "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above.",
+          "tie_out": null
+        },
+        "is_total": true
+      },
+      {
+        "key": "cash_offset",
+        "label": "Less: cash & equivalents",
+        "amount": {
+          "value": -146700000.0,
+          "display": "-$147M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001104659-26-027518",
+            "form_type": "10-K",
+            "filing_date": "2026-03-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+            "quote": "Cash and Cash Equivalents, at Carrying Value (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": "Offset to reach net economic debt.",
+          "tie_out": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "restricted_cash_offset",
+        "label": "Less: restricted cash",
+        "amount": {
+          "value": -2300000.0,
+          "display": "-$2M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001104659-26-027518",
+            "form_type": "10-K",
+            "filing_date": "2026-03-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:RestrictedCashCurrent",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+            "quote": "Restricted Cash, Current (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": "Restricted cash offset. Availability in distress varies — often collateral; treat as best case.",
+          "tie_out": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "net_economic_debt",
+        "label": "Net economic (adjusted) debt",
+        "amount": {
+          "value": 2461404739.0,
+          "display": "$2,461M",
+          "unit": "USD",
+          "citation": null,
+          "derived": true,
+          "formula": "economic debt $2,610M − cash offsets $149M",
+          "note": "Net economic debt = economic debt − cash − restricted cash.",
           "tie_out": null
         },
         "is_total": true
@@ -126,16 +189,25 @@
       "tie_out": null
     },
     "economic_debt": {
-      "value": 2613717866.0,
-      "display": "$2,614M",
+      "value": 2610404739.0,
+      "display": "$2,610M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "reported debt $2,545M + $60M + $4M + $5M",
+      "formula": "reported debt $2,545M + $60M + $4M + $1M",
       "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above.",
       "tie_out": null
     },
-    "net_economic_debt": null,
+    "net_economic_debt": {
+      "value": 2461404739.0,
+      "display": "$2,461M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "economic debt $2,610M − cash offsets $149M",
+      "note": "Net economic debt = economic debt − cash − restricted cash.",
+      "tie_out": null
+    },
     "ebitda": {
       "value": 37400000.0,
       "display": "$37M",
@@ -146,7 +218,16 @@
       "note": "Proxy EBITDA.",
       "tie_out": null
     },
-    "ebitdar": null,
+    "ebitdar": {
+      "value": 55600000.0,
+      "display": "$56M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "EBITDA $37M + operating lease cost $18M (FY2025)",
+      "note": "EBITDAR: operating lease liabilities sit in economic debt, so lease cost is added back to the denominator for a consistent ratio.",
+      "tie_out": null
+    },
     "reported_leverage": {
       "value": 68.05882352941177,
       "display": "68.1x",
@@ -158,13 +239,13 @@
       "tie_out": null
     },
     "economic_leverage": {
-      "value": 69.88550443850268,
-      "display": "69.9x",
+      "value": 46.949725521582735,
+      "display": "46.9x",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "economic debt $2,614M / EBITDA $37M",
-      "note": "Simplified: uses proxy EBITDA (not lease-adjusted EBITDAR).",
+      "formula": "economic debt $2,610M / EBITDAR $56M",
+      "note": "EBITDAR-consistent: lease liabilities in the numerator, lease cost added back to the denominator.",
       "tie_out": null
     }
   },
@@ -888,42 +969,24 @@
         "free_cash_flow": "-$153M",
         "cash": "$147M"
       },
-      "narrative": "Free cash flow was -$153M in FY2025 (OCF minus capex). Sustained negative FCF is the clock on the wall — it sets how fast liquidity is consumed and how soon a refinancing or restructuring is forced. At the FY2025 burn rate, reported cash alone covers ~11 months.",
-      "pointer": "Read the liquidity & capital-resources MD&A, revolver availability/borrowing base, and the maturity schedule."
+      "narrative": "Free cash flow -$153M in FY2025 (OCF − capex). Cash covers ~11 months at this burn.",
+      "pointer": "MD&A liquidity & capital resources; revolver availability / borrowing base; maturity schedule."
     }
   ],
   "obs_items": [
     {
       "category": "pension_opeb",
-      "label": "Switzerland defined contribution pension plan - Reverberi & van Kessel accumulated benefit",
-      "amount": {
-        "value": 4617866.0,
-        "display": "$5M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001104659-26-049440",
-          "form_type": "10-K/A",
-          "filing_date": "2026-04-27",
-          "exhibit": null,
-          "section": "Pension and Other Postretirement Benefits - Supplemental Employee Retirement Benefit",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-049440-index.html",
-          "quote": "Bee van Kessel ... Switzerland Retirement Plan ... 1,232,148 ... Francesca Reverberi Switzerland Retirement Plan ... 3,385,718"
-        },
-        "derived": false,
-        "formula": null,
-        "note": "Underfunded pension/OPEB deficit — a debt-like claim on the enterprise not included in the reported long-term-debt line.",
-        "tie_out": null
-      },
+      "label": "Switzerland defined contribution retirement plan (NEO accumulated benefits)",
+      "amount": null,
       "tax_effect": null,
       "net": null,
       "recourse": "unknown",
-      "include_in_bridge": true,
-      "notes": "Underfunded pension/OPEB deficit — a debt-like claim on the enterprise not included in the reported long-term-debt line."
+      "include_in_bridge": false,
+      "notes": "This is a fully insured defined contribution plan; the figures shown ($1,232,148 and $3,385,718) are the actuarial present value of the individual NEOs' accumulated benefits, not a company-level underfunded (deficit) obligation. No plan-level benefit obligation minus plan assets figure is provided in this text, so no incremental economic-debt amount can be computed. Informational only. The consolidated plan disclosures are in Note 21, which is not included here."
     },
     {
-      "category": "related_party",
-      "label": "Non-qualified deferred compensation plan obligations (NEO balances)",
+      "category": "other",
+      "label": "Non-qualified deferred compensation plan (unfunded)",
       "amount": {
         "value": 1304739.0,
         "display": "$1M",
@@ -936,22 +999,22 @@
           "section": "U.S. Non-Qualified Deferred Compensation Table",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-049440-index.html",
-          "quote": "Frank Bozich ... Aggregate Balance as of December 31, 2025 ... $581,659 David Stasse ... $307,842 Angelo N. Chaclas ... $415,238"
+          "quote": "While the plan is unfunded, amounts deferred under the plan are credited with earnings based on the performance of selected investment vehicles that are available in the open market. ... Aggregate Balance as of December 31, 2025: Frank Bozich $581,659; David Stasse $307,842; Angelo N. Chaclas $415,238."
         },
         "derived": false,
         "formula": null,
-        "note": "The non-qualified deferred compensation plan is described as 'unfunded,' making the company's promise to pay an unsecured economic obligation. However, the figures disclosed here are only the three U.S. NEO account balances within Item 11, not the total company-wide unfunded NQDC liability (which would already be recorded as a liability on the balance sheet, though not as 'debt'). Because these are partial, individual-executive amounts and the broader plan liability is recorded elsewhere, included as informational only, not added to the bridge.",
+        "note": "Debt-like obligation added to reach economic debt.",
         "tie_out": null
       },
       "tax_effect": null,
       "net": null,
       "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "The non-qualified deferred compensation plan is described as 'unfunded,' making the company's promise to pay an unsecured economic obligation. However, the figures disclosed here are only the three U.S. NEO account balances within Item 11, not the total company-wide unfunded NQDC liability (which would already be recorded as a liability on the balance sheet, though not as 'debt'). Because these are partial, individual-executive amounts and the broader plan liability is recorded elsewhere, included as informational only, not added to the bridge."
+      "include_in_bridge": true,
+      "notes": "Debt-like obligation added to reach economic debt."
     },
     {
       "category": "other",
-      "label": "NEO conditional retention bonus awards (clawback if not retained to 2027)",
+      "label": "NEO conditional retention bonus awards (paid Jan 2026, repayable if service condition not met)",
       "amount": {
         "value": 9400000.0,
         "display": "$9M",
@@ -964,41 +1027,31 @@
           "section": "Retention Awards and Waiver of ACI and RCU Vesting",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-049440-index.html",
-          "quote": "Frank Bozich ... $3,200,000 David Stasse ... $2,500,000 Francesca Reverberi ... $1,700,000 Angelo Chaclas ... $1,350,000 Bee van Kessel ... $650,000 ... The Company paid the Retention Awards, less applicable withholdings, on or about January 8, 2026."
+          "quote": "the Compensation Committee approved one-time conditional retention bonus awards (the “Retention Awards”) for each of the NEOs... Frank Bozich $3,200,000; David Stasse $2,500,000; Francesca Reverberi $1,700,000; Angelo Chaclas $1,350,000; Bee van Kessel $650,000. ... each Retention Award is conditioned upon the NEO’s continued employment until March 31, 2027... otherwise such Retention Award shall be fully repaid to the Company... The Company paid the Retention Awards... on or about January 8, 2026."
         },
         "derived": false,
         "formula": null,
-        "note": "These are one-time cash retention bonuses already PAID by the company in January 2026 (a cash outflow, not an off-balance-sheet liability owed by the company). The conditional repayment obligation runs from the executive TO the company if they leave, so it is a receivable/contingency in the company's favor, not an incremental claim on the enterprise. Not added to the economic-debt bridge; recorded as informational context (notable cash use signaling potential distress/retention concern).",
+        "note": "These retention awards ($3,200,000 + $2,500,000 + $1,700,000 + $1,350,000 + $650,000 = $9,400,000) were cash outflows paid after the balance sheet date (Jan 2026). They are compensation expense, not a debt-like financing claim on the enterprise; if anything the repayment feature is a receivable to the Company rather than an obligation. Excluded from the economic-debt bridge; informational only.",
         "tie_out": null
       },
       "tax_effect": null,
       "net": null,
       "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "These are one-time cash retention bonuses already PAID by the company in January 2026 (a cash outflow, not an off-balance-sheet liability owed by the company). The conditional repayment obligation runs from the executive TO the company if they leave, so it is a receivable/contingency in the company's favor, not an incremental claim on the enterprise. Not added to the economic-debt bridge; recorded as informational context (notable cash use signaling potential distress/retention concern)."
-    },
-    {
-      "category": "other",
-      "label": "Potential change-in-control / severance cash separation payments (NEOs)",
-      "amount": null,
-      "tax_effect": null,
-      "net": null,
-      "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "Severance and change-in-control amounts are contingent, hypothetical payments that only arise upon specific termination/CIC triggers. They are not present obligations and do not represent an existing economic-debt-like claim on the enterprise. Disclosed as informational; not added to the bridge. Total figures are not fully presented in the provided text, hence amount left null."
+      "notes": "These retention awards ($3,200,000 + $2,500,000 + $1,700,000 + $1,350,000 + $650,000 = $9,400,000) were cash outflows paid after the balance sheet date (Jan 2026). They are compensation expense, not a debt-like financing claim on the enterprise; if anything the repayment feature is a receivable to the Company rather than an obligation. Excluded from the economic-debt bridge; informational only."
     }
   ],
   "covenants": [
     {
       "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession HoldCo Credit Agreement (DIP)",
-      "leverage_covenant_type": "None (no traditional leverage maintenance covenant). As a DIP facility, financial discipline is imposed instead through a DIP Budget/Permitted Variance covenant (Section 7.17 \"Permitted Variance; Liquidity\"), a Liquidity covenant (Section 6.20), Budget and Variance Reporting (Section 6.22) and Milestones (Section 6.23).",
-      "leverage_ratio_threshold": "No leverage ratio specified. DIP controls are budget-variance-based (Permitted Variance) and a minimum Liquidity covenant rather than a defined leverage ratio; specific dollar thresholds are not stated in the excerpted text.",
+      "leverage_covenant_type": "None (no maintenance leverage/net-leverage financial covenant). As a DIP facility, financial discipline is imposed instead through a DIP Budget/Permitted Variance and a minimum Liquidity covenant, plus Milestones and budget/variance reporting (Sections 6.20 Liquidity, 6.22 Budget and Variance Reporting, 6.23 Milestones, 7.17 Permitted Variance; Liquidity). No traditional maintenance leverage ratio is present in the covenant clauses provided.",
+      "leverage_ratio_threshold": "Not present. The provided text does not state a numeric leverage ratio or springing trigger; DIP controls run through the Approved Budget, Permitted Variance, and a Liquidity minimum (dollar threshold not specified in the excerpted text).",
       "ebitda_addback_categories": [],
-      "restricted_payments_basket_size": "Not specified as a dollar/builder basket in the excerpted text. Restricted Payments are governed by Section 7.06; \"Restricted Payment\" is defined to include (i) dividends/distributions and redemptions on Equity Interests and (ii) any Restricted Investment (an Investment other than a Permitted Investment). RP capacity in a DIP of this type is generally limited to enumerated Permitted Investments rather than a sized basket.",
-      "mfn_sunset_period": "Not present / not applicable. No MFN (most-favored-nation) interest-rate protection clause or sunset period appears in the excerpted text; pricing is fixed by reference to Term SOFR/Base Rate definitions.",
+      "restricted_payments_basket_size": "Not specified in the excerpted text. Section 7.06 (Restricted Payments) governs; \"Restricted Payment\" is defined to include any dividend/distribution on Equity Interests, redemptions/returns of capital, and any Restricted Investment. No dollar or grower basket figure is quoted in the provided pages.",
+      "mfn_sunset_period": "Not present / not applicable in the excerpted text. No MFN pricing protection clause (or sunset) appears; pricing is Term SOFR / Base Rate with a Floor, and roll-up/new-money mechanics govern instead.",
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "Limited/structural rather than discretionary. The agreement does not provide a covenant for the Lead Borrower to freely designate new Unrestricted Subsidiaries; instead designation is fixed by the structure: Section 5.14 requires that the Co-Borrower, Holdings, Altuglas and Aristech \"are and shall remain an 'Unrestricted Subsidiary' of the Trinseo Lead Borrower and its Restricted Subsidiaries\" at all times under the Prepetition OpCo and Super-Priority Revolving agreements. This is a HoldCo DIP sitting at the unrestricted-subsidiary level of the OpCo structure, so the LME drop-down risk is structurally embedded rather than left to future designation discretion.",
-      "lme_risk_notes": "This is the HoldCo tranche of the Trinseo DIP, layered above an OpCo DIP, and is itself a product of an LME/restructuring: it includes a \"Roll-Up\" of Prepetition Super HoldCo Secured Obligations into Roll-Up Term Loans (an uptier mechanic), priming via super-priority DIP status and the DIP Orders, and Required Lender protections that disregard non-signing Roll-Up Lenders and elevate Designated Lenders holding >=75% of New Money. The Aristech/Altuglas drop-down structure is already realized: those entities plus the Co-Borrower and Holdings are designated Unrestricted Subsidiaries of the prepetition OpCo group (Sec. 5.14), separating them and their cash/IP from OpCo creditors. JV Interests (Americas Styrenics / Chevron Phillips consent) are carved from pledge but their proceeds remain Collateral. Specified IP (held by Trinseo Europe and licensed to Aristech/Altuglas) is fenced by Sec. 7.14 (Specified IP Covenant) and Sec. 5.15. Overall: high LME-structuring profile (uptier roll-up, super-priority priming, unrestricted-sub drop-down), consistent with an executed restructuring under the May 13, 2026 RSA rather than a vulnerability to future LME.",
+      "unrestricted_subsidiary_designation_flexibility": "Limited/atypical for a HoldCo DIP: the structure is inverted. Per Section 5.14, the Co-Borrower, Holdings, Altuglas and Aristech are and must remain designated \"Unrestricted Subsidiaries\" of the OpCo (Trinseo Lead Borrower) group under the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement, and any refinancing indebtedness — i.e., they are structurally ring-fenced OUT of the OpCo restricted group and INTO this HoldCo DIP collateral perimeter. Covenants here run against \"Covenant Parties.\" The excerpted text does not grant discretionary borrower flexibility to newly designate/re-designate unrestricted subsidiaries.",
+      "lme_risk_notes": "Low residual LME vulnerability within this instrument, but the whole facility is itself the product of an LME/restructuring. (1) Uptier/priming: This is a court-approved super-priority DIP with a Roll-Up of Prepetition Super HoldCo Secured Obligations into Roll-Up Term Loans; amendments and any further Roll require Required Lender consent, and Required Lenders are skewed toward New Money holders — a Designated Lender counts as a Required Lender only while holding >=75% of its Closing-Date New Money — entrenching the ad hoc/new-money group and limiting minority-lender uptier/cram exposure. (2) Drop-down/asset transfer: constrained by the Specified IP Covenant (Section 7.14), No Flowback (Section 7.16), separateness undertakings (Section 7.07), and negative covenants on Dispositions (7.05), Restricted Payments (7.06) and Indebtedness (7.03); Specified IP (Trinseo Europe -> Aristech/Altuglas license) is expressly protected. (3) The Chevron Phillips consent gate on the JV Interests limits direct pledge but proceeds/products remain Collateral. (4) Chief LME risk is external: the OpCo-side unrestricted-subsidiary designation of Aristech/Altuglas/Holdings/Co-Borrower (5.14) was the structural maneuver enabling this HoldCo priming/drop-down facility.",
       "citation": {
         "accession_no": "0001104659-26-073451",
         "form_type": "8-K/A",
@@ -1007,19 +1060,19 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926073451/tm2617803d1_ex10-2.htm",
-        "quote": "Section 5.14 Designation. As of the Closing Date and at all times thereafter, each of the Co-Borrower, Holdings, Altuglas and Aristech are and shall remain an \"Unrestricted Subsidiary\" of the Trinseo Lead Borrower and its Restricted Subsidiaries for purposes of, in accordance with and pursuant to the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement and any other Indebtedness of the Trinseo Lead Borrower and its Restricted Subsidiaries at any time outstanding."
+        "quote": "\"As of the Closing Date and at all times thereafter, each of the Co-Borrower, Holdings, Altuglas and Aristech are and shall remain an \"Unrestricted Subsidiary\" of the Trinseo Lead Borrower and its Restricted Subsidiaries for purposes of, in accordance with and pursuant to the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement and any other Indebtedness of the Trinseo Lead Borrower and its Restricted Subsidiaries at any time outstanding, including without limitation, any refinancing Indebtedness of any of the foregoing.\""
       }
     },
     {
-      "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession (DIP) Credit Agreement",
-      "leverage_covenant_type": "None (no maintenance leverage ratio covenant). As a DIP facility, financial discipline is imposed through a Liquidity covenant (Section 6.20/7.16), Permitted Variance / Budget and Variance Reporting against the DIP Budget (Sections 6.22, 7.16), and Milestones (Section 6.23) — not a traditional leverage ratio test.",
-      "leverage_ratio_threshold": "Not present. No total/net leverage ratio threshold or springing trigger is set forth in the provided text; covenant compliance is driven by a minimum Liquidity test and permitted budget variance rather than a leverage ratio. Specific dollar Liquidity threshold and permitted-variance percentage are in Sections 6.20/7.16 and the Approved Budget, which are not quantified in the excerpt provided.",
+      "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession Credit Agreement (Trinseo)",
+      "leverage_covenant_type": "None (no traditional leverage-ratio maintenance covenant). As a DIP facility, the maintenance covenant regime is a budget/permitted-variance and minimum-Liquidity construct (Section 6.16/6.20/6.22/7.16 \"Permitted Variance; Liquidity\") together with DIP Milestones (Section 6.23) and Budget/Variance Reporting.",
+      "leverage_ratio_threshold": "Not applicable — no leverage ratio threshold is stated. DIP covenant controls are (i) minimum Liquidity (\"the aggregate amount of unrestricted cash and Cash Equivalents of the Loan Parties\") tested per Sections 6.20/7.16, and (ii) Permitted Variance against the Approved Budget/Interim DIP Order budget. Specific numeric thresholds are set in the Interim/Final DIP Orders and are not quoted in the excerpted text.",
       "ebitda_addback_categories": [],
-      "restricted_payments_basket_size": "Not specified in the provided text. Restricted Payments are governed by Section 7.06 (not reproduced); the only quantified affiliated/related basket visible is Management Advances \"not exceeding $1,000,000 in the aggregate outstanding at any time.\"",
-      "mfn_sunset_period": "Not present / not applicable. No MFN (most-favored-nation) interest-rate protection clause or sunset appears in the provided text. Pricing is fixed (Term Loans at 3.00%; Roll-Up Loan (Rev) at 0.00%).",
-      "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "No \"Unrestricted Subsidiary\" construct appears in the provided definitions; the agreement operates on a Lead Borrower / Restricted Subsidiary / Guarantor framework typical of a DIP. As a debtor-in-possession facility subject to the DIP Orders, the Bankruptcy Court and Required Lenders control structural changes (e.g., New Subsidiaries under Section 7.15, Permitted Activities under Section 7.14), materially limiting any ability to designate and capitalize unrestricted subsidiaries outside lender control.",
-      "lme_risk_notes": "Low conventional LME (liability-management exercise) risk because this is a court-supervised super-priority DIP, not a covenanted operating credit agreement. Key protections against drop-down / uptier / priming maneuvers: (1) DIP Liens and Section 364(c) super-priority administrative-expense claims attach to all Collateral with recourse, leaving little unencumbered value to migrate; (2) no Unrestricted Subsidiary designation mechanic exists to support a J.Crew-style IP/asset drop-down; (3) the broad Disposition definition (capturing licenses, leases and issuances of Restricted Subsidiary equity) plus Section 7.05 Dispositions limits, and Net Proceeds 100% sweep on Dispositions/Casualty/debt/equity issuances, restrict value leakage; (4) governance is overlaid by the DIP Orders, Required-Lender consent rights, First Day Orders, the RSA and Milestones, so any priming/uptier would require court approval and lender consent. Residual risk sits in inter-creditor dynamics among the Prepetition Superpriority Revolving, OpCo, Super Holdco and Second Lien tranches governed by the Intercreditor Agreement, and in any unguaranteed/Excluded-Asset value (e.g., non-wholly-owned subsidiary equity, assets where pledging causes adverse tax/legal consequences).",
+      "restricted_payments_basket_size": "Not specified in the excerpted text (Section 7.06 \"Restricted Payments\" is referenced but its basket amounts are not reproduced). Note the Loans to Officers/Employees carve-out capped at \"not exceeding $1,000,000 in the aggregate outstanding at any time.\"",
+      "mfn_sunset_period": "Not present in the excerpted text — no MFN (most-favored-nation pricing) provision or sunset is set forth in the definitions/clauses provided.",
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": "The facility operates on a Restricted Subsidiary / Guarantor basis and, as a DIP financing, contains no visible \"Unrestricted Subsidiary\" designation mechanic in the provided text. Section 7.14 (Permitted Activities) and 7.15 (New Subsidiaries) constrain subsidiary activity; collateral definition sweeps in \"OpCo DIP Collateral\" and expressly excludes only enumerated Excluded Assets. This structure sharply limits the ability to move value into a non-guarantor/unrestricted vehicle.",
+      "lme_risk_notes": "This is a court-supervised super-priority DIP facility governed by DIP Orders and an Intercreditor Agreement, not a typical syndicated TLB, so traditional out-of-court LME (drop-down / uptier / priming) vectors are structurally curtailed: (i) DIP claims are section 364(c) super-priority administrative claims with recourse against all Collateral, subject only to the Carve-Out; (ii) priming/adequate protection is controlled by the Bankruptcy Court via the DIP Orders and by an existing January 17, 2025 Intercreditor Agreement among the Prepetition Superpriority Revolving, Prepetition OpCo, Prepetition Super Holdco and Second Lien Notes agents; (iii) J.Crew-style IP drop-down risk is materially mitigated because the Aristech/Altuglas operating IP is licensed in under identified Technology License Agreements and the collateral package is broad, though I cannot confirm an express Section 7.05/7.14 transfer blocker from the excerpt (marked null). Key residual leverage lies with the Required Lenders, who must find the Interim/Final DIP Orders and First Day Orders \"acceptable in all respects,\" giving lenders veto-style control over restructuring steps and Milestones rather than exposing them to unilateral borrower LME maneuvers. Note the built-in \"Roll-Up Loan (Rev)\" (0.00% applicable rate) reflects a prepetition-to-DIP roll-up, itself an LME-adjacent priority enhancement for existing revolver lenders.",
       "citation": {
         "accession_no": "0001104659-26-068944",
         "form_type": "8-K",
@@ -1028,7 +1081,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926068944/tm2615985d1_ex10-1.htm",
-        "quote": "\"means any IP Rights necessary to operate the businesses of Aristech and Altuglas as set forth on Schedule 5.15 of the Prepetition Superpriority Credit Agreement.\" (with the Technology License Agreements between Trinseo Europe as licensor and Altuglas/Aristech as licensees being defined and tracked, evidencing that material operating IP and its license arrangements are specifically identified and protected within the Collateral/Loan Document perimeter)"
+        "quote": "\"'Liquidity' means, as of any date of determination, the aggregate amount of unrestricted cash and Cash Equivalents of the Loan Parties.\""
       }
     }
   ],
@@ -1037,43 +1090,43 @@
       "period_end": "2024-03-31",
       "form_type": "10-Q",
       "drift_from_prior": null,
-      "liquidity_tone_score": 28.0
+      "liquidity_tone_score": 30.0
     },
     {
       "period_end": "2024-06-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.4245,
-      "liquidity_tone_score": 27.0
+      "liquidity_tone_score": 28.0
     },
     {
       "period_end": "2024-09-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.358,
-      "liquidity_tone_score": 35.0
+      "liquidity_tone_score": 34.0
     },
     {
       "period_end": "2024-12-31",
       "form_type": "10-K",
       "drift_from_prior": 0.4497,
-      "liquidity_tone_score": 45.0
+      "liquidity_tone_score": 40.0
     },
     {
       "period_end": "2025-03-31",
       "form_type": "10-Q",
       "drift_from_prior": 0.3773,
-      "liquidity_tone_score": 55.0
+      "liquidity_tone_score": 52.0
     },
     {
       "period_end": "2025-06-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.3566,
-      "liquidity_tone_score": 56.0
+      "liquidity_tone_score": 54.0
     },
     {
       "period_end": "2025-09-30",
       "form_type": "10-Q",
       "drift_from_prior": 0.2939,
-      "liquidity_tone_score": 68.0
+      "liquidity_tone_score": 62.0
     },
     {
       "period_end": "2025-12-31",
@@ -1088,7 +1141,824 @@
       "liquidity_tone_score": 97.0
     }
   ],
-  "subsidiaries": [],
+  "subsidiaries": [
+    {
+      "name": "Trinseo Belgium B.V.",
+      "jurisdiction": "Belgium",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Operating Belgium B.V.",
+      "jurisdiction": "Belgium",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Canada ULC",
+      "jurisdiction": "Canada",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Styron Synthetic Materials (Shanghai) Company Limited",
+      "jurisdiction": "China",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Polymers (Zhangjiagang) Company Limited",
+      "jurisdiction": "China",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Altuglas International Denmark A/S",
+      "jurisdiction": "Denmark",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Suomi Oy",
+      "jurisdiction": "Finland",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Altuglas International SAS",
+      "jurisdiction": "France",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo France S.A.S.",
+      "jurisdiction": "France",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Deutschland Anlagengesellschaft mbH",
+      "jurisdiction": "Germany",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Deutschland GmbH",
+      "jurisdiction": "Germany",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo (Hong Kong) Limited",
+      "jurisdiction": "Hong Kong",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Materials (Hong Kong) Limited",
+      "jurisdiction": "Hong Kong",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo India Trading Private Limited",
+      "jurisdiction": "India",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "PT Trinseo Materials Indonesia",
+      "jurisdiction": "Indonesia",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "PT Trinseo Operating Indonesia",
+      "jurisdiction": "Indonesia",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Finance Ireland Unlimited Company",
+      "jurisdiction": "Ireland",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Ireland Global IHB Limited",
+      "jurisdiction": "Ireland",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Ireland Holdings Limited",
+      "jurisdiction": "Ireland",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Services Ireland Limited",
+      "jurisdiction": "Ireland",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "A.P.I. Applicazioni Plastiche Industriali S.p.A.",
+      "jurisdiction": "Italy",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Altuglas S.r.l.",
+      "jurisdiction": "Italy",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Italia S.R.L.",
+      "jurisdiction": "Italy",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Japan Y.K.",
+      "jurisdiction": "Japan",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Korea Ltd.",
+      "jurisdiction": "Korea",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Holding S.à r.l.",
+      "jurisdiction": "Luxembourg",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Luxco S.à r.l.",
+      "jurisdiction": "Luxembourg",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Luxco Finance SPV S.à r.l.",
+      "jurisdiction": "Luxembourg",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Altuglas Mexico, S.A. de C.V.",
+      "jurisdiction": "Mexico",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo de México S. de R.L. de C.V.",
+      "jurisdiction": "Mexico",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Heathland B.V.",
+      "jurisdiction": "The Netherlands",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Styron Netherlands Holding Company B.V.",
+      "jurisdiction": "The Netherlands",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Holding B.V.",
+      "jurisdiction": "The Netherlands",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Netherlands B.V.",
+      "jurisdiction": "The Netherlands",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Holdings Asia Pte. Ltd.",
+      "jurisdiction": "Singapore",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Singapore Pte. Ltd.",
+      "jurisdiction": "Singapore",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Sverige AB",
+      "jurisdiction": "Sweden",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Europe GmbH",
+      "jurisdiction": "Switzerland",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Export GmbH",
+      "jurisdiction": "Switzerland",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Taiwan Trinseo Limited",
+      "jurisdiction": "Taiwan",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Kimya Ticaret Limited Şirketi",
+      "jurisdiction": "Turkey",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo UK Limited",
+      "jurisdiction": "England and Wales",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Altuglas LLC",
+      "jurisdiction": "USA – Delaware",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Americas Styrenics LLC",
+      "jurisdiction": "USA – Delaware",
+      "parent": null,
+      "percent_owned": 50.0,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo LLC",
+      "jurisdiction": "USA – Delaware",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo Materials Finance, Inc.",
+      "jurisdiction": "USA – Delaware",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo NA Finance LLC",
+      "jurisdiction": "USA – Delaware",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo NA Finance SPV LLC",
+      "jurisdiction": "USA – Delaware",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo U.S. Holding, Inc.",
+      "jurisdiction": "USA – Delaware",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Trinseo U.S. Receivables Company SPV LLC",
+      "jurisdiction": "USA – Delaware",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    },
+    {
+      "name": "Aristech Surfaces LLC",
+      "jurisdiction": "USA – Kentucky",
+      "parent": null,
+      "percent_owned": null,
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": "EX-21.1",
+        "section": "Exhibit 21 — Subsidiaries of the Registrant",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/tse-20251231xex21d1.htm",
+        "quote": null
+      }
+    }
+  ],
   "xbrl_tie_outs": [],
   "leverage_timeline": [
     {
@@ -1957,5 +2827,6 @@
       "n_credit_docs": 1
     }
   ],
-  "warnings": []
+  "warnings": [],
+  "llm_fallback_note": null
 }

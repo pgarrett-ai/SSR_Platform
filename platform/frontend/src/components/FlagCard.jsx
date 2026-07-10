@@ -1,9 +1,10 @@
 import React from "react";
+import { Badge } from "../ui/index.jsx";
 
 const SEV = {
-  high: { ring: "border-rose-500/50", chip: "bg-rose-500/20 text-rose-300", label: "high" },
-  watch: { ring: "border-amber-500/50", chip: "bg-amber-500/20 text-amber-300", label: "watch" },
-  info: { ring: "border-sky-500/40", chip: "bg-sky-500/20 text-sky-300", label: "info" },
+  high: { ring: "border-rose-500/50", tone: "high" },
+  watch: { ring: "border-amber-500/50", tone: "watch" },
+  info: { ring: "border-sky-500/40", tone: "info" },
 };
 
 const TITLES = {
@@ -16,14 +17,12 @@ const TITLES = {
 export default function FlagCard({ flag }) {
   const sev = SEV[flag.severity] || SEV.info;
   return (
-    <div className={`rounded-lg border ${sev.ring} bg-ink-800/70 p-4`}>
+    <div className={`rounded-xl border ${sev.ring} bg-ink-800/50 p-4`}>
       <div className="mb-2 flex items-center justify-between gap-2">
         <h4 className="text-sm font-semibold text-slate-100">
           {TITLES[flag.flag_type] || flag.flag_type}
         </h4>
-        <span className={`rounded px-2 py-0.5 text-[10px] uppercase tracking-wide ${sev.chip}`}>
-          {sev.label}
-        </span>
+        <Badge tone={sev.tone}>{flag.severity}</Badge>
       </div>
       <p className="text-[13px] leading-relaxed text-slate-300">{flag.narrative}</p>
       {flag.metrics && Object.keys(flag.metrics).length > 0 && (
@@ -42,7 +41,7 @@ export default function FlagCard({ flag }) {
       )}
       {flag.pointer && (
         <p className="mt-3 border-t border-ink-700 pt-2 text-[12px] text-slate-400">
-          <span className="text-slate-500">Read next →</span> {flag.pointer}
+          <span className="text-slate-500">Refs:</span> {flag.pointer}
         </p>
       )}
     </div>

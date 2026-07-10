@@ -257,7 +257,7 @@ def _derive_structure(ticker: str, years: int) -> tuple[CapitalStructure, Option
     ov = json.loads(run_overview(ticker, years).model_dump_json())
     structure, ebitda, citations = overview_to_structure(ov)
     subsidiaries = ov.get("subsidiaries") or []
-    source = "capstack overview"
+    source = "filed debt schedule"
     if not structure.tranches:
         total_debt, citations = None, {}
         for row in reversed(ov.get("forensic_table") or []):
@@ -265,15 +265,15 @@ def _derive_structure(ticker: str, years: int) -> tuple[CapitalStructure, Option
             if cv and cv.get("value"):
                 total_debt = float(cv["value"]) / 1e6
                 if cv.get("citation"):
-                    citations["Total debt (edit me)"] = cv["citation"]
+                    citations["Total debt (XBRL seed)"] = cv["citation"]
                 break
         structure = CapitalStructure(
             name=structure.name,
             entities=[Entity("OpCo", ev_share=1.0, parent=None)],
-            tranches=[Tranche("Total debt (edit me)", "OpCo",
+            tranches=[Tranche("Total debt (XBRL seed)", "OpCo",
                               face=total_debt or 100.0, lien_rank=1, secured=True)],
         )
-        source = "XBRL total-debt seed (edit before trusting)" if total_debt else "manual seed"
+        source = "XBRL total-debt seed" if total_debt else "manual seed"
     return structure, ebitda, source, citations, subsidiaries
 
 

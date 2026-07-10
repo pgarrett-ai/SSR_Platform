@@ -60,6 +60,9 @@ def _backfill() -> None:
                 ov = load_overview(ticker, int(yrs[:-1])) if ticker else None
                 if ov is not None:
                     upsert_snapshot(session, ticker.upper(), ov)
+                    # autoflush is off: without this, two cache files for one ticker
+                    # (AAL_3y + AAL_10y) both INSERT and violate the ticker PK.
+                    session.flush()
         if FTS_AVAILABLE and session.execute(sql("SELECT count(*) FROM search")).scalar() == 0:
             tickers = session.execute(sql(
                 "SELECT ticker FROM covenants UNION SELECT ticker FROM mdna_sections "
