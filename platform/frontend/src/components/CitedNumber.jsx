@@ -26,10 +26,6 @@ function CiteCard({ anchorRef, cv, onEnter, onLeave }) {
     setPos({ top, left });
   }, [anchorRef]);
 
-  const tie = cv.tie_out;
-  const tieColor =
-    tie?.status === "match" ? "text-emerald-400" : tie?.status === "mismatch" ? "text-amber-400" : "text-slate-500";
-
   return createPortal(
     <div
       ref={cardRef}
@@ -77,17 +73,6 @@ function CiteCard({ anchorRef, cv, onEnter, onLeave }) {
           {cv.note && <div className="mt-1 text-[11px] text-slate-400">{cv.note}</div>}
         </div>
       )}
-      {tie && tie.status !== "no_xbrl" && (
-        <div className="mt-2 border-t border-ink-600 pt-2 text-[11px]">
-          <div className={`font-semibold ${tieColor}`}>
-            {tie.status === "match" ? "✓ Ties out to XBRL" : `⚠ ${tie.delta_pct > 0 ? "+" : ""}${tie.delta_pct}% vs XBRL`}
-          </div>
-          <div className="mt-0.5 text-slate-400">
-            footnote {tie.llm_display} vs XBRL {tie.xbrl_display}
-            {tie.xbrl_concept ? ` · ${tie.xbrl_concept}` : ""}
-          </div>
-        </div>
-      )}
     </div>,
     document.body,
   );
@@ -114,9 +99,6 @@ export default function CitedNumber({ cv, className = "", placeholder = "—" })
 
   const label = cv.display ?? (cv.value != null ? String(cv.value) : placeholder);
   const isDerived = cv.derived;
-  const tie = cv.tie_out;
-  const tieColor =
-    tie?.status === "match" ? "text-emerald-400" : tie?.status === "mismatch" ? "text-amber-400" : "text-slate-500";
 
   // The card is a portal, not a DOM child — hovering into it must cancel the
   // pending close so the SEC.gov link stays reachable.
@@ -140,11 +122,6 @@ export default function CitedNumber({ cv, className = "", placeholder = "—" })
         {label}
         {isDerived && <sup className="ml-0.5 text-[9px] text-amber-400/80">ƒ</sup>}
       </span>
-      {tie && tie.status !== "no_xbrl" && (
-        <sup className={`ml-1 text-[9px] font-semibold ${tieColor}`} title="XBRL tie-out">
-          {tie.status === "match" ? "✓XBRL" : `⚠${tie.delta_pct > 0 ? "+" : ""}${tie.delta_pct}%`}
-        </sup>
-      )}
       {open && <CiteCard anchorRef={anchorRef} cv={cv} onEnter={openNow} onLeave={closeSoon} />}
     </span>
   );

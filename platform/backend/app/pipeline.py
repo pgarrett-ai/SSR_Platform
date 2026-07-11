@@ -2,20 +2,22 @@
 
 Phase 1 covers issuer resolution + filing/exhibit retrieval + persistence, and assembles the
 header + sources of the Overview. Later phases (XBRL facts, economic-debt bridge, covenants,
-MD&A drift) attach their sections here. The function takes a ProgressLog so the API can stream
-"what it's doing" to the UI.
+MD&A sections) attach their sections here. The function takes a ProgressLog so the API can
+stream "what it's doing" to the UI.
 """
 from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Optional
 
-from .capstack.bridge import build_bridge
-from .capstack.covenants import extract_covenant_summary, find_credit_documents
+from .capstack.bridge import build_bridge, build_ebitda_box
+from .capstack.agreements import group_families, map_instruments
+from .capstack.covenants import extract_covenant_package, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
-from .capstack.debt_schedule import extract_debt_schedule
+from .capstack.debt_schedule import annotate_maturities, drop_retired, extract_debt_schedule
+from .capstack.debt_xbrl import build_xbrl_debt_schedule
 from .capstack.forensic import build_forensic_table, detect_flags
-from .capstack.mdna_drift import build_drift
+from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .core.config import get_settings
 from .core.db import session_scope
@@ -35,6 +37,9 @@ from .store import (
     persist_obs,
     upsert_filings,
 )
+
+# Cap on per-run covenant LLM extractions; the per-doc cache amortizes repeat runs to ~zero.
+_MAX_COVENANT_EXTRACTS = 10
 
 
 def run_overview(
@@ -134,6 +139,26 @@ def run_overview(
         ft = get_filing_text(latest_10k) if latest_10k is not None else None
     except Exception as exc:
         warnings.append(f"10-K text fetch failed: {exc}")
+
+    # --- debt schedule from dimensional XBRL — deterministic, runs with the LLM off ---
+    debt_asof = None
+    try:
+        progress.emit("Building debt schedule from XBRL dimensions…", step="debt", pct=66)
+        from .rates import get_key_rates
+        with session_scope() as session:
+            rate_map = {r["series"]: r["value"] for r in get_key_rates(session)}
+        debt_schedule, debt_asof = build_xbrl_debt_schedule(company, rate_map)
+        if debt_schedule:
+            progress.emit(
+                f"{len(debt_schedule)} instruments from XBRL dimensions (as of {debt_asof}).",
+                step="debt", pct=67,
+            )
+        else:
+            progress.emit("No dimensioned debt in XBRL — footnote extraction will be used.",
+                          step="debt", pct=67)
+    except Exception as exc:
+        warnings.append(f"XBRL debt schedule failed: {exc}")
+
     if settings.llm_enabled:
         try:
             progress.emit("Extracting footnotes & MD&A (leases, pension, supplier finance, "
@@ -148,10 +173,15 @@ def run_overview(
                 if obs_items:
                     with session_scope() as session:
                         persist_obs(session, ticker, obs_items)
-                instruments, debt_err = extract_debt_schedule(ft)
-                debt_schedule = instruments
-                if debt_err:
-                    warnings.append(f"Debt-schedule extraction error: {debt_err}")
+                if debt_schedule:   # XBRL numbers stand; the LLM only annotates text
+                    ann_err = annotate_maturities(debt_schedule, ft, debt_asof)
+                    if ann_err:
+                        warnings.append(f"Maturity annotation: {ann_err}")
+                else:               # undimensioned issuer: legacy extraction + hard filters
+                    instruments, debt_err = extract_debt_schedule(ft)
+                    debt_schedule = drop_retired(instruments, debt_asof)
+                    if debt_err:
+                        warnings.append(f"Debt-schedule extraction error: {debt_err}")
                 n_lines = len(economic_debt_bridge.lines) if economic_debt_bridge else 0
                 progress.emit(
                     f"Built economic-debt bridge ({n_lines} lines), {len(obs_items)} OBS findings, "
@@ -170,14 +200,26 @@ def run_overview(
         warnings.append(f"Credit-document fetch failed: {exc}")
     if settings.llm_enabled:
         try:
-            progress.emit("Extracting covenants from credit documents…",
-                          step="covenants", pct=85)
+            progress.emit("Grouping credit documents into agreement families…",
+                          step="covenants", pct=84)
+            families = group_families(credit_docs)
+            map_instruments(families, debt_schedule)
+            # families that govern a known instrument first, newest first; cap LLM spend —
+            # the per-doc extraction cache makes repeat live runs near-free anyway
+            families.sort(key=lambda f: (bool(f.governs_instruments),
+                                         f.operative.doc.filing_date or ""), reverse=True)
+            progress.emit(
+                f"{len(families)} agreement families from {len(credit_docs)} credit documents; "
+                f"extracting up to {_MAX_COVENANT_EXTRACTS}…", step="covenants", pct=85,
+            )
             clause_texts: list[tuple] = []
-            for d in credit_docs[:2]:
-                summ, clause, _lme = extract_covenant_summary(d)
-                if summ:
-                    covenants.append(summ)
-                    clause_texts.append((summ, clause))
+            for fam in families[:_MAX_COVENANT_EXTRACTS]:
+                pkg, clause, cov_err = extract_covenant_package(fam)
+                if cov_err:
+                    warnings.append(f"Covenant extraction ({fam.label}): {cov_err}")
+                if pkg:
+                    covenants.append(pkg)
+                    clause_texts.append((pkg, clause))
             if clause_texts:
                 with session_scope() as session:
                     persist_covenants(session, ticker, clause_texts)
@@ -223,36 +265,17 @@ def run_overview(
     maturities = maturity_wall(debt_schedule)
     changes = what_changed_quarterly(quarters) or what_changed(forensic_table)
 
-    # --- Phase 4.3: XBRL tie-out reconciliation (confidence score) ---
-    xbrl_tie_outs = []
+    # --- Phase 5: MD&A section retention — deterministic, runs even without an API key ---
     try:
-        from .capstack.reconcile import build_tie_outs
-        xbrl_tie_outs, tie_warnings = build_tie_outs(series, obs_extractions, debt_schedule)
-        warnings.extend(tie_warnings)
-        if xbrl_tie_outs:
-            progress.emit(
-                f"Reconciled {len(xbrl_tie_outs)} footnote total(s) against XBRL "
-                f"({sum(t.status == 'mismatch' for t in xbrl_tie_outs)} mismatch).",
-                step="reconcile", pct=93,
-            )
-    except Exception as exc:
-        warnings.append(f"XBRL tie-out step failed: {exc}")
-
-    # --- Phase 5: MD&A semantic drift (§7, experimental) — runs even without an API key ---
-    mdna_drift = []
-    try:
-        progress.emit("Computing MD&A semantic drift (TF-IDF) + liquidity tone…",
-                      step="drift", pct=94)
-        drift_points, mdna_periods = build_drift(company, years, settings.llm_enabled)
-        mdna_drift = drift_points
+        progress.emit("Storing MD&A sections per period…", step="mdna", pct=94)
+        mdna_periods = build_mdna_series(company, years)
         if mdna_periods:
             with session_scope() as session:
                 persist_mdna(session, ticker, mdna_periods)
-        progress.emit(f"MD&A drift computed over {len(mdna_drift)} period(s).",
-                      step="drift", pct=98)
+        progress.emit(f"Stored MD&A for {len(mdna_periods)} period(s).", step="mdna", pct=98)
     except Exception as exc:
-        warnings.append(f"MD&A drift step failed: {exc}")
-        progress.emit(f"MD&A drift step failed: {exc}", step="drift", pct=98)
+        warnings.append(f"MD&A step failed: {exc}")
+        progress.emit(f"MD&A step failed: {exc}", step="mdna", pct=98)
 
     # LLM off → splice the LLM-derived sections from the newest cached snapshot so the
     # dashboard still shows analysis (clearly labeled as prior) instead of empty cards.
@@ -272,12 +295,6 @@ def run_overview(
             covenants = covenants or prior.covenants
             subsidiaries = subsidiaries or prior.subsidiaries
             debt_schedule = debt_schedule or prior.debt_schedule
-            # MD&A tone is LLM-derived; the TF-IDF drift itself stays fresh.
-            prior_tone = {(p.period_end, p.form_type): p.liquidity_tone_score
-                          for p in prior.mdna_drift}
-            for p in mdna_drift:
-                if p.liquidity_tone_score is None:
-                    p.liquidity_tone_score = prior_tone.get((p.period_end, p.form_type))
         else:
             llm_fallback_note = "LLM analysis is off — re-enable to analyze."
         warnings.append(llm_fallback_note)
@@ -286,6 +303,28 @@ def run_overview(
                 "ANTHROPIC_API_KEY not set — covenant/OBS extraction skipped; XBRL debt "
                 "schedule and forensic flags still run."
             )
+
+    # --- entity roles: match XBRL debt obligors to Exhibit 21 entities (deterministic) ---
+    if subsidiaries:
+        try:
+            from .capstack.subsidiaries import assign_roles
+            assign_roles(subsidiaries, debt_schedule, issuer_name)
+        except Exception as exc:
+            warnings.append(f"Entity role annotation failed: {exc}")
+
+    # --- EBITDA box: net-income walk + the issuer's covenant add-backs (deterministic; the
+    # categories come from whatever covenant packages exist, including a spliced prior run) ---
+    ebitda_build = None
+    try:
+        if series is not None and series.years:
+            cats: list[str] = []
+            for c in covenants:
+                for a in c.ebitda_addback_categories:
+                    if a not in cats:
+                        cats.append(a)
+            ebitda_build = build_ebitda_box(series, cats)
+    except Exception as exc:
+        warnings.append(f"EBITDA box step failed: {exc}")
 
     header = IssuerHeader(
         issuer=issuer_name,
@@ -299,17 +338,25 @@ def run_overview(
         llm_enabled=settings.llm_enabled,
     )
 
+    if debt_schedule:
+        try:
+            from .store import persist_debt_instruments
+            with session_scope() as session:
+                persist_debt_instruments(session, ticker, debt_schedule, debt_asof)
+        except Exception as exc:
+            warnings.append(f"Debt-instrument persistence failed: {exc}")
+
     overview = Overview(
         header=header,
         economic_debt_bridge=economic_debt_bridge,
+        ebitda_build=ebitda_build,
         debt_schedule=debt_schedule,
+        debt_schedule_asof=debt_asof,
         forensic_table=forensic_table,
         forensic_flags=forensic_flags,
         obs_items=obs_items,
         covenants=covenants,
-        mdna_drift=mdna_drift,
         subsidiaries=subsidiaries,
-        xbrl_tie_outs=xbrl_tie_outs,
         leverage_timeline=lev_timeline,
         maturity_wall=maturities,
         what_changed=changes,

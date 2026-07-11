@@ -66,7 +66,7 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
                 lien_rank=lien,
                 secured=secured,
                 preferred=preferred,
-                coupon=_parse_coupon(inst.get("coupon")),
+                coupon=_tranche_coupon(inst),
                 maturity=inst.get("maturity"),
             )
         )
@@ -87,9 +87,23 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
     return structure, ebitda, citations
 
 
+def _tranche_coupon(inst: dict) -> float:
+    """Accrual coupon for a tranche. Tagged XBRL rates first — the effective floater rate,
+    then the stated coupon (range midpoint) — so 'SOFR + 2.75%' is never read as 2.75%."""
+    eff = inst.get("effective_rate_pct")
+    if eff:
+        return float(eff) / 100.0
+    cp = inst.get("coupon_pct")
+    if cp:
+        hi = inst.get("coupon_pct_max")
+        return (float(cp) + float(hi)) / 2.0 / 100.0 if hi else float(cp) / 100.0
+    return _parse_coupon(inst.get("coupon"))
+
+
 def _parse_coupon(coupon: Optional[str]) -> float:
-    """'variable interest rate of 6.00%' -> 0.06; unparseable -> 0.0 (informational only)."""
+    """String fallback: the LAST percent wins — 'SOFR + 2.75% → 6.05%' -> 0.0605, and
+    'rates ranging from 2.88% to 7.15%, averaging 3.95%' -> 0.0395. Unparseable -> 0.0."""
     if not coupon:
         return 0.0
-    m = re.search(r"(\d+(?:\.\d+)?)\s*%", coupon)
-    return float(m.group(1)) / 100.0 if m else 0.0
+    hits = re.findall(r"(\d+(?:\.\d+)?)\s*%", coupon)
+    return float(hits[-1]) / 100.0 if hits else 0.0

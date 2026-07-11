@@ -1,10 +1,11 @@
-"""Phase 4.1: EBITDAR-consistent economic leverage. Synthetic XBRL facts, no network."""
+"""Economic-debt bridge: plain-EBITDA leverage, no cash/net-debt lines, and the EBITDA box.
+Synthetic XBRL facts, no network."""
 from __future__ import annotations
 
 import datetime as dt
 from types import SimpleNamespace
 
-from app.capstack.bridge import build_bridge
+from app.capstack.bridge import build_bridge, build_ebitda_box
 from app.edgar.facts import FinancialSeries, YearFacts
 
 
@@ -25,64 +26,58 @@ def _series(**metrics) -> FinancialSeries:
 BASE = dict(lt_debt_noncurrent=24e9, op_lease_noncurrent=6e9, op_lease_current=1e9,
             operating_income=1.5e9, d_and_a=2.2e9)
 
+WALK = dict(net_income=1.0e9, interest_expense=0.5e9, income_tax_expense=0.2e9)
 
-def test_economic_leverage_uses_ebitdar_when_rent_found():
+
+def test_leverage_uses_plain_ebitda():
     bridge, _ = build_bridge(_series(**BASE, operating_lease_cost=2e9), [], None)
-    assert bridge.ebitdar.value == 3.7e9 + 2e9
-    # economic debt 31e9 (24 debt + 7 op leases) / EBITDAR 5.7e9
-    assert abs(bridge.economic_leverage.value - 31e9 / 5.7e9) < 1e-9
-    assert "EBITDAR" in bridge.economic_leverage.formula
-    # reported leverage stays vs plain EBITDA (reported debt has no leases)
-    assert abs(bridge.reported_leverage.value - 24e9 / 3.7e9) < 1e-9
-    assert "EBITDAR" not in bridge.reported_leverage.formula
-
-
-def test_economic_leverage_falls_back_to_ebitda_without_rent():
-    bridge, _ = build_bridge(_series(**BASE), [], None)
-    assert bridge.ebitdar is None
+    # proxy EBITDA (no net-income walk components): OI 1.5 + D&A 2.2 = 3.7e9
+    assert bridge.ebitda.value == 3.7e9
+    # economic debt 31e9 (24 debt + 7 op leases) / plain EBITDA — no EBITDAR add-back
     assert abs(bridge.economic_leverage.value - 31e9 / 3.7e9) < 1e-9
-    assert "not found" in bridge.economic_leverage.note
+    assert "EBITDAR" not in bridge.economic_leverage.formula
+    assert abs(bridge.reported_leverage.value - 24e9 / 3.7e9) < 1e-9
 
 
-def test_no_ebitdar_when_no_operating_leases_in_bridge():
-    metrics = {k: v for k, v in BASE.items() if not k.startswith("op_lease")}
-    bridge, _ = build_bridge(_series(**metrics, operating_lease_cost=2e9), [], None)
-    assert bridge.ebitdar is None      # nothing in the numerator -> no add-back
-    assert abs(bridge.economic_leverage.value - 24e9 / 3.7e9) < 1e-9
+def test_ebitda_prefers_net_income_walk():
+    bridge, _ = build_bridge(_series(**BASE, **WALK), [], None)
+    # NI 1.0 + interest 0.5 + taxes 0.2 + D&A 2.2 = 3.9e9 (walk beats the OI proxy)
+    assert bridge.ebitda.value == 3.9e9
+    assert "net income" in bridge.ebitda.formula
 
 
-# ---- Phase 4.2: net-debt offsets + per-item tax effect --------------------------------
-
-
-def _keys(bridge):
-    return [ln.key for ln in bridge.lines]
-
-
-def test_net_debt_offsets_and_total():
+def test_no_cash_or_net_debt_lines():
     bridge, _ = build_bridge(_series(**BASE, cash=3e9, restricted_cash=1e9), [], None)
-    assert _keys(bridge)[-3:] == ["cash_offset", "restricted_cash_offset", "net_economic_debt"]
-    cash_line = next(ln for ln in bridge.lines if ln.key == "cash_offset")
-    assert cash_line.amount.value == -3e9 and cash_line.amount.citation is not None
-    # economic 31e9 − 4e9 offsets
-    assert bridge.net_economic_debt.value == 27e9
-    assert bridge.economic_debt.value == 31e9   # gross total untouched by offsets
+    keys = [ln.key for ln in bridge.lines]
+    assert "cash_offset" not in keys and "net_economic_debt" not in keys
+    assert keys[-1] == "economic_debt"       # the waterfall ends at economic debt
+    assert bridge.economic_debt.value == 31e9
 
 
-def test_restricted_cash_skipped_when_cash_tag_bundles_it():
-    yf = YearFacts(fiscal_year=2025, period_end=dt.date(2025, 12, 31), metrics={
-        **{k: _fact(v, k) for k, v in BASE.items()},
-        "cash": _fact(4e9, "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents"),
-        "restricted_cash": _fact(1e9, "RestrictedCashAndCashEquivalents"),
-    })
-    bridge, _ = build_bridge(FinancialSeries(cik="6201", years=[yf]), [], None)
-    assert "restricted_cash_offset" not in _keys(bridge)   # double-count guard
-    assert bridge.net_economic_debt.value == 31e9 - 4e9
+# ---- EBITDA box ------------------------------------------------------------------
 
 
-def test_no_net_line_without_cash():
-    bridge, _ = build_bridge(_series(**BASE), [], None)
-    assert bridge.net_economic_debt is None
-    assert "net_economic_debt" not in _keys(bridge)
+def test_ebitda_box_walk_and_addbacks():
+    series = _series(**BASE, **WALK, share_based_comp=0.3e9)
+    cats = ["stock-based compensation", "business optimization costs",
+            "depreciation and amortization"]
+    box = build_ebitda_box(series, cats)
+    assert [ln.key for ln in box.lines] == [
+        "net_income", "interest_expense", "income_tax_expense", "d_and_a", "ebitda"]
+    assert box.ebitda.value == 3.9e9                       # same rule as the bridge
+    # D&A category is a walk line, so it's dropped; stock comp quantifies from XBRL
+    assert [a.category for a in box.addbacks] == [
+        "stock-based compensation", "business optimization costs"]
+    assert box.addbacks[0].amount.value == 0.3e9
+    assert box.addbacks[0].amount.citation is not None
+    assert box.addbacks[1].amount is None                  # disclosed, not quantifiable
+
+
+def test_ebitda_box_requires_walk_anchors():
+    assert build_ebitda_box(_series(**BASE), ["stock comp"]) is None   # no net_income
+
+
+# ---- OBS tax effects (unchanged behavior) ----------------------------------------
 
 
 def _obs(amount=1e9, category="pension_opeb"):

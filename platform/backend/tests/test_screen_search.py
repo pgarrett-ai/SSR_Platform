@@ -5,24 +5,22 @@ from app import models
 from app.core import cache, db
 from app.core.db import init_db, session_scope
 from app.main import app
-from app.schemas import (CitedValue, DriftPoint, EconomicDebtBridge, ForensicFlag,
+from app.schemas import (CitedValue, EconomicDebtBridge, ForensicFlag,
                          IssuerHeader, Overview)
 from app.store import rebuild_fts, update_snapshot_risk
 
 client = TestClient(app).__enter__()   # lifespan runs init_db (tables + FTS)
 
 
-def _overview(lev=6.5, tone=40.0):
+def _overview(lev=6.5):
     return Overview(
         header=IssuerHeader(issuer="ZZ Test Corp", ticker="ZZTEST", cik="99",
                             years=3, last_updated="2026-07-07T00:00:00+00:00"),
         economic_debt_bridge=EconomicDebtBridge(
             reported_leverage=CitedValue(value=5.0),
             economic_leverage=CitedValue(value=lev),
-            net_economic_debt=CitedValue(value=1.2e9),
         ),
         forensic_flags=[ForensicFlag(flag_type="x", severity="warn", narrative="n")],
-        mdna_drift=[DriftPoint(period_end="2026-03-31", liquidity_tone_score=tone)],
     )
 
 
@@ -52,11 +50,10 @@ def test_fts5_available():
 def test_snapshot_upsert_and_screen(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DIR", tmp_path)
     cache.save_overview("ZZTEST", 3, _overview(lev=6.5))
-    cache.save_overview("ZZTEST", 3, _overview(lev=7.1, tone=55.0))   # latest wins
+    cache.save_overview("ZZTEST", 3, _overview(lev=7.1))   # latest wins
     rows = [r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST"]
     assert len(rows) == 1
     assert rows[0]["economic_leverage"] == 7.1
-    assert rows[0]["liquidity_tone"] == 55.0
     assert rows[0]["flag_count"] == 1
     _cleanup()
 

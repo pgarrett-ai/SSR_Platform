@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from . import models
 from .edgar.client import FilingInfo
-from .schemas import CovenantSummary, FilingRef
+from .schemas import CovenantPackage, FilingRef
 from .schemas import ObsItem as ObsItemSchema
 
 
@@ -50,7 +50,7 @@ def upsert_filings(
 
 
 def persist_covenants(
-    session: Session, ticker: str, items: list[tuple[CovenantSummary, str]]
+    session: Session, ticker: str, items: list[tuple[CovenantPackage, str]]
 ) -> None:
     """Store extracted covenant packages, keeping `clause_text` so a vector index can be added
     later (brief §5 — embedding/clustering is v2; we just keep the raw clauses now)."""
@@ -129,7 +129,7 @@ def persist_obs(session: Session, ticker: str, items: list[ObsItemSchema]) -> No
 
 
 def persist_mdna(session: Session, ticker: str, periods) -> None:
-    """Store MD&A sections + computed drift/tone for §7 (replace prior rows for this ticker)."""
+    """Store MD&A section text per period (replace prior rows for this ticker)."""
     for row in session.scalars(
         select(models.MdnaSection).where(models.MdnaSection.ticker == ticker)
     ).all():
@@ -142,10 +142,38 @@ def persist_mdna(session: Session, ticker: str, periods) -> None:
             period_end=p.period_end,
             section_name="MD&A",
             text=(p.text or "")[:200000],
-            drift_from_prior=p.drift_from_prior,
-            liquidity_tone_score=p.tone,
         ))
     rebuild_fts(session, ticker)
+
+
+def persist_debt_instruments(session: Session, ticker: str, instruments,
+                             asof) -> None:
+    """Replace the ticker's queryable debt-schedule rows with the latest run's."""
+    for row in session.scalars(
+        select(models.DebtInstrumentRow).where(models.DebtInstrumentRow.ticker == ticker)
+    ).all():
+        session.delete(row)
+    for i in instruments:
+        cv = i.outstanding or i.principal
+        session.add(models.DebtInstrumentRow(
+            ticker=ticker,
+            instrument=i.instrument,
+            xbrl_member=i.xbrl_member,
+            outstanding=cv.value if cv else None,
+            coupon=i.coupon,
+            coupon_pct=i.coupon_pct,
+            coupon_pct_max=i.coupon_pct_max,
+            spread_pct=i.spread_pct,
+            effective_rate_pct=i.effective_rate_pct,
+            rate_type=i.rate_type,
+            rate_base=i.rate_base,
+            maturity=i.maturity,
+            secured=i.secured,
+            seniority=i.seniority,
+            obligor=i.obligor,
+            governed_by=i.governed_by,
+            asof=str(asof) if asof else None,
+        ))
 
 
 def upsert_snapshot(session: Session, ticker: str, overview) -> None:
@@ -155,8 +183,6 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         return cv.value if cv is not None else None
 
     bridge = overview.economic_debt_bridge
-    tones = [p.liquidity_tone_score for p in overview.mdna_drift
-             if p.liquidity_tone_score is not None]
     prior = session.get(models.Snapshot, ticker)
     session.merge(models.Snapshot(
         ticker=ticker,
@@ -166,9 +192,7 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         last_updated=overview.header.last_updated,
         reported_leverage=_val(bridge.reported_leverage) if bridge else None,
         economic_leverage=_val(bridge.economic_leverage) if bridge else None,
-        net_economic_debt=_val(bridge.net_economic_debt) if bridge else None,
         flag_count=len(overview.forensic_flags),
-        liquidity_tone=tones[-1] if tones else None,
         overall_risk=prior.overall_risk if prior else None,
         trained_pd=prior.trained_pd if prior else None,
         implied_rating=prior.implied_rating if prior else None,

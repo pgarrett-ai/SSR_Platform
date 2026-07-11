@@ -195,6 +195,62 @@ class MdnaSection(Base):
     liquidity_tone_score: Mapped[Optional[float]] = mapped_column(Float)  # zero-shot Claude score
 
 
+class DebtInstrumentRow(Base):
+    """Queryable copy of the latest debt schedule per ticker (replaced on each run) —
+    feeds cross-company screens and N-PORT holder matching."""
+
+    __tablename__ = "debt_instruments"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    ticker: Mapped[str] = mapped_column(String(16), index=True)
+    instrument: Mapped[str] = mapped_column(Text)
+    xbrl_member: Mapped[Optional[str]] = mapped_column(String(128))
+    outstanding: Mapped[Optional[float]] = mapped_column(Float)          # USD
+    coupon: Mapped[Optional[str]] = mapped_column(String(80))            # display string
+    coupon_pct: Mapped[Optional[float]] = mapped_column(Float)
+    coupon_pct_max: Mapped[Optional[float]] = mapped_column(Float)       # rate ranges (EETCs)
+    spread_pct: Mapped[Optional[float]] = mapped_column(Float)
+    effective_rate_pct: Mapped[Optional[float]] = mapped_column(Float)
+    rate_type: Mapped[Optional[str]] = mapped_column(String(16))
+    rate_base: Mapped[Optional[str]] = mapped_column(String(16))
+    maturity: Mapped[Optional[str]] = mapped_column(String(64))
+    secured: Mapped[Optional[bool]] = mapped_column(Boolean)
+    seniority: Mapped[Optional[str]] = mapped_column(String(64))
+    obligor: Mapped[Optional[str]] = mapped_column(String(128))
+    governed_by: Mapped[Optional[str]] = mapped_column(String(160))
+    asof: Mapped[Optional[str]] = mapped_column(String(10))
+
+
+class NportHolding(Base):
+    """One registered fund's reported holding of a tracked issuer's debt (from the quarterly
+    SEC N-PORT data set, via scripts/ingest_nport.py). Partial coverage by construction."""
+
+    __tablename__ = "nport_holdings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    ticker: Mapped[str] = mapped_column(String(16), index=True)
+    issuer_name: Mapped[Optional[str]] = mapped_column(Text)
+    title: Mapped[Optional[str]] = mapped_column(Text)          # issue title, e.g. "AAL 5.75% 2029"
+    cusip: Mapped[Optional[str]] = mapped_column(String(12))
+    fund_name: Mapped[Optional[str]] = mapped_column(Text)
+    value_usd: Mapped[Optional[float]] = mapped_column(Float)
+    pct_of_fund: Mapped[Optional[float]] = mapped_column(Float)
+    instrument: Mapped[Optional[str]] = mapped_column(Text)     # matched debt-schedule row
+    report_quarter: Mapped[Optional[str]] = mapped_column(String(10), index=True)  # e.g. 2026q1
+
+
+class Rate(Base):
+    """Key reference-rate observations (SOFR, EFFR, prime, treasuries) — one row per
+    (series, date), refreshed by app.rates when stale."""
+
+    __tablename__ = "rates"
+
+    series: Mapped[str] = mapped_column(String(16), primary_key=True)
+    date: Mapped[str] = mapped_column(String(10), primary_key=True)
+    value: Mapped[float] = mapped_column(Float)
+    fetched_at: Mapped[Optional[str]] = mapped_column(String(40))
+
+
 class Scenario(Base):
     """A saved fulcrum run: structure + assumptions + summary results, for side-by-side compare."""
 
@@ -225,9 +281,7 @@ class Snapshot(Base):
     saved_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     reported_leverage: Mapped[Optional[float]] = mapped_column(Float)
     economic_leverage: Mapped[Optional[float]] = mapped_column(Float)
-    net_economic_debt: Mapped[Optional[float]] = mapped_column(Float)   # USD
     flag_count: Mapped[Optional[int]] = mapped_column(Integer)
-    liquidity_tone: Mapped[Optional[float]] = mapped_column(Float)      # 0-100 stress
     overall_risk: Mapped[Optional[float]] = mapped_column(Float)        # hazard composite
     trained_pd: Mapped[Optional[float]] = mapped_column(Float)          # calibrated 12m PD
     implied_rating: Mapped[Optional[str]] = mapped_column(String(8))

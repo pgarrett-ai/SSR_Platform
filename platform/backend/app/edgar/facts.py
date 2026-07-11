@@ -123,6 +123,15 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("capex", "Capital expenditures", "CashFlowStatement", "duration",
                ("PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets",
                 "PaymentsForCapitalImprovements", "PaymentsToAcquireOtherProductiveAssets")),
+    # --- common covenant EBITDA add-backs (quantified when tagged; no statement filter) ---
+    MetricSpec("share_based_comp", "Stock-based compensation", None, "duration",
+               ("ShareBasedCompensation", "AllocatedShareBasedCompensationExpense")),
+    MetricSpec("restructuring", "Restructuring charges", None, "duration",
+               ("RestructuringCharges", "RestructuringCostsAndAssetImpairmentCharges",
+                "RestructuringSettlementAndImpairmentProvisions", "RestructuringCosts")),
+    MetricSpec("impairment", "Impairment charges", None, "duration",
+               ("AssetImpairmentCharges", "ImpairmentOfLongLivedAssetsHeldAndUsed",
+                "GoodwillImpairmentLoss", "TangibleAssetImpairmentCharges")),
 )
 
 _SPEC_BY_KEY = {s.key: s for s in METRIC_SPECS}

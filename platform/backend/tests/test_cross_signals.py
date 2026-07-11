@@ -17,8 +17,6 @@ def test_capstack_signals_from_shipped_snapshot():
     cs = capstack_signals("AAL")
     assert cs["hidden_leverage"]["raw"] > 0
     assert 0.0 <= cs["hidden_leverage"]["risk"] <= 100.0
-    assert 0.0 <= cs["mdna_tone"]["risk"] <= 100.0
-    assert cs["mdna_tone"]["risk"] == cs["mdna_tone"]["raw"]
 
 
 def test_capstack_signals_cache_miss_is_empty():

@@ -18,7 +18,7 @@ from contextlib import asynccontextmanager
 from typing import Optional
 
 import numpy as np
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
@@ -201,11 +201,79 @@ def screen() -> JSONResponse:
             "ticker": r.ticker, "issuer": r.issuer, "last_updated": r.last_updated,
             "reported_leverage": r.reported_leverage,
             "economic_leverage": r.economic_leverage,
-            "net_economic_debt": r.net_economic_debt,
-            "flag_count": r.flag_count, "liquidity_tone": r.liquidity_tone,
+            "flag_count": r.flag_count,
             "overall_risk": r.overall_risk, "trained_pd": r.trained_pd,
             "implied_rating": r.implied_rating,
         } for r in rows]))
+
+
+@app.get("/api/rates")
+def key_rates() -> JSONResponse:
+    """Latest key reference rates (SOFR, EFFR, Fed Funds target, prime, T-bill, 10Y) —
+    stored in the DB, refreshed when stale, served with their observation dates."""
+    from .rates import LIBOR_NOTE, get_key_rates, refresh_if_stale
+
+    with session_scope() as session:
+        refresh_if_stale(session)
+        return JSONResponse(content={"rates": get_key_rates(session), "note": LIBOR_NOTE})
+
+
+@app.get("/api/company/{ticker}/holders")
+def known_holders(ticker: str) -> JSONResponse:
+    """Registered-fund holders of the issuer's debt (N-PORT data set, when ingested),
+    grouped by matched instrument, largest positions first."""
+    from sqlalchemy import desc, nulls_last
+
+    from .nport import COVERAGE_NOTE
+
+    with session_scope() as session:
+        rows = (session.query(models.NportHolding)
+                .filter(models.NportHolding.ticker == ticker.upper())
+                .order_by(nulls_last(desc(models.NportHolding.value_usd)))
+                .limit(500).all())
+        return JSONResponse(content=jsonable({
+            "note": COVERAGE_NOTE,
+            "quarter": rows[0].report_quarter if rows else None,
+            "holdings": [{
+                "fund_name": r.fund_name, "title": r.title, "instrument": r.instrument,
+                "value_usd": r.value_usd, "pct_of_fund": r.pct_of_fund, "cusip": r.cusip,
+            } for r in rows],
+        }))
+
+
+@app.get("/api/company/{ticker}/mdna")
+def mdna_periods(ticker: str) -> JSONResponse:
+    """Stored MD&A sections for the ticker, newest first — the reader's table of contents."""
+    from sqlalchemy import desc, nulls_last
+
+    from .edgar.client import index_url_for
+
+    with session_scope() as session:
+        snap = session.get(models.Snapshot, ticker.upper())
+        cik = snap.cik if snap else None
+        rows = (session.query(models.MdnaSection)
+                .filter(models.MdnaSection.ticker == ticker.upper())
+                .order_by(nulls_last(desc(models.MdnaSection.period_end))).all())
+        return JSONResponse(content=jsonable([{
+            "accession_no": r.accession_no, "form_type": r.form_type,
+            "period_end": r.period_end, "n_chars": len(r.text or ""),
+            "source_url": index_url_for(cik, r.accession_no) if cik and r.accession_no else None,
+        } for r in rows]))
+
+
+@app.get("/api/company/{ticker}/mdna/{accession_no}")
+def mdna_text(ticker: str, accession_no: str) -> JSONResponse:
+    """Full stored MD&A text for one filing period."""
+    with session_scope() as session:
+        row = (session.query(models.MdnaSection)
+               .filter(models.MdnaSection.ticker == ticker.upper(),
+                       models.MdnaSection.accession_no == accession_no).first())
+        if row is None:
+            raise HTTPException(status_code=404, detail="No stored MD&A for that filing")
+        return JSONResponse(content=jsonable({
+            "accession_no": row.accession_no, "form_type": row.form_type,
+            "period_end": row.period_end, "text": row.text or "",
+        }))
 
 
 @app.get("/api/search")

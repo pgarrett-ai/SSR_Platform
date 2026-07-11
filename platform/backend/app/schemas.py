@@ -19,21 +19,6 @@ class Citation(BaseModel):
     quote: Optional[str] = None
 
 
-class TieOut(BaseModel):
-    """Reconciliation of an LLM footnote reading against its XBRL concept (Phase 4.3). `status`
-    is match (≤5%) / mismatch (>5%) / no_xbrl. This is the v1 confidence score for a number."""
-
-    label: str
-    llm_value: Optional[float] = None
-    llm_display: Optional[str] = None
-    xbrl_value: Optional[float] = None
-    xbrl_display: Optional[str] = None
-    xbrl_concept: Optional[str] = None
-    delta_pct: Optional[float] = None      # (llm − xbrl) / |xbrl| × 100
-    status: str = "no_xbrl"
-    source_url: Optional[str] = None
-
-
 class CitedValue(BaseModel):
     """A single number plus its provenance. Either `citation` is set, or `derived` is True
     and `formula` explains the computation. The UI never shows an uncited hard number."""
@@ -45,7 +30,6 @@ class CitedValue(BaseModel):
     derived: bool = False
     formula: Optional[str] = None
     note: Optional[str] = None
-    tie_out: Optional[TieOut] = None       # XBRL reconciliation chip, when this number has an analog
 
 
 class FilingRef(BaseModel):
@@ -75,11 +59,21 @@ class DebtInstrument(BaseModel):
     instrument: str
     principal: Optional[CitedValue] = None
     outstanding: Optional[CitedValue] = None
-    coupon: Optional[str] = None
+    coupon: Optional[str] = None           # display string, e.g. "5.75%" or "SOFR + 2.75% → 6.05%"
     maturity: Optional[str] = None
     secured: Optional[bool] = None
     seniority: Optional[str] = None
     citation: Optional[Citation] = None
+    # deterministic rate fields from dimensional XBRL (None on the legacy LLM path)
+    coupon_pct: Optional[float] = None
+    coupon_pct_max: Optional[float] = None  # set when the instrument is a rate range (EETCs)
+    spread_pct: Optional[float] = None
+    effective_rate_pct: Optional[float] = None
+    rate_type: Optional[str] = None         # 'fixed' | 'floating'
+    rate_base: Optional[str] = None         # 'SOFR' (overnight proxy) when floating
+    xbrl_member: Optional[str] = None
+    obligor: Optional[str] = None            # LegalEntityAxis member, when tagged
+    governed_by: Optional[str] = None        # agreement-family label (or known-creditor note)
 
 
 class ForensicTableRow(BaseModel):
@@ -131,24 +125,88 @@ class EconomicDebtBridge(BaseModel):
     lines: list[BridgeLine] = Field(default_factory=list)
     reported_debt: Optional[CitedValue] = None
     economic_debt: Optional[CitedValue] = None
-    net_economic_debt: Optional[CitedValue] = None   # economic debt − cash − restricted cash
     ebitda: Optional[CitedValue] = None
-    ebitdar: Optional[CitedValue] = None             # EBITDA + operating lease cost, when found
     reported_leverage: Optional[CitedValue] = None   # reported debt / EBITDA
-    economic_leverage: Optional[CitedValue] = None   # economic debt / EBITDAR (EBITDA fallback)
+    economic_leverage: Optional[CitedValue] = None   # economic debt / EBITDA
 
 
-class CovenantSummary(BaseModel):
-    agreement_type: Optional[str] = None
-    leverage_covenant_type: Optional[str] = None
-    leverage_ratio_threshold: Optional[str] = None
+class EbitdaAddback(BaseModel):
+    """One covenant add-back category; amount is the matching XBRL fact when one exists."""
+
+    category: str                            # as extracted from the credit agreement
+    label: str
+    amount: Optional[CitedValue] = None      # None -> disclosed category, not XBRL-quantifiable
+
+
+class EbitdaBuild(BaseModel):
+    """Net income → EBITDA walk plus the issuer's own covenant add-backs (toggleable in the UI)."""
+
+    lines: list[BridgeLine] = Field(default_factory=list)   # NI → +interest → +taxes → +D&A → EBITDA
+    ebitda: Optional[CitedValue] = None
+    addbacks: list[EbitdaAddback] = Field(default_factory=list)
+
+
+class FinancialCovenant(BaseModel):
+    """One maintenance/incurrence financial covenant with what it tests and when."""
+
+    kind: Optional[str] = None              # e.g. "First-lien net leverage (maintenance)"
+    threshold: Optional[str] = None         # e.g. "≤ 4.50x, stepping to 4.00x FY27"
+    test_frequency: Optional[str] = None    # e.g. "quarterly", "springing at 35% revolver draw"
+    springing_trigger: Optional[str] = None
+    quote: Optional[str] = None
+
+
+class CovenantFact(BaseModel):
+    """A named basket/capacity fact (RP basket, incremental debt, lien capacity, …)."""
+
+    name: str
+    value: Optional[str] = None
+    quote: Optional[str] = None
+
+
+class LmeVector(BaseModel):
+    """One liability-management vulnerability read, tied to the covenant facts it rests on.
+    `not_addressed` vectors are not rendered — no phantom LME narratives."""
+
+    vector: str                             # uptier_priming | dropdown_jcrew | incremental_debt | rp_leakage
+    risk: str = "not_addressed"             # protected | open | unclear | not_addressed
+    rationale: Optional[str] = None
+    basis: Optional[str] = None             # the covenant facts this read rests on
+    quote: Optional[str] = None
+
+
+class CovenantPackage(BaseModel):
+    """The covenant read for one agreement family (base doc + its amendments)."""
+
+    # family metadata
+    family_label: Optional[str] = None      # "Credit Agreement dated June 27, 2013"
+    doc_class: Optional[str] = None         # credit_agreement | indenture | …
+    operative_date: Optional[str] = None    # filing date of the doc the terms were read from
+    amendment_count: int = 0
+    base_missing: bool = False              # only amendments on file — base terms not in window
+    governs_instruments: list[str] = Field(default_factory=list)
+    # creditors
+    admin_agent: Optional[str] = None
+    trustee: Optional[str] = None
+    collateral_agent: Optional[str] = None
+    creditor_note: Optional[str] = None
+    guarantors: Optional[str] = None        # who guarantees — usually a class description
+    # covenant facts
+    financial_covenants: list[FinancialCovenant] = Field(default_factory=list)
+    baskets: list[CovenantFact] = Field(default_factory=list)
     ebitda_addback_categories: list[str] = Field(default_factory=list)
-    restricted_payments_basket_size: Optional[str] = None
     mfn_sunset_period: Optional[str] = None
     j_crew_blocker_present: Optional[bool] = None
     unrestricted_subsidiary_designation_flexibility: Optional[str] = None
-    lme_risk_notes: Optional[str] = None
+    anchor_clause: Optional[str] = None     # always rendered, verbatim
+    lme_vectors: list[LmeVector] = Field(default_factory=list)
     citation: Optional[Citation] = None
+    # legacy fields — pre-rework cached snapshots still render through these
+    agreement_type: Optional[str] = None
+    leverage_covenant_type: Optional[str] = None
+    leverage_ratio_threshold: Optional[str] = None
+    restricted_payments_basket_size: Optional[str] = None
+    lme_risk_notes: Optional[str] = None
 
 
 class Subsidiary(BaseModel):
@@ -158,14 +216,9 @@ class Subsidiary(BaseModel):
     jurisdiction: Optional[str] = None
     parent: Optional[str] = None            # immediate parent, only when the exhibit is explicit
     percent_owned: Optional[float] = None
+    role: Optional[str] = None              # 'debt obligor' | 'parent' — deterministic matches only
+    instruments: list[str] = Field(default_factory=list)   # instruments this entity obligates
     citation: Optional[Citation] = None
-
-
-class DriftPoint(BaseModel):
-    period_end: Optional[str] = None
-    form_type: Optional[str] = None
-    drift_from_prior: Optional[float] = None
-    liquidity_tone_score: Optional[float] = None
 
 
 class LeverageTimelinePoint(BaseModel):
@@ -201,14 +254,14 @@ class ChangeItem(BaseModel):
 class Overview(BaseModel):
     header: IssuerHeader
     economic_debt_bridge: Optional[EconomicDebtBridge] = None
+    ebitda_build: Optional[EbitdaBuild] = None
     debt_schedule: list[DebtInstrument] = Field(default_factory=list)
+    debt_schedule_asof: Optional[str] = None   # balance-sheet instant the schedule reflects
     forensic_table: list[ForensicTableRow] = Field(default_factory=list)
     forensic_flags: list[ForensicFlag] = Field(default_factory=list)
     obs_items: list[ObsItem] = Field(default_factory=list)
-    covenants: list[CovenantSummary] = Field(default_factory=list)
-    mdna_drift: list[DriftPoint] = Field(default_factory=list)
+    covenants: list[CovenantPackage] = Field(default_factory=list)
     subsidiaries: list[Subsidiary] = Field(default_factory=list)
-    xbrl_tie_outs: list[TieOut] = Field(default_factory=list)
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY

@@ -1,23 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { overviewJsonUrl, streamOverview } from "../api.js";
-import { getCached, setCached } from "../cache.js";
 import Header from "../components/Header.jsx";
 import { ACCENT, INK, Section, chartTooltipStyle } from "../ui/index.jsx";
-import ProgressLog from "../components/ProgressLog.jsx";
 import ForensicTable from "../components/ForensicTable.jsx";
 import FlagCard from "../components/FlagCard.jsx";
 import SourcesPanel from "../components/SourcesPanel.jsx";
 import EconomicDebtBridge from "../components/EconomicDebtBridge.jsx";
+import EbitdaBuild from "../components/EbitdaBuild.jsx";
 import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
-import XbrlTieOut from "../components/XbrlTieOut.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
-import CovenantCard from "../components/CovenantCard.jsx";
-import MdnaDrift from "../components/MdnaDrift.jsx";
-
-// The original CapStack page, extracted from the pre-router App. Loads automatically for
-// the routed ticker (cache-first: session cache here, snapshot cache server-side).
+import CovenantPackages from "../components/CovenantPackages.jsx";
+import HoldersPanel from "../components/HoldersPanel.jsx";
+import MdnaReader from "../components/MdnaReader.jsx";
 
 // Phase 4.6: face due per calendar year, parsed from footnote maturity strings
 // (ranges like "2026 to 2038" are spread evenly — hover shows the instruments).
@@ -46,46 +41,9 @@ function MaturityWall({ wall }) {
   );
 }
 
-export default function CapitalPage({ ticker, years, health }) {
-  const [events, setEvents] = useState([]);
-  const [overview, setOverview] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const streamRef = useRef(null);
-
-  const cacheKey = `overview:${ticker}:${years}`;
-
-  async function run(live = false) {
-    streamRef.current?.cancel();
-    setLoading(true);
-    setError(null);
-    setEvents([]);
-    setOverview(null);
-    const ctrl = streamOverview(ticker, years, live, (e) => setEvents((prev) => [...prev, e]));
-    streamRef.current = ctrl;
-    try {
-      const ov = await ctrl.promise;
-      setOverview(setCached(cacheKey, ov));
-    } catch (err) {
-      setError(err.message || String(err));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    const cached = getCached(cacheKey);
-    if (cached) {
-      setOverview(cached);
-      setEvents([]);
-      setError(null);
-      return;
-    }
-    run(false);
-    return () => streamRef.current?.cancel();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cacheKey]);
-
+// Overview data + Run Live + progress log live in the shell (App.jsx) — this page renders
+// whatever snapshot the shell holds for the routed ticker.
+export default function CapitalPage({ ticker, health, overview }) {
   const flags = overview?.forensic_flags || [];
   // Badge for LLM-derived sections: fresh run → none; spliced prior snapshot → "prior
   // analysis"; nothing to show → "LLM off". Full note (with date) rides in warnings.
@@ -99,42 +57,6 @@ export default function CapitalPage({ ticker, years, health }) {
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-3 text-xs text-slate-500">
-        <button
-          onClick={() => run(true)}
-          disabled={loading}
-          className="rounded-md border border-ink-600 px-3 py-1.5 text-slate-300 hover:border-accent hover:text-white disabled:opacity-50"
-          title="bypass all caches and re-run the pipeline against EDGAR (~3 min with LLM)"
-        >
-          Run live ↻
-        </button>
-        {overview && (
-          <a
-            href={overviewJsonUrl(overview.header.ticker, overview.header.years, false)}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-md border border-ink-600 px-3 py-1.5 text-slate-300 hover:border-accent hover:text-white"
-          >
-            Download JSON
-          </a>
-        )}
-        {health && !health.llm_enabled && (
-          <span className="text-amber-400">
-            {health.llm_key_set
-              ? "LLM analysis is off — live runs reuse the last saved analysis"
-              : "LLM key not set — OBS/covenant sections skipped"}
-          </span>
-        )}
-      </div>
-
-      {(loading || events.length > 0) && <ProgressLog events={events} done={!!overview} />}
-
-      {error && (
-        <div className="mb-8 rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-200">
-          <span className="font-semibold">Could not complete:</span> {error}
-        </div>
-      )}
-
       {overview && (
         <>
           <Header header={overview.header} />
@@ -155,23 +77,27 @@ export default function CapitalPage({ ticker, years, health }) {
             <EconomicDebtBridge bridge={overview.economic_debt_bridge} />
           </Section>
 
+          {overview.ebitda_build && (
+            <Section
+              title="EBITDA build"
+              subtitle="net income → EBITDA, plus the issuer's covenant add-backs"
+            >
+              <EbitdaBuild
+                build={overview.ebitda_build}
+                economicDebt={overview.economic_debt_bridge?.economic_debt}
+              />
+            </Section>
+          )}
+
           <Section
             title="As-reported debt schedule"
-            subtitle={`${overview.debt_schedule?.length || 0} instruments from the debt footnote`}
-            badge={llmBadge}
+            subtitle={`${overview.debt_schedule?.length || 0} instruments${
+              overview.debt_schedule_asof ? ` · as of ${overview.debt_schedule_asof}` : ""
+            } · amounts from XBRL dimensions`}
           >
             <DebtScheduleTable instruments={overview.debt_schedule} />
             {overview.maturity_wall?.length > 0 && <MaturityWall wall={overview.maturity_wall} />}
           </Section>
-
-          {overview.xbrl_tie_outs?.length > 0 && (
-            <Section
-              title="XBRL tie-out"
-              subtitle="footnote totals reconciled against XBRL — the v1 confidence score"
-            >
-              <XbrlTieOut tieOuts={overview.xbrl_tie_outs} />
-            </Section>
-          )}
 
           <Section title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">
             <ForensicTable rows={overview.forensic_table} />
@@ -195,22 +121,34 @@ export default function CapitalPage({ ticker, years, health }) {
           {overview.subsidiaries?.length > 0 && (
             <Section
               title="Legal entities"
-              subtitle={`${overview.subsidiaries.length} entities from Exhibit 21`}
+              subtitle={`${overview.subsidiaries.length} entities from Exhibit 21 · obligors matched from XBRL`}
             >
-              <SubsidiariesList subsidiaries={overview.subsidiaries} />
+              <SubsidiariesList
+                subsidiaries={overview.subsidiaries}
+                guarantorNotes={(overview.covenants || [])
+                  .filter((c) => c.guarantors)
+                  .map((c) => `${c.family_label || c.agreement_type}: ${c.guarantors}`)}
+              />
             </Section>
           )}
 
           <Section
-            title="Covenant summary"
-            subtitle={`${overview.covenants?.length || 0} agreement(s) from EX-10.x / EX-4.x`}
+            title="Covenants & creditors"
+            subtitle={`${overview.covenants?.length || 0} agreement famil${
+              (overview.covenants?.length || 0) === 1 ? "y" : "ies"
+            } from EX-10.x / EX-4.x`}
             badge={llmBadge}
           >
-            <CovenantCard covenants={overview.covenants} />
+            <CovenantPackages
+              covenants={overview.covenants}
+              instruments={overview.debt_schedule}
+            />
           </Section>
 
-          <Section title="MD&A semantic drift" badge="experimental" subtitle={`${overview.mdna_drift?.length || 0} periods`}>
-            <MdnaDrift points={overview.mdna_drift} />
+          <HoldersPanel ticker={ticker} />
+
+          <Section title="MD&A" subtitle="management's discussion, per filing period">
+            <MdnaReader ticker={ticker} />
           </Section>
 
           <Section title="Sources" subtitle={`${overview.sources.length} filings analyzed`}>

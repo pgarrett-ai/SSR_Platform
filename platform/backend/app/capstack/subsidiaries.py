@@ -9,6 +9,7 @@ not who guarantees what).
 """
 from __future__ import annotations
 
+import re
 from typing import Optional
 
 from ..core.llm import extract_structured
@@ -113,6 +114,49 @@ def coerce_subsidiaries(raw_items, citation: Optional[Citation] = None,
         if len(out) >= cap:
             break
     return out
+
+
+# Structural subordination is the question legal entities exist to answer: match XBRL debt
+# obligors (LegalEntityAxis members) to Exhibit 21 entities so the list shows WHERE debt sits.
+_NAME_STOPWORDS = {"inc", "incorporated", "corp", "corporation", "llc", "ltd",
+                   "company", "co", "group", "holdings", "the"}
+
+
+def _norm_name(name: str) -> str:
+    s = re.sub(r"[^a-z0-9 ]", " ", (name or "").lower())
+    return " ".join(w for w in s.split() if w not in _NAME_STOPWORDS)
+
+
+def _member_to_words(member: str) -> str:
+    """'AmericanAirlinesIncMember' -> 'american airlines' (camel-case split + normalize)."""
+    s = re.sub(r"Member$", "", member or "")
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", s)
+    return _norm_name(s)
+
+
+def assign_roles(subsidiaries: list[Subsidiary], instruments,
+                 issuer_name: Optional[str] = None) -> list[Subsidiary]:
+    """Deterministic role annotation: an entity matching a debt instrument's XBRL obligor is
+    tagged 'debt obligor' (with its instruments); the registrant itself is 'parent'. Entities
+    we can't place stay unlabeled — guarantor status is a class definition in the credit
+    docs, not a per-entity fact we can verify here."""
+    obligors: dict[str, list[str]] = {}
+    for inst in instruments or []:
+        if getattr(inst, "obligor", None):
+            obligors.setdefault(_member_to_words(inst.obligor), []).append(inst.instrument)
+    issuer_norm = _norm_name(issuer_name) if issuer_name else None
+    for s in subsidiaries:
+        n = _norm_name(s.name)
+        if not n:
+            continue
+        hit = next((insts for ob, insts in obligors.items()
+                    if ob and (ob == n or ob in n or n in ob)), None)
+        if hit:
+            s.role = "debt obligor"
+            s.instruments = hit
+        elif issuer_norm and n == issuer_norm:
+            s.role = "parent"
+    return subsidiaries
 
 
 def extract_subsidiaries(company) -> tuple[list[Subsidiary], Optional[str]]:

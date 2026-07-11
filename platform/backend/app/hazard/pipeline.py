@@ -52,14 +52,6 @@ def capstack_signals(ticker: str) -> dict:
             "risk": round(_leverage_to_risk(float(lev)), 1),
             "source": "capstack economic-debt bridge (snapshot cache)",
         }
-    tones = [p.liquidity_tone_score for p in ov.mdna_drift
-             if p.liquidity_tone_score is not None]
-    if tones:  # already a 0-100 stress score; latest period is last
-        out["mdna_tone"] = {
-            "raw": float(tones[-1]), "unit": "liquidity stress tone 0-100",
-            "risk": float(tones[-1]),
-            "source": "capstack MD&A liquidity tone (snapshot cache)",
-        }
     return out
 
 
@@ -160,7 +152,7 @@ def analyze(ticker: str, years: int = 10) -> dict:
                                   "components": ["Altman"] if r is not None else []})
 
     # Composite overall risk (0-100): equal-weight blend of available signals, now including
-    # the capstack cross-module signals (hidden leverage, MD&A tone) when a snapshot exists.
+    # the capstack cross-module signal (hidden leverage) when a snapshot exists.
     signals, composite_of = [], []
     merton = scores.get("Merton DD", {})
     if merton.get("available") and merton.get("pd", {}).get("12m") is not None:
@@ -170,10 +162,9 @@ def analyze(ticker: str, years: int = 10) -> dict:
         signals.append(risk_timeline[-1]["altman_risk"])
         composite_of.append("Altman")
     cross = capstack_signals(sym) or capstack_signals(ticker)
-    for key, label in (("hidden_leverage", "hidden leverage"), ("mdna_tone", "MD&A tone")):
-        if key in cross:
-            signals.append(cross[key]["risk"])
-            composite_of.append(label)
+    if "hidden_leverage" in cross:
+        signals.append(cross["hidden_leverage"]["risk"])
+        composite_of.append("hidden leverage")
     overall_risk = round(float(np.mean(signals)), 1) if signals else None
     # The gauge and the timeline's final point are the same blend by construction —
     # the last point simply gets the full signal set (live Merton + cross-module signals).

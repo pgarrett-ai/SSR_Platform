@@ -1,8 +1,28 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { fetchHazard, fetchOverview, simulateRecovery } from "../api.js";
+import { fetchHazard, fetchOverview, fetchRates, simulateRecovery } from "../api.js";
 import { useAsync } from "../cache.js";
 import { Badge, Card, fmt, riskColor } from "../ui/index.jsx";
+
+// Key reference rates strip — DB-stored observations with their as-of dates.
+function KeyRates() {
+  const { data } = useAsync("rates", () => fetchRates(), []);
+  if (!data?.rates?.length) return null;
+  return (
+    <div className="mb-6 flex flex-wrap items-baseline gap-x-6 gap-y-2 rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3">
+      <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Key rates</span>
+      {data.rates.map((r) => (
+        <span key={r.series} className="text-xs text-slate-400" title={`as of ${r.date}`}>
+          {r.label}{" "}
+          <span className="font-mono text-slate-200">{r.value.toFixed(2)}%</span>
+        </span>
+      ))}
+      <span className="ml-auto text-[10px] text-slate-600" title={data.note}>
+        LIBOR discontinued 6/2023
+      </span>
+    </div>
+  );
+}
 
 // Company landing page: risk / leverage / recovery / flags, one card each, loading
 // independently. "What changed" compares the two most recent periods.
@@ -48,6 +68,8 @@ export default function OverviewPage({ ticker, years }) {
         <span className="font-mono text-sm text-slate-500">{ticker}</span>
         {ov.data?.header?.from_cache && <Badge>cached</Badge>}
       </div>
+
+      <KeyRates />
 
       <div className="grid gap-4 md:grid-cols-2">
         <OverviewCard title="Default risk" to={`/company/${ticker}/risk`}

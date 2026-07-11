@@ -9,12 +9,13 @@ Reported Debt
   + take-or-pay / purchase commitments           (LLM)
   + environmental / litigation reserves (debt-like) (LLM)
 = Economic (Adjusted) Debt
-  − cash & restricted cash                      (from XBRL, cited)
-= Net Economic Debt
 
 Every line is citation-linked; reported-debt/EBITDA sits next to economic-debt/EBITDA so the
 hidden leverage is obvious. Lease amounts come from XBRL (exact) to avoid double-counting the
 LLM's lease reading; everything else comes from the footnote extraction with a verbatim quote.
+
+This module also builds the EBITDA box: the net-income → EBITDA walk plus the issuer's own
+covenant add-back categories, XBRL-quantified where a matching concept is tagged.
 """
 from __future__ import annotations
 
@@ -32,12 +33,13 @@ from ..schemas import (
     BridgeLine,
     Citation,
     CitedValue,
+    EbitdaAddback,
+    EbitdaBuild,
     EconomicDebtBridge,
     ObsItem as ObsItemSchema,
 )
 from .forensic import total_debt
 from .obs_llm import ObsExtraction
-from .reconcile import pension_tie_out
 
 # Categories whose amounts feed the bridge by design (the brief's structural lines). Judgment
 # categories (guarantee/take_or_pay/litigation_env/vie/related_party/other) defer to the LLM's
@@ -217,8 +219,6 @@ def build_bridge(
         cv.display = fmt_money_millions(subtotal)
         if len(items) > 1:
             cv.note = f"Sum of {len(items)} {cat} items; largest shown. " + (cv.note or "")
-        if cat == "pension_opeb":   # tie the footnote deficit to the XBRL funded status
-            cv.tie_out = pension_tie_out(latest, cik, subtotal)
         lines.append(BridgeLine(key=cat, label=_LINE_LABELS.get(cat, cat), amount=cv))
         running += subtotal
 
@@ -234,82 +234,29 @@ def build_bridge(
     lines.append(BridgeLine(key="economic_debt", label="Economic (adjusted) debt", amount=econ_cv,
                             is_total=True))
 
-    # --- net-debt offsets: cash, plus restricted cash when tagged separately ---
-    net_running = running
-    cash_v = raw_value(latest, "cash")
-    if cash_v and cash_v > 0:
-        lines.append(BridgeLine(key="cash_offset", label="Less: cash & equivalents",
-                                amount=CitedValue(
-                                    value=-cash_v, display=fmt_money_millions(-cash_v),
-                                    citation=_xbrl_cite(latest, "cash", cik),
-                                    note="Offset to reach net economic debt.")))
-        net_running -= cash_v
-    cash_concept = getattr(latest.get("cash"), "concept", "") or ""
-    rc_v = raw_value(latest, "restricted_cash")
-    # skip when the cash tag already bundles restricted cash (double-count guard)
-    if rc_v and rc_v > 0 and "RestrictedCash" not in cash_concept:
-        lines.append(BridgeLine(key="restricted_cash_offset", label="Less: restricted cash",
-                                amount=CitedValue(
-                                    value=-rc_v, display=fmt_money_millions(-rc_v),
-                                    citation=_xbrl_cite(latest, "restricted_cash", cik),
-                                    note="Restricted cash offset. Availability in distress "
-                                         "varies — often collateral; treat as best case.")))
-        net_running -= rc_v
-    net_cv = None
-    if net_running != running:
-        net_cv = CitedValue(
-            value=net_running, display=fmt_money_millions(net_running), derived=True,
-            formula=f"economic debt {fmt_money_millions(running)} − cash offsets "
-                    f"{fmt_money_millions(running - net_running)}",
-            note="Net economic debt = economic debt − cash − restricted cash.",
-        )
-        lines.append(BridgeLine(key="net_economic_debt", label="Net economic (adjusted) debt",
-                                amount=net_cv, is_total=True))
-
-    # --- leverage. Reported = reported debt / EBITDA (neither includes leases). Economic
-    # debt carries the lease liabilities, so its denominator adds rent back: EBITDAR.
-    # Finance leases need no add-back — their cost (D&A + interest) is already outside EBITDA.
+    # --- leverage. Reported = reported debt / EBITDA; economic = economic debt / EBITDA.
+    # Lease liabilities sit in the numerator with no rent add-back to the denominator by
+    # design (user call: plain EBITDA) — heavy lessees read conservatively high.
     ebitda = _ebitda_value(latest)
-    ebitdar = rep_lev = econ_lev = None
+    rep_lev = econ_lev = None
     if ebitda and ebitda.value:
         rep_lev = CitedValue(
             value=rep_val / ebitda.value, display=fmt_ratio(rep_val / ebitda.value), derived=True,
             formula=f"reported debt {fmt_money_millions(rep_val)} / EBITDA {ebitda.display}",
         )
-        rent = raw_value(latest, "operating_lease_cost")
-        if op_cv and rent and rent > 0:
-            v = ebitda.value + rent
-            ebitdar = CitedValue(
-                value=v, display=fmt_money_millions(v), derived=True,
-                formula=f"EBITDA {ebitda.display} + operating lease cost "
-                        f"{fmt_money_millions(rent)} (FY{latest.fiscal_year})",
-                note="EBITDAR: operating lease liabilities sit in economic debt, so lease cost "
-                     "is added back to the denominator for a consistent ratio.",
-            )
-            econ_lev = CitedValue(
-                value=running / v, display=fmt_ratio(running / v), derived=True,
-                formula=f"economic debt {fmt_money_millions(running)} / EBITDAR {ebitdar.display}",
-                note="EBITDAR-consistent: lease liabilities in the numerator, lease cost added "
-                     "back to the denominator.",
-            )
-        else:
-            econ_lev = CitedValue(
-                value=running / ebitda.value, display=fmt_ratio(running / ebitda.value),
-                derived=True,
-                formula=f"economic debt {fmt_money_millions(running)} / EBITDA {ebitda.display}",
-                note="Simplified: proxy EBITDA (operating lease cost not found in XBRL, so no "
-                     "EBITDAR adjustment)." if op_cv else
-                     "Proxy EBITDA (no operating leases in the bridge — no EBITDAR adjustment "
-                     "needed).",
-            )
+        econ_lev = CitedValue(
+            value=running / ebitda.value, display=fmt_ratio(running / ebitda.value),
+            derived=True,
+            formula=f"economic debt {fmt_money_millions(running)} / EBITDA {ebitda.display}",
+            note="Economic debt (incl. lease liabilities) over plain EBITDA — no rent "
+                 "add-back to the denominator.",
+        )
 
     bridge = EconomicDebtBridge(
         lines=lines,
         reported_debt=reported_cv,
         economic_debt=econ_cv,
-        net_economic_debt=net_cv,
         ebitda=ebitda,
-        ebitdar=ebitdar,
         reported_leverage=rep_lev,
         economic_leverage=econ_lev,
     )
@@ -338,7 +285,32 @@ def _effective_tax_rate(yf: YearFacts, cik: str) -> Optional[CitedValue]:
     )
 
 
+# The walk from net income and the EBITDA box below must agree by construction: both are
+# NI + (interest or 0) + (taxes or 0) + D&A, requiring only the NI and D&A anchors.
+def _walk_components(yf: YearFacts) -> Optional[list[tuple[str, str, float]]]:
+    ni, da = raw_value(yf, "net_income"), raw_value(yf, "d_and_a")
+    if ni is None or da is None:
+        return None
+    out = [("net_income", "net income", ni)]
+    for key, label in (("interest_expense", "interest"), ("income_tax_expense", "taxes")):
+        v = raw_value(yf, key)
+        if v is not None:
+            out.append((key, label, v))
+    out.append(("d_and_a", "D&A", da))
+    return out
+
+
 def _ebitda_value(yf: YearFacts) -> Optional[CitedValue]:
+    """Canonical EBITDA: the net-income walk (NI + interest + taxes + D&A). Falls back to
+    the operating-income proxy when the walk's anchors aren't tagged."""
+    comps = _walk_components(yf)
+    if comps is not None:
+        v = sum(c[2] for c in comps)
+        return CitedValue(
+            value=v, display=fmt_money_millions(v), derived=True,
+            formula=" + ".join(f"{label} {fmt_money_millions(val)}" for _, label, val in comps)
+                    + f" (FY{yf.fiscal_year})",
+        )
     oi, da = raw_value(yf, "operating_income"), raw_value(yf, "d_and_a")
     if oi is None or da is None:
         return None
@@ -347,8 +319,64 @@ def _ebitda_value(yf: YearFacts) -> Optional[CitedValue]:
         value=v, display=fmt_money_millions(v), derived=True,
         formula=f"operating income {fmt_money_millions(oi)} + D&A {fmt_money_millions(da)} "
                 f"(FY{yf.fiscal_year})",
-        note="Proxy EBITDA.",
+        note="Proxy EBITDA (net-income walk components not all tagged).",
     )
+
+
+# Covenant add-back categories that duplicate walk lines are dropped; the rest map to an
+# XBRL concept where one is commonly tagged, else render as an unquantified category.
+_WALK_DUPES = ("interest", "tax", "depreciation", "amortization", "d&a")
+_ADDBACK_XBRL = (
+    (("stock", "share"), "share_based_comp"),
+    (("restructur", "severance"), "restructuring"),
+    (("impair", "write-down", "write-off", "writedown"), "impairment"),
+)
+
+_WALK_LABELS = {
+    "net_income": "Net income",
+    "interest_expense": "+ Interest expense",
+    "income_tax_expense": "+ Income tax expense",
+    "d_and_a": "+ Depreciation & amortization",
+}
+
+
+def build_ebitda_box(series: FinancialSeries,
+                     addback_categories: list[str]) -> Optional[EbitdaBuild]:
+    """The EBITDA box: net-income → EBITDA walk (each line XBRL-cited) plus the issuer's own
+    covenant add-back categories, quantified from XBRL where a matching concept is tagged."""
+    latest = series.latest() if series else None
+    if latest is None:
+        return None
+    cik = series.cik
+    comps = _walk_components(latest)
+    if comps is None:
+        return None   # bridge falls back to proxy EBITDA; no box without the walk anchors
+
+    lines = [
+        BridgeLine(key=key, label=_WALK_LABELS[key], amount=CitedValue(
+            value=val, display=fmt_money_millions(val), citation=_xbrl_cite(latest, key, cik)))
+        for key, _label, val in comps
+    ]
+    ebitda = _ebitda_value(latest)
+    lines.append(BridgeLine(key="ebitda", label="EBITDA", amount=ebitda, is_total=True))
+
+    addbacks: list[EbitdaAddback] = []
+    used_metrics: set[str] = set()
+    for cat in addback_categories:
+        lc = cat.lower()
+        if any(w in lc for w in _WALK_DUPES):
+            continue   # already a walk line above
+        metric = next((k for kws, k in _ADDBACK_XBRL if any(w in lc for w in kws)), None)
+        amount = None
+        if metric and metric not in used_metrics:
+            v = raw_value(latest, metric)
+            if v:
+                amount = CitedValue(value=v, display=fmt_money_millions(v),
+                                    citation=_xbrl_cite(latest, metric, cik))
+                used_metrics.add(metric)
+        addbacks.append(EbitdaAddback(category=cat, label=cat, amount=amount))
+
+    return EbitdaBuild(lines=lines, ebitda=ebitda, addbacks=addbacks)
 
 
 def _obs_findings(obs_items: list[ObsExtraction], ft: Optional[FilingText],
