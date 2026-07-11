@@ -11,6 +11,7 @@ import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
 import CovenantPackages from "../components/CovenantPackages.jsx";
+import HoldersPanel from "../components/HoldersPanel.jsx";
 import MdnaReader from "../components/MdnaReader.jsx";
 
 // Phase 4.6: face due per calendar year, parsed from footnote maturity strings
@@ -143,6 +144,8 @@ export default function CapitalPage({ ticker, health, overview }) {
               instruments={overview.debt_schedule}
             />
           </Section>
+
+          <HoldersPanel ticker={ticker} />
 
           <Section title="MD&A" subtitle="management's discussion, per filing period">
             <MdnaReader ticker={ticker} />

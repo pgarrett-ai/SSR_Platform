@@ -208,6 +208,7 @@ class DebtInstrumentRow(Base):
     outstanding: Mapped[Optional[float]] = mapped_column(Float)          # USD
     coupon: Mapped[Optional[str]] = mapped_column(String(80))            # display string
     coupon_pct: Mapped[Optional[float]] = mapped_column(Float)
+    coupon_pct_max: Mapped[Optional[float]] = mapped_column(Float)       # rate ranges (EETCs)
     spread_pct: Mapped[Optional[float]] = mapped_column(Float)
     effective_rate_pct: Mapped[Optional[float]] = mapped_column(Float)
     rate_type: Mapped[Optional[str]] = mapped_column(String(16))
@@ -218,6 +219,24 @@ class DebtInstrumentRow(Base):
     obligor: Mapped[Optional[str]] = mapped_column(String(128))
     governed_by: Mapped[Optional[str]] = mapped_column(String(160))
     asof: Mapped[Optional[str]] = mapped_column(String(10))
+
+
+class NportHolding(Base):
+    """One registered fund's reported holding of a tracked issuer's debt (from the quarterly
+    SEC N-PORT data set, via scripts/ingest_nport.py). Partial coverage by construction."""
+
+    __tablename__ = "nport_holdings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    ticker: Mapped[str] = mapped_column(String(16), index=True)
+    issuer_name: Mapped[Optional[str]] = mapped_column(Text)
+    title: Mapped[Optional[str]] = mapped_column(Text)          # issue title, e.g. "AAL 5.75% 2029"
+    cusip: Mapped[Optional[str]] = mapped_column(String(12))
+    fund_name: Mapped[Optional[str]] = mapped_column(Text)
+    value_usd: Mapped[Optional[float]] = mapped_column(Float)
+    pct_of_fund: Mapped[Optional[float]] = mapped_column(Float)
+    instrument: Mapped[Optional[str]] = mapped_column(Text)     # matched debt-schedule row
+    report_quarter: Mapped[Optional[str]] = mapped_column(String(10), index=True)  # e.g. 2026q1
 
 
 class Rate(Base):

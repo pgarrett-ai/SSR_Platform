@@ -218,6 +218,29 @@ def key_rates() -> JSONResponse:
         return JSONResponse(content={"rates": get_key_rates(session), "note": LIBOR_NOTE})
 
 
+@app.get("/api/company/{ticker}/holders")
+def known_holders(ticker: str) -> JSONResponse:
+    """Registered-fund holders of the issuer's debt (N-PORT data set, when ingested),
+    grouped by matched instrument, largest positions first."""
+    from sqlalchemy import desc, nulls_last
+
+    from .nport import COVERAGE_NOTE
+
+    with session_scope() as session:
+        rows = (session.query(models.NportHolding)
+                .filter(models.NportHolding.ticker == ticker.upper())
+                .order_by(nulls_last(desc(models.NportHolding.value_usd)))
+                .limit(500).all())
+        return JSONResponse(content=jsonable({
+            "note": COVERAGE_NOTE,
+            "quarter": rows[0].report_quarter if rows else None,
+            "holdings": [{
+                "fund_name": r.fund_name, "title": r.title, "instrument": r.instrument,
+                "value_usd": r.value_usd, "pct_of_fund": r.pct_of_fund, "cusip": r.cusip,
+            } for r in rows],
+        }))
+
+
 @app.get("/api/company/{ticker}/mdna")
 def mdna_periods(ticker: str) -> JSONResponse:
     """Stored MD&A sections for the ticker, newest first — the reader's table of contents."""

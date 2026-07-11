@@ -93,6 +93,10 @@ export async function fetchRates() {
   return jsonOrThrow(await fetch("/api/rates"));
 }
 
+export async function fetchHolders(ticker) {
+  return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/holders`));
+}
+
 // ---- MD&A reader ---------------------------------------------------------------
 
 export async function fetchMdnaPeriods(ticker) {
