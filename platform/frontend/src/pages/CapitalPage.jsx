@@ -120,9 +120,14 @@ export default function CapitalPage({ ticker, health, overview }) {
           {overview.subsidiaries?.length > 0 && (
             <Section
               title="Legal entities"
-              subtitle={`${overview.subsidiaries.length} entities from Exhibit 21`}
+              subtitle={`${overview.subsidiaries.length} entities from Exhibit 21 · obligors matched from XBRL`}
             >
-              <SubsidiariesList subsidiaries={overview.subsidiaries} />
+              <SubsidiariesList
+                subsidiaries={overview.subsidiaries}
+                guarantorNotes={(overview.covenants || [])
+                  .filter((c) => c.guarantors)
+                  .map((c) => `${c.family_label || c.agreement_type}: ${c.guarantors}`)}
+              />
             </Section>
           )}
 

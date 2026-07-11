@@ -304,6 +304,14 @@ def run_overview(
                 "schedule and forensic flags still run."
             )
 
+    # --- entity roles: match XBRL debt obligors to Exhibit 21 entities (deterministic) ---
+    if subsidiaries:
+        try:
+            from .capstack.subsidiaries import assign_roles
+            assign_roles(subsidiaries, debt_schedule, issuer_name)
+        except Exception as exc:
+            warnings.append(f"Entity role annotation failed: {exc}")
+
     # --- EBITDA box: net-income walk + the issuer's covenant add-backs (deterministic; the
     # categories come from whatever covenant packages exist, including a spliced prior run) ---
     ebitda_build = None

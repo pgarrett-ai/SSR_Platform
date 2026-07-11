@@ -33,3 +33,26 @@ def test_coerce_attaches_citation_and_caps():
 def test_coerce_blank_jurisdiction_becomes_none():
     subs = coerce_subsidiaries([{"name": "Co", "jurisdiction": "   ", "parent": ""}])
     assert subs[0].jurisdiction is None and subs[0].parent is None
+
+
+def test_assign_roles_matches_xbrl_obligors():
+    from app.capstack.subsidiaries import assign_roles
+    from app.schemas import DebtInstrument, Subsidiary
+
+    subs = [
+        Subsidiary(name="American Airlines, Inc."),
+        Subsidiary(name="Envoy Aviation Group Inc."),
+        Subsidiary(name="AAdvantage Loyalty IP Ltd."),
+    ]
+    instruments = [
+        DebtInstrument(instrument="5.75% Senior Notes", obligor="AmericanAirlinesIncMember"),
+        DebtInstrument(instrument="2021 AAdvantage Term Loan Facility",
+                       obligor="AAdvantageLoyaltyIPLtdMember"),
+        DebtInstrument(instrument="PSP1 Promissory Note"),   # no obligor tagged
+    ]
+    assign_roles(subs, instruments, issuer_name="American Airlines Group Inc.")
+    assert subs[0].role == "debt obligor"
+    assert subs[0].instruments == ["5.75% Senior Notes"]
+    assert subs[1].role is None
+    assert subs[2].role == "debt obligor"
+    assert "AAdvantage" in subs[2].instruments[0]

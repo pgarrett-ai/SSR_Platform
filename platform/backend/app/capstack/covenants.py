@@ -200,6 +200,12 @@ _INPUT_SCHEMA = {
         "admin_agent": {"type": ["string", "null"]},
         "trustee": {"type": ["string", "null"]},
         "collateral_agent": {"type": ["string", "null"]},
+        "guarantors": {
+            "type": ["string", "null"],
+            "description": "who guarantees the obligations, as the agreement defines them "
+                           "(usually a class, e.g. 'all wholly-owned domestic restricted "
+                           "subsidiaries'); named entities if listed",
+        },
     },
     "required": ["anchor_clause", "lme_vectors"],
 }
@@ -307,6 +313,7 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
         trustee=op.roles.get("trustee") or result.get("trustee"),
         collateral_agent=op.roles.get("collateral_agent") or result.get("collateral_agent"),
         creditor_note=_CREDITOR_NOTE,
+        guarantors=result.get("guarantors"),
         financial_covenants=fincovs,
         baskets=baskets,
         ebitda_addback_categories=_as_list(result.get("ebitda_addback_categories")),

@@ -190,6 +190,7 @@ class CovenantPackage(BaseModel):
     trustee: Optional[str] = None
     collateral_agent: Optional[str] = None
     creditor_note: Optional[str] = None
+    guarantors: Optional[str] = None        # who guarantees — usually a class description
     # covenant facts
     financial_covenants: list[FinancialCovenant] = Field(default_factory=list)
     baskets: list[CovenantFact] = Field(default_factory=list)
@@ -215,6 +216,8 @@ class Subsidiary(BaseModel):
     jurisdiction: Optional[str] = None
     parent: Optional[str] = None            # immediate parent, only when the exhibit is explicit
     percent_owned: Optional[float] = None
+    role: Optional[str] = None              # 'debt obligor' | 'parent' — deterministic matches only
+    instruments: list[str] = Field(default_factory=list)   # instruments this entity obligates
     citation: Optional[Citation] = None
 
 
