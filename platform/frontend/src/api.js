@@ -87,6 +87,18 @@ export async function fetchHazard(ticker, years = 10) {
   return hz;
 }
 
+// ---- MD&A reader ---------------------------------------------------------------
+
+export async function fetchMdnaPeriods(ticker) {
+  return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/mdna`));
+}
+
+export async function fetchMdnaText(ticker, accessionNo) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/mdna/${encodeURIComponent(accessionNo)}`)
+  );
+}
+
 // ---- Screening + full-text search --------------------------------------------
 
 export async function fetchScreen() {

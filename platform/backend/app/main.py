@@ -18,7 +18,7 @@ from contextlib import asynccontextmanager
 from typing import Optional
 
 import numpy as np
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
@@ -202,10 +202,45 @@ def screen() -> JSONResponse:
             "reported_leverage": r.reported_leverage,
             "economic_leverage": r.economic_leverage,
             "net_economic_debt": r.net_economic_debt,
-            "flag_count": r.flag_count, "liquidity_tone": r.liquidity_tone,
+            "flag_count": r.flag_count,
             "overall_risk": r.overall_risk, "trained_pd": r.trained_pd,
             "implied_rating": r.implied_rating,
         } for r in rows]))
+
+
+@app.get("/api/company/{ticker}/mdna")
+def mdna_periods(ticker: str) -> JSONResponse:
+    """Stored MD&A sections for the ticker, newest first — the reader's table of contents."""
+    from sqlalchemy import desc, nulls_last
+
+    from .edgar.client import index_url_for
+
+    with session_scope() as session:
+        snap = session.get(models.Snapshot, ticker.upper())
+        cik = snap.cik if snap else None
+        rows = (session.query(models.MdnaSection)
+                .filter(models.MdnaSection.ticker == ticker.upper())
+                .order_by(nulls_last(desc(models.MdnaSection.period_end))).all())
+        return JSONResponse(content=jsonable([{
+            "accession_no": r.accession_no, "form_type": r.form_type,
+            "period_end": r.period_end, "n_chars": len(r.text or ""),
+            "source_url": index_url_for(cik, r.accession_no) if cik and r.accession_no else None,
+        } for r in rows]))
+
+
+@app.get("/api/company/{ticker}/mdna/{accession_no}")
+def mdna_text(ticker: str, accession_no: str) -> JSONResponse:
+    """Full stored MD&A text for one filing period."""
+    with session_scope() as session:
+        row = (session.query(models.MdnaSection)
+               .filter(models.MdnaSection.ticker == ticker.upper(),
+                       models.MdnaSection.accession_no == accession_no).first())
+        if row is None:
+            raise HTTPException(status_code=404, detail="No stored MD&A for that filing")
+        return JSONResponse(content=jsonable({
+            "accession_no": row.accession_no, "form_type": row.form_type,
+            "period_end": row.period_end, "text": row.text or "",
+        }))
 
 
 @app.get("/api/search")

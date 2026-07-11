@@ -8,10 +8,9 @@ import SourcesPanel from "../components/SourcesPanel.jsx";
 import EconomicDebtBridge from "../components/EconomicDebtBridge.jsx";
 import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
-import XbrlTieOut from "../components/XbrlTieOut.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
 import CovenantCard from "../components/CovenantCard.jsx";
-import MdnaDrift from "../components/MdnaDrift.jsx";
+import MdnaReader from "../components/MdnaReader.jsx";
 
 // Phase 4.6: face due per calendar year, parsed from footnote maturity strings
 // (ranges like "2026 to 2038" are spread evenly — hover shows the instruments).
@@ -42,7 +41,7 @@ function MaturityWall({ wall }) {
 
 // Overview data + Run Live + progress log live in the shell (App.jsx) — this page renders
 // whatever snapshot the shell holds for the routed ticker.
-export default function CapitalPage({ health, overview }) {
+export default function CapitalPage({ ticker, health, overview }) {
   const flags = overview?.forensic_flags || [];
   // Badge for LLM-derived sections: fresh run → none; spliced prior snapshot → "prior
   // analysis"; nothing to show → "LLM off". Full note (with date) rides in warnings.
@@ -85,15 +84,6 @@ export default function CapitalPage({ health, overview }) {
             {overview.maturity_wall?.length > 0 && <MaturityWall wall={overview.maturity_wall} />}
           </Section>
 
-          {overview.xbrl_tie_outs?.length > 0 && (
-            <Section
-              title="XBRL tie-out"
-              subtitle="footnote totals reconciled against XBRL — the v1 confidence score"
-            >
-              <XbrlTieOut tieOuts={overview.xbrl_tie_outs} />
-            </Section>
-          )}
-
           <Section title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">
             <ForensicTable rows={overview.forensic_table} />
             {flags.length > 0 && (
@@ -130,8 +120,8 @@ export default function CapitalPage({ health, overview }) {
             <CovenantCard covenants={overview.covenants} />
           </Section>
 
-          <Section title="MD&A semantic drift" badge="experimental" subtitle={`${overview.mdna_drift?.length || 0} periods`}>
-            <MdnaDrift points={overview.mdna_drift} />
+          <Section title="MD&A" subtitle="management's discussion, per filing period">
+            <MdnaReader ticker={ticker} />
           </Section>
 
           <Section title="Sources" subtitle={`${overview.sources.length} filings analyzed`}>

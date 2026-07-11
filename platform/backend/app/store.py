@@ -129,7 +129,7 @@ def persist_obs(session: Session, ticker: str, items: list[ObsItemSchema]) -> No
 
 
 def persist_mdna(session: Session, ticker: str, periods) -> None:
-    """Store MD&A sections + computed drift/tone for §7 (replace prior rows for this ticker)."""
+    """Store MD&A section text per period (replace prior rows for this ticker)."""
     for row in session.scalars(
         select(models.MdnaSection).where(models.MdnaSection.ticker == ticker)
     ).all():
@@ -142,8 +142,6 @@ def persist_mdna(session: Session, ticker: str, periods) -> None:
             period_end=p.period_end,
             section_name="MD&A",
             text=(p.text or "")[:200000],
-            drift_from_prior=p.drift_from_prior,
-            liquidity_tone_score=p.tone,
         ))
     rebuild_fts(session, ticker)
 
@@ -155,8 +153,6 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         return cv.value if cv is not None else None
 
     bridge = overview.economic_debt_bridge
-    tones = [p.liquidity_tone_score for p in overview.mdna_drift
-             if p.liquidity_tone_score is not None]
     prior = session.get(models.Snapshot, ticker)
     session.merge(models.Snapshot(
         ticker=ticker,
@@ -168,7 +164,6 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         economic_leverage=_val(bridge.economic_leverage) if bridge else None,
         net_economic_debt=_val(bridge.net_economic_debt) if bridge else None,
         flag_count=len(overview.forensic_flags),
-        liquidity_tone=tones[-1] if tones else None,
         overall_risk=prior.overall_risk if prior else None,
         trained_pd=prior.trained_pd if prior else None,
         implied_rating=prior.implied_rating if prior else None,

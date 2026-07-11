@@ -37,7 +37,6 @@ from ..schemas import (
 )
 from .forensic import total_debt
 from .obs_llm import ObsExtraction
-from .reconcile import pension_tie_out
 
 # Categories whose amounts feed the bridge by design (the brief's structural lines). Judgment
 # categories (guarantee/take_or_pay/litigation_env/vie/related_party/other) defer to the LLM's
@@ -217,8 +216,6 @@ def build_bridge(
         cv.display = fmt_money_millions(subtotal)
         if len(items) > 1:
             cv.note = f"Sum of {len(items)} {cat} items; largest shown. " + (cv.note or "")
-        if cat == "pension_opeb":   # tie the footnote deficit to the XBRL funded status
-            cv.tie_out = pension_tie_out(latest, cik, subtotal)
         lines.append(BridgeLine(key=cat, label=_LINE_LABELS.get(cat, cat), amount=cv))
         running += subtotal
 

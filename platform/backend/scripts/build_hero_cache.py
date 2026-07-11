@@ -57,8 +57,7 @@ def main(argv: list[str]) -> int:
             bridge = ov.economic_debt_bridge
             lev = bridge.economic_leverage.display if (bridge and bridge.economic_leverage) else "n/a"
             print(f"  [OK] {tk}: {ov.header.issuer} - {len(ov.sources)} filings, "
-                  f"econ leverage {lev}, {len(ov.covenants)} covenant pkg(s), "
-                  f"{len(ov.mdna_drift)} drift periods  ({secs:.0f}s)\n")
+                  f"econ leverage {lev}, {len(ov.covenants)} covenant pkg(s)  ({secs:.0f}s)\n")
         except Exception as exc:
             print(f"  [FAIL] {tk}: {exc}\n")
     print("Done. Cached snapshots live in app/cache/ and are served when 'Run live' is off.")

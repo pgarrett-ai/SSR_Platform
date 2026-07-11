@@ -2,8 +2,8 @@
 
 Phase 1 covers issuer resolution + filing/exhibit retrieval + persistence, and assembles the
 header + sources of the Overview. Later phases (XBRL facts, economic-debt bridge, covenants,
-MD&A drift) attach their sections here. The function takes a ProgressLog so the API can stream
-"what it's doing" to the UI.
+MD&A sections) attach their sections here. The function takes a ProgressLog so the API can
+stream "what it's doing" to the UI.
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from .capstack.covenants import extract_covenant_summary, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
 from .capstack.debt_schedule import extract_debt_schedule
 from .capstack.forensic import build_forensic_table, detect_flags
-from .capstack.mdna_drift import build_drift
+from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .core.config import get_settings
 from .core.db import session_scope
@@ -223,36 +223,17 @@ def run_overview(
     maturities = maturity_wall(debt_schedule)
     changes = what_changed_quarterly(quarters) or what_changed(forensic_table)
 
-    # --- Phase 4.3: XBRL tie-out reconciliation (confidence score) ---
-    xbrl_tie_outs = []
+    # --- Phase 5: MD&A section retention — deterministic, runs even without an API key ---
     try:
-        from .capstack.reconcile import build_tie_outs
-        xbrl_tie_outs, tie_warnings = build_tie_outs(series, obs_extractions, debt_schedule)
-        warnings.extend(tie_warnings)
-        if xbrl_tie_outs:
-            progress.emit(
-                f"Reconciled {len(xbrl_tie_outs)} footnote total(s) against XBRL "
-                f"({sum(t.status == 'mismatch' for t in xbrl_tie_outs)} mismatch).",
-                step="reconcile", pct=93,
-            )
-    except Exception as exc:
-        warnings.append(f"XBRL tie-out step failed: {exc}")
-
-    # --- Phase 5: MD&A semantic drift (§7, experimental) — runs even without an API key ---
-    mdna_drift = []
-    try:
-        progress.emit("Computing MD&A semantic drift (TF-IDF) + liquidity tone…",
-                      step="drift", pct=94)
-        drift_points, mdna_periods = build_drift(company, years, settings.llm_enabled)
-        mdna_drift = drift_points
+        progress.emit("Storing MD&A sections per period…", step="mdna", pct=94)
+        mdna_periods = build_mdna_series(company, years)
         if mdna_periods:
             with session_scope() as session:
                 persist_mdna(session, ticker, mdna_periods)
-        progress.emit(f"MD&A drift computed over {len(mdna_drift)} period(s).",
-                      step="drift", pct=98)
+        progress.emit(f"Stored MD&A for {len(mdna_periods)} period(s).", step="mdna", pct=98)
     except Exception as exc:
-        warnings.append(f"MD&A drift step failed: {exc}")
-        progress.emit(f"MD&A drift step failed: {exc}", step="drift", pct=98)
+        warnings.append(f"MD&A step failed: {exc}")
+        progress.emit(f"MD&A step failed: {exc}", step="mdna", pct=98)
 
     # LLM off → splice the LLM-derived sections from the newest cached snapshot so the
     # dashboard still shows analysis (clearly labeled as prior) instead of empty cards.
@@ -272,12 +253,6 @@ def run_overview(
             covenants = covenants or prior.covenants
             subsidiaries = subsidiaries or prior.subsidiaries
             debt_schedule = debt_schedule or prior.debt_schedule
-            # MD&A tone is LLM-derived; the TF-IDF drift itself stays fresh.
-            prior_tone = {(p.period_end, p.form_type): p.liquidity_tone_score
-                          for p in prior.mdna_drift}
-            for p in mdna_drift:
-                if p.liquidity_tone_score is None:
-                    p.liquidity_tone_score = prior_tone.get((p.period_end, p.form_type))
         else:
             llm_fallback_note = "LLM analysis is off — re-enable to analyze."
         warnings.append(llm_fallback_note)
@@ -307,9 +282,7 @@ def run_overview(
         forensic_flags=forensic_flags,
         obs_items=obs_items,
         covenants=covenants,
-        mdna_drift=mdna_drift,
         subsidiaries=subsidiaries,
-        xbrl_tie_outs=xbrl_tie_outs,
         leverage_timeline=lev_timeline,
         maturity_wall=maturities,
         what_changed=changes,

@@ -19,21 +19,6 @@ class Citation(BaseModel):
     quote: Optional[str] = None
 
 
-class TieOut(BaseModel):
-    """Reconciliation of an LLM footnote reading against its XBRL concept (Phase 4.3). `status`
-    is match (≤5%) / mismatch (>5%) / no_xbrl. This is the v1 confidence score for a number."""
-
-    label: str
-    llm_value: Optional[float] = None
-    llm_display: Optional[str] = None
-    xbrl_value: Optional[float] = None
-    xbrl_display: Optional[str] = None
-    xbrl_concept: Optional[str] = None
-    delta_pct: Optional[float] = None      # (llm − xbrl) / |xbrl| × 100
-    status: str = "no_xbrl"
-    source_url: Optional[str] = None
-
-
 class CitedValue(BaseModel):
     """A single number plus its provenance. Either `citation` is set, or `derived` is True
     and `formula` explains the computation. The UI never shows an uncited hard number."""
@@ -45,7 +30,6 @@ class CitedValue(BaseModel):
     derived: bool = False
     formula: Optional[str] = None
     note: Optional[str] = None
-    tie_out: Optional[TieOut] = None       # XBRL reconciliation chip, when this number has an analog
 
 
 class FilingRef(BaseModel):
@@ -161,13 +145,6 @@ class Subsidiary(BaseModel):
     citation: Optional[Citation] = None
 
 
-class DriftPoint(BaseModel):
-    period_end: Optional[str] = None
-    form_type: Optional[str] = None
-    drift_from_prior: Optional[float] = None
-    liquidity_tone_score: Optional[float] = None
-
-
 class LeverageTimelinePoint(BaseModel):
     fiscal_year: int
     label: Optional[str] = None            # quarterly points: "Q3 2025" (TTM EBITDA)
@@ -206,9 +183,7 @@ class Overview(BaseModel):
     forensic_flags: list[ForensicFlag] = Field(default_factory=list)
     obs_items: list[ObsItem] = Field(default_factory=list)
     covenants: list[CovenantSummary] = Field(default_factory=list)
-    mdna_drift: list[DriftPoint] = Field(default_factory=list)
     subsidiaries: list[Subsidiary] = Field(default_factory=list)
-    xbrl_tie_outs: list[TieOut] = Field(default_factory=list)
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY
