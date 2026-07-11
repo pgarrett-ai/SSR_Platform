@@ -146,6 +146,34 @@ def persist_mdna(session: Session, ticker: str, periods) -> None:
     rebuild_fts(session, ticker)
 
 
+def persist_debt_instruments(session: Session, ticker: str, instruments,
+                             asof) -> None:
+    """Replace the ticker's queryable debt-schedule rows with the latest run's."""
+    for row in session.scalars(
+        select(models.DebtInstrumentRow).where(models.DebtInstrumentRow.ticker == ticker)
+    ).all():
+        session.delete(row)
+    for i in instruments:
+        cv = i.outstanding or i.principal
+        session.add(models.DebtInstrumentRow(
+            ticker=ticker,
+            instrument=i.instrument,
+            xbrl_member=i.xbrl_member,
+            outstanding=cv.value if cv else None,
+            coupon=i.coupon,
+            coupon_pct=i.coupon_pct,
+            spread_pct=i.spread_pct,
+            effective_rate_pct=i.effective_rate_pct,
+            rate_type=i.rate_type,
+            rate_base=i.rate_base,
+            maturity=i.maturity,
+            secured=i.secured,
+            seniority=i.seniority,
+            obligor=i.obligor,
+            asof=str(asof) if asof else None,
+        ))
+
+
 def upsert_snapshot(session: Session, ticker: str, overview) -> None:
     """Refresh the ticker's screening-index row from an Overview. merge() replaces every
     column, so hazard risk values from a prior Default Risk run are carried over."""

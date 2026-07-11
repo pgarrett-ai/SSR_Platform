@@ -59,11 +59,20 @@ class DebtInstrument(BaseModel):
     instrument: str
     principal: Optional[CitedValue] = None
     outstanding: Optional[CitedValue] = None
-    coupon: Optional[str] = None
+    coupon: Optional[str] = None           # display string, e.g. "5.75%" or "SOFR + 2.75% → 6.05%"
     maturity: Optional[str] = None
     secured: Optional[bool] = None
     seniority: Optional[str] = None
     citation: Optional[Citation] = None
+    # deterministic rate fields from dimensional XBRL (None on the legacy LLM path)
+    coupon_pct: Optional[float] = None
+    coupon_pct_max: Optional[float] = None  # set when the instrument is a rate range (EETCs)
+    spread_pct: Optional[float] = None
+    effective_rate_pct: Optional[float] = None
+    rate_type: Optional[str] = None         # 'fixed' | 'floating'
+    rate_base: Optional[str] = None         # 'SOFR' (overnight proxy) when floating
+    xbrl_member: Optional[str] = None
+    obligor: Optional[str] = None            # LegalEntityAxis member, when tagged
 
 
 class ForensicTableRow(BaseModel):
@@ -194,6 +203,7 @@ class Overview(BaseModel):
     economic_debt_bridge: Optional[EconomicDebtBridge] = None
     ebitda_build: Optional[EbitdaBuild] = None
     debt_schedule: list[DebtInstrument] = Field(default_factory=list)
+    debt_schedule_asof: Optional[str] = None   # balance-sheet instant the schedule reflects
     forensic_table: list[ForensicTableRow] = Field(default_factory=list)
     forensic_flags: list[ForensicFlag] = Field(default_factory=list)
     obs_items: list[ObsItem] = Field(default_factory=list)

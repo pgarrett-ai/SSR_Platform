@@ -90,8 +90,9 @@ export default function CapitalPage({ ticker, health, overview }) {
 
           <Section
             title="As-reported debt schedule"
-            subtitle={`${overview.debt_schedule?.length || 0} instruments from the debt footnote`}
-            badge={llmBadge}
+            subtitle={`${overview.debt_schedule?.length || 0} instruments${
+              overview.debt_schedule_asof ? ` · as of ${overview.debt_schedule_asof}` : ""
+            } · amounts from XBRL dimensions`}
           >
             <DebtScheduleTable instruments={overview.debt_schedule} />
             {overview.maturity_wall?.length > 0 && <MaturityWall wall={overview.maturity_wall} />}

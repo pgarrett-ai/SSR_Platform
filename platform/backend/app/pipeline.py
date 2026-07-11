@@ -13,7 +13,8 @@ from typing import Optional
 from .capstack.bridge import build_bridge, build_ebitda_box
 from .capstack.covenants import extract_covenant_summary, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
-from .capstack.debt_schedule import extract_debt_schedule
+from .capstack.debt_schedule import annotate_maturities, drop_retired, extract_debt_schedule
+from .capstack.debt_xbrl import build_xbrl_debt_schedule
 from .capstack.forensic import build_forensic_table, detect_flags
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
@@ -134,6 +135,26 @@ def run_overview(
         ft = get_filing_text(latest_10k) if latest_10k is not None else None
     except Exception as exc:
         warnings.append(f"10-K text fetch failed: {exc}")
+
+    # --- debt schedule from dimensional XBRL — deterministic, runs with the LLM off ---
+    debt_asof = None
+    try:
+        progress.emit("Building debt schedule from XBRL dimensions…", step="debt", pct=66)
+        from .rates import get_key_rates
+        with session_scope() as session:
+            rate_map = {r["series"]: r["value"] for r in get_key_rates(session)}
+        debt_schedule, debt_asof = build_xbrl_debt_schedule(company, rate_map)
+        if debt_schedule:
+            progress.emit(
+                f"{len(debt_schedule)} instruments from XBRL dimensions (as of {debt_asof}).",
+                step="debt", pct=67,
+            )
+        else:
+            progress.emit("No dimensioned debt in XBRL — footnote extraction will be used.",
+                          step="debt", pct=67)
+    except Exception as exc:
+        warnings.append(f"XBRL debt schedule failed: {exc}")
+
     if settings.llm_enabled:
         try:
             progress.emit("Extracting footnotes & MD&A (leases, pension, supplier finance, "
@@ -148,10 +169,15 @@ def run_overview(
                 if obs_items:
                     with session_scope() as session:
                         persist_obs(session, ticker, obs_items)
-                instruments, debt_err = extract_debt_schedule(ft)
-                debt_schedule = instruments
-                if debt_err:
-                    warnings.append(f"Debt-schedule extraction error: {debt_err}")
+                if debt_schedule:   # XBRL numbers stand; the LLM only annotates text
+                    ann_err = annotate_maturities(debt_schedule, ft, debt_asof)
+                    if ann_err:
+                        warnings.append(f"Maturity annotation: {ann_err}")
+                else:               # undimensioned issuer: legacy extraction + hard filters
+                    instruments, debt_err = extract_debt_schedule(ft)
+                    debt_schedule = drop_retired(instruments, debt_asof)
+                    if debt_err:
+                        warnings.append(f"Debt-schedule extraction error: {debt_err}")
                 n_lines = len(economic_debt_bridge.lines) if economic_debt_bridge else 0
                 progress.emit(
                     f"Built economic-debt bridge ({n_lines} lines), {len(obs_items)} OBS findings, "
@@ -288,11 +314,20 @@ def run_overview(
         llm_enabled=settings.llm_enabled,
     )
 
+    if debt_schedule:
+        try:
+            from .store import persist_debt_instruments
+            with session_scope() as session:
+                persist_debt_instruments(session, ticker, debt_schedule, debt_asof)
+        except Exception as exc:
+            warnings.append(f"Debt-instrument persistence failed: {exc}")
+
     overview = Overview(
         header=header,
         economic_debt_bridge=economic_debt_bridge,
         ebitda_build=ebitda_build,
         debt_schedule=debt_schedule,
+        debt_schedule_asof=debt_asof,
         forensic_table=forensic_table,
         forensic_flags=forensic_flags,
         obs_items=obs_items,

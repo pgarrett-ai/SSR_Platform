@@ -6,10 +6,11 @@ export default function DebtScheduleTable({ instruments }) {
   if (!instruments || instruments.length === 0) {
     return (
       <p className="text-sm text-slate-400">
-        No instrument-level detail extracted from the debt footnote.
+        No instrument-level detail available for this issuer.
       </p>
     );
   }
+  const hasObligor = instruments.some((d) => d.obligor);
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -20,6 +21,7 @@ export default function DebtScheduleTable({ instruments }) {
             <Th>Coupon</Th>
             <Th>Maturity</Th>
             <Th>Lien / seniority</Th>
+            {hasObligor && <Th>Obligor</Th>}
           </tr>
         </thead>
         <tbody>
@@ -39,6 +41,9 @@ export default function DebtScheduleTable({ instruments }) {
                 )}
                 <span className="text-slate-400">{d.seniority || ""}</span>
               </Td>
+              {hasObligor && (
+                <Td className="text-[12px] text-slate-400">{d.obligor || "—"}</Td>
+              )}
             </tr>
           ))}
         </tbody>
