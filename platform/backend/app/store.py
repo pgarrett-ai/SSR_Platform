@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from . import models
 from .edgar.client import FilingInfo
-from .schemas import CovenantSummary, FilingRef
+from .schemas import CovenantPackage, FilingRef
 from .schemas import ObsItem as ObsItemSchema
 
 
@@ -50,7 +50,7 @@ def upsert_filings(
 
 
 def persist_covenants(
-    session: Session, ticker: str, items: list[tuple[CovenantSummary, str]]
+    session: Session, ticker: str, items: list[tuple[CovenantPackage, str]]
 ) -> None:
     """Store extracted covenant packages, keeping `clause_text` so a vector index can be added
     later (brief §5 — embedding/clustering is v2; we just keep the raw clauses now)."""
@@ -170,6 +170,7 @@ def persist_debt_instruments(session: Session, ticker: str, instruments,
             secured=i.secured,
             seniority=i.seniority,
             obligor=i.obligor,
+            governed_by=i.governed_by,
             asof=str(asof) if asof else None,
         ))
 

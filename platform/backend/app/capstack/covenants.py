@@ -9,12 +9,13 @@ stored so a vector index can be added later (not built now).
 """
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Optional
 
 from ..edgar.documents import window_by_keywords
 from ..core.llm import extract_structured
-from ..schemas import Citation, CovenantSummary
+from ..schemas import Citation, CovenantFact, CovenantPackage, FinancialCovenant, LmeVector
 
 # Forms whose EX-10.x / EX-4.x exhibits carry credit agreements & indentures.
 _CREDIT_FORMS = ["8-K", "10-K", "S-4", "S-1"]
@@ -59,8 +60,8 @@ def _classify(head: str) -> Optional[str]:
     return None
 
 
-def find_credit_documents(company, years: int, max_check: int = 8,
-                          max_keep: int = 2) -> list[CreditDoc]:
+def find_credit_documents(company, years: int, max_check: int = 40,
+                          max_keep: int = 24) -> list[CreditDoc]:
     """Fetch + content-classify candidate EX-10.x/EX-4.x exhibits; keep the best credit docs."""
     import datetime as dt
 
@@ -120,7 +121,9 @@ def find_credit_documents(company, years: int, max_check: int = 8,
     return kept
 
 
-# --- LLM extraction (brief §5 schema) ---------------------------------------
+# --- LLM extraction ----------------------------------------------------------
+
+_PROMPT_VERSION = "v2"   # bump to invalidate the per-doc extraction cache
 
 _SYSTEM = (
     "You are a distressed-credit lawyer-analyst reading a credit agreement or indenture. You extract "
@@ -130,39 +133,106 @@ _SYSTEM = (
 )
 
 _TOOL_DESCRIPTION = (
-    "Record the covenant package for this agreement. For leverage_covenant_type, state the maintenance "
-    "financial covenant type or 'None (covenant-lite)'. For thresholds, give the ratio and any springing "
-    "trigger. j_crew_blocker_present is true if the agreement restricts transferring material IP/assets "
-    "to unrestricted subsidiaries (a J.Crew blocker). Capture LME-relevant flexibility (unrestricted-"
-    "subsidiary designation, drop-down/uptier capacity, MFN protection and its sunset)."
+    "Record the covenant package for this agreement. financial_covenants: every maintenance or "
+    "springing financial covenant with its threshold (including step-downs) and test frequency. "
+    "baskets: the key negative-covenant capacities (restricted payments, incremental/ratio debt, "
+    "liens, investments, asset sales) with their sizes. j_crew_blocker_present is true if the "
+    "agreement restricts transferring material IP/assets to unrestricted subsidiaries. "
+    "anchor_clause: THE single verbatim clause a distressed analyst must read (sacred rights, "
+    "priming carve-out, or the loosest basket). lme_vectors: assess ONLY what this text actually "
+    "addresses — for each of uptier_priming, dropdown_jcrew, incremental_debt, rp_leakage give "
+    "risk protected/open/unclear (or not_addressed when the text is silent), a one-sentence "
+    "rationale, the covenant facts it rests on (basis), and a short verbatim quote. Never imply "
+    "a liability-management exercise exists; you are describing contractual capacity only."
 )
 
 _INPUT_SCHEMA = {
     "type": "object",
     "properties": {
-        "agreement_type": {"type": "string"},
-        "leverage_covenant_type": {"type": "string"},
-        "leverage_ratio_threshold": {"type": "string"},
+        "financial_covenants": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "kind": {"type": "string"},
+                    "threshold": {"type": "string"},
+                    "test_frequency": {"type": "string"},
+                    "springing_trigger": {"type": ["string", "null"]},
+                    "quote": {"type": "string"},
+                },
+                "required": ["kind"],
+            },
+        },
+        "baskets": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "value": {"type": "string"},
+                    "quote": {"type": "string"},
+                },
+                "required": ["name"],
+            },
+        },
         "ebitda_addback_categories": {"type": "array", "items": {"type": "string"}},
-        "restricted_payments_basket_size": {"type": "string"},
-        "mfn_sunset_period": {"type": "string"},
+        "mfn_sunset_period": {"type": ["string", "null"]},
         "j_crew_blocker_present": {"type": ["boolean", "null"]},
-        "unrestricted_subsidiary_designation_flexibility": {"type": "string"},
-        "lme_risk_notes": {"type": "string", "description": "uptier/drop-down/priming vulnerability"},
-        "key_quote": {"type": "string", "description": "one verbatim clause that anchors the read"},
+        "unrestricted_subsidiary_designation_flexibility": {"type": ["string", "null"]},
+        "anchor_clause": {"type": "string"},
+        "lme_vectors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "vector": {"type": "string",
+                               "enum": ["uptier_priming", "dropdown_jcrew",
+                                        "incremental_debt", "rp_leakage"]},
+                    "risk": {"type": "string",
+                             "enum": ["protected", "open", "unclear", "not_addressed"]},
+                    "rationale": {"type": "string"},
+                    "basis": {"type": "string"},
+                    "quote": {"type": "string"},
+                },
+                "required": ["vector", "risk"],
+            },
+        },
+        "admin_agent": {"type": ["string", "null"]},
+        "trustee": {"type": ["string", "null"]},
+        "collateral_agent": {"type": ["string", "null"]},
     },
-    "required": ["leverage_covenant_type", "key_quote"],
+    "required": ["anchor_clause", "lme_vectors"],
 }
 
+_CREDITOR_NOTE = (
+    "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not "
+    "public; registered-fund holdings (N-PORT) are a partial view shown separately when available."
+)
 
-def extract_covenant_summary(doc: CreditDoc) -> tuple[Optional[CovenantSummary], Optional[str], Optional[str]]:
-    """Return (summary, clause_text_window, error)."""
+
+def _extract_cache_path(doc: CreditDoc):
+    from ..core.cache import CACHE_DIR
+    d = CACHE_DIR / "covenant_extracts"
+    d.mkdir(parents=True, exist_ok=True)
+    ex = (doc.exhibit_type or "EX").replace("/", "-").replace(".", "_")
+    return d / f"{doc.accession}_{ex}_{_PROMPT_VERSION}.json"
+
+
+def _extract_raw(doc: CreditDoc) -> tuple[Optional[dict], Optional[str], Optional[str]]:
+    """(raw LLM result, clause window, error). Filed agreements never change, so results
+    cache per (accession, exhibit, prompt version) — repeat runs pay only for new docs."""
+    path = _extract_cache_path(doc)
+    if path.exists():
+        try:
+            saved = json.loads(path.read_text(encoding="utf-8"))
+            return saved["result"], saved.get("window"), None
+        except Exception:
+            pass
+
     window = window_by_keywords(doc.text, _COVENANT_KEYWORDS, radius=1500, max_chars=55000)
     if not window:
         window = doc.text[:55000]
-    # Prepend the title/parties region for context.
     payload = doc.text[:2500] + "\n…\n" + window
-
     user = (
         f"Document: {doc.exhibit_type} ({doc.doc_class}) from {doc.form_type} filed {doc.filing_date}.\n"
         "Below are the title/parties block and the covenant clauses with the definitions they cite. "
@@ -175,19 +245,46 @@ def extract_covenant_summary(doc: CreditDoc) -> tuple[Optional[CovenantSummary],
         tool_name="record_covenant_package",
         tool_description=_TOOL_DESCRIPTION,
         input_schema=_INPUT_SCHEMA,
-        max_tokens=2500,
+        max_tokens=4000,
     )
     if result is None:
         return None, None, "LLM unavailable"
     if "__error__" in result:
         return None, None, result["__error__"]
+    try:
+        path.write_text(json.dumps({"result": result, "window": window}), encoding="utf-8")
+    except Exception:
+        pass
+    return result, window, None
 
-    # Claude occasionally returns a scalar where the schema asks for a list (e.g. "Not present").
-    addbacks = result.get("ebitda_addback_categories")
-    if isinstance(addbacks, str):
-        addbacks = [addbacks] if addbacks and "not present" not in addbacks.lower() else []
-    elif not isinstance(addbacks, list):
-        addbacks = []
+
+def _as_list(v) -> list:
+    if isinstance(v, list):
+        return v
+    if isinstance(v, str) and v and "not present" not in v.lower():
+        return [v]
+    return []
+
+
+def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optional[str], Optional[str]]:
+    """Extract the covenant package for an agreement family's operative document.
+    Returns (package, clause_text_window, error)."""
+    op = family.operative
+    doc = op.doc
+    result, window, err = _extract_raw(doc)
+    if result is None:
+        return None, None, err
+
+    fincovs = [FinancialCovenant(**{k: fc.get(k) for k in
+                                    ("kind", "threshold", "test_frequency",
+                                     "springing_trigger", "quote")})
+               for fc in result.get("financial_covenants") or [] if isinstance(fc, dict)]
+    baskets = [CovenantFact(name=b.get("name", ""), value=b.get("value"), quote=b.get("quote"))
+               for b in result.get("baskets") or [] if isinstance(b, dict) and b.get("name")]
+    vectors = [LmeVector(vector=v.get("vector", ""), risk=v.get("risk", "not_addressed"),
+                         rationale=v.get("rationale"), basis=v.get("basis"),
+                         quote=v.get("quote"))
+               for v in result.get("lme_vectors") or [] if isinstance(v, dict) and v.get("vector")]
 
     citation = Citation(
         accession_no=doc.accession,
@@ -196,20 +293,33 @@ def extract_covenant_summary(doc: CreditDoc) -> tuple[Optional[CovenantSummary],
         exhibit=doc.exhibit_type,
         section="Negative covenants / Definitions",
         source_url=doc.url,
-        quote=result.get("key_quote"),
+        quote=result.get("anchor_clause"),
     )
-    summary = CovenantSummary(
-        agreement_type=result.get("agreement_type") or doc.doc_class,
-        leverage_covenant_type=result.get("leverage_covenant_type"),
-        leverage_ratio_threshold=result.get("leverage_ratio_threshold"),
-        ebitda_addback_categories=addbacks,
-        restricted_payments_basket_size=result.get("restricted_payments_basket_size"),
+    package = CovenantPackage(
+        family_label=family.label,
+        doc_class=family.doc_class,
+        operative_date=doc.filing_date,
+        amendment_count=len(family.amendments),
+        base_missing=family.base_missing,
+        governs_instruments=list(family.governs_instruments),
+        # deterministic head-parse wins; the LLM fills gaps
+        admin_agent=op.roles.get("admin_agent") or result.get("admin_agent"),
+        trustee=op.roles.get("trustee") or result.get("trustee"),
+        collateral_agent=op.roles.get("collateral_agent") or result.get("collateral_agent"),
+        creditor_note=_CREDITOR_NOTE,
+        financial_covenants=fincovs,
+        baskets=baskets,
+        ebitda_addback_categories=_as_list(result.get("ebitda_addback_categories")),
         mfn_sunset_period=result.get("mfn_sunset_period"),
         j_crew_blocker_present=result.get("j_crew_blocker_present"),
         unrestricted_subsidiary_designation_flexibility=result.get(
-            "unrestricted_subsidiary_designation_flexibility"
-        ),
-        lme_risk_notes=result.get("lme_risk_notes"),
+            "unrestricted_subsidiary_designation_flexibility"),
+        anchor_clause=result.get("anchor_clause"),
+        lme_vectors=vectors,
         citation=citation,
+        # legacy display fields, filled for DB/FTS continuity
+        agreement_type=family.doc_class,
+        leverage_covenant_type=fincovs[0].kind if fincovs else None,
+        leverage_ratio_threshold=fincovs[0].threshold if fincovs else None,
     )
-    return summary, window, result.get("lme_risk_notes")
+    return package, window, None

@@ -10,7 +10,7 @@ import EbitdaBuild from "../components/EbitdaBuild.jsx";
 import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
-import CovenantCard from "../components/CovenantCard.jsx";
+import CovenantPackages from "../components/CovenantPackages.jsx";
 import MdnaReader from "../components/MdnaReader.jsx";
 
 // Phase 4.6: face due per calendar year, parsed from footnote maturity strings
@@ -127,11 +127,16 @@ export default function CapitalPage({ ticker, health, overview }) {
           )}
 
           <Section
-            title="Covenant summary"
-            subtitle={`${overview.covenants?.length || 0} agreement(s) from EX-10.x / EX-4.x`}
+            title="Covenants & creditors"
+            subtitle={`${overview.covenants?.length || 0} agreement famil${
+              (overview.covenants?.length || 0) === 1 ? "y" : "ies"
+            } from EX-10.x / EX-4.x`}
             badge={llmBadge}
           >
-            <CovenantCard covenants={overview.covenants} />
+            <CovenantPackages
+              covenants={overview.covenants}
+              instruments={overview.debt_schedule}
+            />
           </Section>
 
           <Section title="MD&A" subtitle="management's discussion, per filing period">

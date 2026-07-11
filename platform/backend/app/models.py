@@ -216,6 +216,7 @@ class DebtInstrumentRow(Base):
     secured: Mapped[Optional[bool]] = mapped_column(Boolean)
     seniority: Mapped[Optional[str]] = mapped_column(String(64))
     obligor: Mapped[Optional[str]] = mapped_column(String(128))
+    governed_by: Mapped[Optional[str]] = mapped_column(String(160))
     asof: Mapped[Optional[str]] = mapped_column(String(10))
 
 

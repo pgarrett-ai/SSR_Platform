@@ -11,7 +11,8 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from .capstack.bridge import build_bridge, build_ebitda_box
-from .capstack.covenants import extract_covenant_summary, find_credit_documents
+from .capstack.agreements import group_families, map_instruments
+from .capstack.covenants import extract_covenant_package, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
 from .capstack.debt_schedule import annotate_maturities, drop_retired, extract_debt_schedule
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
@@ -36,6 +37,9 @@ from .store import (
     persist_obs,
     upsert_filings,
 )
+
+# Cap on per-run covenant LLM extractions; the per-doc cache amortizes repeat runs to ~zero.
+_MAX_COVENANT_EXTRACTS = 10
 
 
 def run_overview(
@@ -196,14 +200,26 @@ def run_overview(
         warnings.append(f"Credit-document fetch failed: {exc}")
     if settings.llm_enabled:
         try:
-            progress.emit("Extracting covenants from credit documents…",
-                          step="covenants", pct=85)
+            progress.emit("Grouping credit documents into agreement families…",
+                          step="covenants", pct=84)
+            families = group_families(credit_docs)
+            map_instruments(families, debt_schedule)
+            # families that govern a known instrument first, newest first; cap LLM spend —
+            # the per-doc extraction cache makes repeat live runs near-free anyway
+            families.sort(key=lambda f: (bool(f.governs_instruments),
+                                         f.operative.doc.filing_date or ""), reverse=True)
+            progress.emit(
+                f"{len(families)} agreement families from {len(credit_docs)} credit documents; "
+                f"extracting up to {_MAX_COVENANT_EXTRACTS}…", step="covenants", pct=85,
+            )
             clause_texts: list[tuple] = []
-            for d in credit_docs[:2]:
-                summ, clause, _lme = extract_covenant_summary(d)
-                if summ:
-                    covenants.append(summ)
-                    clause_texts.append((summ, clause))
+            for fam in families[:_MAX_COVENANT_EXTRACTS]:
+                pkg, clause, cov_err = extract_covenant_package(fam)
+                if cov_err:
+                    warnings.append(f"Covenant extraction ({fam.label}): {cov_err}")
+                if pkg:
+                    covenants.append(pkg)
+                    clause_texts.append((pkg, clause))
             if clause_texts:
                 with session_scope() as session:
                     persist_covenants(session, ticker, clause_texts)

@@ -73,6 +73,7 @@ class DebtInstrument(BaseModel):
     rate_base: Optional[str] = None         # 'SOFR' (overnight proxy) when floating
     xbrl_member: Optional[str] = None
     obligor: Optional[str] = None            # LegalEntityAxis member, when tagged
+    governed_by: Optional[str] = None        # agreement-family label (or known-creditor note)
 
 
 class ForensicTableRow(BaseModel):
@@ -145,17 +146,66 @@ class EbitdaBuild(BaseModel):
     addbacks: list[EbitdaAddback] = Field(default_factory=list)
 
 
-class CovenantSummary(BaseModel):
-    agreement_type: Optional[str] = None
-    leverage_covenant_type: Optional[str] = None
-    leverage_ratio_threshold: Optional[str] = None
+class FinancialCovenant(BaseModel):
+    """One maintenance/incurrence financial covenant with what it tests and when."""
+
+    kind: Optional[str] = None              # e.g. "First-lien net leverage (maintenance)"
+    threshold: Optional[str] = None         # e.g. "≤ 4.50x, stepping to 4.00x FY27"
+    test_frequency: Optional[str] = None    # e.g. "quarterly", "springing at 35% revolver draw"
+    springing_trigger: Optional[str] = None
+    quote: Optional[str] = None
+
+
+class CovenantFact(BaseModel):
+    """A named basket/capacity fact (RP basket, incremental debt, lien capacity, …)."""
+
+    name: str
+    value: Optional[str] = None
+    quote: Optional[str] = None
+
+
+class LmeVector(BaseModel):
+    """One liability-management vulnerability read, tied to the covenant facts it rests on.
+    `not_addressed` vectors are not rendered — no phantom LME narratives."""
+
+    vector: str                             # uptier_priming | dropdown_jcrew | incremental_debt | rp_leakage
+    risk: str = "not_addressed"             # protected | open | unclear | not_addressed
+    rationale: Optional[str] = None
+    basis: Optional[str] = None             # the covenant facts this read rests on
+    quote: Optional[str] = None
+
+
+class CovenantPackage(BaseModel):
+    """The covenant read for one agreement family (base doc + its amendments)."""
+
+    # family metadata
+    family_label: Optional[str] = None      # "Credit Agreement dated June 27, 2013"
+    doc_class: Optional[str] = None         # credit_agreement | indenture | …
+    operative_date: Optional[str] = None    # filing date of the doc the terms were read from
+    amendment_count: int = 0
+    base_missing: bool = False              # only amendments on file — base terms not in window
+    governs_instruments: list[str] = Field(default_factory=list)
+    # creditors
+    admin_agent: Optional[str] = None
+    trustee: Optional[str] = None
+    collateral_agent: Optional[str] = None
+    creditor_note: Optional[str] = None
+    # covenant facts
+    financial_covenants: list[FinancialCovenant] = Field(default_factory=list)
+    baskets: list[CovenantFact] = Field(default_factory=list)
     ebitda_addback_categories: list[str] = Field(default_factory=list)
-    restricted_payments_basket_size: Optional[str] = None
     mfn_sunset_period: Optional[str] = None
     j_crew_blocker_present: Optional[bool] = None
     unrestricted_subsidiary_designation_flexibility: Optional[str] = None
-    lme_risk_notes: Optional[str] = None
+    anchor_clause: Optional[str] = None     # always rendered, verbatim
+    lme_vectors: list[LmeVector] = Field(default_factory=list)
     citation: Optional[Citation] = None
+    # legacy fields — pre-rework cached snapshots still render through these
+    agreement_type: Optional[str] = None
+    leverage_covenant_type: Optional[str] = None
+    leverage_ratio_threshold: Optional[str] = None
+    restricted_payments_basket_size: Optional[str] = None
+    lme_risk_notes: Optional[str] = None
 
 
 class Subsidiary(BaseModel):
@@ -207,7 +257,7 @@ class Overview(BaseModel):
     forensic_table: list[ForensicTableRow] = Field(default_factory=list)
     forensic_flags: list[ForensicFlag] = Field(default_factory=list)
     obs_items: list[ObsItem] = Field(default_factory=list)
-    covenants: list[CovenantSummary] = Field(default_factory=list)
+    covenants: list[CovenantPackage] = Field(default_factory=list)
     subsidiaries: list[Subsidiary] = Field(default_factory=list)
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
