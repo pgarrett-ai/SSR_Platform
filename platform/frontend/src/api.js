@@ -87,6 +87,12 @@ export async function fetchHazard(ticker, years = 10) {
   return hz;
 }
 
+// ---- Key rates -----------------------------------------------------------------
+
+export async function fetchRates() {
+  return jsonOrThrow(await fetch("/api/rates"));
+}
+
 // ---- MD&A reader ---------------------------------------------------------------
 
 export async function fetchMdnaPeriods(ticker) {

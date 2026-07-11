@@ -207,6 +207,17 @@ def screen() -> JSONResponse:
         } for r in rows]))
 
 
+@app.get("/api/rates")
+def key_rates() -> JSONResponse:
+    """Latest key reference rates (SOFR, EFFR, Fed Funds target, prime, T-bill, 10Y) —
+    stored in the DB, refreshed when stale, served with their observation dates."""
+    from .rates import LIBOR_NOTE, get_key_rates, refresh_if_stale
+
+    with session_scope() as session:
+        refresh_if_stale(session)
+        return JSONResponse(content={"rates": get_key_rates(session), "note": LIBOR_NOTE})
+
+
 @app.get("/api/company/{ticker}/mdna")
 def mdna_periods(ticker: str) -> JSONResponse:
     """Stored MD&A sections for the ticker, newest first — the reader's table of contents."""

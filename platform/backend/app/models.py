@@ -195,6 +195,18 @@ class MdnaSection(Base):
     liquidity_tone_score: Mapped[Optional[float]] = mapped_column(Float)  # zero-shot Claude score
 
 
+class Rate(Base):
+    """Key reference-rate observations (SOFR, EFFR, prime, treasuries) — one row per
+    (series, date), refreshed by app.rates when stale."""
+
+    __tablename__ = "rates"
+
+    series: Mapped[str] = mapped_column(String(16), primary_key=True)
+    date: Mapped[str] = mapped_column(String(10), primary_key=True)
+    value: Mapped[float] = mapped_column(Float)
+    fetched_at: Mapped[Optional[str]] = mapped_column(String(40))
+
+
 class Scenario(Base):
     """A saved fulcrum run: structure + assumptions + summary results, for side-by-side compare."""
 
