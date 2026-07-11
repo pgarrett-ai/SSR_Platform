@@ -78,6 +78,32 @@ export function Badge({ tone = "neutral", className = "", children }) {
   );
 }
 
+/* ---------- form primitives ---------- */
+
+const BUTTON_VARIANTS = {
+  primary: "bg-accent font-semibold text-white hover:bg-accent/90",
+  ghost: "border border-ink-600 text-slate-300 hover:border-accent hover:text-white",
+};
+
+export function Button({ variant = "ghost", className = "", ...props }) {
+  return (
+    <button
+      className={`rounded-md px-3 py-1.5 text-sm disabled:opacity-50 ${BUTTON_VARIANTS[variant] || BUTTON_VARIANTS.ghost} ${className}`}
+      {...props}
+    />
+  );
+}
+
+export const Input = React.forwardRef(function Input({ className = "", ...props }, ref) {
+  return (
+    <input
+      ref={ref}
+      className={`rounded-md border border-ink-600 bg-ink-800 px-3 py-1.5 text-sm text-slate-100 outline-none focus:border-accent ${className}`}
+      {...props}
+    />
+  );
+});
+
 export function Section({ title, subtitle, badge, right, flush = false, id, className = "", children }) {
   return (
     <section id={id} className={`mb-6 ${className}`}>

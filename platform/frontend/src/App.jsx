@@ -2,7 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
-import { fetchHealth, setLlmEnabled } from "./api.js";
+import { fetchHealth, overviewJsonUrl, setLlmEnabled, streamOverview } from "./api.js";
+import { getCached, setCached } from "./cache.js";
+import { Button, Input } from "./ui/index.jsx";
+import ProgressLog from "./components/ProgressLog.jsx";
 import ScreenTable from "./components/ScreenTable.jsx";
 import OverviewPage from "./pages/OverviewPage.jsx";
 import CapitalPage from "./pages/CapitalPage.jsx";
@@ -23,32 +26,16 @@ const TABS = [
   { id: "recovery", label: "Recovery", key: "v" },
 ];
 
-function CompanyLayout({ years, health }) {
+function CompanyLayout({ years, health, overview }) {
   const { ticker } = useParams();
   return (
-    <div>
-      <div className="mb-6 flex gap-1 border-b border-ink-700">
-        {TABS.map((t) => (
-          <NavLink
-            key={t.id}
-            to={`/company/${ticker}/${t.id}`}
-            className={({ isActive }) =>
-              `px-4 py-2 text-sm ${isActive ? "border-b-2 border-accent font-semibold text-white" : "text-slate-400 hover:text-slate-200"}`
-            }
-          >
-            {t.label}
-            <span className="ml-2 hidden text-[9px] text-slate-600 md:inline">g {t.key}</span>
-          </NavLink>
-        ))}
-      </div>
-      <Routes>
-        <Route path="overview" element={<OverviewPage ticker={ticker} years={years} />} />
-        <Route path="capital" element={<CapitalPage ticker={ticker} years={years} health={health} />} />
-        <Route path="risk" element={<RiskPage ticker={ticker} />} />
-        <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
-        <Route path="*" element={<Navigate to="overview" replace />} />
-      </Routes>
-    </div>
+    <Routes>
+      <Route path="overview" element={<OverviewPage ticker={ticker} years={years} />} />
+      <Route path="capital" element={<CapitalPage health={health} overview={overview} />} />
+      <Route path="risk" element={<RiskPage ticker={ticker} />} />
+      <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
+      <Route path="*" element={<Navigate to="overview" replace />} />
+    </Routes>
   );
 }
 
@@ -62,10 +49,58 @@ export default function App() {
   const pendingG = useRef(false);
 
   const activeTicker = location.pathname.match(/^\/company\/([^/]+)/)?.[1] || null;
+  const onCapitalTab = /^\/company\/[^/]+\/capital/.test(location.pathname);
+
+  // Overview pipeline state lives in the shell so Run Live (sidebar) and the progress
+  // log (top of main) work from any tab; CapitalPage is purely presentational.
+  const [overview, setOverview] = useState(null);
+  const [ovEvents, setOvEvents] = useState([]);
+  const [ovLoading, setOvLoading] = useState(false);
+  const [ovError, setOvError] = useState(null);
+  const streamRef = useRef(null);
+  const lastKeyRef = useRef(null);
+  const cacheKey = activeTicker ? `overview:${activeTicker}:${years}` : null;
+
+  async function runOverview(live = false) {
+    if (!activeTicker) return;
+    streamRef.current?.cancel();
+    setOvLoading(true);
+    setOvError(null);
+    setOvEvents([]);
+    setOverview(null);
+    const key = cacheKey;
+    const ctrl = streamOverview(activeTicker, years, live, (e) => setOvEvents((prev) => [...prev, e]));
+    streamRef.current = ctrl;
+    try {
+      const ov = await ctrl.promise;
+      setOverview(setCached(key, ov));
+    } catch (err) {
+      setOvError(err.message || String(err));
+    } finally {
+      setOvLoading(false);
+    }
+  }
 
   useEffect(() => {
     fetchHealth().then(setHealth).catch(() => {});
   }, []);
+
+  // One effect owns cached-vs-run: on a ticker/years change, cancel any in-flight run and
+  // serve the session cache; the cached pipeline auto-runs only when the Capital tab needs
+  // it (progress persists across tab switches — only a company/timeframe change cancels).
+  useEffect(() => {
+    if (!cacheKey) return;
+    if (lastKeyRef.current !== cacheKey) {
+      lastKeyRef.current = cacheKey;
+      streamRef.current?.cancel();
+      setOvLoading(false);
+      setOvEvents([]);
+      setOvError(null);
+      setOverview(getCached(cacheKey) || null);
+    }
+    if (onCapitalTab && !getCached(cacheKey) && !ovLoading) runOverview(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cacheKey, onCapitalTab]);
 
   // Keyboard: "/" focuses search; "g" then o/c/r/v jumps tabs.
   useEffect(() => {
@@ -108,6 +143,61 @@ export default function App() {
           <div className="mb-1 font-bold tracking-tight text-slate-100">◆ Distressed Credit</div>
           <div className="mb-6 text-[10px] uppercase tracking-[0.2em] text-slate-600">research platform</div>
 
+          <form
+            onSubmit={(e) => { e.preventDefault(); go(query); }}
+            className="mb-6 flex flex-col gap-2"
+          >
+            <Input
+              ref={searchRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="ticker or CIK  ( / )"
+              className="w-full font-mono"
+            />
+            <label className="flex items-center justify-between text-[11px] text-slate-500">
+              lookback (years)
+              <Input
+                type="number"
+                min={1}
+                max={20}
+                value={years}
+                onChange={(e) => setYears(Math.min(20, Math.max(1, Number(e.target.value) || 1)))}
+                className="w-16 px-2 text-right"
+              />
+            </label>
+            <Button type="submit" variant="primary" className="w-full">
+              Open
+            </Button>
+          </form>
+
+          <div className="mb-6 flex flex-col gap-2">
+            <Button
+              onClick={() => runOverview(true)}
+              disabled={!activeTicker || ovLoading}
+              title="bypass all caches and re-run the pipeline against EDGAR (~3 min with LLM)"
+              className="w-full"
+            >
+              Run live ↻
+            </Button>
+            {overview && (
+              <a
+                href={overviewJsonUrl(overview.header.ticker, overview.header.years, false)}
+                target="_blank"
+                rel="noreferrer"
+                className="text-center text-[11px] text-slate-500 hover:text-slate-300"
+              >
+                Download JSON
+              </a>
+            )}
+            {health && !health.llm_enabled && (
+              <div className="text-[11px] text-amber-400">
+                {health.llm_key_set
+                  ? "LLM analysis is off — live runs reuse the last saved analysis"
+                  : "LLM key not set — OBS/covenant sections skipped"}
+              </div>
+            )}
+          </div>
+
           <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">Companies</div>
           <nav className="mb-6 flex flex-col gap-1">
             {HEROES.map((h) => (
@@ -139,7 +229,7 @@ export default function App() {
                       setHealth(await fetchHealth());
                     } catch {}
                   }}
-                  title="toggle LLM analysis (covenants, OBS, subsidiaries, MD&A tone)"
+                  title="toggle LLM analysis (covenants, OBS, subsidiaries)"
                   className={`rounded-full border px-2 py-0.5 ${health.llm_enabled ? "border-emerald-400/40 text-emerald-400" : "border-amber-400/40 text-amber-400"}`}
                 >
                   {health.llm_enabled ? "on" : "off"}
@@ -155,38 +245,42 @@ export default function App() {
       {/* Main column */}
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-10 border-b border-ink-700 bg-ink-900/80 backdrop-blur">
-          <form
-            onSubmit={(e) => { e.preventDefault(); go(query); }}
-            className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-5 py-3"
-          >
-            <input
-              ref={searchRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="ticker or CIK  ( / )"
-              className="w-44 rounded-md border border-ink-600 bg-ink-800 px-3 py-1.5 font-mono text-sm text-slate-100 outline-none focus:border-accent"
-            />
-            <select
-              value={years}
-              onChange={(e) => setYears(Number(e.target.value))}
-              className="rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 text-sm text-slate-300"
-              title="filing lookback (capital structure / recovery)"
-            >
-              {[1, 2, 3, 5, 10].map((y) => <option key={y} value={y}>{y}y</option>)}
-            </select>
-            <button type="submit" className="rounded-md bg-accent px-4 py-1.5 text-sm font-semibold text-white hover:bg-accent/90">
-              Open
-            </button>
-            {activeTicker && (
-              <span className="ml-auto font-mono text-sm text-slate-500">{activeTicker}</span>
+          <div className="mx-auto flex max-w-6xl items-center gap-1 px-5">
+            {activeTicker ? (
+              <>
+                {TABS.map((t) => (
+                  <NavLink
+                    key={t.id}
+                    to={`/company/${activeTicker}/${t.id}`}
+                    className={({ isActive }) =>
+                      `px-4 py-3 text-sm ${isActive ? "border-b-2 border-accent font-semibold text-white" : "text-slate-400 hover:text-slate-200"}`
+                    }
+                  >
+                    {t.label}
+                    <span className="ml-2 hidden text-[9px] text-slate-600 md:inline">g {t.key}</span>
+                  </NavLink>
+                ))}
+                <span className="ml-auto font-mono text-sm text-slate-500">{activeTicker}</span>
+              </>
+            ) : (
+              <span className="py-3 text-sm text-slate-500">Search any SEC issuer — every number traces to an EDGAR filing.</span>
             )}
-          </form>
+          </div>
         </header>
 
         <main className="mx-auto max-w-6xl px-5 py-6">
+          {(ovLoading || ovEvents.length > 0) && <ProgressLog events={ovEvents} done={!!overview} />}
+          {ovError && (
+            <div className="mb-8 rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-200">
+              <span className="font-semibold">Could not complete:</span> {ovError}
+            </div>
+          )}
           <Routes>
             <Route path="/" element={<Landing onPick={go} />} />
-            <Route path="/company/:ticker/*" element={<CompanyLayout years={years} health={health} />} />
+            <Route
+              path="/company/:ticker/*"
+              element={<CompanyLayout years={years} health={health} overview={overview} />}
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
