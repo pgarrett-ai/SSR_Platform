@@ -19,7 +19,6 @@ def _overview(lev=6.5):
         economic_debt_bridge=EconomicDebtBridge(
             reported_leverage=CitedValue(value=5.0),
             economic_leverage=CitedValue(value=lev),
-            net_economic_debt=CitedValue(value=1.2e9),
         ),
         forensic_flags=[ForensicFlag(flag_type="x", severity="warn", narrative="n")],
     )

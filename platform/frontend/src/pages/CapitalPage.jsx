@@ -6,6 +6,7 @@ import ForensicTable from "../components/ForensicTable.jsx";
 import FlagCard from "../components/FlagCard.jsx";
 import SourcesPanel from "../components/SourcesPanel.jsx";
 import EconomicDebtBridge from "../components/EconomicDebtBridge.jsx";
+import EbitdaBuild from "../components/EbitdaBuild.jsx";
 import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
@@ -74,6 +75,18 @@ export default function CapitalPage({ ticker, health, overview }) {
           >
             <EconomicDebtBridge bridge={overview.economic_debt_bridge} />
           </Section>
+
+          {overview.ebitda_build && (
+            <Section
+              title="EBITDA build"
+              subtitle="net income → EBITDA, plus the issuer's covenant add-backs"
+            >
+              <EbitdaBuild
+                build={overview.ebitda_build}
+                economicDebt={overview.economic_debt_bridge?.economic_debt}
+              />
+            </Section>
+          )}
 
           <Section
             title="As-reported debt schedule"

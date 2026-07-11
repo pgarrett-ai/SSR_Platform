@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { fetchScreen, searchText } from "../api.js";
 import { Badge, Td, Th, fmtX, rowClass } from "../ui/index.jsx";
 
-const fmtB = (v) => (v == null ? "—" : `$${(v / 1e9).toFixed(1)}B`);
 
 // Snippets come from filing text via FTS5 snippet(); the only HTML we allow through
 // is our own <mark> markers — everything else is escaped before rendering.
@@ -81,7 +80,6 @@ export default function ScreenTable({ onPick }) {
                   <Th>Issuer</Th>
                   <Th right>Reported lev</Th>
                   <Th right>Economic lev</Th>
-                  <Th right>Net econ debt</Th>
                   <Th right>Flags</Th>
                   <Th right className="cursor-help" title="composite risk 0-100 · trained PD implied rating — fills in after a Default Risk run">Risk</Th>
                 </tr>
@@ -97,7 +95,6 @@ export default function ScreenTable({ onPick }) {
                     <Td className="text-slate-400">{r.issuer || "—"}</Td>
                     <Td right mono className="text-slate-300">{fmtX(r.reported_leverage)}</Td>
                     <Td right mono className="text-slate-300">{fmtX(r.economic_leverage)}</Td>
-                    <Td right mono className="text-slate-400">{fmtB(r.net_economic_debt)}</Td>
                     <Td right mono className="text-slate-400">{r.flag_count ?? "—"}</Td>
                     <Td right mono className="text-slate-300">
                       {r.overall_risk == null ? "—" : `${r.overall_risk.toFixed(1)}${r.implied_rating ? ` · ${r.implied_rating}` : ""}`}

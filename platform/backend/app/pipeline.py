@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
 
-from .capstack.bridge import build_bridge
+from .capstack.bridge import build_bridge, build_ebitda_box
 from .capstack.covenants import extract_covenant_summary, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
 from .capstack.debt_schedule import extract_debt_schedule
@@ -262,6 +262,20 @@ def run_overview(
                 "schedule and forensic flags still run."
             )
 
+    # --- EBITDA box: net-income walk + the issuer's covenant add-backs (deterministic; the
+    # categories come from whatever covenant packages exist, including a spliced prior run) ---
+    ebitda_build = None
+    try:
+        if series is not None and series.years:
+            cats: list[str] = []
+            for c in covenants:
+                for a in c.ebitda_addback_categories:
+                    if a not in cats:
+                        cats.append(a)
+            ebitda_build = build_ebitda_box(series, cats)
+    except Exception as exc:
+        warnings.append(f"EBITDA box step failed: {exc}")
+
     header = IssuerHeader(
         issuer=issuer_name,
         ticker=ticker,
@@ -277,6 +291,7 @@ def run_overview(
     overview = Overview(
         header=header,
         economic_debt_bridge=economic_debt_bridge,
+        ebitda_build=ebitda_build,
         debt_schedule=debt_schedule,
         forensic_table=forensic_table,
         forensic_flags=forensic_flags,

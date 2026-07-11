@@ -201,7 +201,6 @@ def screen() -> JSONResponse:
             "ticker": r.ticker, "issuer": r.issuer, "last_updated": r.last_updated,
             "reported_leverage": r.reported_leverage,
             "economic_leverage": r.economic_leverage,
-            "net_economic_debt": r.net_economic_debt,
             "flag_count": r.flag_count,
             "overall_risk": r.overall_risk, "trained_pd": r.trained_pd,
             "implied_rating": r.implied_rating,

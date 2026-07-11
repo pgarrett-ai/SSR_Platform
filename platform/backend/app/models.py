@@ -225,9 +225,7 @@ class Snapshot(Base):
     saved_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     reported_leverage: Mapped[Optional[float]] = mapped_column(Float)
     economic_leverage: Mapped[Optional[float]] = mapped_column(Float)
-    net_economic_debt: Mapped[Optional[float]] = mapped_column(Float)   # USD
     flag_count: Mapped[Optional[int]] = mapped_column(Integer)
-    liquidity_tone: Mapped[Optional[float]] = mapped_column(Float)      # 0-100 stress
     overall_risk: Mapped[Optional[float]] = mapped_column(Float)        # hazard composite
     trained_pd: Mapped[Optional[float]] = mapped_column(Float)          # calibrated 12m PD
     implied_rating: Mapped[Optional[str]] = mapped_column(String(8))

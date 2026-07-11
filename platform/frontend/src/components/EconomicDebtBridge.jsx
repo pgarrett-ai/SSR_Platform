@@ -4,7 +4,7 @@ import { NEUTRAL, RISK } from "../ui/colors.js";
 
 const B = (v) => (v == null ? null : `${v < 0 ? "−" : ""}$${Math.abs(v / 1e9).toFixed(1)}B`);
 
-const TOTAL_SUBLABEL = { reported_debt: "reported", economic_debt: "economic", net_economic_debt: "net" };
+const TOTAL_SUBLABEL = { reported_debt: "reported", economic_debt: "economic" };
 
 function LeverageCallout({ bridge }) {
   const r = bridge.reported_leverage;
@@ -23,7 +23,7 @@ function LeverageCallout({ bridge }) {
       </div>
       {r?.value != null && e?.value != null && (
         <div className={`ml-auto rounded-md px-3 py-1.5 text-sm ${e.value >= r.value ? "bg-rose-500/10 text-rose-200" : "bg-emerald-500/10 text-emerald-200"}`}>
-          {e.value >= r.value ? "Hidden leverage: " : "EBITDAR-adjusted: "}
+          {e.value >= r.value ? "Hidden leverage: " : "Below reported: "}
           <span className="font-mono font-semibold">
             {e.value >= r.value ? "+" : ""}{(e.value - r.value).toFixed(1)}x
           </span>{" "}
@@ -78,10 +78,7 @@ function WaterfallSvg({ lines }) {
       .replace("Pension / OPEB deficit", "Pension/OPEB")
       .replace("Supplier / supply-chain finance", "Supplier fin.")
       .replace("Securitized / factored receivables (recourse)", "Securitization")
-      .replace("Guarantees of external / JV / SPE debt", "Guarantees")
-      .replace("Less: cash & equivalents", "Cash")
-      .replace("Less: restricted cash", "Restricted cash")
-      .replace("Net economic (adjusted) debt", "Net econ. debt");
+      .replace("Guarantees of external / JV / SPE debt", "Guarantees");
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 320 }}>
@@ -127,8 +124,13 @@ function WaterfallSvg({ lines }) {
   );
 }
 
+// ponytail: pre-rework cached snapshots still carry cash/net lines as data; drop them at
+// render. Remove this filter once the hero caches are regenerated.
+const DROPPED_KEYS = new Set(["cash_offset", "restricted_cash_offset", "net_economic_debt"]);
+
 export default function EconomicDebtBridge({ bridge }) {
-  if (!bridge || !bridge.lines || bridge.lines.length === 0) {
+  const lines = (bridge?.lines || []).filter((ln) => !DROPPED_KEYS.has(ln.key));
+  if (lines.length === 0) {
     return (
       <p className="text-sm text-slate-400">
         Bridge unpopulated — requires footnote/OBS extraction (LLM off).
@@ -139,11 +141,11 @@ export default function EconomicDebtBridge({ bridge }) {
   return (
     <div>
       <LeverageCallout bridge={bridge} />
-      <WaterfallSvg lines={bridge.lines} />
+      <WaterfallSvg lines={lines} />
 
       <table className="mt-4 w-full text-sm">
         <tbody>
-          {bridge.lines.map((ln, i) => (
+          {lines.map((ln, i) => (
             <tr
               key={i}
               className={`border-b border-ink-700/60 ${
@@ -167,11 +169,8 @@ export default function EconomicDebtBridge({ bridge }) {
       </table>
       {bridge.ebitda && (
         <p className="mt-2 text-[11px] text-slate-500">
-          Reported leverage vs EBITDA <CitedNumber cv={bridge.ebitda} /> (proxy)
-          {bridge.ebitdar ? (
-            <>; economic leverage vs EBITDAR <CitedNumber cv={bridge.ebitdar} /></>
-          ) : null}
-          . Leases from XBRL; other lines from footnotes.
+          Both leverage ratios vs EBITDA <CitedNumber cv={bridge.ebitda} /> — see the EBITDA
+          build below. Leases from XBRL; other lines from footnotes.
         </p>
       )}
     </div>

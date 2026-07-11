@@ -115,11 +115,25 @@ class EconomicDebtBridge(BaseModel):
     lines: list[BridgeLine] = Field(default_factory=list)
     reported_debt: Optional[CitedValue] = None
     economic_debt: Optional[CitedValue] = None
-    net_economic_debt: Optional[CitedValue] = None   # economic debt − cash − restricted cash
     ebitda: Optional[CitedValue] = None
-    ebitdar: Optional[CitedValue] = None             # EBITDA + operating lease cost, when found
     reported_leverage: Optional[CitedValue] = None   # reported debt / EBITDA
-    economic_leverage: Optional[CitedValue] = None   # economic debt / EBITDAR (EBITDA fallback)
+    economic_leverage: Optional[CitedValue] = None   # economic debt / EBITDA
+
+
+class EbitdaAddback(BaseModel):
+    """One covenant add-back category; amount is the matching XBRL fact when one exists."""
+
+    category: str                            # as extracted from the credit agreement
+    label: str
+    amount: Optional[CitedValue] = None      # None -> disclosed category, not XBRL-quantifiable
+
+
+class EbitdaBuild(BaseModel):
+    """Net income → EBITDA walk plus the issuer's own covenant add-backs (toggleable in the UI)."""
+
+    lines: list[BridgeLine] = Field(default_factory=list)   # NI → +interest → +taxes → +D&A → EBITDA
+    ebitda: Optional[CitedValue] = None
+    addbacks: list[EbitdaAddback] = Field(default_factory=list)
 
 
 class CovenantSummary(BaseModel):
@@ -178,6 +192,7 @@ class ChangeItem(BaseModel):
 class Overview(BaseModel):
     header: IssuerHeader
     economic_debt_bridge: Optional[EconomicDebtBridge] = None
+    ebitda_build: Optional[EbitdaBuild] = None
     debt_schedule: list[DebtInstrument] = Field(default_factory=list)
     forensic_table: list[ForensicTableRow] = Field(default_factory=list)
     forensic_flags: list[ForensicFlag] = Field(default_factory=list)

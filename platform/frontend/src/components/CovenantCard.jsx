@@ -54,18 +54,6 @@ function CovenantBlock({ cov }) {
         </span>
         <Blocker present={cov.j_crew_blocker_present} />
       </div>
-      {cov.ebitda_addback_categories?.length > 0 && (
-        <div className="py-2">
-          <span className="text-[12px] uppercase tracking-wide text-slate-500">EBITDA add-backs</span>
-          <div className="mt-1 flex flex-wrap gap-1.5">
-            {cov.ebitda_addback_categories.map((a, i) => (
-              <span key={i} className="rounded bg-ink-700 px-2 py-0.5 text-[11px] text-slate-300">
-                {a}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
       {cov.lme_risk_notes && (
         <div className="mt-2 rounded-md border border-amber-500/30 bg-amber-500/5 p-2 text-[12px] text-amber-200/90">
           <span className="font-semibold">LME read:</span> {cov.lme_risk_notes}
