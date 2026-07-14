@@ -6,9 +6,9 @@
     "cik": "1519061",
     "years": 3,
     "n_filings": 70,
-    "last_updated": "2026-07-10T13:12:41.249871+00:00",
+    "last_updated": "2026-07-14T10:27:56.998631+00:00",
     "from_cache": false,
-    "llm_enabled": true
+    "llm_enabled": false
   },
   "economic_debt_bridge": {
     "lines": [
@@ -22,8 +22,7 @@
           "citation": null,
           "derived": true,
           "formula": "lt_debt_noncurrent=$2,332M + lt_debt_current=$213M",
-          "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases.",
-          "tie_out": null
+          "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases."
         },
         "is_total": true
       },
@@ -46,8 +45,7 @@
           },
           "derived": false,
           "formula": null,
-          "note": "Operating leases: noncurrent $48M + current $12M per the balance sheet (XBRL). On-balance-sheet under ASC 842 but excluded from headline 'debt'.",
-          "tie_out": null
+          "note": "Operating leases: noncurrent $48M + current $12M per the balance sheet (XBRL). On-balance-sheet under ASC 842 but excluded from headline 'debt'."
         },
         "is_total": false
       },
@@ -70,8 +68,7 @@
           },
           "derived": false,
           "formula": null,
-          "note": "Finance leases: noncurrent $2M + current $2M per the balance sheet (XBRL). On-balance-sheet under ASC 842 but excluded from headline 'debt'.",
-          "tie_out": null
+          "note": "Finance leases: noncurrent $2M + current $2M per the balance sheet (XBRL). On-balance-sheet under ASC 842 but excluded from headline 'debt'."
         },
         "is_total": false
       },
@@ -94,8 +91,7 @@
           },
           "derived": false,
           "formula": null,
-          "note": "Debt-like obligation added to reach economic debt.",
-          "tie_out": null
+          "note": "Debt-like obligation added to reach economic debt."
         },
         "is_total": false
       },
@@ -109,71 +105,7 @@
           "citation": null,
           "derived": true,
           "formula": "reported debt $2,545M + $60M + $4M + $1M",
-          "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above.",
-          "tie_out": null
-        },
-        "is_total": true
-      },
-      {
-        "key": "cash_offset",
-        "label": "Less: cash & equivalents",
-        "amount": {
-          "value": -146700000.0,
-          "display": "-$147M",
-          "unit": "USD",
-          "citation": {
-            "accession_no": "0001104659-26-027518",
-            "form_type": "10-K",
-            "filing_date": "2026-03-13",
-            "exhibit": null,
-            "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
-            "quote": "Cash and Cash Equivalents, at Carrying Value (as of 2025-12-31) [XBRL]"
-          },
-          "derived": false,
-          "formula": null,
-          "note": "Offset to reach net economic debt.",
-          "tie_out": null
-        },
-        "is_total": false
-      },
-      {
-        "key": "restricted_cash_offset",
-        "label": "Less: restricted cash",
-        "amount": {
-          "value": -2300000.0,
-          "display": "-$2M",
-          "unit": "USD",
-          "citation": {
-            "accession_no": "0001104659-26-027518",
-            "form_type": "10-K",
-            "filing_date": "2026-03-13",
-            "exhibit": null,
-            "section": "XBRL concept us-gaap:RestrictedCashCurrent",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
-            "quote": "Restricted Cash, Current (as of 2025-12-31) [XBRL]"
-          },
-          "derived": false,
-          "formula": null,
-          "note": "Restricted cash offset. Availability in distress varies — often collateral; treat as best case.",
-          "tie_out": null
-        },
-        "is_total": false
-      },
-      {
-        "key": "net_economic_debt",
-        "label": "Net economic (adjusted) debt",
-        "amount": {
-          "value": 2461404739.0,
-          "display": "$2,461M",
-          "unit": "USD",
-          "citation": null,
-          "derived": true,
-          "formula": "economic debt $2,610M − cash offsets $149M",
-          "note": "Net economic debt = economic debt − cash − restricted cash.",
-          "tie_out": null
+          "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
         },
         "is_total": true
       }
@@ -185,8 +117,7 @@
       "citation": null,
       "derived": true,
       "formula": "lt_debt_noncurrent=$2,332M + lt_debt_current=$213M",
-      "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases.",
-      "tie_out": null
+      "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases."
     },
     "economic_debt": {
       "value": 2610404739.0,
@@ -195,61 +126,135 @@
       "citation": null,
       "derived": true,
       "formula": "reported debt $2,545M + $60M + $4M + $1M",
-      "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above.",
-      "tie_out": null
-    },
-    "net_economic_debt": {
-      "value": 2461404739.0,
-      "display": "$2,461M",
-      "unit": "USD",
-      "citation": null,
-      "derived": true,
-      "formula": "economic debt $2,610M − cash offsets $149M",
-      "note": "Net economic debt = economic debt − cash − restricted cash.",
-      "tie_out": null
+      "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
     },
     "ebitda": {
-      "value": 37400000.0,
-      "display": "$37M",
+      "value": -211400000.0,
+      "display": "-$211M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "operating income -$254M + D&A $292M (FY2025)",
-      "note": "Proxy EBITDA.",
-      "tie_out": null
-    },
-    "ebitdar": {
-      "value": 55600000.0,
-      "display": "$56M",
-      "unit": "USD",
-      "citation": null,
-      "derived": true,
-      "formula": "EBITDA $37M + operating lease cost $18M (FY2025)",
-      "note": "EBITDAR: operating lease liabilities sit in economic debt, so lease cost is added back to the denominator for a consistent ratio.",
-      "tie_out": null
+      "formula": "net income -$546M + taxes $43M + D&A $292M (FY2025)",
+      "note": null
     },
     "reported_leverage": {
-      "value": 68.05882352941177,
-      "display": "68.1x",
+      "value": -12.040681173131505,
+      "display": "-12.0x",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "reported debt $2,545M / EBITDA $37M",
-      "note": null,
-      "tie_out": null
+      "formula": "reported debt $2,545M / EBITDA -$211M",
+      "note": null
     },
     "economic_leverage": {
-      "value": 46.949725521582735,
-      "display": "46.9x",
+      "value": -12.348177573320719,
+      "display": "-12.3x",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "economic debt $2,610M / EBITDAR $56M",
-      "note": "EBITDAR-consistent: lease liabilities in the numerator, lease cost added back to the denominator.",
-      "tie_out": null
+      "formula": "economic debt $2,610M / EBITDA -$211M",
+      "note": "Economic debt (incl. lease liabilities) over plain EBITDA — no rent add-back to the denominator."
     }
   },
+  "ebitda_build": {
+    "lines": [
+      {
+        "key": "net_income",
+        "label": "Net income",
+        "amount": {
+          "value": -545600000.0,
+          "display": "-$546M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001104659-26-027518",
+            "form_type": "10-K",
+            "filing_date": "2026-03-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:NetIncomeLoss",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+            "quote": "Net Income (Loss) Attributable to Parent (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "income_tax_expense",
+        "label": "+ Income tax expense",
+        "amount": {
+          "value": 42600000.0,
+          "display": "$43M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001104659-26-027518",
+            "form_type": "10-K",
+            "filing_date": "2026-03-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:IncomeTaxExpenseBenefit",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+            "quote": "Income Tax Expense (Benefit) (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "d_and_a",
+        "label": "+ Depreciation & amortization",
+        "amount": {
+          "value": 291600000.0,
+          "display": "$292M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001104659-26-027518",
+            "form_type": "10-K",
+            "filing_date": "2026-03-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:DepreciationDepletionAndAmortization",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+            "quote": "Depreciation, Depletion and Amortization (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "ebitda",
+        "label": "EBITDA",
+        "amount": {
+          "value": -211400000.0,
+          "display": "-$211M",
+          "unit": "USD",
+          "citation": null,
+          "derived": true,
+          "formula": "net income -$546M + taxes $43M + D&A $292M (FY2025)",
+          "note": null
+        },
+        "is_total": true
+      }
+    ],
+    "ebitda": {
+      "value": -211400000.0,
+      "display": "-$211M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "net income -$546M + taxes $43M + D&A $292M (FY2025)",
+      "note": null
+    },
+    "addbacks": []
+  },
   "debt_schedule": [],
+  "debt_schedule_asof": null,
   "forensic_table": [
     {
       "fiscal_year": 2022,
@@ -261,8 +266,7 @@
         "citation": null,
         "derived": true,
         "formula": "lt_debt_noncurrent=$2,302M + lt_debt_current=$16M",
-        "note": "Sum of reported debt components (each cited).",
-        "tie_out": null
+        "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
         "value": 211700000.0,
@@ -280,8 +284,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "free_cash_flow": {
         "value": -104700000.0,
@@ -290,8 +293,7 @@
         "citation": null,
         "derived": true,
         "formula": "OCF ($44M) - capex ($148M)",
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "capex": {
         "value": 148200000.0,
@@ -309,8 +311,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "accounts_payable": {
         "value": 438100000.0,
@@ -328,8 +329,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "inventory": {
         "value": 553600000.0,
@@ -347,8 +347,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "revenue": {
         "value": 4965500000.0,
@@ -366,8 +365,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "cogs": {
         "value": 4693200000.0,
@@ -385,8 +383,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "ebitda": {
         "value": -127000000.0,
@@ -395,8 +392,7 @@
         "citation": null,
         "derived": true,
         "formula": "operating_income (-$364M) + D&A ($237M)",
-        "note": "Proxy EBITDA = operating income + D&A.",
-        "tie_out": null
+        "note": "Proxy EBITDA = operating income + D&A."
       },
       "operating_cash_flow": {
         "value": 43500000.0,
@@ -414,8 +410,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "dpo": {
         "value": 34.071955169180946,
@@ -424,8 +419,7 @@
         "citation": null,
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
-        "note": "Days payable outstanding (denominator: COGS).",
-        "tie_out": null
+        "note": "Days payable outstanding (denominator: COGS)."
       }
     },
     {
@@ -438,8 +432,7 @@
         "citation": null,
         "derived": true,
         "formula": "lt_debt_noncurrent=$2,278M + lt_debt_current=$21M",
-        "note": "Sum of reported debt components (each cited).",
-        "tie_out": null
+        "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
         "value": 259100000.0,
@@ -457,8 +450,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "free_cash_flow": {
         "value": 79000000.0,
@@ -467,8 +459,7 @@
         "citation": null,
         "derived": true,
         "formula": "OCF ($149M) - capex ($70M)",
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "capex": {
         "value": 69700000.0,
@@ -486,8 +477,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "accounts_payable": {
         "value": 449700000.0,
@@ -505,8 +495,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "inventory": {
         "value": 404700000.0,
@@ -524,8 +513,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "revenue": {
         "value": 3675400000.0,
@@ -543,8 +531,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "cogs": {
         "value": 3533100000.0,
@@ -562,8 +549,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "ebitda": {
         "value": -234200000.0,
@@ -572,8 +558,7 @@
         "citation": null,
         "derived": true,
         "formula": "operating_income (-$455M) + D&A ($221M)",
-        "note": "Proxy EBITDA = operating income + D&A.",
-        "tie_out": null
+        "note": "Proxy EBITDA = operating income + D&A."
       },
       "operating_cash_flow": {
         "value": 148700000.0,
@@ -591,8 +576,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "dpo": {
         "value": 46.457926466842146,
@@ -601,8 +585,7 @@
         "citation": null,
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
-        "note": "Days payable outstanding (denominator: COGS).",
-        "tie_out": null
+        "note": "Days payable outstanding (denominator: COGS)."
       }
     },
     {
@@ -615,8 +598,7 @@
         "citation": null,
         "derived": true,
         "formula": "lt_debt_noncurrent=$2,201M + lt_debt_current=$211M",
-        "note": "Sum of reported debt components (each cited).",
-        "tie_out": null
+        "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
         "value": 209800000.0,
@@ -634,8 +616,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "free_cash_flow": {
         "value": -77500000.0,
@@ -644,8 +625,7 @@
         "citation": null,
         "derived": true,
         "formula": "OCF (-$14M) - capex ($63M)",
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "capex": {
         "value": 63300000.0,
@@ -663,8 +643,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "accounts_payable": {
         "value": 263100000.0,
@@ -682,8 +661,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "inventory": {
         "value": 347200000.0,
@@ -701,8 +679,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "revenue": {
         "value": 3513200000.0,
@@ -720,8 +697,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "cogs": {
         "value": 3247600000.0,
@@ -739,8 +715,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "ebitda": {
         "value": 164200000.0,
@@ -749,8 +724,7 @@
         "citation": null,
         "derived": true,
         "formula": "operating_income (-$46M) + D&A ($210M)",
-        "note": "Proxy EBITDA = operating income + D&A.",
-        "tie_out": null
+        "note": "Proxy EBITDA = operating income + D&A."
       },
       "operating_cash_flow": {
         "value": -14200000.0,
@@ -768,8 +742,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "dpo": {
         "value": 29.569990146569772,
@@ -778,8 +751,7 @@
         "citation": null,
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
-        "note": "Days payable outstanding (denominator: COGS).",
-        "tie_out": null
+        "note": "Days payable outstanding (denominator: COGS)."
       }
     },
     {
@@ -792,8 +764,7 @@
         "citation": null,
         "derived": true,
         "formula": "lt_debt_noncurrent=$2,332M + lt_debt_current=$213M",
-        "note": "Sum of reported debt components (each cited).",
-        "tie_out": null
+        "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
         "value": 146700000.0,
@@ -811,8 +782,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "free_cash_flow": {
         "value": -153400000.0,
@@ -821,8 +791,7 @@
         "citation": null,
         "derived": true,
         "formula": "OCF (-$102M) - capex ($51M)",
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "capex": {
         "value": 51000000.0,
@@ -840,8 +809,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "accounts_payable": {
         "value": 283900000.0,
@@ -859,8 +827,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "inventory": {
         "value": 316000000.0,
@@ -878,8 +845,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "revenue": {
         "value": 2974900000.0,
@@ -897,8 +863,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "cogs": {
         "value": 2809000000.0,
@@ -916,8 +881,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "ebitda": {
         "value": 37400000.0,
@@ -926,8 +890,7 @@
         "citation": null,
         "derived": true,
         "formula": "operating_income (-$254M) + D&A ($292M)",
-        "note": "Proxy EBITDA = operating income + D&A.",
-        "tie_out": null
+        "note": "Proxy EBITDA = operating income + D&A."
       },
       "operating_cash_flow": {
         "value": -102400000.0,
@@ -945,8 +908,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "dpo": {
         "value": 36.88981844072624,
@@ -955,8 +917,7 @@
         "citation": null,
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
-        "note": "Days payable outstanding (denominator: COGS).",
-        "tie_out": null
+        "note": "Days payable outstanding (denominator: COGS)."
       }
     }
   ],
@@ -1003,8 +964,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": "Debt-like obligation added to reach economic debt.",
-        "tie_out": null
+        "note": "Debt-like obligation added to reach economic debt."
       },
       "tax_effect": null,
       "net": null,
@@ -1031,8 +991,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": "These retention awards ($3,200,000 + $2,500,000 + $1,700,000 + $1,350,000 + $650,000 = $9,400,000) were cash outflows paid after the balance sheet date (Jan 2026). They are compensation expense, not a debt-like financing claim on the enterprise; if anything the repayment feature is a receivable to the Company rather than an obligation. Excluded from the economic-debt bridge; informational only.",
-        "tie_out": null
+        "note": "These retention awards ($3,200,000 + $2,500,000 + $1,700,000 + $1,350,000 + $650,000 = $9,400,000) were cash outflows paid after the balance sheet date (Jan 2026). They are compensation expense, not a debt-like financing claim on the enterprise; if anything the repayment feature is a receivable to the Company rather than an obligation. Excluded from the economic-debt bridge; informational only."
       },
       "tax_effect": null,
       "net": null,
@@ -1043,15 +1002,25 @@
   ],
   "covenants": [
     {
-      "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession HoldCo Credit Agreement (DIP)",
-      "leverage_covenant_type": "None (no maintenance leverage/net-leverage financial covenant). As a DIP facility, financial discipline is imposed instead through a DIP Budget/Permitted Variance and a minimum Liquidity covenant, plus Milestones and budget/variance reporting (Sections 6.20 Liquidity, 6.22 Budget and Variance Reporting, 6.23 Milestones, 7.17 Permitted Variance; Liquidity). No traditional maintenance leverage ratio is present in the covenant clauses provided.",
-      "leverage_ratio_threshold": "Not present. The provided text does not state a numeric leverage ratio or springing trigger; DIP controls run through the Approved Budget, Permitted Variance, and a Liquidity minimum (dollar threshold not specified in the excerpted text).",
+      "family_label": null,
+      "doc_class": null,
+      "operative_date": null,
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": null,
+      "trustee": null,
+      "collateral_agent": null,
+      "creditor_note": null,
+      "guarantors": null,
+      "financial_covenants": [],
+      "baskets": [],
       "ebitda_addback_categories": [],
-      "restricted_payments_basket_size": "Not specified in the excerpted text. Section 7.06 (Restricted Payments) governs; \"Restricted Payment\" is defined to include any dividend/distribution on Equity Interests, redemptions/returns of capital, and any Restricted Investment. No dollar or grower basket figure is quoted in the provided pages.",
       "mfn_sunset_period": "Not present / not applicable in the excerpted text. No MFN pricing protection clause (or sunset) appears; pricing is Term SOFR / Base Rate with a Floor, and roll-up/new-money mechanics govern instead.",
       "j_crew_blocker_present": true,
       "unrestricted_subsidiary_designation_flexibility": "Limited/atypical for a HoldCo DIP: the structure is inverted. Per Section 5.14, the Co-Borrower, Holdings, Altuglas and Aristech are and must remain designated \"Unrestricted Subsidiaries\" of the OpCo (Trinseo Lead Borrower) group under the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement, and any refinancing indebtedness — i.e., they are structurally ring-fenced OUT of the OpCo restricted group and INTO this HoldCo DIP collateral perimeter. Covenants here run against \"Covenant Parties.\" The excerpted text does not grant discretionary borrower flexibility to newly designate/re-designate unrestricted subsidiaries.",
-      "lme_risk_notes": "Low residual LME vulnerability within this instrument, but the whole facility is itself the product of an LME/restructuring. (1) Uptier/priming: This is a court-approved super-priority DIP with a Roll-Up of Prepetition Super HoldCo Secured Obligations into Roll-Up Term Loans; amendments and any further Roll require Required Lender consent, and Required Lenders are skewed toward New Money holders — a Designated Lender counts as a Required Lender only while holding >=75% of its Closing-Date New Money — entrenching the ad hoc/new-money group and limiting minority-lender uptier/cram exposure. (2) Drop-down/asset transfer: constrained by the Specified IP Covenant (Section 7.14), No Flowback (Section 7.16), separateness undertakings (Section 7.07), and negative covenants on Dispositions (7.05), Restricted Payments (7.06) and Indebtedness (7.03); Specified IP (Trinseo Europe -> Aristech/Altuglas license) is expressly protected. (3) The Chevron Phillips consent gate on the JV Interests limits direct pledge but proceeds/products remain Collateral. (4) Chief LME risk is external: the OpCo-side unrestricted-subsidiary designation of Aristech/Altuglas/Holdings/Co-Borrower (5.14) was the structural maneuver enabling this HoldCo priming/drop-down facility.",
+      "anchor_clause": null,
+      "lme_vectors": [],
       "citation": {
         "accession_no": "0001104659-26-073451",
         "form_type": "8-K/A",
@@ -1061,18 +1030,33 @@
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926073451/tm2617803d1_ex10-2.htm",
         "quote": "\"As of the Closing Date and at all times thereafter, each of the Co-Borrower, Holdings, Altuglas and Aristech are and shall remain an \"Unrestricted Subsidiary\" of the Trinseo Lead Borrower and its Restricted Subsidiaries for purposes of, in accordance with and pursuant to the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement and any other Indebtedness of the Trinseo Lead Borrower and its Restricted Subsidiaries at any time outstanding, including without limitation, any refinancing Indebtedness of any of the foregoing.\""
-      }
+      },
+      "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession HoldCo Credit Agreement (DIP)",
+      "leverage_covenant_type": "None (no maintenance leverage/net-leverage financial covenant). As a DIP facility, financial discipline is imposed instead through a DIP Budget/Permitted Variance and a minimum Liquidity covenant, plus Milestones and budget/variance reporting (Sections 6.20 Liquidity, 6.22 Budget and Variance Reporting, 6.23 Milestones, 7.17 Permitted Variance; Liquidity). No traditional maintenance leverage ratio is present in the covenant clauses provided.",
+      "leverage_ratio_threshold": "Not present. The provided text does not state a numeric leverage ratio or springing trigger; DIP controls run through the Approved Budget, Permitted Variance, and a Liquidity minimum (dollar threshold not specified in the excerpted text).",
+      "restricted_payments_basket_size": "Not specified in the excerpted text. Section 7.06 (Restricted Payments) governs; \"Restricted Payment\" is defined to include any dividend/distribution on Equity Interests, redemptions/returns of capital, and any Restricted Investment. No dollar or grower basket figure is quoted in the provided pages.",
+      "lme_risk_notes": "Low residual LME vulnerability within this instrument, but the whole facility is itself the product of an LME/restructuring. (1) Uptier/priming: This is a court-approved super-priority DIP with a Roll-Up of Prepetition Super HoldCo Secured Obligations into Roll-Up Term Loans; amendments and any further Roll require Required Lender consent, and Required Lenders are skewed toward New Money holders — a Designated Lender counts as a Required Lender only while holding >=75% of its Closing-Date New Money — entrenching the ad hoc/new-money group and limiting minority-lender uptier/cram exposure. (2) Drop-down/asset transfer: constrained by the Specified IP Covenant (Section 7.14), No Flowback (Section 7.16), separateness undertakings (Section 7.07), and negative covenants on Dispositions (7.05), Restricted Payments (7.06) and Indebtedness (7.03); Specified IP (Trinseo Europe -> Aristech/Altuglas license) is expressly protected. (3) The Chevron Phillips consent gate on the JV Interests limits direct pledge but proceeds/products remain Collateral. (4) Chief LME risk is external: the OpCo-side unrestricted-subsidiary designation of Aristech/Altuglas/Holdings/Co-Borrower (5.14) was the structural maneuver enabling this HoldCo priming/drop-down facility."
     },
     {
-      "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession Credit Agreement (Trinseo)",
-      "leverage_covenant_type": "None (no traditional leverage-ratio maintenance covenant). As a DIP facility, the maintenance covenant regime is a budget/permitted-variance and minimum-Liquidity construct (Section 6.16/6.20/6.22/7.16 \"Permitted Variance; Liquidity\") together with DIP Milestones (Section 6.23) and Budget/Variance Reporting.",
-      "leverage_ratio_threshold": "Not applicable — no leverage ratio threshold is stated. DIP covenant controls are (i) minimum Liquidity (\"the aggregate amount of unrestricted cash and Cash Equivalents of the Loan Parties\") tested per Sections 6.20/7.16, and (ii) Permitted Variance against the Approved Budget/Interim DIP Order budget. Specific numeric thresholds are set in the Interim/Final DIP Orders and are not quoted in the excerpted text.",
+      "family_label": null,
+      "doc_class": null,
+      "operative_date": null,
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": null,
+      "trustee": null,
+      "collateral_agent": null,
+      "creditor_note": null,
+      "guarantors": null,
+      "financial_covenants": [],
+      "baskets": [],
       "ebitda_addback_categories": [],
-      "restricted_payments_basket_size": "Not specified in the excerpted text (Section 7.06 \"Restricted Payments\" is referenced but its basket amounts are not reproduced). Note the Loans to Officers/Employees carve-out capped at \"not exceeding $1,000,000 in the aggregate outstanding at any time.\"",
       "mfn_sunset_period": "Not present in the excerpted text — no MFN (most-favored-nation pricing) provision or sunset is set forth in the definitions/clauses provided.",
       "j_crew_blocker_present": null,
       "unrestricted_subsidiary_designation_flexibility": "The facility operates on a Restricted Subsidiary / Guarantor basis and, as a DIP financing, contains no visible \"Unrestricted Subsidiary\" designation mechanic in the provided text. Section 7.14 (Permitted Activities) and 7.15 (New Subsidiaries) constrain subsidiary activity; collateral definition sweeps in \"OpCo DIP Collateral\" and expressly excludes only enumerated Excluded Assets. This structure sharply limits the ability to move value into a non-guarantor/unrestricted vehicle.",
-      "lme_risk_notes": "This is a court-supervised super-priority DIP facility governed by DIP Orders and an Intercreditor Agreement, not a typical syndicated TLB, so traditional out-of-court LME (drop-down / uptier / priming) vectors are structurally curtailed: (i) DIP claims are section 364(c) super-priority administrative claims with recourse against all Collateral, subject only to the Carve-Out; (ii) priming/adequate protection is controlled by the Bankruptcy Court via the DIP Orders and by an existing January 17, 2025 Intercreditor Agreement among the Prepetition Superpriority Revolving, Prepetition OpCo, Prepetition Super Holdco and Second Lien Notes agents; (iii) J.Crew-style IP drop-down risk is materially mitigated because the Aristech/Altuglas operating IP is licensed in under identified Technology License Agreements and the collateral package is broad, though I cannot confirm an express Section 7.05/7.14 transfer blocker from the excerpt (marked null). Key residual leverage lies with the Required Lenders, who must find the Interim/Final DIP Orders and First Day Orders \"acceptable in all respects,\" giving lenders veto-style control over restructuring steps and Milestones rather than exposing them to unilateral borrower LME maneuvers. Note the built-in \"Roll-Up Loan (Rev)\" (0.00% applicable rate) reflects a prepetition-to-DIP roll-up, itself an LME-adjacent priority enhancement for existing revolver lenders.",
+      "anchor_clause": null,
+      "lme_vectors": [],
       "citation": {
         "accession_no": "0001104659-26-068944",
         "form_type": "8-K",
@@ -1082,63 +1066,12 @@
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926068944/tm2615985d1_ex10-1.htm",
         "quote": "\"'Liquidity' means, as of any date of determination, the aggregate amount of unrestricted cash and Cash Equivalents of the Loan Parties.\""
-      }
-    }
-  ],
-  "mdna_drift": [
-    {
-      "period_end": "2024-03-31",
-      "form_type": "10-Q",
-      "drift_from_prior": null,
-      "liquidity_tone_score": 30.0
-    },
-    {
-      "period_end": "2024-06-30",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.4245,
-      "liquidity_tone_score": 28.0
-    },
-    {
-      "period_end": "2024-09-30",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.358,
-      "liquidity_tone_score": 34.0
-    },
-    {
-      "period_end": "2024-12-31",
-      "form_type": "10-K",
-      "drift_from_prior": 0.4497,
-      "liquidity_tone_score": 40.0
-    },
-    {
-      "period_end": "2025-03-31",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.3773,
-      "liquidity_tone_score": 52.0
-    },
-    {
-      "period_end": "2025-06-30",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.3566,
-      "liquidity_tone_score": 54.0
-    },
-    {
-      "period_end": "2025-09-30",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.2939,
-      "liquidity_tone_score": 62.0
-    },
-    {
-      "period_end": "2025-12-31",
-      "form_type": "10-K",
-      "drift_from_prior": 0.4116,
-      "liquidity_tone_score": 88.0
-    },
-    {
-      "period_end": "2026-03-31",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.4301,
-      "liquidity_tone_score": 97.0
+      },
+      "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession Credit Agreement (Trinseo)",
+      "leverage_covenant_type": "None (no traditional leverage-ratio maintenance covenant). As a DIP facility, the maintenance covenant regime is a budget/permitted-variance and minimum-Liquidity construct (Section 6.16/6.20/6.22/7.16 \"Permitted Variance; Liquidity\") together with DIP Milestones (Section 6.23) and Budget/Variance Reporting.",
+      "leverage_ratio_threshold": "Not applicable — no leverage ratio threshold is stated. DIP covenant controls are (i) minimum Liquidity (\"the aggregate amount of unrestricted cash and Cash Equivalents of the Loan Parties\") tested per Sections 6.20/7.16, and (ii) Permitted Variance against the Approved Budget/Interim DIP Order budget. Specific numeric thresholds are set in the Interim/Final DIP Orders and are not quoted in the excerpted text.",
+      "restricted_payments_basket_size": "Not specified in the excerpted text (Section 7.06 \"Restricted Payments\" is referenced but its basket amounts are not reproduced). Note the Loans to Officers/Employees carve-out capped at \"not exceeding $1,000,000 in the aggregate outstanding at any time.\"",
+      "lme_risk_notes": "This is a court-supervised super-priority DIP facility governed by DIP Orders and an Intercreditor Agreement, not a typical syndicated TLB, so traditional out-of-court LME (drop-down / uptier / priming) vectors are structurally curtailed: (i) DIP claims are section 364(c) super-priority administrative claims with recourse against all Collateral, subject only to the Carve-Out; (ii) priming/adequate protection is controlled by the Bankruptcy Court via the DIP Orders and by an existing January 17, 2025 Intercreditor Agreement among the Prepetition Superpriority Revolving, Prepetition OpCo, Prepetition Super Holdco and Second Lien Notes agents; (iii) J.Crew-style IP drop-down risk is materially mitigated because the Aristech/Altuglas operating IP is licensed in under identified Technology License Agreements and the collateral package is broad, though I cannot confirm an express Section 7.05/7.14 transfer blocker from the excerpt (marked null). Key residual leverage lies with the Required Lenders, who must find the Interim/Final DIP Orders and First Day Orders \"acceptable in all respects,\" giving lenders veto-style control over restructuring steps and Milestones rather than exposing them to unilateral borrower LME maneuvers. Note the built-in \"Roll-Up Loan (Rev)\" (0.00% applicable rate) reflects a prepetition-to-DIP roll-up, itself an LME-adjacent priority enhancement for existing revolver lenders."
     }
   ],
   "subsidiaries": [
@@ -1147,6 +1080,8 @@
       "jurisdiction": "Belgium",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1163,6 +1098,8 @@
       "jurisdiction": "Belgium",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1179,6 +1116,8 @@
       "jurisdiction": "Canada",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1195,6 +1134,8 @@
       "jurisdiction": "China",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1211,6 +1152,8 @@
       "jurisdiction": "China",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1227,6 +1170,8 @@
       "jurisdiction": "Denmark",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1243,6 +1188,8 @@
       "jurisdiction": "Finland",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1259,6 +1206,8 @@
       "jurisdiction": "France",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1275,6 +1224,8 @@
       "jurisdiction": "France",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1291,6 +1242,8 @@
       "jurisdiction": "Germany",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1307,6 +1260,8 @@
       "jurisdiction": "Germany",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1323,6 +1278,8 @@
       "jurisdiction": "Hong Kong",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1339,6 +1296,8 @@
       "jurisdiction": "Hong Kong",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1355,6 +1314,8 @@
       "jurisdiction": "India",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1371,6 +1332,8 @@
       "jurisdiction": "Indonesia",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1387,6 +1350,8 @@
       "jurisdiction": "Indonesia",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1403,6 +1368,8 @@
       "jurisdiction": "Ireland",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1419,6 +1386,8 @@
       "jurisdiction": "Ireland",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1435,6 +1404,8 @@
       "jurisdiction": "Ireland",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1451,6 +1422,8 @@
       "jurisdiction": "Ireland",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1467,6 +1440,8 @@
       "jurisdiction": "Italy",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1483,6 +1458,8 @@
       "jurisdiction": "Italy",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1499,6 +1476,8 @@
       "jurisdiction": "Italy",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1515,6 +1494,8 @@
       "jurisdiction": "Japan",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1531,6 +1512,8 @@
       "jurisdiction": "Korea",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1547,6 +1530,8 @@
       "jurisdiction": "Luxembourg",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1563,6 +1548,8 @@
       "jurisdiction": "Luxembourg",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1579,6 +1566,8 @@
       "jurisdiction": "Luxembourg",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1595,6 +1584,8 @@
       "jurisdiction": "Mexico",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1611,6 +1602,8 @@
       "jurisdiction": "Mexico",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1627,6 +1620,8 @@
       "jurisdiction": "The Netherlands",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1643,6 +1638,8 @@
       "jurisdiction": "The Netherlands",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1659,6 +1656,8 @@
       "jurisdiction": "The Netherlands",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1675,6 +1674,8 @@
       "jurisdiction": "The Netherlands",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1691,6 +1692,8 @@
       "jurisdiction": "Singapore",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1707,6 +1710,8 @@
       "jurisdiction": "Singapore",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1723,6 +1728,8 @@
       "jurisdiction": "Sweden",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1739,6 +1746,8 @@
       "jurisdiction": "Switzerland",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1755,6 +1764,8 @@
       "jurisdiction": "Switzerland",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1771,6 +1782,8 @@
       "jurisdiction": "Taiwan",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1787,6 +1800,8 @@
       "jurisdiction": "Turkey",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1803,6 +1818,8 @@
       "jurisdiction": "England and Wales",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1819,6 +1836,8 @@
       "jurisdiction": "USA – Delaware",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1835,6 +1854,8 @@
       "jurisdiction": "USA – Delaware",
       "parent": null,
       "percent_owned": 50.0,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1851,6 +1872,8 @@
       "jurisdiction": "USA – Delaware",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1867,6 +1890,8 @@
       "jurisdiction": "USA – Delaware",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1883,6 +1908,8 @@
       "jurisdiction": "USA – Delaware",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1899,6 +1926,8 @@
       "jurisdiction": "USA – Delaware",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1915,6 +1944,8 @@
       "jurisdiction": "USA – Delaware",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1931,6 +1962,8 @@
       "jurisdiction": "USA – Delaware",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1947,6 +1980,8 @@
       "jurisdiction": "USA – Kentucky",
       "parent": null,
       "percent_owned": null,
+      "role": null,
+      "instruments": [],
       "citation": {
         "accession_no": "0001104659-26-027518",
         "form_type": "10-K",
@@ -1959,7 +1994,6 @@
       }
     }
   ],
-  "xbrl_tie_outs": [],
   "leverage_timeline": [
     {
       "fiscal_year": 2023,
@@ -2827,6 +2861,8 @@
       "n_credit_docs": 1
     }
   ],
-  "warnings": [],
-  "llm_fallback_note": null
+  "warnings": [
+    "Prior analysis from 2026-07-10 — LLM analysis is off. Re-enable to refresh."
+  ],
+  "llm_fallback_note": "Prior analysis from 2026-07-10 — LLM analysis is off. Re-enable to refresh."
 }

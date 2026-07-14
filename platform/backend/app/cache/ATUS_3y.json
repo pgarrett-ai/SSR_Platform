@@ -6,9 +6,9 @@
     "cik": "1702780",
     "years": 3,
     "n_filings": 45,
-    "last_updated": "2026-07-10T13:08:59.636735+00:00",
+    "last_updated": "2026-07-14T10:25:37.723217+00:00",
     "from_cache": false,
-    "llm_enabled": true
+    "llm_enabled": false
   },
   "economic_debt_bridge": {
     "lines": [
@@ -22,8 +22,7 @@
           "citation": null,
           "derived": true,
           "formula": "lt_debt_noncurrent=$26,145M + lt_debt_current=$61M",
-          "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases.",
-          "tie_out": null
+          "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases."
         },
         "is_total": true
       },
@@ -46,8 +45,7 @@
           },
           "derived": false,
           "formula": null,
-          "note": "Operating leases: noncurrent $250M + current $40M per the balance sheet (XBRL). On-balance-sheet under ASC 842 but excluded from headline 'debt'.",
-          "tie_out": null
+          "note": "Operating leases: noncurrent $250M + current $40M per the balance sheet (XBRL). On-balance-sheet under ASC 842 but excluded from headline 'debt'."
         },
         "is_total": false
       },
@@ -70,8 +68,7 @@
           },
           "derived": false,
           "formula": null,
-          "note": "Finance leases: noncurrent $82M + current $24M per the balance sheet (XBRL). On-balance-sheet under ASC 842 but excluded from headline 'debt'.",
-          "tie_out": null
+          "note": "Finance leases: noncurrent $82M + current $24M per the balance sheet (XBRL). On-balance-sheet under ASC 842 but excluded from headline 'debt'."
         },
         "is_total": false
       },
@@ -85,71 +82,7 @@
           "citation": null,
           "derived": true,
           "formula": "reported debt $26,206M + $290M + $106M",
-          "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above.",
-          "tie_out": null
-        },
-        "is_total": true
-      },
-      {
-        "key": "cash_offset",
-        "label": "Less: cash & equivalents",
-        "amount": {
-          "value": -1012201000.0,
-          "display": "-$1,012M",
-          "unit": "USD",
-          "citation": {
-            "accession_no": "0001702780-26-000013",
-            "form_type": "10-K",
-            "filing_date": "2026-02-13",
-            "exhibit": null,
-            "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
-            "quote": "Cash and Cash Equivalents, at Carrying Value (as of 2025-12-31) [XBRL]"
-          },
-          "derived": false,
-          "formula": null,
-          "note": "Offset to reach net economic debt.",
-          "tie_out": null
-        },
-        "is_total": false
-      },
-      {
-        "key": "restricted_cash_offset",
-        "label": "Less: restricted cash",
-        "amount": {
-          "value": -107384000.0,
-          "display": "-$107M",
-          "unit": "USD",
-          "citation": {
-            "accession_no": "0001702780-26-000013",
-            "form_type": "10-K",
-            "filing_date": "2026-02-13",
-            "exhibit": null,
-            "section": "XBRL concept us-gaap:RestrictedCashCurrent",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
-            "quote": "Restricted Cash, Current (as of 2025-12-31) [XBRL]"
-          },
-          "derived": false,
-          "formula": null,
-          "note": "Restricted cash offset. Availability in distress varies — often collateral; treat as best case.",
-          "tie_out": null
-        },
-        "is_total": false
-      },
-      {
-        "key": "net_economic_debt",
-        "label": "Net economic (adjusted) debt",
-        "amount": {
-          "value": 25482259000.0,
-          "display": "$25,482M",
-          "unit": "USD",
-          "citation": null,
-          "derived": true,
-          "formula": "economic debt $26,602M − cash offsets $1,120M",
-          "note": "Net economic debt = economic debt − cash − restricted cash.",
-          "tie_out": null
+          "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
         },
         "is_total": true
       }
@@ -161,8 +94,7 @@
       "citation": null,
       "derived": true,
       "formula": "lt_debt_noncurrent=$26,145M + lt_debt_current=$61M",
-      "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases.",
-      "tie_out": null
+      "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases."
     },
     "economic_debt": {
       "value": 26601844000.0,
@@ -171,52 +103,223 @@
       "citation": null,
       "derived": true,
       "formula": "reported debt $26,206M + $290M + $106M",
-      "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above.",
-      "tie_out": null
-    },
-    "net_economic_debt": {
-      "value": 25482259000.0,
-      "display": "$25,482M",
-      "unit": "USD",
-      "citation": null,
-      "derived": true,
-      "formula": "economic debt $26,602M − cash offsets $1,120M",
-      "note": "Net economic debt = economic debt − cash − restricted cash.",
-      "tie_out": null
+      "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
     },
     "ebitda": {
-      "value": 1584416000.0,
-      "display": "$1,584M",
+      "value": -268958000.0,
+      "display": "-$269M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "operating income -$113M + D&A $1,697M (FY2025)",
-      "note": "Proxy EBITDA.",
-      "tie_out": null
+      "formula": "net income -$1,869M + taxes -$97M + D&A $1,697M (FY2025)",
+      "note": null
     },
-    "ebitdar": null,
     "reported_leverage": {
-      "value": 16.53998318623392,
-      "display": "16.5x",
+      "value": -97.43608295719034,
+      "display": "-97.4x",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "reported debt $26,206M / EBITDA $1,584M",
-      "note": null,
-      "tie_out": null
+      "formula": "reported debt $26,206M / EBITDA -$269M",
+      "note": null
     },
     "economic_leverage": {
-      "value": 16.789684022377962,
-      "display": "16.8x",
+      "value": -98.90705612028644,
+      "display": "-98.9x",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "economic debt $26,602M / EBITDA $1,584M",
-      "note": "Simplified: proxy EBITDA (operating lease cost not found in XBRL, so no EBITDAR adjustment).",
-      "tie_out": null
+      "formula": "economic debt $26,602M / EBITDA -$269M",
+      "note": "Economic debt (incl. lease liabilities) over plain EBITDA — no rent add-back to the denominator."
     }
   },
+  "ebitda_build": {
+    "lines": [
+      {
+        "key": "net_income",
+        "label": "Net income",
+        "amount": {
+          "value": -1869024000.0,
+          "display": "-$1,869M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001702780-26-000013",
+            "form_type": "10-K",
+            "filing_date": "2026-02-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:NetIncomeLoss",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+            "quote": "Net Income (Loss) Attributable to Parent (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "income_tax_expense",
+        "label": "+ Income tax expense",
+        "amount": {
+          "value": -96908000.0,
+          "display": "-$97M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001702780-26-000013",
+            "form_type": "10-K",
+            "filing_date": "2026-02-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:IncomeTaxExpenseBenefit",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+            "quote": "Income Tax Expense (Benefit) (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "d_and_a",
+        "label": "+ Depreciation & amortization",
+        "amount": {
+          "value": 1696974000.0,
+          "display": "$1,697M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001702780-26-000013",
+            "form_type": "10-K",
+            "filing_date": "2026-02-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:DepreciationDepletionAndAmortization",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+            "quote": "Depreciation, Depletion and Amortization (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "ebitda",
+        "label": "EBITDA",
+        "amount": {
+          "value": -268958000.0,
+          "display": "-$269M",
+          "unit": "USD",
+          "citation": null,
+          "derived": true,
+          "formula": "net income -$1,869M + taxes -$97M + D&A $1,697M (FY2025)",
+          "note": null
+        },
+        "is_total": true
+      }
+    ],
+    "ebitda": {
+      "value": -268958000.0,
+      "display": "-$269M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "net income -$1,869M + taxes -$97M + D&A $1,697M (FY2025)",
+      "note": null
+    },
+    "addbacks": [
+      {
+        "category": "Restructuring/new product design, development and introduction costs and expenses",
+        "label": "Restructuring/new product design, development and introduction costs and expenses",
+        "amount": null
+      },
+      {
+        "category": "Intellectual property development and new systems design costs",
+        "label": "Intellectual property development and new systems design costs",
+        "amount": null
+      },
+      {
+        "category": "IT systems implementation, replacement, development or upgrade costs and technology initiatives",
+        "label": "IT systems implementation, replacement, development or upgrade costs and technology initiatives",
+        "amount": null
+      },
+      {
+        "category": "Governmental investigation, litigation or other dispute costs (including customer disputes)",
+        "label": "Governmental investigation, litigation or other dispute costs (including customer disputes)",
+        "amount": null
+      },
+      {
+        "category": "Warranty payments and product recall / field service campaign liabilities",
+        "label": "Warranty payments and product recall / field service campaign liabilities",
+        "amount": null
+      },
+      {
+        "category": "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/registration/repayment or modification of Indebtedness, equity issuances, refinancings, amendments/waivers) and non-recurring merger costs",
+        "label": "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/registration/repayment or modification of Indebtedness, equity issuances, refinancings, amendments/waivers) and non-recurring merger costs",
+        "amount": null
+      },
+      {
+        "category": "Cumulative effect of a change in accounting principles",
+        "label": "Cumulative effect of a change in accounting principles",
+        "amount": null
+      },
+      {
+        "category": "Non-cash compensation charges from equity-based awards and non-cash deemed finance charges on pension liabilities",
+        "label": "Non-cash compensation charges from equity-based awards and non-cash deemed finance charges on pension liabilities",
+        "amount": null
+      },
+      {
+        "category": "Goodwill or other intangible asset impairment charges or write-offs",
+        "label": "Goodwill or other intangible asset impairment charges or write-offs",
+        "amount": null
+      },
+      {
+        "category": "Business optimization costs, charges or expenses",
+        "label": "Business optimization costs, charges or expenses",
+        "amount": null
+      },
+      {
+        "category": "New product design, development and introduction costs",
+        "label": "New product design, development and introduction costs",
+        "amount": null
+      },
+      {
+        "category": "Operational, reporting and IT systems implementation/replacement/development/upgrade costs and technology initiatives",
+        "label": "Operational, reporting and IT systems implementation/replacement/development/upgrade costs and technology initiatives",
+        "amount": null
+      },
+      {
+        "category": "Costs/expenses/charges relating to any governmental investigation, litigation or other dispute (including with any customer)",
+        "label": "Costs/expenses/charges relating to any governmental investigation, litigation or other dispute (including with any customer)",
+        "amount": null
+      },
+      {
+        "category": "Non-cash equity-based compensation charges (stock, options, other equity awards) and non-cash deemed finance charges on pensions",
+        "label": "Non-cash equity-based compensation charges (stock, options, other equity awards) and non-cash deemed finance charges on pensions",
+        "amount": {
+          "value": 64088000.0,
+          "display": "$64M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001702780-26-000013",
+            "form_type": "10-K",
+            "filing_date": "2026-02-13",
+            "exhibit": null,
+            "section": "XBRL concept us-gaap:ShareBasedCompensation",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+            "quote": "Share-based Payment Arrangement, Noncash Expense (as of 2025-12-31) [XBRL]"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      }
+    ]
+  },
   "debt_schedule": [],
+  "debt_schedule_asof": null,
   "forensic_table": [
     {
       "fiscal_year": 2022,
@@ -228,8 +331,7 @@
         "citation": null,
         "derived": true,
         "formula": "lt_debt_noncurrent=$24,513M + lt_debt_current=$2,075M",
-        "note": "Sum of reported debt components (each cited).",
-        "tie_out": null
+        "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
         "value": 305484000.0,
@@ -247,8 +349,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "free_cash_flow": {
         "value": 452619000.0,
@@ -257,8 +358,7 @@
         "citation": null,
         "derived": true,
         "formula": "OCF ($2,367M) - capex ($1,914M)",
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "capex": {
         "value": 1914282000.0,
@@ -276,8 +376,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "accounts_payable": {
         "value": 1213806000.0,
@@ -295,8 +394,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "inventory": null,
       "revenue": {
@@ -315,8 +413,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "cogs": {
         "value": 3205638000.0,
@@ -334,8 +431,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "ebitda": {
         "value": 3576267000.0,
@@ -344,8 +440,7 @@
         "citation": null,
         "derived": true,
         "formula": "operating_income ($1,803M) + D&A ($1,774M)",
-        "note": "Proxy EBITDA = operating income + D&A.",
-        "tie_out": null
+        "note": "Proxy EBITDA = operating income + D&A."
       },
       "operating_cash_flow": {
         "value": 2366901000.0,
@@ -363,8 +458,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "dpo": {
         "value": 138.20624474753544,
@@ -373,8 +467,7 @@
         "citation": null,
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
-        "note": "Days payable outstanding (denominator: COGS).",
-        "tie_out": null
+        "note": "Days payable outstanding (denominator: COGS)."
       }
     },
     {
@@ -387,8 +480,7 @@
         "citation": null,
         "derived": true,
         "formula": "lt_debt_noncurrent=$24,716M + lt_debt_current=$359M",
-        "note": "Sum of reported debt components (each cited).",
-        "tie_out": null
+        "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
         "value": 302058000.0,
@@ -406,8 +498,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "free_cash_flow": {
         "value": 121587000.0,
@@ -416,8 +507,7 @@
         "citation": null,
         "derived": true,
         "formula": "OCF ($1,826M) - capex ($1,705M)",
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "capex": {
         "value": 1704811000.0,
@@ -435,8 +525,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "accounts_payable": {
         "value": 936950000.0,
@@ -454,8 +543,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "inventory": null,
       "revenue": {
@@ -474,8 +562,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "cogs": {
         "value": 3029842000.0,
@@ -493,8 +580,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "ebitda": {
         "value": 3346237000.0,
@@ -503,8 +589,7 @@
         "citation": null,
         "derived": true,
         "formula": "operating_income ($1,702M) + D&A ($1,644M)",
-        "note": "Proxy EBITDA = operating income + D&A.",
-        "tie_out": null
+        "note": "Proxy EBITDA = operating income + D&A."
       },
       "operating_cash_flow": {
         "value": 1826398000.0,
@@ -522,8 +607,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "dpo": {
         "value": 112.87279996778709,
@@ -532,8 +616,7 @@
         "citation": null,
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
-        "note": "Days payable outstanding (denominator: COGS).",
-        "tie_out": null
+        "note": "Days payable outstanding (denominator: COGS)."
       }
     },
     {
@@ -546,8 +629,7 @@
         "citation": null,
         "derived": true,
         "formula": "lt_debt_noncurrent=$24,872M + lt_debt_current=$185M",
-        "note": "Sum of reported debt components (each cited).",
-        "tie_out": null
+        "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
         "value": 256534000.0,
@@ -565,8 +647,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "free_cash_flow": {
         "value": 149388000.0,
@@ -575,8 +656,7 @@
         "citation": null,
         "derived": true,
         "formula": "OCF ($1,582M) - capex ($1,433M)",
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "capex": {
         "value": 1433013000.0,
@@ -594,8 +674,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "accounts_payable": {
         "value": 971499000.0,
@@ -613,8 +692,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "inventory": null,
       "revenue": {
@@ -633,8 +711,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "cogs": {
         "value": 2896570000.0,
@@ -652,8 +729,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "ebitda": {
         "value": 3322323000.0,
@@ -662,8 +738,7 @@
         "citation": null,
         "derived": true,
         "formula": "operating_income ($1,680M) + D&A ($1,642M)",
-        "note": "Proxy EBITDA = operating income + D&A.",
-        "tie_out": null
+        "note": "Proxy EBITDA = operating income + D&A."
       },
       "operating_cash_flow": {
         "value": 1582401000.0,
@@ -681,8 +756,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "dpo": {
         "value": 122.41966705448166,
@@ -691,8 +765,7 @@
         "citation": null,
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
-        "note": "Days payable outstanding (denominator: COGS).",
-        "tie_out": null
+        "note": "Days payable outstanding (denominator: COGS)."
       }
     },
     {
@@ -705,8 +778,7 @@
         "citation": null,
         "derived": true,
         "formula": "lt_debt_noncurrent=$26,145M + lt_debt_current=$61M",
-        "note": "Sum of reported debt components (each cited).",
-        "tie_out": null
+        "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
         "value": 1012201000.0,
@@ -724,8 +796,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "free_cash_flow": {
         "value": -118837000.0,
@@ -734,8 +805,7 @@
         "citation": null,
         "derived": true,
         "formula": "OCF ($1,228M) - capex ($1,347M)",
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "capex": {
         "value": 1347294000.0,
@@ -753,8 +823,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "accounts_payable": {
         "value": 816860000.0,
@@ -772,8 +841,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "inventory": null,
       "revenue": {
@@ -792,8 +860,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "cogs": {
         "value": 2637181000.0,
@@ -811,8 +878,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "ebitda": {
         "value": 1584416000.0,
@@ -821,8 +887,7 @@
         "citation": null,
         "derived": true,
         "formula": "operating_income (-$113M) + D&A ($1,697M)",
-        "note": "Proxy EBITDA = operating income + D&A.",
-        "tie_out": null
+        "note": "Proxy EBITDA = operating income + D&A."
       },
       "operating_cash_flow": {
         "value": 1228457000.0,
@@ -840,8 +905,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": null,
-        "tie_out": null
+        "note": null
       },
       "dpo": {
         "value": 113.05780680203596,
@@ -850,8 +914,7 @@
         "citation": null,
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
-        "note": "Days payable outstanding (denominator: COGS).",
-        "tie_out": null
+        "note": "Days payable outstanding (denominator: COGS)."
       }
     }
   ],
@@ -898,9 +961,19 @@
   "obs_items": [],
   "covenants": [
     {
-      "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "Incurrence-based leverage ratios only; no traditional maintenance financial covenant found in the covenant package. The agreement uses a Combined Gross Pari Passu Leverage Ratio trigger (2.50:1.00) to define an \"Amortization Period,\" and a Combined Net Leverage Ratio as an incurrence test, rather than a maintenance leverage covenant tested each period.",
-      "leverage_ratio_threshold": "Combined Gross Pari Passu Leverage Ratio of 2.50:1.00 (springing trigger for an \"Amortization Period\"); Combined Net Leverage Ratio used as an incurrence test under Section 6.04(b). No numerically capped maintenance leverage covenant threshold is stated in the provided text.",
+      "family_label": null,
+      "doc_class": null,
+      "operative_date": null,
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": null,
+      "trustee": null,
+      "collateral_agent": null,
+      "creditor_note": null,
+      "guarantors": null,
+      "financial_covenants": [],
+      "baskets": [],
       "ebitda_addback_categories": [
         "Restructuring/new product design, development and introduction costs and expenses",
         "Intellectual property development and new systems design costs",
@@ -913,11 +986,11 @@
         "One-time non-cash charges or increases in amortization/depreciation from purchase accounting or reorganization/restructuring",
         "Goodwill or other intangible asset impairment charges or write-offs"
       ],
-      "restricted_payments_basket_size": "Section 6.05 (Limitation on Restricted Payments) governs; specific basket dollar amount not set out in the provided excerpt. Asset Disposition de minimis basket is $5 million per calendar year (clause (g)).",
       "mfn_sunset_period": "Not present in the provided text (no MFN / most-favored-nation pricing protection clause located).",
       "j_crew_blocker_present": true,
       "unrestricted_subsidiary_designation_flexibility": "Notably constrained relative to typical sponsor deals. The agreement contains Section 6.01 \"Prohibition on Liability Management Exercises,\" which is an express anti-LME covenant. The \"Designation\" defined term refers only to designating the Loan Parties as \"unrestricted subsidiaries\" under the Existing Debt Documents (i.e., in relation to a separate debt stack), not a broad borrower right to designate unrestricted subsidiaries here. Section 6.17 (Delaware LLC Divisions) further restricts division-type maneuvers. No open-ended unrestricted-subsidiary designation basket is granted in the provided text.",
-      "lme_risk_notes": "This agreement appears purpose-built to resist liability-management exercises, reflecting its post-Original/A&R restructuring posture. Key protections: (1) Section 6.01 is an express \"Prohibition on Liability Management Exercises\" — a direct anti-uptier/anti-drop-down covenant, unusual and highly protective; (2) Section 9.23 \"Prohibition Regarding Cooperation Agreements\" cuts against coordinated lender-group priming maneuvers; (3) Section 6.17 restricts Delaware LLC divisions (anti-Serta/anti-drop-down division play); (4) Section 6.02 \"Prohibition on Outside Accounts\" and Sections 6.12–6.13 (Impairment of Security Interests; Intercreditor Agreements) tighten collateral leakage. The ABS/InfraCo structure and IP License Agreement (Section 6.15 governs amendments to Shared Services / IP arrangements) is the principal residual value-leakage vector to watch, given prior \"Designation\" of Loan Parties as unrestricted subsidiaries under Existing Debt Documents. Net: low drop-down/uptier vulnerability by design; the residual risk is structural subordination via the separately-financed ABS Loan Parties and CSC-affiliate IP/shared-services arrangements rather than in-agreement priming.",
+      "anchor_clause": null,
+      "lme_vectors": [],
       "citation": {
         "accession_no": "0001104659-26-080797",
         "form_type": "8-K",
@@ -927,12 +1000,27 @@
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465926080797/tm2619807d1_ex10-1.htm",
         "quote": "\"Section 6.01. Prohibition on Liability Management Exercises\""
-      }
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "Incurrence-based leverage ratios only; no traditional maintenance financial covenant found in the covenant package. The agreement uses a Combined Gross Pari Passu Leverage Ratio trigger (2.50:1.00) to define an \"Amortization Period,\" and a Combined Net Leverage Ratio as an incurrence test, rather than a maintenance leverage covenant tested each period.",
+      "leverage_ratio_threshold": "Combined Gross Pari Passu Leverage Ratio of 2.50:1.00 (springing trigger for an \"Amortization Period\"); Combined Net Leverage Ratio used as an incurrence test under Section 6.04(b). No numerically capped maintenance leverage covenant threshold is stated in the provided text.",
+      "restricted_payments_basket_size": "Section 6.05 (Limitation on Restricted Payments) governs; specific basket dollar amount not set out in the provided excerpt. Asset Disposition de minimis basket is $5 million per calendar year (clause (g)).",
+      "lme_risk_notes": "This agreement appears purpose-built to resist liability-management exercises, reflecting its post-Original/A&R restructuring posture. Key protections: (1) Section 6.01 is an express \"Prohibition on Liability Management Exercises\" — a direct anti-uptier/anti-drop-down covenant, unusual and highly protective; (2) Section 9.23 \"Prohibition Regarding Cooperation Agreements\" cuts against coordinated lender-group priming maneuvers; (3) Section 6.17 restricts Delaware LLC divisions (anti-Serta/anti-drop-down division play); (4) Section 6.02 \"Prohibition on Outside Accounts\" and Sections 6.12–6.13 (Impairment of Security Interests; Intercreditor Agreements) tighten collateral leakage. The ABS/InfraCo structure and IP License Agreement (Section 6.15 governs amendments to Shared Services / IP arrangements) is the principal residual value-leakage vector to watch, given prior \"Designation\" of Loan Parties as unrestricted subsidiaries under Existing Debt Documents. Net: low drop-down/uptier vulnerability by design; the residual risk is structural subordination via the separately-financed ABS Loan Parties and CSC-affiliate IP/shared-services arrangements rather than in-agreement priming."
     },
     {
-      "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "No maintenance leverage covenant identified in the provided text. The agreement uses incurrence-style ratio tests (Combined Gross Pari Passu Leverage Ratio, Combined Net Leverage Ratio) rather than a stated maintenance financial covenant. There is a springing \"Amortization Period\" mechanic tied to the Combined Gross Pari Passu Leverage Ratio exceeding 2.50:1.00, but no maintenance leverage covenant threshold is stated in the excerpted clauses.",
-      "leverage_ratio_threshold": "Not stated as a maintenance covenant. Relevant ratio trigger: Amortization Period commences when Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 (and ends when it no longer exceeds 2.50:1.00).",
+      "family_label": null,
+      "doc_class": null,
+      "operative_date": null,
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": null,
+      "trustee": null,
+      "collateral_agent": null,
+      "creditor_note": null,
+      "guarantors": null,
+      "financial_covenants": [],
+      "baskets": [],
       "ebitda_addback_categories": [
         "Business optimization costs, charges or expenses",
         "New product design, development and introduction costs",
@@ -946,11 +1034,11 @@
         "One-time non-cash charges or increases in amortization/depreciation resulting from purchase accounting (acquisitions, reorganizations, restructurings)",
         "Goodwill or other intangible asset impairment charges or write-offs"
       ],
-      "restricted_payments_basket_size": "Not specified in the provided excerpts. Section 6.05 (\"Limitation on Restricted Payments\") is referenced with a Schedule 6.05 of Existing Investments, but no builder/starter basket dollar amount is set out in the text provided.",
       "mfn_sunset_period": "No MFN (most-favored-nation) pricing protection clause or sunset is present in the excerpted text.",
       "j_crew_blocker_present": true,
       "unrestricted_subsidiary_designation_flexibility": "The provided excerpts do not include an \"Unrestricted Subsidiary\" definition or a designation mechanic; the structure is built around Loan Parties, Subsidiaries, Group Members and a discrete set of ABS Transaction Parties (a ring-fenced receivables/ABS structure). No unrestricted-subsidiary designation flexibility is evidenced in the text provided.",
-      "lme_risk_notes": "This is an atypically LME-defensive package. Article VI opens with Section 6.01 \"Prohibition on Liability Management Exercises\" and Section 6.02 \"Prohibition on Outside Accounts,\" signaling express anti-LME drafting to curb uptier/drop-down structures. Section 3.28 \"Material Assets\" plus the \"Material Assets\" definition (any property/assets, including IP, material to the business of the Loan Parties taken as a whole) supports a J.Crew-style asset/IP transfer blocker. Note residual leakage vectors: (i) the ring-fenced ABS/receivables structure (ABS Borrower, ABS Holdings, ABS InfraCos, ABS Transaction Parties) with a Trademark License to CSC and shared-services agreements sits outside the Group Member perimeter and could be a value-transfer channel; (ii) Asset Disposition exclusions permit up to $5 million/year of dispositions and Section 1031 like-kind exchanges without falling into Section 6.08; (iii) short-dated Maturity Date (Nov 25, 2028) and high 9.00% Applicable Rate suggest stressed/rescue-financing context. No maintenance leverage covenant means limited early lender leverage absent the incurrence/Amortization Period triggers.",
+      "anchor_clause": null,
+      "lme_vectors": [],
       "citation": {
         "accession_no": "0001213900-26-063161",
         "form_type": "8-K",
@@ -960,67 +1048,15 @@
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000121390026063161/ea029287101ex10-1.htm",
         "quote": "\"Amortization Period\" shall mean each period commencing on the first date on which the Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 and ending on the first date thereafter when the Combined Gross Pari Passu Leverage Ratio on such date does not exceed 2.50:1.00."
-      }
-    }
-  ],
-  "mdna_drift": [
-    {
-      "period_end": "2024-03-31",
-      "form_type": "10-Q",
-      "drift_from_prior": null,
-      "liquidity_tone_score": 35.0
-    },
-    {
-      "period_end": "2024-06-30",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.3997,
-      "liquidity_tone_score": 35.0
-    },
-    {
-      "period_end": "2024-09-30",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.3371,
-      "liquidity_tone_score": 35.0
-    },
-    {
-      "period_end": "2024-12-31",
-      "form_type": "10-K",
-      "drift_from_prior": 0.4814,
-      "liquidity_tone_score": 36.0
-    },
-    {
-      "period_end": "2025-03-31",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.3996,
-      "liquidity_tone_score": 35.0
-    },
-    {
-      "period_end": "2025-06-30",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.4311,
-      "liquidity_tone_score": 35.0
-    },
-    {
-      "period_end": "2025-09-30",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.3719,
-      "liquidity_tone_score": 35.0
-    },
-    {
-      "period_end": "2025-12-31",
-      "form_type": "10-K",
-      "drift_from_prior": 0.481,
-      "liquidity_tone_score": 48.0
-    },
-    {
-      "period_end": "2026-03-31",
-      "form_type": "10-Q",
-      "drift_from_prior": 0.3927,
-      "liquidity_tone_score": 78.0
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "No maintenance leverage covenant identified in the provided text. The agreement uses incurrence-style ratio tests (Combined Gross Pari Passu Leverage Ratio, Combined Net Leverage Ratio) rather than a stated maintenance financial covenant. There is a springing \"Amortization Period\" mechanic tied to the Combined Gross Pari Passu Leverage Ratio exceeding 2.50:1.00, but no maintenance leverage covenant threshold is stated in the excerpted clauses.",
+      "leverage_ratio_threshold": "Not stated as a maintenance covenant. Relevant ratio trigger: Amortization Period commences when Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 (and ends when it no longer exceeds 2.50:1.00).",
+      "restricted_payments_basket_size": "Not specified in the provided excerpts. Section 6.05 (\"Limitation on Restricted Payments\") is referenced with a Schedule 6.05 of Existing Investments, but no builder/starter basket dollar amount is set out in the text provided.",
+      "lme_risk_notes": "This is an atypically LME-defensive package. Article VI opens with Section 6.01 \"Prohibition on Liability Management Exercises\" and Section 6.02 \"Prohibition on Outside Accounts,\" signaling express anti-LME drafting to curb uptier/drop-down structures. Section 3.28 \"Material Assets\" plus the \"Material Assets\" definition (any property/assets, including IP, material to the business of the Loan Parties taken as a whole) supports a J.Crew-style asset/IP transfer blocker. Note residual leakage vectors: (i) the ring-fenced ABS/receivables structure (ABS Borrower, ABS Holdings, ABS InfraCos, ABS Transaction Parties) with a Trademark License to CSC and shared-services agreements sits outside the Group Member perimeter and could be a value-transfer channel; (ii) Asset Disposition exclusions permit up to $5 million/year of dispositions and Section 1031 like-kind exchanges without falling into Section 6.08; (iii) short-dated Maturity Date (Nov 25, 2028) and high 9.00% Applicable Rate suggest stressed/rescue-financing context. No maintenance leverage covenant means limited early lender leverage absent the incurrence/Amortization Period triggers."
     }
   ],
   "subsidiaries": [],
-  "xbrl_tie_outs": [],
   "leverage_timeline": [
     {
       "fiscal_year": 2023,
@@ -1602,6 +1638,8 @@
       "n_credit_docs": 0
     }
   ],
-  "warnings": [],
-  "llm_fallback_note": null
+  "warnings": [
+    "Prior analysis from 2026-07-10 — LLM analysis is off. Re-enable to refresh."
+  ],
+  "llm_fallback_note": "Prior analysis from 2026-07-10 — LLM analysis is off. Re-enable to refresh."
 }
