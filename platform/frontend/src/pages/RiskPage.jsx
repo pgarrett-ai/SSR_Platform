@@ -46,7 +46,7 @@ export default function RiskPage({ ticker }) {
   );
 
   if (loading)
-    return <Loading>Pulling EDGAR + market data for {ticker}… first run ~30–60 s</Loading>;
+    return <Loading>Pulling EDGAR + market data for {ticker}… first load of the day takes ~30–60 s</Loading>;
   if (error) return <ErrorCard>{error}</ErrorCard>;
   if (!data) return null;
 

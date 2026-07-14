@@ -1,82 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { fetchScreen, searchText } from "../api.js";
-import { Badge, Button, Input, Td, Th, fmtLev, rowClass } from "../ui/index.jsx";
-
-// Badge uppercases its label, so raw source kinds need display names ("mdna" → MD&A).
-const KIND_LABELS = { mdna: "MD&A" };
-
-
-// Snippets come from filing text via FTS5 snippet(); the only HTML we allow through
-// is our own <mark> markers — everything else is escaped before rendering.
-function markOnly(snippet) {
-  const esc = snippet
-    .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-  return esc
-    .replaceAll("&lt;mark&gt;", "<mark class=\"bg-accent/30 text-white rounded px-0.5\">")
-    .replaceAll("&lt;/mark&gt;", "</mark>");
-}
+import { fetchScreen } from "../api.js";
+import { Td, Th, fmtLev, rowClass } from "../ui/index.jsx";
 
 export default function ScreenTable({ onPick }) {
   const [rows, setRows] = useState([]);
-  const [q, setQ] = useState("");
-  const [hits, setHits] = useState(null);   // null = no search yet
 
   useEffect(() => {
     fetchScreen().then(setRows).catch(() => {});
   }, []);
 
-  async function runSearch(e) {
-    e.preventDefault();
-    if (!q.trim()) { setHits(null); return; }
-    try {
-      // The corpus stores the same clause across amendments/periods — dedupe for display.
-      const seen = new Set();
-      setHits((await searchText(q.trim())).hits.filter((h) => {
-        const k = `${h.ticker}|${h.source_kind}|${h.snippet}`;
-        if (seen.has(k)) return false;
-        seen.add(k);
-        return true;
-      }));
-    } catch {
-      setHits([]);
-    }
-  }
-
   return (
     <div className="mt-12 text-left">
-      <form onSubmit={runSearch} className="mb-6 flex gap-2">
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="search covenants, OBS findings, MD&A… (e.g. springing lien)"
-          className="w-full"
-        />
-        <Button type="submit">Search</Button>
-      </form>
-
-      {hits !== null && (
-        <div className="mb-8">
-          <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">
-            {hits.length} hit{hits.length === 1 ? "" : "s"}
-          </div>
-          {hits.length === 0 && <p className="text-sm text-slate-500">No matches in the analyzed corpus.</p>}
-          {hits.map((h, i) => (
-            <button
-              key={i}
-              onClick={() => onPick(h.ticker)}
-              className="mb-1 block w-full rounded-md border border-ink-700 px-3 py-2 text-left text-sm hover:border-accent"
-            >
-              <span className="font-mono text-slate-200">{h.ticker}</span>
-              <Badge className="ml-2">{KIND_LABELS[h.source_kind] || h.source_kind}</Badge>
-              <span
-                className="ml-2 text-slate-400"
-                dangerouslySetInnerHTML={{ __html: markOnly(h.snippet || "") }}
-              />
-            </button>
-          ))}
-        </div>
-      )}
-
       {rows.length > 0 && (
         <>
           <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">Analyzed companies</div>

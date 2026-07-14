@@ -238,19 +238,7 @@ def build_bridge(
     # Lease liabilities sit in the numerator with no rent add-back to the denominator by
     # design (user call: plain EBITDA) — heavy lessees read conservatively high.
     ebitda = _ebitda_value(latest)
-    rep_lev = econ_lev = None
-    if ebitda and ebitda.value:
-        rep_lev = CitedValue(
-            value=rep_val / ebitda.value, display=fmt_ratio(rep_val / ebitda.value), derived=True,
-            formula=f"reported debt {fmt_money_millions(rep_val)} / EBITDA {ebitda.display}",
-        )
-        econ_lev = CitedValue(
-            value=running / ebitda.value, display=fmt_ratio(running / ebitda.value),
-            derived=True,
-            formula=f"economic debt {fmt_money_millions(running)} / EBITDA {ebitda.display}",
-            note="Economic debt (incl. lease liabilities) over plain EBITDA — no rent "
-                 "add-back to the denominator.",
-        )
+    rep_lev, econ_lev = _leverage_ratios(rep_val, running, ebitda)
 
     bridge = EconomicDebtBridge(
         lines=lines,
@@ -261,6 +249,48 @@ def build_bridge(
         economic_leverage=econ_lev,
     )
     return bridge, obs_schema
+
+
+def _leverage_ratios(rep_val: float, econ_val: float,
+                     ebitda: Optional[CitedValue]) -> tuple[Optional[CitedValue], Optional[CitedValue]]:
+    rep_lev = econ_lev = None
+    if ebitda and ebitda.value:
+        rep_lev = CitedValue(
+            value=rep_val / ebitda.value, display=fmt_ratio(rep_val / ebitda.value), derived=True,
+            formula=f"reported debt {fmt_money_millions(rep_val)} / EBITDA {ebitda.display}",
+        )
+        econ_lev = CitedValue(
+            value=econ_val / ebitda.value, display=fmt_ratio(econ_val / ebitda.value),
+            derived=True,
+            formula=f"economic debt {fmt_money_millions(econ_val)} / EBITDA {ebitda.display}",
+            note="Economic debt (incl. lease liabilities) over plain EBITDA — no rent "
+                 "add-back to the denominator.",
+        )
+    return rep_lev, econ_lev
+
+
+# Bridge lines produced by pre-rework code that current semantics no longer include.
+_LEGACY_LINE_KEYS = {"cash_offset", "restricted_cash_offset", "net_economic_debt"}
+
+
+def renormalize_spliced_bridge(bridge: EconomicDebtBridge,
+                               series: Optional[FinancialSeries]) -> EconomicDebtBridge:
+    """A bridge spliced from a prior snapshot carries whatever ratio semantics its era used
+    (EBITDAR denominator, cash-netting lines). The LLM-extracted content is reusable; the
+    arithmetic is not — drop legacy lines and recompute both leverage ratios with the
+    current formula over the current XBRL EBITDA."""
+    bridge.lines = [l for l in bridge.lines if l.key not in _LEGACY_LINE_KEYS]
+    latest = series.latest() if series else None
+    if latest is None:
+        return bridge   # no current XBRL — the whole bridge is prior analysis, leave it
+    rep = bridge.reported_debt.value if bridge.reported_debt else None
+    econ = bridge.economic_debt.value if bridge.economic_debt else None
+    if rep is None or econ is None:
+        return bridge
+    ebitda = _ebitda_value(latest)
+    bridge.ebitda = ebitda
+    bridge.reported_leverage, bridge.economic_leverage = _leverage_ratios(rep, econ, ebitda)
+    return bridge
 
 
 def _effective_tax_rate(yf: YearFacts, cik: str) -> Optional[CitedValue]:

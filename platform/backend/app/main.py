@@ -24,9 +24,11 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel
 from sse_starlette.sse import EventSourceResponse
 
+import datetime as dt
+
 from . import models
 from .core.cache import cached_tickers
-from .core.config import get_settings, set_llm_runtime_enabled
+from .core.config import CACHE_DIR, get_settings, set_llm_runtime_enabled
 from .core.db import init_db, session_scope
 from .edgar.client import NoFilingsError, TickerNotFoundError
 from .fulcrum import CapitalStructure, Entity, SimConfig, Tranche
@@ -148,6 +150,29 @@ def _native(obj):
     return obj
 
 
+def _hazard_section(ticker: str, years: int, live: bool) -> dict:
+    """Same-day disk cache around the hazard pipeline. Market data moves daily and EDGAR on
+    filings, so a day-fresh payload serves page reloads instantly instead of re-running the
+    ~30s pipeline; live=True bypasses. Kept in its own subdir so the overview-cache globs
+    (TICKER_*y.json) never pick these up."""
+    p = CACHE_DIR / "hazard" / f"{ticker.strip().upper()}_{int(years)}y.json"
+    today = dt.date.today().isoformat()
+    if not live and p.exists():
+        try:
+            blob = json.loads(p.read_text(encoding="utf-8"))
+            if blob.get("as_of") == today:
+                return blob["data"]
+        except Exception:
+            pass
+    data = jsonable(_native(hazard_analyze(ticker, years)))
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps({"as_of": today, "data": data}), encoding="utf-8")
+    except Exception:
+        pass  # caching is best-effort; never fail a request over it
+    return data
+
+
 @app.get("/api/company/{ticker}")
 def company(
     ticker: str,
@@ -174,7 +199,7 @@ def company(
 
     if "hazard" in requested:
         try:
-            out["sections"]["hazard"] = _native(hazard_analyze(ticker, years))
+            out["sections"]["hazard"] = _hazard_section(ticker, years, live)
         except TickerNotFoundError as exc:
             return JSONResponse(status_code=404, content={"error": str(exc)})
         except Exception as exc:
@@ -278,8 +303,10 @@ def mdna_text(ticker: str, accession_no: str) -> JSONResponse:
 
 @app.get("/api/search")
 def search(q: str = Query(..., min_length=1, max_length=200),
+           ticker: Optional[str] = Query(None, max_length=12),
            limit: int = Query(20, ge=1, le=100)) -> JSONResponse:
-    """BM25 full-text search over covenant clauses, MD&A, and OBS narratives (FTS5)."""
+    """BM25 full-text search over covenant clauses, MD&A, and OBS narratives (FTS5),
+    optionally scoped to one issuer."""
     from sqlalchemy import text as sql
 
     from .core.db import FTS_AVAILABLE
@@ -288,12 +315,16 @@ def search(q: str = Query(..., min_length=1, max_length=200),
     # Trust boundary: quote each token so user input can't hit FTS query syntax
     # (implicit AND between quoted tokens is preserved).
     match = " ".join(f'"{tok.replace(chr(34), chr(34) * 2)}"' for tok in q.split())
+    tk_filter = " AND ticker = :t" if ticker else ""
+    params = {"q": match, "n": limit}
+    if ticker:
+        params["t"] = ticker.strip().upper()
     with session_scope() as session:
         rows = session.execute(sql(
             "SELECT source_kind, ticker, ref_id, "
             "snippet(search, 0, '<mark>', '</mark>', ' ... ', 24) AS snip "
-            "FROM search WHERE search MATCH :q ORDER BY bm25(search) LIMIT :n"),
-            {"q": match, "n": limit}).all()
+            f"FROM search WHERE search MATCH :q{tk_filter} ORDER BY bm25(search) LIMIT :n"),
+            params).all()
         return JSONResponse(content={"hits": [
             {"source_kind": r[0], "ticker": r[1], "ref_id": r[2], "snippet": r[3]}
             for r in rows]})

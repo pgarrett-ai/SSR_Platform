@@ -115,8 +115,9 @@ export async function fetchScreen() {
   return jsonOrThrow(await fetch("/api/screen"));
 }
 
-export async function searchText(q) {
-  return jsonOrThrow(await fetch(`/api/search?q=${encodeURIComponent(q)}`));
+export async function searchText(q, ticker) {
+  const t = ticker ? `&ticker=${encodeURIComponent(ticker)}` : "";
+  return jsonOrThrow(await fetch(`/api/search?q=${encodeURIComponent(q)}${t}`));
 }
 
 // ---- Recovery (fulcrum) ------------------------------------------------------
