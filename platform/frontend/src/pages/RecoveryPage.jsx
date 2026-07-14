@@ -4,7 +4,10 @@ import {
   Tooltip, XAxis, YAxis,
 } from "recharts";
 import CitedNumber from "../components/CitedNumber.jsx";
-import { ACCENT, INK, LINE_COLORS, RISK, Section, Th, chartTooltipStyle, fmt } from "../ui/index.jsx";
+import {
+  ACCENT, Button, ErrorCard, INK, Input, LINE_COLORS, Loading, RISK, Section, Th,
+  chartTooltipStyle, fmt,
+} from "../ui/index.jsx";
 import {
   deleteScenario, fetchRecoveryStructure, listScenarios, saveScenario, simulateRecovery,
 } from "../api.js";
@@ -25,6 +28,8 @@ const SIM_DEFAULTS = {
   n_draws: 50000, seed: 42,
 };
 
+// ponytail: dense table-cell inputs stay local — kit Input's px-3 py-1.5 text-sm can't be
+// reliably overridden with conflicting utilities. Backgrounds track the kit (bg-ink-800).
 function NumCell({ value, onChange, step = 1, className = "" }) {
   return (
     <input
@@ -32,7 +37,7 @@ function NumCell({ value, onChange, step = 1, className = "" }) {
       step={step}
       value={value ?? ""}
       onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
-      className={`w-24 rounded border border-ink-600 bg-ink-900 px-2 py-1 font-mono text-xs text-slate-100 outline-none focus:border-accent ${className}`}
+      className={`w-24 rounded border border-ink-600 bg-ink-800 px-2 py-1 font-mono text-xs text-slate-100 outline-none focus:border-accent ${className}`}
     />
   );
 }
@@ -42,7 +47,7 @@ function TextCell({ value, onChange, className = "" }) {
     <input
       value={value ?? ""}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-full rounded border border-ink-600 bg-ink-900 px-2 py-1 text-xs text-slate-100 outline-none focus:border-accent ${className}`}
+      className={`w-full rounded border border-ink-600 bg-ink-800 px-2 py-1 text-xs text-slate-100 outline-none focus:border-accent ${className}`}
     />
   );
 }
@@ -186,15 +191,11 @@ export default function RecoveryPage({ ticker, years }) {
       </div>
     );
   if (loading)
-    return <div className="p-10 text-center text-slate-400">Loading capital structure for {ticker}…</div>;
+    return <Loading>Loading capital structure for {ticker}…</Loading>;
 
   return (
     <div>
-      {error && (
-        <div className="mb-6 rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-200">
-          {error}
-        </div>
-      )}
+      {error && <ErrorCard className="mb-6">{error}</ErrorCard>}
 
       {structure && (
         <>
@@ -244,41 +245,42 @@ export default function RecoveryPage({ ticker, years }) {
                 </tbody>
               </table>
             </div>
-            <button
+            <Button
               onClick={() => setStructure((s) => ({ ...s, tranches: [...s.tranches, { name: "New tranche", entity: s.entities[0]?.name || "OpCo", face: 100, lien_rank: 99, secured: false, preferred: false, coupon: 0, make_whole: 0, maturity: "" }] }))}
-              className="mt-3 rounded-md border border-ink-600 px-3 py-1.5 text-xs text-slate-300 hover:border-accent hover:text-white"
+              className="mt-3"
             >
               + Add tranche
-            </button>
+            </Button>
           </Section>
 
           <div className="grid md:grid-cols-2 md:gap-x-6">
-            <Section title="Legal entities" subtitle="ev_share must sum to 1.0 · empty parent = top">
-              <table className="w-full border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-ink-600"><Th>Entity</Th><Th right>EV share</Th><Th>Parent</Th><Th /></tr>
-                </thead>
-                <tbody>
-                  {structure.entities.map((e, i) => (
-                    <tr key={i} className="border-b border-ink-700/60">
-                      <td className="px-2 py-1"><TextCell value={e.name} onChange={(v) => patchEntity(i, { name: v })} /></td>
-                      <td className="px-2 py-1 text-right"><NumCell value={e.ev_share} step={0.05} onChange={(v) => patchEntity(i, { ev_share: v ?? 0 })} className="w-20" /></td>
-                      <td className="px-2 py-1"><TextCell value={e.parent} onChange={(v) => patchEntity(i, { parent: v })} className="w-28" /></td>
-                      <td className="px-2 py-1">
-                        <button onClick={() => setStructure((s) => ({ ...s, entities: s.entities.filter((_, j) => j !== i) }))} className="text-slate-500 hover:text-rose-400">✕</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <Section title="Legal entities" subtitle="EV shares must sum to 1.0 · empty parent = top of the structure">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-ink-600"><Th>Entity</Th><Th right>EV share</Th><Th>Parent</Th><Th /></tr>
+                  </thead>
+                  <tbody>
+                    {structure.entities.map((e, i) => (
+                      <tr key={i} className="border-b border-ink-700/60">
+                        <td className="px-2 py-1"><TextCell value={e.name} onChange={(v) => patchEntity(i, { name: v })} /></td>
+                        <td className="px-2 py-1 text-right"><NumCell value={e.ev_share} step={0.05} onChange={(v) => patchEntity(i, { ev_share: v ?? 0 })} className="w-20" /></td>
+                        <td className="px-2 py-1"><TextCell value={e.parent} onChange={(v) => patchEntity(i, { parent: v })} className="w-28" /></td>
+                        <td className="px-2 py-1">
+                          <button onClick={() => setStructure((s) => ({ ...s, entities: s.entities.filter((_, j) => j !== i) }))} className="text-slate-500 hover:text-rose-400">✕</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               <div className="mt-3 flex items-end justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
                     onClick={() => setStructure((s) => ({ ...s, entities: [...s.entities, { name: "HoldCo", ev_share: 0.0, parent: null }] }))}
-                    className="rounded-md border border-ink-600 px-3 py-1.5 text-xs text-slate-300 hover:border-accent hover:text-white"
                   >
                     + Add entity
-                  </button>
+                  </Button>
                   {availableEntities.length > 0 && (
                     <select
                       value=""
@@ -300,22 +302,24 @@ export default function RecoveryPage({ ticker, years }) {
               </div>
             </Section>
 
-            <Section title="Collateral pools" subtitle="derived · v1: all-asset pledge per entity">
-              <table className="w-full border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-ink-600"><Th>Pool</Th><Th right>EV share</Th><Th right>Secured face</Th><Th>Secured tranches</Th></tr>
-                </thead>
-                <tbody>
-                  {collateral.map((r, i) => (
-                    <tr key={i} className="border-b border-ink-700/60 text-slate-300">
-                      <td className="px-2 py-1.5">{r.pool}</td>
-                      <td className="px-2 py-1.5 text-right font-mono">{fmt(r.ev_share, 2)}</td>
-                      <td className="px-2 py-1.5 text-right font-mono">{fmt(r.secured_face)}</td>
-                      <td className="px-2 py-1.5 text-slate-400">{r.tranches}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <Section title="Collateral pools" subtitle="derived — all-asset pledge per entity">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-ink-600"><Th>Pool</Th><Th right>EV share</Th><Th right>Secured face</Th><Th>Secured tranches</Th></tr>
+                  </thead>
+                  <tbody>
+                    {collateral.map((r, i) => (
+                      <tr key={i} className="border-b border-ink-700/60 text-slate-300">
+                        <td className="px-2 py-1.5">{r.pool}</td>
+                        <td className="px-2 py-1.5 text-right font-mono">{fmt(r.ev_share, 2)}</td>
+                        <td className="px-2 py-1.5 text-right font-mono">{fmt(r.secured_face)}</td>
+                        <td className="px-2 py-1.5 text-slate-400">{r.tranches}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </Section>
           </div>
 
@@ -336,10 +340,9 @@ export default function RecoveryPage({ ticker, years }) {
               <NumField label="Draws" value={sim.n_draws} step={10000} onChange={(v) => setSim({ ...sim, n_draws: v })} />
               <NumField label="Seed" value={sim.seed} step={1} onChange={(v) => setSim({ ...sim, seed: v })} />
               <div className="flex items-end">
-                <button onClick={run} disabled={running}
-                  className="rounded-md bg-accent px-6 py-2 text-sm font-semibold text-white shadow hover:bg-accent/90 disabled:opacity-50">
+                <Button variant="primary" onClick={run} disabled={running}>
                   {running ? "Simulating…" : "Run simulation"}
-                </button>
+                </Button>
               </div>
             </div>
           </Section>
@@ -351,12 +354,11 @@ export default function RecoveryPage({ ticker, years }) {
       {result && (
         <Section title="Scenarios" subtitle="save this run, compare side-by-side">
           <div className="mb-4 flex gap-2">
-            <input value={scenarioName} onChange={(e) => setScenarioName(e.target.value)} placeholder="e.g. Base / Bear / Priming"
-              className="w-56 rounded-md border border-ink-600 bg-ink-800 px-3 py-1.5 text-xs text-slate-100 outline-none focus:border-accent" />
-            <button onClick={onSaveScenario} disabled={!scenarioName.trim()}
-              className="rounded-md border border-ink-600 px-4 py-1.5 text-xs text-slate-300 hover:border-accent hover:text-white disabled:opacity-40">
+            <Input value={scenarioName} onChange={(e) => setScenarioName(e.target.value)}
+              placeholder="e.g. Base / Bear / Priming" className="w-56" />
+            <Button onClick={onSaveScenario} disabled={!scenarioName.trim()}>
               Save scenario
-            </button>
+            </Button>
           </div>
           {scenarios.length > 0 && (
             <table className="w-full border-collapse text-xs">

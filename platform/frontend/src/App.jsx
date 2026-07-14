@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 import { fetchHealth, overviewJsonUrl, setLlmEnabled, streamOverview } from "./api.js";
 import { getCached, setCached } from "./cache.js";
-import { Button, Input } from "./ui/index.jsx";
+import { Button, ErrorCard, Input } from "./ui/index.jsx";
 import ProgressLog from "./components/ProgressLog.jsx";
 import ScreenTable from "./components/ScreenTable.jsx";
 import OverviewPage from "./pages/OverviewPage.jsx";
@@ -177,7 +177,7 @@ export default function App() {
             <Button
               onClick={() => runOverview(true)}
               disabled={!activeTicker || ovLoading}
-              title="bypass all caches and re-run the pipeline against EDGAR (~3 min with LLM)"
+              title="re-run the full pipeline against EDGAR (~3 min with LLM)"
               className="w-full"
             >
               Run live ↻
@@ -274,9 +274,9 @@ export default function App() {
         <main className="mx-auto max-w-6xl px-5 py-6">
           {(ovLoading || ovEvents.length > 0) && <ProgressLog events={ovEvents} done={!!overview} />}
           {ovError && (
-            <div className="mb-8 rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-200">
+            <ErrorCard className="mb-8">
               <span className="font-semibold">Could not complete:</span> {ovError}
-            </div>
+            </ErrorCard>
           )}
           <Routes>
             <Route path="/" element={<Landing onPick={go} />} />
