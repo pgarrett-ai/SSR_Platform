@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
 
-from .capstack.bridge import build_bridge, build_ebitda_box
+from .capstack.bridge import build_bridge, build_ebitda_box, renormalize_spliced_bridge
 from .capstack.agreements import group_families, map_instruments
 from .capstack.covenants import extract_covenant_package, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
@@ -290,7 +290,11 @@ def run_overview(
             snap_date = (prior.header.last_updated or "")[:10] or "an earlier run"
             llm_fallback_note = (f"Prior analysis from {snap_date} — LLM analysis is off. "
                                  "Re-enable to refresh.")
-            economic_debt_bridge = economic_debt_bridge or prior.economic_debt_bridge
+            # reuse the prior LLM-extracted content, but recompute the ratio arithmetic
+            # with current code — a spliced bridge must not fossilize old semantics
+            if economic_debt_bridge is None and prior.economic_debt_bridge is not None:
+                economic_debt_bridge = renormalize_spliced_bridge(
+                    prior.economic_debt_bridge, series)
             obs_items = obs_items or prior.obs_items
             covenants = covenants or prior.covenants
             subsidiaries = subsidiaries or prior.subsidiaries
