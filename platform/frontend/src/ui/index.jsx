@@ -13,7 +13,13 @@ export const fmtPct = (x, dp = 1) =>
 export const fmtNum = (x, dp = 2) =>
   x == null || Number.isNaN(x) ? "—" : Number(x).toFixed(dp);
 export const fmtX = (x, dp = 1) =>
-  x == null || Number.isNaN(x) ? "—" : `${Number(x).toFixed(dp)}x`;
+  x == null || Number.isNaN(x) ? "—" : `${Number(x).toFixed(Math.abs(x) < 1 ? 2 : dp)}x`;
+// Leverage where negative means negative EBITDA (screener columns) — not net cash.
+export const fmtLev = (x, dp = 1) =>
+  x == null || Number.isNaN(x) ? "—"
+  : x < 0
+    ? <span className="text-slate-600" title="not meaningful — negative EBITDA">n.m.</span>
+    : fmtX(x, dp);
 export const fmt = (v, d = 1) =>
   v == null || Number.isNaN(v)
     ? "—"
@@ -68,13 +74,25 @@ const BADGE_TONES = {
   accent: "bg-accent/15 text-accent",
 };
 
-export function Badge({ tone = "neutral", className = "", children }) {
+export function Badge({ tone = "neutral", mono = false, className = "", children }) {
   return (
     <span
-      className={`inline-block rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${BADGE_TONES[tone] || BADGE_TONES.neutral} ${className}`}
+      className={`inline-block rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${mono ? "font-mono" : ""} ${BADGE_TONES[tone] || BADGE_TONES.neutral} ${className}`}
     >
       {children}
     </span>
+  );
+}
+
+export function Loading({ className = "", children = "Loading…" }) {
+  return <div className={`py-8 text-center text-sm text-slate-500 ${className}`}>{children}</div>;
+}
+
+export function ErrorCard({ className = "", children }) {
+  return (
+    <div className={`rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-200 ${className}`}>
+      {children}
+    </div>
   );
 }
 

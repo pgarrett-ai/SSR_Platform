@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { fetchHazard, fetchOverview, fetchRates, simulateRecovery } from "../api.js";
 import { useAsync } from "../cache.js";
-import { Badge, Card, fmt, riskColor } from "../ui/index.jsx";
+import { Badge, Card, Loading, fmt, riskColor } from "../ui/index.jsx";
 
 // Key reference rates strip — DB-stored observations with their as-of dates.
 function KeyRates() {
@@ -38,7 +38,7 @@ function OverviewCard({ title, to, children, loading, error }) {
           </Link>
         )}
       </div>
-      {loading && <div className="py-6 text-center text-xs text-slate-500">loading…</div>}
+      {loading && <Loading />}
       {error && <div className="py-2 text-xs text-rose-300">{error}</div>}
       {!loading && !error && children}
     </Card>
@@ -82,7 +82,7 @@ export default function OverviewPage({ ticker, years }) {
               <div className="text-[10px] uppercase tracking-wide text-slate-500">composite risk / 100</div>
             </div>
             <div className="space-y-1 text-xs text-slate-400">
-              <div>distance-to-default: <span className="font-mono text-slate-200">{fmt(es?.distance_to_default, 2)}σ</span></div>
+              <div>distance-to-default: <span className="font-mono text-slate-200">{es?.distance_to_default != null ? `${fmt(es.distance_to_default, 2)}σ` : "—"}</span></div>
               <div>12m PD (Merton): <span className="font-mono text-slate-200">{es?.distress_pd?.["12m"] != null ? `${fmt(100 * es.distress_pd["12m"], 1)}%` : "—"}</span></div>
               <div>trend: <span className={`font-semibold ${es?.trend?.direction === "worsening" ? "text-rose-300" : es?.trend?.direction === "improving" ? "text-emerald-300" : "text-slate-200"}`}>{es?.trend?.direction || "—"}</span></div>
             </div>
@@ -159,7 +159,7 @@ export default function OverviewPage({ ticker, years }) {
               </div>
             ))}
             {(ov.data?.warnings || []).length > 0 && (
-              <div className="text-[11px] text-slate-600">{ov.data.warnings.length} pipeline warning(s) — see Capital Structure</div>
+              <div className="text-[11px] text-slate-600">{ov.data.warnings.length} pipeline warning{ov.data.warnings.length === 1 ? "" : "s"} — see Capital Structure</div>
             )}
           </div>
         </OverviewCard>

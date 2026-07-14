@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Td, Th, rowClass } from "../ui/index.jsx";
+import { Badge, Td, Th, rowClass } from "../ui/index.jsx";
 
 export default function SourcesPanel({ sources }) {
   const [showAll, setShowAll] = useState(false);
@@ -23,9 +23,7 @@ export default function SourcesPanel({ sources }) {
             {shown.map((s) => (
               <tr key={s.accession_no} className={rowClass}>
                 <Td>
-                  <span className="rounded bg-ink-600 px-1.5 py-0.5 font-mono text-[11px] text-slate-200">
-                    {s.form_type}
-                  </span>
+                  <Badge mono>{s.form_type}</Badge>
                 </Td>
                 <Td mono className="text-[12px] text-slate-300">{s.filing_date}</Td>
                 <Td mono className="text-[12px] text-slate-400">{s.period_of_report || "—"}</Td>

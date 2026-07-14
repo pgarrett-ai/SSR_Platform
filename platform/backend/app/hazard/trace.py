@@ -80,7 +80,7 @@ def get_credit_backdrop() -> CreditBackdrop:
 def _backdrop_for_day(day: str) -> CreditBackdrop:
     s = get_settings()
     if not s.trace_enabled:
-        return CreditBackdrop(note="TRACE disabled: set FINRA_API_KEY / FINRA_API_SECRET in .env")
+        return CreditBackdrop(note="TRACE feed not configured (FINRA API credentials not set)")
     try:
         token = _token(s)
         end = dt.date.fromisoformat(day)

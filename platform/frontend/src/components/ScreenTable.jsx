@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { fetchScreen, searchText } from "../api.js";
-import { Badge, Td, Th, fmtX, rowClass } from "../ui/index.jsx";
+import { Badge, Button, Input, Td, Th, fmtLev, rowClass } from "../ui/index.jsx";
+
+// Badge uppercases its label, so raw source kinds need display names ("mdna" → MD&A).
+const KIND_LABELS = { mdna: "MD&A" };
 
 
 // Snippets come from filing text via FTS5 snippet(); the only HTML we allow through
@@ -26,7 +29,14 @@ export default function ScreenTable({ onPick }) {
     e.preventDefault();
     if (!q.trim()) { setHits(null); return; }
     try {
-      setHits((await searchText(q.trim())).hits);
+      // The corpus stores the same clause across amendments/periods — dedupe for display.
+      const seen = new Set();
+      setHits((await searchText(q.trim())).hits.filter((h) => {
+        const k = `${h.ticker}|${h.source_kind}|${h.snippet}`;
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      }));
     } catch {
       setHits([]);
     }
@@ -35,15 +45,13 @@ export default function ScreenTable({ onPick }) {
   return (
     <div className="mt-12 text-left">
       <form onSubmit={runSearch} className="mb-6 flex gap-2">
-        <input
+        <Input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="search covenants, OBS findings, MD&A… (e.g. springing lien)"
-          className="w-full rounded-md border border-ink-600 bg-ink-800 px-3 py-1.5 text-sm text-slate-100 outline-none focus:border-accent"
+          className="w-full"
         />
-        <button type="submit" className="rounded-md border border-ink-600 px-3 py-1.5 text-sm text-slate-300 hover:border-accent hover:text-white">
-          Search
-        </button>
+        <Button type="submit">Search</Button>
       </form>
 
       {hits !== null && (
@@ -59,7 +67,7 @@ export default function ScreenTable({ onPick }) {
               className="mb-1 block w-full rounded-md border border-ink-700 px-3 py-2 text-left text-sm hover:border-accent"
             >
               <span className="font-mono text-slate-200">{h.ticker}</span>
-              <Badge className="ml-2">{h.source_kind}</Badge>
+              <Badge className="ml-2">{KIND_LABELS[h.source_kind] || h.source_kind}</Badge>
               <span
                 className="ml-2 text-slate-400"
                 dangerouslySetInnerHTML={{ __html: markOnly(h.snippet || "") }}
@@ -93,8 +101,8 @@ export default function ScreenTable({ onPick }) {
                   >
                     <Td mono className="text-slate-200">{r.ticker}</Td>
                     <Td className="text-slate-400">{r.issuer || "—"}</Td>
-                    <Td right mono className="text-slate-300">{fmtX(r.reported_leverage)}</Td>
-                    <Td right mono className="text-slate-300">{fmtX(r.economic_leverage)}</Td>
+                    <Td right mono className="text-slate-300">{fmtLev(r.reported_leverage)}</Td>
+                    <Td right mono className="text-slate-300">{fmtLev(r.economic_leverage)}</Td>
                     <Td right mono className="text-slate-400">{r.flag_count ?? "—"}</Td>
                     <Td right mono className="text-slate-300">
                       {r.overall_risk == null ? "—" : `${r.overall_risk.toFixed(1)}${r.implied_rating ? ` · ${r.implied_rating}` : ""}`}

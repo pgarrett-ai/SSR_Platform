@@ -47,6 +47,8 @@ const RAW_COLS = [
   ["net_income", "Net income", fmtMoney],
 ];
 
+// ponytail: raw th/td, not kit Th/Td — these two tables are denser (text-xs, py-1.5)
+// than the kit cells, and header/body padding must match for the sticky FY column.
 function Table({ rows, cols }) {
   return (
     <div className="overflow-x-auto">

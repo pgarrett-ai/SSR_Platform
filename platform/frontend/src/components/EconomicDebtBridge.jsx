@@ -73,6 +73,7 @@ function WaterfallSvg({ lines }) {
 
   const shortLabel = (s) =>
     s
+      .replace("Economic (adjusted) debt", "Economic debt")
       .replace(" liabilities", "")
       .replace(" (underfunded)", "")
       .replace("Pension / OPEB deficit", "Pension/OPEB")

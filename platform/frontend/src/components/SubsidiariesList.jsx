@@ -17,6 +17,10 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
   // debt obligors first — they're the entities that matter for structural subordination
   const ordered = [...subsidiaries].sort((a, b) => (b.role ? 1 : 0) - (a.role ? 1 : 0));
   const shown = showAll ? ordered : ordered.slice(0, 24);
+  // hide columns Exhibit 21 didn't populate for any entity — a column of "—" says nothing
+  const hasRole = subsidiaries.some((s) => s.role);
+  const hasParent = subsidiaries.some((s) => s.parent);
+  const hasPct = subsidiaries.some((s) => s.percent_owned != null);
   return (
     <div>
       {guarantorNotes?.length > 0 && (
@@ -34,34 +38,38 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
           <thead>
             <tr className="border-b border-ink-600">
               <Th>Entity</Th>
-              <Th>Role</Th>
+              {hasRole && <Th>Role</Th>}
               <Th>Jurisdiction</Th>
-              <Th>Parent</Th>
-              <Th right>% owned</Th>
+              {hasParent && <Th>Parent</Th>}
+              {hasPct && <Th right>% owned</Th>}
             </tr>
           </thead>
           <tbody>
             {shown.map((s, i) => (
               <tr key={i} className={rowClass}>
                 <Td className="text-slate-200">{s.name}</Td>
-                <Td>
-                  {s.role ? (
-                    <Badge
-                      tone={s.role === "debt obligor" ? "accent" : "neutral"}
-                      className="cursor-help"
-                      title={s.instruments?.length ? `obligates: ${s.instruments.join(", ")}` : undefined}
-                    >
-                      {s.role}
-                    </Badge>
-                  ) : (
-                    <span className="text-slate-600">—</span>
-                  )}
-                </Td>
+                {hasRole && (
+                  <Td>
+                    {s.role ? (
+                      <Badge
+                        tone={s.role === "debt obligor" ? "accent" : "neutral"}
+                        className="cursor-help"
+                        title={s.instruments?.length ? `obligates: ${s.instruments.join(", ")}` : undefined}
+                      >
+                        {s.role}
+                      </Badge>
+                    ) : (
+                      <span className="text-slate-600">—</span>
+                    )}
+                  </Td>
+                )}
                 <Td className="text-slate-400">{s.jurisdiction || "—"}</Td>
-                <Td className="text-slate-500">{s.parent || "—"}</Td>
-                <Td right mono className="text-slate-400">
-                  {s.percent_owned == null ? "—" : `${s.percent_owned}%`}
-                </Td>
+                {hasParent && <Td className="text-slate-500">{s.parent || "—"}</Td>}
+                {hasPct && (
+                  <Td right mono className="text-slate-400">
+                    {s.percent_owned == null ? "—" : `${s.percent_owned}%`}
+                  </Td>
+                )}
               </tr>
             ))}
           </tbody>

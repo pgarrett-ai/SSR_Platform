@@ -1,4 +1,5 @@
 import React from "react";
+import { Badge } from "../ui/index.jsx";
 import CitedNumber from "./CitedNumber.jsx";
 
 const CAT_LABELS = {
@@ -29,17 +30,11 @@ export default function ObsFindings({ items }) {
       {items.map((it, i) => (
         <div key={i} className="rounded-lg border border-ink-700 bg-ink-800/70 p-4">
           <div className="mb-1 flex items-center justify-between gap-2">
-            <span className="rounded bg-ink-600 px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-300">
-              {CAT_LABELS[it.category] || it.category}
-            </span>
+            <Badge>{CAT_LABELS[it.category] || it.category}</Badge>
             {it.include_in_bridge ? (
-              <span className="rounded bg-rose-500/15 px-2 py-0.5 text-[10px] uppercase text-rose-300">
-                in bridge
-              </span>
+              <Badge tone="high">in bridge</Badge>
             ) : (
-              <span className="rounded bg-slate-500/10 px-2 py-0.5 text-[10px] uppercase text-slate-400">
-                informational
-              </span>
+              <Badge>informational</Badge>
             )}
           </div>
           <div className="flex items-baseline justify-between gap-2">
@@ -52,7 +47,9 @@ export default function ObsFindings({ items }) {
             </div>
           )}
           {it.recourse && it.recourse !== "unknown" && (
-            <div className="mt-1 text-[11px] text-slate-500">recourse: {it.recourse}</div>
+            <div className="mt-1 text-[11px] text-slate-500">
+              {it.recourse === "partial" ? "partial recourse" : it.recourse}
+            </div>
           )}
           {it.notes && <p className="mt-2 text-[12px] text-slate-400">{it.notes}</p>}
         </div>

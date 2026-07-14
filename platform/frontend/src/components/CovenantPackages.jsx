@@ -67,7 +67,9 @@ function LmeVectors({ vectors }) {
 }
 
 function PackageCard({ cov }) {
-  const title = cov.family_label || cov.agreement_type || "Credit agreement";
+  // agreement_type is a raw enum ("credit_agreement") — humanize for display
+  const raw = cov.family_label || cov.agreement_type || "Credit agreement";
+  const title = raw.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
   const creditors = [
     cov.admin_agent && `Admin agent: ${cov.admin_agent}`,
     cov.trustee && `Trustee: ${cov.trustee}`,
@@ -80,7 +82,7 @@ function PackageCard({ cov }) {
         <h4 className="text-sm font-semibold text-slate-100">{title}</h4>
         <div className="flex items-center gap-2">
           {cov.amendment_count > 0 && (
-            <Badge tone="neutral">{cov.amendment_count} amendment(s)</Badge>
+            <Badge tone="neutral">{cov.amendment_count} amendment{cov.amendment_count === 1 ? "" : "s"}</Badge>
           )}
           {cov.base_missing && (
             <Badge tone="watch" className="cursor-help"
@@ -88,11 +90,7 @@ function PackageCard({ cov }) {
               base not on file
             </Badge>
           )}
-          {cov.citation?.exhibit && (
-            <span className="rounded bg-ink-600 px-2 py-0.5 font-mono text-[10px] text-slate-300">
-              {cov.citation.exhibit}
-            </span>
-          )}
+          {cov.citation?.exhibit && <Badge mono>{cov.citation.exhibit}</Badge>}
         </div>
       </div>
 
@@ -107,26 +105,28 @@ function PackageCard({ cov }) {
       )}
 
       {cov.financial_covenants?.length > 0 ? (
-        <table className="mb-1 w-full text-sm">
-          <thead>
-            <tr className="border-b border-ink-600">
-              <Th>Financial covenant</Th>
-              <Th>Threshold</Th>
-              <Th>Tested</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {cov.financial_covenants.map((fc, i) => (
-              <tr key={i} className={rowClass}>
-                <Td className="text-slate-200">{fc.kind || "—"}</Td>
-                <Td mono className="text-[12px] text-slate-300">{fc.threshold || "—"}</Td>
-                <Td className="text-[12px] text-slate-400">
-                  {[fc.test_frequency, fc.springing_trigger].filter(Boolean).join(" · ") || "—"}
-                </Td>
+        <div className="overflow-x-auto">
+          <table className="mb-1 w-full text-sm">
+            <thead>
+              <tr className="border-b border-ink-600">
+                <Th>Financial covenant</Th>
+                <Th>Threshold</Th>
+                <Th>Tested</Th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {cov.financial_covenants.map((fc, i) => (
+                <tr key={i} className={rowClass}>
+                  <Td className="text-slate-200">{fc.kind || "—"}</Td>
+                  <Td mono className="text-[12px] text-slate-300">{fc.threshold || "—"}</Td>
+                  <Td className="text-[12px] text-slate-400">
+                    {[fc.test_frequency, fc.springing_trigger].filter(Boolean).join(" · ") || "—"}
+                  </Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <>
           <Row label="Financial covenant" value={cov.leverage_covenant_type} />
@@ -180,7 +180,7 @@ function PackageCard({ cov }) {
       ) : (
         cov.lme_risk_notes && (
           <div className="mt-2 rounded-md border border-amber-500/30 bg-amber-500/5 p-2 text-[12px] text-amber-200/90">
-            <span className="font-semibold">LME read (prior format):</span> {cov.lme_risk_notes}
+            <span className="font-semibold">LME assessment:</span> {cov.lme_risk_notes}
           </div>
         )
       )}
@@ -206,26 +206,25 @@ export default function CovenantPackages({ covenants, instruments }) {
     name: d.instrument,
     family: d.governed_by || governedBy[d.instrument] || null,
   }));
+  const matched = strip.filter((s) => s.family);
 
   return (
     <div className="grid gap-4">
       {strip.length > 0 && (
         <div className="rounded-xl border border-ink-700 bg-ink-900/50 p-3">
-          <div className="mb-2 text-[11px] uppercase tracking-wide text-slate-500">
-            Coverage — instrument → governing agreement
+          <div className="text-[11px] uppercase tracking-wide text-slate-500">
+            Coverage — {matched.length} of {strip.length} instruments matched to an agreement on file
           </div>
-          <div className="grid gap-x-6 gap-y-1 text-[12px] sm:grid-cols-2">
-            {strip.map((s, i) => (
-              <div key={i} className="flex justify-between gap-2">
-                <span className="truncate text-slate-300">{s.name}</span>
-                {s.family ? (
+          {matched.length > 0 && (
+            <div className="mt-2 grid gap-x-6 gap-y-1 text-[12px] sm:grid-cols-2">
+              {matched.map((s, i) => (
+                <div key={i} className="flex justify-between gap-2">
+                  <span className="truncate text-slate-300">{s.name}</span>
                   <span className="shrink-0 text-accent">{s.family}</span>
-                ) : (
-                  <span className="shrink-0 text-slate-600">no agreement on file</span>
-                )}
-              </div>
-            ))}
-          </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
       {covenants.map((c, i) => (

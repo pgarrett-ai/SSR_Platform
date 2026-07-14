@@ -20,7 +20,7 @@ export default function ExecutiveSummary({ data }) {
         <div>
           <div className="text-xs uppercase tracking-wide text-slate-500">Overall risk</div>
           <div className="text-2xl font-semibold" style={{ color: riskColor(es.overall_risk) }}>
-            {es.overall_risk == null ? "—" : `${es.overall_risk}/100`}
+            {es.overall_risk == null ? "—" : `${Math.round(es.overall_risk)}/100`}
           </div>
           <div className="text-xs text-slate-400">
             composite ({(es.composite_of || ["Altman", "Merton"]).join(" + ")})
