@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Badge } from "../ui/index.jsx";
 
 // Renders a single value with its provenance. Hovering shows the citation (verbatim quote +
 // link to the EDGAR source) or, for a derived figure, the formula. Nothing is shown uncited.
@@ -37,9 +38,7 @@ function CiteCard({ anchorRef, cv, onEnter, onLeave }) {
       {cv.citation ? (
         <div>
           <div className="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-wide text-slate-400">
-            <span className="rounded bg-ink-700 px-1.5 py-0.5 font-mono text-slate-200">
-              {cv.citation.form_type || "filing"}
-            </span>
+            <Badge mono>{cv.citation.form_type || "filing"}</Badge>
             <span className="font-mono">{cv.citation.filing_date}</span>
             {cv.citation.exhibit && <span className="font-mono normal-case">· {cv.citation.exhibit}</span>}
           </div>
@@ -64,9 +63,7 @@ function CiteCard({ anchorRef, cv, onEnter, onLeave }) {
         </div>
       ) : (
         <div>
-          <span className="mb-1 inline-block rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-300">
-            Derived
-          </span>
+          <Badge tone="watch" className="mb-1">Derived</Badge>
           {cv.formula && (
             <div className="font-mono text-[11px] text-slate-200">{cv.formula}</div>
           )}

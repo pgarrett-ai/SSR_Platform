@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchMdnaPeriods, fetchMdnaText } from "../api.js";
-import { getCached, setCached, useAsync } from "../cache.js";
+import { useAsync } from "../cache.js";
+import { Loading } from "../ui/index.jsx";
 
 // The actual MD&A, per filing period: tabs newest-first (10-K/10-Q + period end), a reading
 // pane, and the EDGAR source link. Text comes from the mdna_sections store — populated by
@@ -15,32 +16,18 @@ export default function MdnaReader({ ticker }) {
   const { data: periods, error, loading } = useAsync(
     `mdna:${ticker}`, () => fetchMdnaPeriods(ticker), [ticker]);
   const [active, setActive] = useState(null);
-  const [doc, setDoc] = useState(null);
-  const [docError, setDocError] = useState(null);
 
   const activeAccession = active ?? periods?.[0]?.accession_no ?? null;
 
   useEffect(() => { setActive(null); }, [ticker]);
 
-  useEffect(() => {
-    if (!activeAccession) return;
-    const key = `mdna:${ticker}:${activeAccession}`;
-    const cached = getCached(key);
-    if (cached) {
-      setDoc(cached);
-      setDocError(null);
-      return;
-    }
-    let alive = true;
-    setDoc(null);
-    setDocError(null);
-    fetchMdnaText(ticker, activeAccession)
-      .then((d) => alive && setDoc(setCached(key, d)))
-      .catch((e) => alive && setDocError(e.message));
-    return () => { alive = false; };
-  }, [ticker, activeAccession]);
+  const { data: doc, error: docError } = useAsync(
+    activeAccession && `mdna:${ticker}:${activeAccession}`,
+    () => fetchMdnaText(ticker, activeAccession),
+    [ticker, activeAccession],
+  );
 
-  if (loading) return <div className="text-sm text-slate-500">Loading stored MD&A…</div>;
+  if (loading) return <Loading>Loading stored MD&A…</Loading>;
   if (error) return <div className="text-sm text-rose-300">{error}</div>;
   if (!periods || periods.length === 0) {
     return (
@@ -80,7 +67,7 @@ export default function MdnaReader({ ticker }) {
         </a>
       )}
       {docError && <div className="text-sm text-rose-300">{docError}</div>}
-      {!doc && !docError && <div className="text-sm text-slate-500">Loading…</div>}
+      {!doc && !docError && <Loading />}
       {doc && (
         <div className="max-h-[32rem] overflow-y-auto whitespace-pre-wrap rounded-md bg-ink-900/60 p-4 text-[13px] leading-relaxed text-slate-300">
           {doc.text}
