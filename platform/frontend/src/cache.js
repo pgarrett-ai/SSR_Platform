@@ -21,8 +21,12 @@ export function clearCached(key) {
 // Cache-first async loader shared by the data pages (CapitalPage keeps its own
 // SSE streaming flow).
 export function useAsync(key, loader, deps) {
-  const [state, setState] = useState({ data: getCached(key) || null, error: null, loading: !getCached(key) });
+  const [state, setState] = useState({ data: getCached(key) || null, error: null, loading: !!key && !getCached(key) });
   useEffect(() => {
+    if (!key) {
+      setState({ data: null, error: null, loading: false });
+      return;
+    }
     const cached = getCached(key);
     if (cached) {
       setState({ data: cached, error: null, loading: false });
