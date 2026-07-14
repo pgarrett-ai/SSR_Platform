@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { fetchHazard } from "../api.js";
-import { getCached, setCached } from "../cache.js";
-import { Badge, Card, ZONE_COLOR, fmtPct, fmtNum } from "../ui/index.jsx";
+import { useAsync } from "../cache.js";
+import { Badge, ErrorCard, Loading, ZONE_COLOR, fmtPct, fmtNum } from "../ui/index.jsx";
 import ExecutiveSummary from "../components/risk/ExecutiveSummary.jsx";
 import RiskTimeline from "../components/risk/RiskTimeline.jsx";
 import Contributions from "../components/risk/Contributions.jsx";
@@ -35,41 +35,19 @@ function ScoreChip({ name, sc }) {
     <div className="rounded-lg bg-ink-700 px-3 py-2 text-xs" title={sc.note || undefined}>
       <span className="text-slate-500">{name}: </span>
       {body}
-      {sc.real_labels && <Badge tone="ok" className="ml-1.5">real labels</Badge>}
       {sc.trained && !sc.real_labels && <Badge tone="watch" className="ml-1.5">demo</Badge>}
     </div>
   );
 }
 
 export default function RiskPage({ ticker }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const cacheKey = `hazard:${ticker}`;
-
-  useEffect(() => {
-    const cached = getCached(cacheKey);
-    if (cached) {
-      setData(cached);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    setData(null);
-    fetchHazard(ticker, HAZARD_YEARS)
-      .then((d) => setData(setCached(cacheKey, d)))
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [cacheKey, ticker]);
+  const { data, loading, error } = useAsync(
+    `hazard:${ticker}`, () => fetchHazard(ticker, HAZARD_YEARS), [ticker],
+  );
 
   if (loading)
-    return (
-      <div className="py-16 text-center text-sm text-slate-400">
-        Pulling EDGAR + market data for {ticker}… first run ~30–60 s
-      </div>
-    );
-  if (error)
-    return <Card className="border-rose-500/40 bg-rose-500/10 text-sm text-rose-200">{error}</Card>;
+    return <Loading>Pulling EDGAR + market data for {ticker}… first run ~30–60 s</Loading>;
+  if (error) return <ErrorCard>{error}</ErrorCard>;
   if (!data) return null;
 
   return (

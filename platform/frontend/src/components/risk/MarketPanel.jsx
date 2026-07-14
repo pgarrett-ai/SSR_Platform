@@ -34,7 +34,7 @@ export default function MarketPanel({ data }) {
               <Indicator label="Excess return (1y)" value={fmtPct(m.excess_return_1y)} />
             </>
           ) : (
-            <div className="text-sm text-slate-500">Market data unavailable (delisted / no quote).</div>
+            <div className="text-sm text-slate-500">No market quote available.</div>
           )}
         </Card>
 
@@ -99,7 +99,7 @@ export default function MarketPanel({ data }) {
               </div>
             </>
           ) : (
-            <div className="text-sm text-slate-500">{cb.note || "TRACE not configured"}</div>
+            <div className="text-sm text-slate-500" title={cb.note || undefined}>TRACE feed not configured.</div>
           )}
         </Card>
       </div>
