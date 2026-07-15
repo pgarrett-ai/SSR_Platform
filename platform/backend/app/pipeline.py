@@ -258,8 +258,12 @@ def run_overview(
     # --- Phase 4: covenant extraction from credit agreements / indentures (§5) ---
     credit_docs = []
     try:   # locating + fetching the exhibits is EDGAR-only — always runs (warms cache)
-        progress.emit("Locating credit agreements / indentures…", step="covenants", pct=83)
-        credit_docs = find_credit_documents(company, years)
+        from .capstack.covenants import CENSUS_MAX_CHECK, CENSUS_MAX_KEEP, CENSUS_YEARS
+        progress.emit(f"Locating credit agreements / indentures ({CENSUS_YEARS}y census)…",
+                      step="covenants", pct=83)
+        credit_docs = find_credit_documents(company, max(years, CENSUS_YEARS),
+                                            max_check=CENSUS_MAX_CHECK,
+                                            max_keep=CENSUS_MAX_KEEP)
     except Exception as exc:
         warnings.append(f"Credit-document fetch failed: {exc}")
     if settings.llm_enabled:
@@ -268,6 +272,21 @@ def run_overview(
                           step="covenants", pct=84)
             families = group_families(credit_docs)
             map_instruments(families, debt_schedule)
+            # HARD filter before any LLM spend: a family that governs no scheduled
+            # instrument and wasn't filed recently is an expired/refinanced agreement —
+            # reading it would describe debt that no longer exists. Recent unmatched
+            # families are kept as a safety valve for name-match misses.
+            import datetime as _dt
+            recent_cut = (_dt.date.today() - _dt.timedelta(days=3 * 365)).isoformat()
+            live = [f for f in families
+                    if f.governs_instruments
+                    or (f.operative.doc.filing_date or "") >= recent_cut]
+            if len(live) < len(families):
+                progress.emit(
+                    f"Dropped {len(families) - len(live)} expired agreement families "
+                    "(govern no scheduled instrument, filed >3y ago).",
+                    step="covenants", pct=84)
+            families = live
             # families that govern a known instrument first, newest first; cap LLM spend —
             # the per-doc extraction cache makes repeat live runs near-free anyway
             families.sort(key=lambda f: (bool(f.governs_instruments),

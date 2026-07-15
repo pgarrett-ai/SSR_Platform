@@ -20,6 +20,13 @@ from ..schemas import Citation, CovenantFact, CovenantPackage, FinancialCovenant
 # Forms whose EX-10.x / EX-4.x exhibits carry credit agreements & indentures.
 _CREDIT_FORMS = ["8-K", "10-K", "S-4", "S-1"]
 
+# The census looks back further than the display window: a 2021 credit agreement still
+# governs today's revolver. Expired families are filtered AFTER instrument mapping —
+# widening the census costs EDGAR fetches only, never LLM tokens.
+CENSUS_YEARS = 20
+CENSUS_MAX_CHECK = 120   # exhibit texts fetched+classified per run (EDGAR-cached)
+CENSUS_MAX_KEEP = 40     # classified credit docs retained for family grouping
+
 _COVENANT_KEYWORDS = (
     "restricted payment", "limitation on indebtedness", "limitation on liens", "negative covenant",
     "financial covenant", "leverage ratio", "consolidated ebitda", "interest coverage",
