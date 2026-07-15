@@ -128,6 +128,32 @@ def persist_obs(session: Session, ticker: str, items: list[ObsItemSchema]) -> No
     rebuild_fts(session, ticker)
 
 
+def persist_filing_notes(session: Session, ticker: str, fts) -> None:
+    """Store the full notes text of the analyzed filings (10-K + the schedule's 10-Q),
+    replacing prior rows per (ticker, accession). `fts` = FilingText objects."""
+    seen: set = set()
+    for ft in fts:
+        if ft is None or not ft.notes or ft.accession_no in seen:
+            continue   # autoflush=False: dedupe in-batch, the DB delete only sees prior runs
+        seen.add(ft.accession_no)
+        for row in session.scalars(
+            select(models.FilingNotes).where(
+                models.FilingNotes.ticker == ticker,
+                models.FilingNotes.accession_no == ft.accession_no,
+            )
+        ).all():
+            session.delete(row)
+        session.add(models.FilingNotes(
+            ticker=ticker,
+            accession_no=ft.accession_no,
+            form_type=ft.form_type,
+            filing_date=ft.filing_date,
+            source_url=ft.source_url,
+            text=ft.notes[:400000],
+        ))
+    rebuild_fts(session, ticker)
+
+
 def persist_mdna(session: Session, ticker: str, periods) -> None:
     """Store MD&A section text per period (replace prior rows for this ticker)."""
     for row in session.scalars(
@@ -231,6 +257,9 @@ def rebuild_fts(session: Session, ticker: str) -> None:
         UNION ALL
         SELECT COALESCE(label,'') || ' ' || COALESCE(notes,''), 'obs', ticker, id
           FROM obs_items WHERE ticker = :t AND (label IS NOT NULL OR notes IS NOT NULL)
+        UNION ALL
+        SELECT text, 'notes', ticker, id FROM filing_notes
+          WHERE ticker = :t AND text IS NOT NULL
     """), {"t": ticker})
 
 

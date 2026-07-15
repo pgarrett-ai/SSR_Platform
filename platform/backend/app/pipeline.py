@@ -34,6 +34,7 @@ from .schemas import IssuerHeader, Overview
 from .store import (
     filing_refs,
     persist_covenants,
+    persist_filing_notes,
     persist_mdna,
     persist_obs,
     upsert_filings,
@@ -164,6 +165,14 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"XBRL debt schedule failed: {exc}")
     debt_ft = debt_ft or ft
+
+    # Persist the notes corpus (deterministic, LLM-independent): what we downloaded stays
+    # searchable, so gap-fill re-search and /api/search can query it later.
+    try:
+        with session_scope() as session:
+            persist_filing_notes(session, ticker, [ft, debt_ft])
+    except Exception as exc:
+        warnings.append(f"Notes corpus persistence failed: {exc}")
 
     if settings.llm_enabled:
         try:

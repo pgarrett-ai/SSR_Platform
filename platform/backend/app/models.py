@@ -179,6 +179,22 @@ class ForensicFlag(Base):
     pointer: Mapped[Optional[str]] = mapped_column(Text)  # footnote/MD&A to read next
 
 
+class FilingNotes(Base):
+    """Full financial-statement notes text per analyzed filing — the persisted corpus the
+    gap-fill re-search (and /api/search) queries. Extraction windows are transient; this
+    is 'what we downloaded', saved so missing facts can be re-searched without EDGAR."""
+
+    __tablename__ = "filing_notes"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    ticker: Mapped[str] = mapped_column(String(16), index=True)
+    accession_no: Mapped[Optional[str]] = mapped_column(String(32), index=True)
+    form_type: Mapped[Optional[str]] = mapped_column(String(16))
+    filing_date: Mapped[Optional[str]] = mapped_column(String(16))
+    source_url: Mapped[Optional[str]] = mapped_column(Text)
+    text: Mapped[Optional[str]] = mapped_column(Text)
+
+
 class MdnaSection(Base):
     """Extracted MD&A (and liquidity/going-concern) text per filing for §7 drift."""
 

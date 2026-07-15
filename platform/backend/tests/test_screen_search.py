@@ -104,3 +104,28 @@ def test_backfill_seeds_from_json(tmp_path, monkeypatch):
     row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
     assert row["economic_leverage"] == 6.5
     _cleanup()
+
+
+def test_filing_notes_corpus_persisted_and_searchable():
+    from types import SimpleNamespace
+
+    from app.store import persist_filing_notes
+
+    ft = SimpleNamespace(accession_no="acc-1", form_type="10-Q", filing_date="2026-05-05",
+                         source_url="u", notes="The 2031 Notes mature on April 1, 2031.")
+    try:
+        with session_scope() as s:
+            # same filing passed twice (10-K text == schedule text) must store ONE row
+            persist_filing_notes(s, "ZZTEST", [ft, ft])
+        with session_scope() as s:
+            rows = s.query(models.FilingNotes).filter_by(ticker="ZZTEST").all()
+            assert len(rows) == 1 and "2031 Notes" in rows[0].text
+        if db.FTS_AVAILABLE:
+            r = client.get("/api/search", params={"q": "2031 Notes", "ticker": "ZZTEST"})
+            kinds = {h["source_kind"] for h in r.json()["hits"]}
+            assert "notes" in kinds
+    finally:
+        with session_scope() as s:
+            for r in s.query(models.FilingNotes).filter_by(ticker="ZZTEST").all():
+                s.delete(r)
+        _cleanup()
