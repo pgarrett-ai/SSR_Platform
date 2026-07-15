@@ -21,6 +21,14 @@ function KeyRates() {
   );
 }
 
+// $ face -> compact string for the maturity/liquidity lines.
+const fmtB = (v) =>
+  v == null ? "—" : Math.abs(v) >= 1e9 ? `$${(v / 1e9).toFixed(1)}B` : `$${Math.round(v / 1e6)}M`;
+
+// Runway shortens as the burn eats the cash: red under 6 months, amber under a year.
+const runwayColor = (m) =>
+  m == null ? "#cbd5e1" : m < 6 ? "#fb7185" : m < 12 ? "#fbbf24" : "#cbd5e1";
+
 // Company landing page: risk / leverage / recovery / flags, one card each, loading
 // independently. "What changed" compares the two most recent periods.
 
@@ -49,6 +57,7 @@ export default function OverviewPage({ ticker, years }) {
     () => simulateRecovery(ticker, null, { n_draws: 20000 }, years), [ticker, years]);
 
   const bridge = ov.data?.economic_debt_bridge;
+  const liq = ov.data?.liquidity;
   const es = hz.data?.executive_summary;
   const flags = ov.data?.forensic_flags || [];
   // PD × LGD: both payloads already load on this page, so EL is a cross-multiply here.
@@ -86,23 +95,48 @@ export default function OverviewPage({ ticker, years }) {
           </div>
         </OverviewCard>
 
-        <OverviewCard title="Capital structure" to={`/company/${ticker}/capital`}
-          loading={ov.loading} error={ov.error}>
-          <div className="flex flex-wrap items-end gap-x-6 gap-y-2">
+        <OverviewCard title={liq?.is_distressed ? "Liquidity & runway" : "Capital structure"}
+          to={`/company/${ticker}/capital`} loading={ov.loading} error={ov.error}>
+          {liq?.is_distressed ? (
+            // Negative EBITDA: leverage is n.m., so lead with how long the money lasts.
             <div>
-              <div className="font-mono text-4xl text-slate-100">
-                {bridge?.reported_leverage?.display || "—"}
-                <span className="mx-2 text-xl text-slate-500">→</span>
-                <span className="text-rose-300">{bridge?.economic_leverage?.display || "—"}</span>
+              <div className="flex flex-wrap items-end gap-x-6 gap-y-2">
+                <div>
+                  <div className="font-mono text-4xl" style={{ color: runwayColor(liq.runway_months) }}>
+                    {liq.runway_months != null ? liq.runway_months : "—"}
+                    <span className="ml-1 text-lg text-slate-500">mo</span>
+                  </div>
+                  <div className="text-[10px] uppercase tracking-wide text-slate-500">liquidity runway</div>
+                </div>
+                <div className="space-y-1 text-xs text-slate-400">
+                  <div>liquidity: <span className="font-mono text-slate-200">{liq.total_liquidity?.display || "—"}</span>
+                    <span className="text-slate-600"> (cash {liq.cash?.display || "—"}{liq.undrawn_committed ? ` + undrawn ${liq.undrawn_committed.display}` : ""})</span>
+                  </div>
+                  <div>annual burn: <span className="font-mono text-rose-300">{liq.annual_burn?.display || "—"}</span></div>
+                  <div>next maturity: <span className="font-mono text-slate-200">{liq.next_maturity ? `${fmtB(liq.next_maturity.face)} in ${liq.next_maturity.year}` : "—"}</span></div>
+                </div>
               </div>
-              <div className="text-[10px] uppercase tracking-wide text-slate-500">reported → economic leverage</div>
+              <div className="mt-2 text-[10px] text-slate-600">
+                EBITDA negative — leverage n.m.; cash + undrawn credit over free-cash-flow burn ({liq.as_of_label})
+              </div>
             </div>
-            <div className="space-y-1 text-xs text-slate-400">
-              <div>reported debt: <span className="font-mono text-slate-200">{bridge?.reported_debt?.display || "—"}</span></div>
-              <div>economic debt: <span className="font-mono text-slate-200">{bridge?.economic_debt?.display || "—"}</span></div>
-              <div>{(ov.data?.obs_items || []).length} off-balance-sheet findings</div>
+          ) : (
+            <div className="flex flex-wrap items-end gap-x-6 gap-y-2">
+              <div>
+                <div className="font-mono text-4xl text-slate-100">
+                  {bridge?.reported_leverage?.display || "—"}
+                  <span className="mx-2 text-xl text-slate-500">→</span>
+                  <span className="text-rose-300">{bridge?.economic_leverage?.display || "—"}</span>
+                </div>
+                <div className="text-[10px] uppercase tracking-wide text-slate-500">reported → economic leverage</div>
+              </div>
+              <div className="space-y-1 text-xs text-slate-400">
+                <div>reported debt: <span className="font-mono text-slate-200">{bridge?.reported_debt?.display || "—"}</span></div>
+                <div>economic debt: <span className="font-mono text-slate-200">{bridge?.economic_debt?.display || "—"}</span></div>
+                <div>{(ov.data?.obs_items || []).length} off-balance-sheet findings</div>
+              </div>
             </div>
-          </div>
+          )}
         </OverviewCard>
 
         <OverviewCard title="Recovery" to={`/company/${ticker}/recovery`}

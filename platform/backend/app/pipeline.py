@@ -426,6 +426,19 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"EBITDA box step failed: {exc}")
 
+    # --- Liquidity & runway (distressed-mode framing) — deterministic, LLM-independent ---
+    liquidity = None
+    try:
+        from .capstack.liquidity import build_liquidity
+        ebitda_v = None
+        if economic_debt_bridge and economic_debt_bridge.ebitda:
+            ebitda_v = economic_debt_bridge.ebitda.value      # canonical NI-walk EBITDA
+        elif forensic_table and forensic_table[-1].ebitda:
+            ebitda_v = forensic_table[-1].ebitda.value        # proxy fallback (LLM off)
+        liquidity = build_liquidity(forensic_table, debt_schedule, maturities, ebitda_v)
+    except Exception as exc:
+        warnings.append(f"Liquidity/runway step failed: {exc}")
+
     header = IssuerHeader(
         issuer=issuer_name,
         ticker=ticker,
@@ -457,6 +470,7 @@ def run_overview(
         obs_items=obs_items,
         covenants=covenants,
         subsidiaries=subsidiaries,
+        liquidity=liquidity,
         leverage_timeline=lev_timeline,
         maturity_wall=maturities,
         what_changed=changes,
