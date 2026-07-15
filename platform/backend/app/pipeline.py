@@ -14,9 +14,10 @@ from .capstack.bridge import build_bridge, build_ebitda_box, renormalize_spliced
 from .capstack.agreements import group_families, map_instruments
 from .capstack.covenants import extract_covenant_package, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
-from .capstack.debt_schedule import annotate_maturities, drop_retired, extract_debt_schedule
+from .capstack.debt_schedule import (annotate_maturities, drop_retired,
+                                     extract_debt_schedule, fill_maturity_from_name)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
-from .capstack.forensic import build_forensic_table, detect_flags, quarter_forensic_row
+from .capstack.forensic import build_forensic_table, detect_flags, quarter_forensic_row, total_debt
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .core.config import get_settings
@@ -27,12 +28,13 @@ from .edgar.client import (
     TickerNotFoundError,
 )
 from .edgar.documents import get_filing_text
-from .edgar.facts import build_financial_series
+from .edgar.facts import build_financial_series, fmt_money_millions
 from .core.progress import ProgressLog
 from .schemas import IssuerHeader, Overview
 from .store import (
     filing_refs,
     persist_covenants,
+    persist_filing_notes,
     persist_mdna,
     persist_obs,
     upsert_filings,
@@ -142,12 +144,13 @@ def run_overview(
 
     # --- debt schedule from dimensional XBRL — deterministic, runs with the LLM off ---
     debt_asof = None
+    debt_ft = None   # text of the SAME filing the XBRL schedule came from (10-Q ≠ latest 10-K)
     try:
         progress.emit("Building debt schedule from XBRL dimensions…", step="debt", pct=66)
         from .rates import get_key_rates
         with session_scope() as session:
             rate_map = {r["series"]: r["value"] for r in get_key_rates(session)}
-        debt_schedule, debt_asof = build_xbrl_debt_schedule(company, rate_map)
+        debt_schedule, debt_asof, debt_filing = build_xbrl_debt_schedule(company, rate_map)
         if debt_schedule:
             progress.emit(
                 f"{len(debt_schedule)} instruments from XBRL dimensions (as of {debt_asof}).",
@@ -156,8 +159,20 @@ def run_overview(
         else:
             progress.emit("No dimensioned debt in XBRL — footnote extraction will be used.",
                           step="debt", pct=67)
+        if debt_filing is not None and ft is not None and \
+                str(getattr(debt_filing, "accession_no", "")) != ft.accession_no:
+            debt_ft = get_filing_text(debt_filing)   # usually the latest 10-Q
     except Exception as exc:
         warnings.append(f"XBRL debt schedule failed: {exc}")
+    debt_ft = debt_ft or ft
+
+    # Persist the notes corpus (deterministic, LLM-independent): what we downloaded stays
+    # searchable, so gap-fill re-search and /api/search can query it later.
+    try:
+        with session_scope() as session:
+            persist_filing_notes(session, ticker, [ft, debt_ft])
+    except Exception as exc:
+        warnings.append(f"Notes corpus persistence failed: {exc}")
 
     if settings.llm_enabled:
         try:
@@ -174,11 +189,30 @@ def run_overview(
                     with session_scope() as session:
                         persist_obs(session, ticker, obs_items)
                 if debt_schedule:   # XBRL numbers stand; the LLM only annotates text
-                    ann_err = annotate_maturities(debt_schedule, ft, debt_asof)
+                    from .store import load_aliases, record_aliases
+                    with session_scope() as session:
+                        known_aliases = load_aliases(session, ticker)
+                    ann_err, learned = annotate_maturities(
+                        debt_schedule, debt_ft or ft, debt_asof, aliases=known_aliases)
                     if ann_err:
                         warnings.append(f"Maturity annotation: {ann_err}")
+                    with session_scope() as session:
+                        if learned:
+                            record_aliases(session, ticker, learned, source="fuzzy")
+                        # targeted re-search over the persisted corpus for what's still
+                        # missing — small model, snippet-scoped, alias-recording
+                        from .capstack.gapfill import gap_fill_maturities
+                        n_filled, gf_err = gap_fill_maturities(
+                            session, ticker, debt_schedule, debt_ft or ft, debt_asof,
+                            aliases=known_aliases)
+                    if n_filled:
+                        progress.emit(f"Gap-fill re-search recovered {n_filled} "
+                                      "annotation(s) from the persisted corpus.",
+                                      step="debt", pct=79)
+                    if gf_err:
+                        warnings.append(f"Gap-fill re-search: {gf_err}")
                 else:               # undimensioned issuer: legacy extraction + hard filters
-                    instruments, debt_err = extract_debt_schedule(ft)
+                    instruments, debt_err = extract_debt_schedule(debt_ft or ft)
                     debt_schedule = drop_retired(instruments, debt_asof)
                     if debt_err:
                         warnings.append(f"Debt-schedule extraction error: {debt_err}")
@@ -191,11 +225,45 @@ def run_overview(
             warnings.append(f"OBS/bridge step failed: {exc}")
             progress.emit(f"OBS/bridge step failed: {exc}", step="obs", pct=80)
 
+    # --- deterministic debt-schedule sanity passes (run with the LLM on or off) ---
+    if debt_schedule:
+        filled = fill_maturity_from_name(debt_schedule, debt_asof)
+        if filled:
+            progress.emit(f"Filled {filled} maturity year(s) from instrument names.",
+                          step="debt", pct=81)
+        # tie-out: instrument sum vs the reported balance-sheet total. A big gap means
+        # double-counted members (facility + its sub-facility) or missing instruments.
+        try:
+            if series is not None and series.years:
+                reported, _parts = total_debt(series.years[-1])
+                sched_sum = sum((i.outstanding.value or 0) for i in debt_schedule
+                                if i.outstanding and i.outstanding.value)
+                if reported and sched_sum and abs(sched_sum - reported) / reported > 0.15:
+                    warnings.append(
+                        f"Debt schedule sums to {fmt_money_millions(sched_sum)} vs "
+                        f"{fmt_money_millions(reported)} reported total debt "
+                        f"(latest FY) — instruments may overlap (a facility and its "
+                        f"sub-facility) or be missing; review the schedule citations."
+                    )
+        except Exception:
+            pass
+        missing_mat = [i.instrument for i in debt_schedule
+                       if not i.maturity and (i.outstanding and (i.outstanding.value or 0) > 0)]
+        if missing_mat:
+            warnings.append(
+                f"Maturity unknown for {len(missing_mat)} instrument(s) "
+                f"({', '.join(missing_mat[:6])}) — they are missing from the maturity wall."
+            )
+
     # --- Phase 4: covenant extraction from credit agreements / indentures (§5) ---
     credit_docs = []
     try:   # locating + fetching the exhibits is EDGAR-only — always runs (warms cache)
-        progress.emit("Locating credit agreements / indentures…", step="covenants", pct=83)
-        credit_docs = find_credit_documents(company, years)
+        from .capstack.covenants import CENSUS_MAX_CHECK, CENSUS_MAX_KEEP, CENSUS_YEARS
+        progress.emit(f"Locating credit agreements / indentures ({CENSUS_YEARS}y census)…",
+                      step="covenants", pct=83)
+        credit_docs = find_credit_documents(company, max(years, CENSUS_YEARS),
+                                            max_check=CENSUS_MAX_CHECK,
+                                            max_keep=CENSUS_MAX_KEEP)
     except Exception as exc:
         warnings.append(f"Credit-document fetch failed: {exc}")
     if settings.llm_enabled:
@@ -204,6 +272,21 @@ def run_overview(
                           step="covenants", pct=84)
             families = group_families(credit_docs)
             map_instruments(families, debt_schedule)
+            # HARD filter before any LLM spend: a family that governs no scheduled
+            # instrument and wasn't filed recently is an expired/refinanced agreement —
+            # reading it would describe debt that no longer exists. Recent unmatched
+            # families are kept as a safety valve for name-match misses.
+            import datetime as _dt
+            recent_cut = (_dt.date.today() - _dt.timedelta(days=3 * 365)).isoformat()
+            live = [f for f in families
+                    if f.governs_instruments
+                    or (f.operative.doc.filing_date or "") >= recent_cut]
+            if len(live) < len(families):
+                progress.emit(
+                    f"Dropped {len(families) - len(live)} expired agreement families "
+                    "(govern no scheduled instrument, filed >3y ago).",
+                    step="covenants", pct=84)
+            families = live
             # families that govern a known instrument first, newest first; cap LLM spend —
             # the per-doc extraction cache makes repeat live runs near-free anyway
             families.sort(key=lambda f: (bool(f.governs_instruments),

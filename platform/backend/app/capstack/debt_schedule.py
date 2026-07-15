@@ -134,6 +134,29 @@ def drop_retired(instruments: list[DebtInstrument], asof: Optional[str]) -> list
     return out
 
 
+def fill_maturity_from_name(instruments: list[DebtInstrument],
+                            asof: Optional[str] = None) -> int:
+    """Deterministic maturity fallback: '2030 Notes' names its due year; 'Notes due 2028'
+    states it outright. Facility vintage years ('2025 GIB Credit Facility') are NOT
+    maturities and are skipped — only notes/bonds carry the year-as-maturity convention.
+    Returns the number of maturities filled."""
+    asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
+    filled = 0
+    for inst in instruments:
+        if inst.maturity:
+            continue
+        name = f"{inst.instrument} {inst.xbrl_member or ''}"
+        m = re.search(r"(?:due|matur\w*)\s+.{0,12}?((?:19|20)\d{2})", name, re.I)
+        year = int(m.group(1)) if m else None
+        if year is None and inst.facility_type == "notes":
+            ys = re.findall(r"\b(20[2-6]\d)\b", name)
+            year = int(ys[0]) if ys else None
+        if year and (asof_year is None or year >= asof_year):
+            inst.maturity = str(year)
+            filled += 1
+    return filled
+
+
 _ANNOTATE_SYSTEM = (
     "You are annotating an issuer's debt schedule. The instrument list and all amounts are "
     "already known from XBRL — do NOT supply numbers. For each listed instrument, find its "
@@ -164,15 +187,81 @@ _ANNOTATE_SCHEMA = {
 }
 
 
-def annotate_maturities(instruments: list[DebtInstrument], ft: FilingText,
-                        asof: Optional[str] = None) -> Optional[str]:
-    """One LLM call: maturity strings + floating-rate bases for the XBRL instrument list.
-    Mutates the instruments in place; returns an error string or None."""
-    if not instruments:
+_MATCH_STOPWORDS = {"the", "due", "and", "of", "a", "an"}
+
+
+def _name_tokens(s: str) -> set[str]:
+    return {t for t in re.split(r"[^a-z0-9.%]+", (s or "").lower())
+            if t and t not in _MATCH_STOPWORDS}
+
+
+def match_annotation(inst: DebtInstrument, by_name: dict[str, dict],
+                     aliases: Optional[dict[str, list[str]]] = None) -> Optional[dict]:
+    """Find the annotation for an instrument: exact name -> learned alias -> unambiguous
+    token containment (the terse XBRL label '2030 Notes' is a subset of the prose
+    '5.00% Convertible Senior Notes due 2030'). Ambiguous fuzzy matches return None."""
+    ann = by_name.get(inst.instrument.strip().lower())
+    if ann:
+        return ann
+    for alias in (aliases or {}).get(inst.xbrl_member or "", []):
+        ann = by_name.get(alias.strip().lower())
+        if ann:
+            return ann
+    inst_tokens = _name_tokens(inst.instrument)
+    if not inst_tokens:
         return None
+    hits = [a for name, a in by_name.items()
+            if inst_tokens <= _name_tokens(name) or _name_tokens(name) <= inst_tokens]
+    return hits[0] if len(hits) == 1 else None
+
+
+def _apply_annotations(instruments: list[DebtInstrument], annotations: list[dict],
+                       ft: FilingText, asof: Optional[str],
+                       aliases: Optional[dict[str, list[str]]] = None,
+                       section: str = "Long-term debt footnote",
+                       ) -> list[tuple[str, str]]:
+    """Attach maturity/rate-base annotations to their instruments. Returns the
+    (xbrl_member, annotation name) pairs that matched non-exactly — the aliases worth
+    remembering for the next run."""
+    asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
+    by_name = {a.get("instrument", "").strip().lower(): a for a in annotations}
+    learned: list[tuple[str, str]] = []
+    for inst in instruments:
+        ann = match_annotation(inst, by_name, aliases)
+        if not ann:
+            continue
+        ann_name = (ann.get("instrument") or "").strip()
+        if ann_name and ann_name.lower() != inst.instrument.strip().lower() and inst.xbrl_member:
+            learned.append((inst.xbrl_member, ann_name))
+        maturity = ann.get("maturity")
+        if maturity and asof_year:
+            years = [int(y) for y in re.findall(r"\b((?:19|20)\d{2})\b", str(maturity))]
+            if years and max(years) < asof_year:   # sanity: annotation contradicts carrying > 0
+                maturity = None
+        if maturity and not inst.maturity:
+            inst.maturity = maturity
+            inst.citation = Citation(
+                accession_no=ft.accession_no, form_type=ft.form_type,
+                filing_date=ft.filing_date, section=section,
+                source_url=ft.source_url, quote=ann.get("quote", ""),
+            )
+        base = (ann.get("rate_base") or "").strip()
+        if base and inst.rate_type == "floating":
+            inst.rate_base = base
+    return learned
+
+
+def annotate_maturities(instruments: list[DebtInstrument], ft: FilingText,
+                        asof: Optional[str] = None,
+                        aliases: Optional[dict[str, list[str]]] = None,
+                        ) -> tuple[Optional[str], list[tuple[str, str]]]:
+    """One LLM call: maturity strings + floating-rate bases for the XBRL instrument list.
+    Mutates the instruments in place; returns (error-or-None, learned alias pairs)."""
+    if not instruments:
+        return None, []
     window = ft.debt_window()
     if not window:
-        return "no debt footnote text"
+        return "no debt footnote text", []
     names = "\n".join(f"- {i.instrument}" for i in instruments)
     user = (
         f"Filing: {ft.form_type} filed {ft.filing_date} (period {ft.period_of_report}).\n"
@@ -189,29 +278,8 @@ def annotate_maturities(instruments: list[DebtInstrument], ft: FilingText,
         max_tokens=4000,
     )
     if result is None:
-        return "LLM unavailable"
+        return "LLM unavailable", []
     if "__error__" in result:
-        return result["__error__"]
-
-    asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
-    by_name = {a.get("instrument", "").strip().lower(): a for a in result.get("annotations", [])}
-    for inst in instruments:
-        ann = by_name.get(inst.instrument.strip().lower())
-        if not ann:
-            continue
-        maturity = ann.get("maturity")
-        if maturity and asof_year:
-            years = [int(y) for y in re.findall(r"\b((?:19|20)\d{2})\b", str(maturity))]
-            if years and max(years) < asof_year:   # sanity: annotation contradicts carrying > 0
-                maturity = None
-        if maturity:
-            inst.maturity = maturity
-            inst.citation = Citation(
-                accession_no=ft.accession_no, form_type=ft.form_type,
-                filing_date=ft.filing_date, section="Long-term debt footnote",
-                source_url=ft.source_url, quote=ann.get("quote", ""),
-            )
-        base = (ann.get("rate_base") or "").strip()
-        if base and inst.rate_type == "floating":
-            inst.rate_base = base
-    return None
+        return result["__error__"], []
+    learned = _apply_annotations(instruments, result.get("annotations", []), ft, asof, aliases)
+    return None, learned

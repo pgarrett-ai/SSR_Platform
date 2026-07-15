@@ -3,7 +3,8 @@ display, and the tranche-coupon preference order. Canned facts from the AAL prob
 from __future__ import annotations
 
 from app.capstack.debt_schedule import drop_retired
-from app.capstack.debt_xbrl import _instrument_from_member, group_debt_facts, rate_display
+from app.capstack.debt_xbrl import (_instrument_from_member, facility_capacity,
+                                    group_debt_facts, prettify_member, rate_display)
 from app.fulcrum.adapter import _parse_coupon, _tranche_coupon
 from app.schemas import CitedValue, DebtInstrument
 
@@ -56,6 +57,91 @@ def test_group_latest_instant_and_entity_preference():
                               "aal:STLoanMember", "aal:Notes575Member"}
     assert float(by_member["aal:TL2013Member"]["numeric_value"]) == 970e6   # not the comparative
     assert not by_member["aal:Notes575Member"].get("dim_dei_LegalEntityAxis")  # consolidated wins
+
+
+# LCID-shaped facts: converts under LongTermDebt/ConvertibleDebt (dual-tagged), an undrawn
+# revolver, a commitment-only amendment member, and two facilities sharing a generic label.
+LCID_FACTS = [
+    _fact("us-gaap:LongTermDebt", 1085e6, "lcid:A2030NotesMember",
+          dimension_member_label="2030 Notes"),
+    _fact("us-gaap:ConvertibleDebt", 1085e6, "lcid:A2030NotesMember",
+          dimension_member_label="2030 Notes"),
+    _fact("us-gaap:ShortTermBorrowings", 1890e6, "lcid:A2025GIBCreditFacilityMember",
+          dimension_member_label="Revolving Credit Facility"),
+    _fact("us-gaap:ShortTermBorrowings", 503.5e6, "lcid:GIBCreditFacilityMember",
+          dimension_member_label="Revolving Credit Facility"),
+    _fact("us-gaap:LongTermDebt", 0, "lcid:ABLCreditFacilityMember",
+          dimension_member_label="Revolving Credit Facility"),
+    _fact("us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity", 610e6,
+          "lcid:ABLCreditFacilityMember"),
+    # commitment tagged at a LATER (subsequent-event) instant, on a member with no carrying
+    _fact("us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity", 2500e6,
+          "lcid:DDTLAmendmentMember", instant="2026-04-30",
+          dimension_member_label="Secured Debt"),
+    _fact("us-gaap:LongTermDebt", 0, "lcid:SIDFMember",
+          dimension_member_label="SIDF"),   # zero balance, no capacity -> dropped
+]
+
+
+def test_broadened_concepts_and_asof_ignores_capacity_instants():
+    by_member, debt, asof = group_debt_facts(LCID_FACTS)
+    assert asof == "2026-03-31"          # the 2026-04-30 commitment must not skew as-of
+    assert "lcid:A2030NotesMember" in by_member          # LongTermDebt now counts
+    assert float(by_member["lcid:A2030NotesMember"]["numeric_value"]) == 1085e6
+    cap = facility_capacity(debt)
+    assert float(cap["lcid:ABLCreditFacilityMember"]["undrawn"]["numeric_value"]) == 610e6
+    assert float(cap["lcid:DDTLAmendmentMember"]["commitment"]["numeric_value"]) == 2500e6
+
+
+def test_prettify_and_label_collision():
+    assert prettify_member("lcid:A2025GIBCreditFacilityMember") == "2025 GIB Credit Facility"
+    assert prettify_member("lcid:DDTLCreditFacilityMember") == "DDTL Credit Facility"
+    by_member, debt, _ = group_debt_facts(LCID_FACTS)
+    used: set[str] = set()
+    names = []
+    for member in ("lcid:A2025GIBCreditFacilityMember", "lcid:GIBCreditFacilityMember"):
+        rel = [f for f in debt if f.get("dim_us-gaap_DebtInstrumentAxis") == member]
+        inst = _instrument_from_member(member, by_member[member], rel, None, used_labels=used)
+        used.add(inst.instrument)
+        names.append(inst.instrument)
+    # the generic shared label must not survive as two identical rows
+    assert names == ["2025 GIB Credit Facility", "GIB Credit Facility"]
+
+
+def test_undrawn_facility_kept_and_convertible_seniority():
+    by_member, debt, _ = group_debt_facts(LCID_FACTS)
+    cap = facility_capacity(debt)
+    abl = _instrument_from_member(
+        "lcid:ABLCreditFacilityMember", by_member["lcid:ABLCreditFacilityMember"],
+        [f for f in debt if f.get("dim_us-gaap_DebtInstrumentAxis") == "lcid:ABLCreditFacilityMember"],
+        None, used_labels=set(), capacity=cap.get("lcid:ABLCreditFacilityMember"))
+    assert abl.facility_type == "revolver"
+    assert abl.undrawn is not None and abl.undrawn.value == 610e6
+    notes = _instrument_from_member(
+        "lcid:A2030NotesMember", by_member["lcid:A2030NotesMember"],
+        [f for f in debt if f.get("dim_us-gaap_DebtInstrumentAxis") == "lcid:A2030NotesMember"],
+        None, used_labels=set())
+    assert notes.seniority == "convertible"      # from the ConvertibleDebt concept
+    assert notes.facility_type == "notes"
+
+
+def test_fill_maturity_from_name():
+    from app.capstack.debt_schedule import fill_maturity_from_name
+
+    insts = [
+        DebtInstrument(instrument="2030 Notes", facility_type="notes"),
+        DebtInstrument(instrument="2025 GIB Credit Facility", facility_type="revolver"),
+        DebtInstrument(instrument="Senior Notes due 2028", facility_type="notes"),
+        DebtInstrument(instrument="Term Loan", facility_type="term loan"),
+        DebtInstrument(instrument="2026 Notes", facility_type="notes", maturity="December 2026"),
+    ]
+    n = fill_maturity_from_name(insts, "2026-03-31")
+    assert n == 2
+    assert insts[0].maturity == "2030"
+    assert insts[1].maturity is None        # facility vintage year is not a maturity
+    assert insts[2].maturity == "2028"
+    assert insts[3].maturity is None
+    assert insts[4].maturity == "December 2026"   # existing annotation untouched
 
 
 def test_instrument_fields_floater_and_range():

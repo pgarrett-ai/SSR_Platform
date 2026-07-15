@@ -33,20 +33,24 @@ def extract_structured(
     tool_description: str,
     input_schema: dict[str, Any],
     max_tokens: int = 4096,
+    model: Optional[str] = None,
 ) -> Optional[dict[str, Any]]:
     """Force a single tool call and return its input dict, or None on failure.
+
+    `model` overrides the configured default for cheap, narrow tasks (e.g. the gap-fill
+    re-search runs on claude-haiku-4-5); big document extractions stay on the default.
 
     Note: newer models (e.g. claude-opus-4-8) deprecate the `temperature` parameter and run
     deterministically by default, so we don't send it.
     """
     try:
-        client, model = _client()
+        client, default_model = _client()
     except LLMUnavailable:
         return None
 
     try:
         resp = client.messages.create(
-            model=model,
+            model=model or default_model,
             max_tokens=max_tokens,
             system=system,
             tools=[

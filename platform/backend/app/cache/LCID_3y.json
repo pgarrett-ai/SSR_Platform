@@ -6,9 +6,9 @@
     "cik": "1811210",
     "years": 3,
     "n_filings": 76,
-    "last_updated": "2026-07-15T15:01:26.452082+00:00",
+    "last_updated": "2026-07-15T15:52:34.114573+00:00",
     "from_cache": false,
-    "llm_enabled": false
+    "llm_enabled": true
   },
   "economic_debt_bridge": {
     "lines": [
@@ -84,10 +84,10 @@
             "form_type": "10-K",
             "filing_date": "2026-02-24",
             "exhibit": null,
-            "section": "Note 12 - Indemnification",
+            "section": "Note 12 - Commitments and Contingencies - Indemnification",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-            "quote": "The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
+            "quote": "The Company has indemnification obligations with respect to letters of credit and surety bond primarily used as security against facility leases, utilities infrastructure and other agreements that require securitization. The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
           },
           "derived": false,
           "formula": null,
@@ -110,7 +110,7 @@
             "section": "Note 12 - Commitments and Contingencies",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-            "quote": "the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion, calculated using the current base prices ... Total $2,626,674"
+            "quote": "As of December 31, 2025, pursuant to the terms of agreements the Company entered into in connection with the supply of lithium-ion battery cells, the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion... Total$2,626,674"
           },
           "derived": false,
           "formula": null,
@@ -297,17 +297,11 @@
       "formula": "net income -$2,698M + interest $95M + taxes -$2M + D&A $451M (FY2025)",
       "note": null
     },
-    "addbacks": [
-      {
-        "category": "Integration Costs (non-recurring integration costs in connection with any Permitted Acquisition or similar Investment)",
-        "label": "Integration Costs (non-recurring integration costs in connection with any Permitted Acquisition or similar Investment)",
-        "amount": null
-      }
-    ]
+    "addbacks": []
   },
   "debt_schedule": [
     {
-      "instrument": "Revolving Credit Facility",
+      "instrument": "2025 GIB Credit Facility",
       "principal": null,
       "outstanding": {
         "value": 1890000000.0,
@@ -321,26 +315,168 @@
           "section": "XBRL us-gaap:ShortTermBorrowings [lcid:A2025GIBCreditFacilityMember]",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "Revolving Credit Facility: $1,890M as of 2026-03-31 [us-gaap:ShortTermBorrowings, lcid:A2025GIBCreditFacilityMember]"
+          "quote": "2025 GIB Credit Facility: $1,890M as of 2026-03-31 [us-gaap:ShortTermBorrowings, lcid:A2025GIBCreditFacilityMember]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
-      "coupon": "SOFR + 1.40% → 5.00%",
-      "maturity": null,
+      "coupon": "SOFR + 1.40% → 5.03%",
+      "maturity": "February 24, 2028",
       "secured": null,
       "seniority": null,
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "gap-fill re-search (persisted corpus)",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "On February 24, 2025, Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": 1.4,
       "effective_rate_pct": null,
       "rate_type": "floating",
-      "rate_base": "SOFR",
+      "rate_base": "SAIBOR",
       "xbrl_member": "lcid:A2025GIBCreditFacilityMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "credit agreement dated November 4, 2025",
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 1900000000.0,
+        "display": "$1,900M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:A2025GIBCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2025 GIB Credit Facility: $1,900M as of 2025-02-28 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:A2025GIBCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 8700000.0,
+        "display": "$9M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [lcid:A2025GIBCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2025 GIB Credit Facility: $9M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, lcid:A2025GIBCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      }
+    },
+    {
+      "instrument": "2030 Notes",
+      "principal": null,
+      "outstanding": {
+        "value": 1085000000.0,
+        "display": "$1,085M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [lcid:A2030NotesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2030 Notes: $1,085M as of 2026-03-31 [us-gaap:LongTermDebt, lcid:A2030NotesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": "5.00%",
+      "maturity": "April 2030",
+      "secured": false,
+      "seniority": "convertible",
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "The 2030 Notes will mature on April 1, 2030, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+      },
+      "coupon_pct": 5.0,
+      "coupon_pct_max": 5.0,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": "fixed",
+      "rate_base": null,
+      "xbrl_member": "lcid:A2030NotesMember",
+      "obligor": null,
+      "governed_by": "5% notes due 2030",
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null
+    },
+    {
+      "instrument": "2031 Notes",
+      "principal": null,
+      "outstanding": {
+        "value": 962800000.0,
+        "display": "$963M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [lcid:A2031NotesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2031 Notes: $963M as of 2026-03-31 [us-gaap:LongTermDebt, lcid:A2031NotesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": "7.00%",
+      "maturity": "November 2031",
+      "secured": false,
+      "seniority": "convertible",
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "The 2031 Notes will mature on November 1, 2031, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+      },
+      "coupon_pct": 7.0,
+      "coupon_pct_max": 7.0,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": "fixed",
+      "rate_base": null,
+      "xbrl_member": "lcid:A2031NotesMember",
+      "obligor": null,
+      "governed_by": "7% notes due 2031",
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null
     },
     {
       "instrument": "GIB credit facility",
@@ -364,10 +500,19 @@
         "note": null
       },
       "coupon": null,
-      "maturity": null,
+      "maturity": "February 24, 2028",
       "secured": null,
       "seniority": null,
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "gap-fill re-search (persisted corpus)",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -376,7 +521,10 @@
       "rate_base": null,
       "xbrl_member": "lcid:GIBCreditFacilityMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": null,
+      "facility_type": "credit facility",
+      "commitment": null,
+      "undrawn": null
     },
     {
       "instrument": "2026 Notes",
@@ -400,10 +548,19 @@
         "note": null
       },
       "coupon": "1.25%",
-      "maturity": null,
+      "maturity": "December 2026",
       "secured": false,
       "seniority": "convertible",
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "The 2026 Notes will mature on December 15, 2026, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+      },
       "coupon_pct": 1.25,
       "coupon_pct_max": 1.25,
       "spread_pct": null,
@@ -412,7 +569,295 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2026NotesMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "credit agreement dated April 14, 2026",
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null
+    },
+    {
+      "instrument": "ABL Credit Facility",
+      "principal": null,
+      "outstanding": {
+        "value": 0.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [lcid:ABLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "ABL Credit Facility: $0M as of 2026-03-31 [us-gaap:LongTermDebt, lcid:ABLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "lcid:ABLCreditFacilityMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 1000000000.0,
+        "display": "$1,000M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:ABLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "ABL Credit Facility: $1,000M as of 2022-12-31 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:ABLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 610000000.0,
+        "display": "$610M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [lcid:ABLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "ABL Credit Facility: $610M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, lcid:ABLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      }
+    },
+    {
+      "instrument": "DDTL Credit Facility",
+      "principal": null,
+      "outstanding": {
+        "value": 0.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [lcid:DDTLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "DDTL Credit Facility: $0M as of 2026-03-31 [us-gaap:LongTermDebt, lcid:DDTLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "lcid:DDTLCreditFacilityMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": null,
+      "commitment": {
+        "value": 1980000000.0,
+        "display": "$1,980M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:DDTLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "DDTL Credit Facility: $1,980M as of 2025-11-30 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:DDTLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null
+    },
+    {
+      "instrument": "2025 DDTL Credit Facility",
+      "principal": null,
+      "outstanding": null,
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "lcid:A2025DDTLCreditFacilityMember",
+      "obligor": null,
+      "governed_by": "credit agreement dated November 4, 2025",
+      "facility_type": null,
+      "commitment": {
+        "value": 1980000000.0,
+        "display": "$1,980M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:A2025DDTLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2025 DDTL Credit Facility: $1,980M as of 2025-11-04 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:A2025DDTLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null
+    },
+    {
+      "instrument": "GIB Facility Agreement",
+      "principal": null,
+      "outstanding": null,
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "lcid:GIBFacilityAgreementMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 1000000000.0,
+        "display": "$1,000M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:GIBFacilityAgreementMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "GIB Facility Agreement: $1,000M as of 2022-04-29 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:GIBFacilityAgreementMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null
+    },
+    {
+      "instrument": "2023 Amended GIB Facility Agreement",
+      "principal": null,
+      "outstanding": null,
+      "coupon": "SOFR + 1.40% → 5.03%",
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": 1.4,
+      "effective_rate_pct": null,
+      "rate_type": "floating",
+      "rate_base": "SOFR",
+      "xbrl_member": "lcid:A2023AmendedGIBFacilityAgreementMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 1000000000.0,
+        "display": "$1,000M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:A2023AmendedGIBFacilityAgreementMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2023 Amended GIB Facility Agreement: $1,000M as of 2023-03-12 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:A2023AmendedGIBFacilityAgreementMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null
+    },
+    {
+      "instrument": "DDTL Amendment",
+      "principal": null,
+      "outstanding": null,
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "lcid:DDTLAmendmentMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": null,
+      "commitment": {
+        "value": 2500000000.0,
+        "display": "$2,500M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:DDTLAmendmentMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "DDTL Amendment: $2,500M as of 2026-04-30 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:DDTLAmendmentMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null
     }
   ],
   "debt_schedule_asof": "2026-03-31",
@@ -1261,7 +1706,7 @@
           "section": "Note 12 - Commitments and Contingencies",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion, calculated using the current base prices ... Total $2,626,674"
+          "quote": "As of December 31, 2025, pursuant to the terms of agreements the Company entered into in connection with the supply of lithium-ion battery cells, the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion... Total$2,626,674"
         },
         "derived": false,
         "formula": null,
@@ -1294,13 +1739,13 @@
         "formula": "gross $2,627M − tax effect $3M",
         "note": null
       },
-      "recourse": "unknown",
+      "recourse": "recourse",
       "include_in_bridge": true,
       "notes": "Debt-like obligation added to reach economic debt."
     },
     {
       "category": "take_or_pay",
-      "label": "AMP-1 and AMP-2 plant and equipment purchase commitments (open POs)",
+      "label": "AMP-1 and AMP-2 plant and equipment purchase commitments",
       "amount": {
         "value": 900000000.0,
         "display": "$900M",
@@ -1346,13 +1791,13 @@
         "formula": "gross $900M − tax effect $1M",
         "note": null
       },
-      "recourse": "unknown",
+      "recourse": "recourse",
       "include_in_bridge": true,
       "notes": "Debt-like obligation added to reach economic debt."
     },
     {
       "category": "guarantee",
-      "label": "Letters of credit / surety bond indemnification obligations",
+      "label": "Indemnification obligations (letters of credit and surety bonds)",
       "amount": {
         "value": 130900000.0,
         "display": "$131M",
@@ -1362,10 +1807,10 @@
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 12 - Indemnification",
+          "section": "Note 12 - Commitments and Contingencies - Indemnification",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
+          "quote": "The Company has indemnification obligations with respect to letters of credit and surety bond primarily used as security against facility leases, utilities infrastructure and other agreements that require securitization. The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
         },
         "derived": false,
         "formula": null,
@@ -1404,173 +1849,27 @@
     },
     {
       "category": "guarantee",
-      "label": "Outstanding letters of credit under ABL Credit Facility",
-      "amount": {
-        "value": 104100000.0,
-        "display": "$104M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-011053",
-          "form_type": "10-K",
-          "filing_date": "2026-02-24",
-          "exhibit": null,
-          "section": "Note 6 - Debt (ABL Credit Facility)",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "Outstanding letters of credit under the ABL Credit Facility were $104.1 million and $56.9 million as of December 31, 2025 and 2024, respectively."
-        },
-        "derived": false,
-        "formula": null,
-        "note": "Outstanding letters of credit reduce ABL availability but no borrowings drawn; these secure obligations that may overlap with the indemnification obligations disclosed above. Informational; not added to avoid double-counting."
-      },
-      "tax_effect": {
-        "value": 104100.0,
-        "display": "$0M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-011053",
-          "form_type": "10-K",
-          "filing_date": "2026-02-24",
-          "exhibit": null,
-          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
-        },
-        "derived": true,
-        "formula": "gross $104M × effective tax rate 0.1%",
-        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
-      },
-      "net": {
-        "value": 103995900.0,
-        "display": "$104M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "gross $104M − tax effect $0M",
-        "note": null
-      },
-      "recourse": "recourse",
-      "include_in_bridge": false,
-      "notes": "Outstanding letters of credit reduce ABL availability but no borrowings drawn; these secure obligations that may overlap with the indemnification obligations disclosed above. Informational; not added to avoid double-counting."
-    },
-    {
-      "category": "guarantee",
       "label": "General indemnification provisions (customers, vendors, directors, officers)",
       "amount": null,
       "tax_effect": null,
       "net": null,
       "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "Maximum potential future payments are indeterminable and no amount disclosed; cannot be quantified and company has never paid a material claim. Informational only."
+      "notes": "Amount is indeterminable and no material claims ever paid. Disclosed without a dollar amount; informational only, not included in bridge."
     },
     {
-      "category": "related_party",
-      "label": "Related-party lease - KAEC manufacturing plant (Saudi Arabia)",
-      "amount": {
-        "value": 6500000.0,
-        "display": "$6M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-011053",
-          "form_type": "10-K",
-          "filing_date": "2026-02-24",
-          "exhibit": null,
-          "section": "Note 16 - Related Party Transactions (Leases)",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "The lease liability was $6.5 million and $6.1 million as of December 31, 2025 and 2024, respectively. The right-of-use asset and lease liability were recorded in right-of-use assets and other long-term liabilities in the consolidated balance sheets"
-        },
-        "derived": false,
-        "formula": null,
-        "note": "Related-party operating lease liability already recorded within other long-term liabilities and included in the total operating lease liabilities captured above; excluded to avoid double-counting."
-      },
-      "tax_effect": {
-        "value": 6500.0,
-        "display": "$0M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-011053",
-          "form_type": "10-K",
-          "filing_date": "2026-02-24",
-          "exhibit": null,
-          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
-        },
-        "derived": true,
-        "formula": "gross $6M × effective tax rate 0.1%",
-        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
-      },
-      "net": {
-        "value": 6493500.0,
-        "display": "$6M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "gross $6M − tax effect $0M",
-        "note": null
-      },
-      "recourse": "recourse",
+      "category": "litigation_env",
+      "label": "Securities and derivative litigation (In re Lucid Group Securities Litigation)",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "Related-party operating lease liability already recorded within other long-term liabilities and included in the total operating lease liabilities captured above; excluded to avoid double-counting."
+      "notes": "No dollar amount disclosed; company considers matters not material. Included as informational with null amount; not in bridge."
     },
     {
       "category": "related_party",
-      "label": "Related-party lease - KAFD corporate office (Saudi Arabia)",
-      "amount": {
-        "value": 2400000.0,
-        "display": "$2M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-011053",
-          "form_type": "10-K",
-          "filing_date": "2026-02-24",
-          "exhibit": null,
-          "section": "Note 16 - Related Party Transactions (Leases)",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "The lease liability was $2.4 million as of December 31, 2025 and 2024, respectively. The right-of-use asset and lease liability were recorded in right-of-use assets and primarily in other long-term liabilities in the consolidated balance sheets"
-        },
-        "derived": false,
-        "formula": null,
-        "note": "Related-party lease liability already recorded within lease liabilities and captured in total operating lease liabilities; excluded to avoid double-counting."
-      },
-      "tax_effect": {
-        "value": 2400.0,
-        "display": "$0M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-011053",
-          "form_type": "10-K",
-          "filing_date": "2026-02-24",
-          "exhibit": null,
-          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
-        },
-        "derived": true,
-        "formula": "gross $2M × effective tax rate 0.1%",
-        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
-      },
-      "net": {
-        "value": 2397600.0,
-        "display": "$2M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "gross $2M − tax effect $0M",
-        "note": null
-      },
-      "recourse": "recourse",
-      "include_in_bridge": false,
-      "notes": "Related-party lease liability already recorded within lease liabilities and captured in total operating lease liabilities; excluded to avoid double-counting."
-    },
-    {
-      "category": "related_party",
-      "label": "SIDF Loan Agreement undrawn commitment (related party)",
+      "label": "SIDF Loan Agreement (committed but undrawn related-party facility)",
       "amount": {
         "value": 1400000000.0,
         "display": "$1,400M",
@@ -1580,14 +1879,14 @@
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 6 - Debt / Note 16 (SIDF Loan Agreement)",
+          "section": "Note 6 - Debt / Note 16 - Related Party Transactions",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "SIDF has committed to provide the SIDF Loans to Lucid LLC in an aggregate principal amount of up to SAR 5.19 billion (approximately $1.4 billion) ... As of December 31, 2025 and 2024, no amount was outstanding under the SIDF Loan Agreement. Obligations under the SIDF Loan Agreement do not extend to the Company or any of its other subsidiaries."
+          "quote": "SIDF has committed to provide the SIDF Loans to Lucid LLC in an aggregate principal amount of up to SAR 5.19 billion (approximately $1.4 billion)... As of December 31, 2025 and 2024, no amount was outstanding under the SIDF Loan Agreement. ... Obligations under the SIDF Loan Agreement do not extend to the Company or any of its other subsidiaries."
         },
         "derived": false,
         "formula": null,
-        "note": "Committed but undrawn facility - no amount outstanding as of 2025-12-31; obligations do not extend to the Company or other subsidiaries. Not a current claim; informational."
+        "note": "Undrawn committed facility with no amount outstanding; not a current claim. Non-recourse to the parent. Informational, not included in bridge."
       },
       "tax_effect": {
         "value": 1400000.0,
@@ -1618,11 +1917,11 @@
       },
       "recourse": "nonrecourse",
       "include_in_bridge": false,
-      "notes": "Committed but undrawn facility - no amount outstanding as of 2025-12-31; obligations do not extend to the Company or other subsidiaries. Not a current claim; informational."
+      "notes": "Undrawn committed facility with no amount outstanding; not a current claim. Non-recourse to the parent. Informational, not included in bridge."
     },
     {
       "category": "related_party",
-      "label": "SIDF service fees over term of loans",
+      "label": "SIDF service fees over term of loans (contingent on drawdown)",
       "amount": {
         "value": 472000000.0,
         "display": "$472M",
@@ -1632,14 +1931,14 @@
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 6 - Debt (SIDF Loan Agreement)",
+          "section": "Note 6 - Debt",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
           "quote": "Lucid LLC will be required to pay SIDF service fees, consisting of follow-up and technical evaluation fees, ranging, in aggregate, from SAR 415 million (approximately $110.7 million) to SAR 1.77 billion (approximately $472.0 million), over the term of the SIDF Loans."
         },
         "derived": false,
         "formula": null,
-        "note": "Service fees are contingent on drawing the SIDF loans, which have zero balance; conditional future obligation, not a current claim. Recording the upper-bound figure for reference only."
+        "note": "Service fees contingent on drawing loans which are currently undrawn; not yet an obligation. Recorded upper-bound amount for reference. Not included in bridge."
       },
       "tax_effect": {
         "value": 472000.0,
@@ -1670,17 +1969,17 @@
       },
       "recourse": "nonrecourse",
       "include_in_bridge": false,
-      "notes": "Service fees are contingent on drawing the SIDF loans, which have zero balance; conditional future obligation, not a current claim. Recording the upper-bound figure for reference only."
+      "notes": "Service fees contingent on drawing loans which are currently undrawn; not yet an obligation. Recorded upper-bound amount for reference. Not included in bridge."
     },
     {
-      "category": "litigation_env",
-      "label": "Securities class action and derivative litigation",
+      "category": "related_party",
+      "label": "Ayar prepaid forward transaction fee (2030 & 2031 Notes)",
       "amount": null,
       "tax_effect": null,
       "net": null,
-      "recourse": "unknown",
+      "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "No reserve amount disclosed and company deems matters not material; unquantifiable contingency, informational only."
+      "notes": "The Company is not a party to the prepaid forward transactions themselves; only owes an immaterial periodic fee. No material liability; informational only."
     }
   ],
   "covenants": [
@@ -1757,9 +2056,11 @@
       "operative_date": "2025-11-17",
       "amendment_count": 0,
       "base_missing": false,
-      "governs_instruments": [],
+      "governs_instruments": [
+        "2031 Notes"
+      ],
       "admin_agent": null,
-      "trustee": "U.S. Bank Trust Company, National Association",
+      "trustee": "U.S. BANK TRUST COMPANY, NATIONAL ASSOCIATION",
       "collateral_agent": null,
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
       "guarantors": null,
@@ -1822,7 +2123,10 @@
       "operative_date": "2025-11-05",
       "amendment_count": 1,
       "base_missing": true,
-      "governs_instruments": [],
+      "governs_instruments": [
+        "2025 GIB Credit Facility",
+        "2025 DDTL Credit Facility"
+      ],
       "admin_agent": "Ayar Third Investment Company",
       "trustee": null,
       "collateral_agent": null,
@@ -1887,7 +2191,9 @@
       "operative_date": "2025-04-08",
       "amendment_count": 0,
       "base_missing": false,
-      "governs_instruments": [],
+      "governs_instruments": [
+        "2030 Notes"
+      ],
       "admin_agent": null,
       "trustee": "U.S. Bank Trust Company, National Association",
       "collateral_agent": null,
@@ -1957,68 +2263,66 @@
       "trustee": null,
       "collateral_agent": null,
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "The Subsidiary Guarantors (as defined) — i.e., subsidiaries required to guarantee under Section 5.13, excluding any \"Excluded Subsidiary\" (which includes Foreign Holdcos, Foreign Subsidiaries, CFC Domestic Subsidiaries, Unrestricted Subsidiaries, subsidiaries owning only Intellectual Property with no Permitted Additional Indebtedness, Limited Purpose Subsidiaries, and others). Initial Subsidiary Guarantors listed on Schedule 1.01(a).",
+      "guarantors": "The Subsidiary Guarantors — being the wholly-owned subsidiaries that are not Excluded Subsidiaries; Foreign Subsidiaries, Foreign Holdcos, Unrestricted Subsidiaries, Limited Purpose Subsidiaries and IP-only subsidiaries are excluded, with the Borrower having discretion to designate any Excluded Subsidiary as a Guarantor (Schedule 1.01(a) lists the Subsidiary Guarantors).",
       "financial_covenants": [
         {
-          "kind": "Liquidity (minimum liquidity covenant, likely applicable given the defined term)",
-          "threshold": "Not specified in the excerpt — only the definition of 'Liquidity' is provided (Availability under the ABL Credit Agreement plus unrestricted cash and Permitted Investments, with Foreign Liquidity capped at 25% of all Liquidity); the numeric minimum threshold and test frequency appear in the covenant article (Article VI) not included in the excerpt.",
-          "test_frequency": "not stated in excerpt",
+          "kind": "Minimum Liquidity (financial-condition metric referenced in definitions; the maintenance covenant clause itself, Section 6.x, was not included in the excerpt)",
+          "threshold": "Not stated in the provided text — the excerpt defines 'Liquidity' (Availability under the ABL plus unrestricted cash/Permitted Investments, with Foreign Liquidity capped at 25%) but does not include the operative covenant threshold.",
+          "test_frequency": "Not stated in the provided text",
           "springing_trigger": null,
-          "quote": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries ... provided that the aggregate amount of unrestricted cash and unrestricted Permitted Investments of Foreign Subsidiaries shall not at any time exceed 25% of all Liquidity"
+          "quote": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries"
         }
       ],
       "baskets": [
         {
-          "name": "Material Debt threshold (cross-default / materiality peg, not a basket per se)",
+          "name": "Material Debt threshold (cross-default reference, not a basket per se)",
           "value": "$200,000,000 aggregate principal amount of Money Borrowed",
           "quote": "Money Borrowed of any one or more of the Loan Parties or any of their respective Restricted Subsidiaries in an aggregate principal amount in excess of $200,000,000"
         },
         {
-          "name": "Aggregate Delayed Draw Term Commitment (facility size)",
-          "value": "$750,000,000",
-          "quote": "As of the Effective Date, the Aggregate Delayed Draw Commitment is $750,000,000."
+          "name": "Immaterial Subsidiary threshold (assets / revenues)",
+          "value": "5.0% of Consolidated Total Assets (assets) and 5.0% of consolidated total revenues",
+          "quote": "did not, as of the most recently ended Test Period, have total assets with a value in excess of 5.0% of Consolidated Total Assets and (ii) did not, during the most recently ended Test Period, have revenues in excess of 5.0% of the consolidated total revenues"
         },
         {
-          "name": "Immaterial Subsidiary threshold",
-          "value": "5.0% of Consolidated Total Assets / 5.0% of consolidated total revenues",
-          "quote": "did not, as of the most recently ended Test Period, have total assets with a value in excess of 5.0% of Consolidated Total Assets and (ii) did not, during the most recently ended Test Period, have revenues in excess of 5.0% of the consolidated total revenues"
+          "name": "Aggregate Delayed Draw Term Commitment (facility size)",
+          "value": "$750,000,000 as of the Effective Date",
+          "quote": "As of the Effective Date, the Aggregate Delayed Draw Commitment is $750,000,000."
         }
       ],
-      "ebitda_addback_categories": [
-        "Integration Costs (non-recurring integration costs in connection with any Permitted Acquisition or similar Investment)"
-      ],
-      "mfn_sunset_period": "Not addressed in the provided excerpt (no MFN provision or sunset period appears in the definitions/clauses given).",
-      "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "The Borrower may designate subsidiaries as Unrestricted Subsidiaries; such designation is treated as an Investment valued at the proportionate fair market value of net assets at designation, and property transferred to/from an Unrestricted Subsidiary is valued at fair market value at transfer — so designation capacity is governed by the Investments basket (Section 6.07). Initial Unrestricted Subsidiaries are on Schedule 1.01(b).",
-      "anchor_clause": "\"Material IP Subsidiary\" means each Subsidiary that owns, directly or indirectly through one or more of its subsidiaries, any Material IP; and an \"Excluded Subsidiary\" includes any subsidiary \"that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness.\"",
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": "The agreement contemplates Unrestricted Subsidiaries (Schedule 1.01(b) lists them; designation feeds into the Investments definition, which values the net assets contributed on designation and values property transferred to/from an Unrestricted Subsidiary at fair market value). The specific designation mechanics, conditions and caps were not included in the excerpt provided, so the degree of flexibility cannot be fully assessed from this text.",
+      "anchor_clause": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries ... provided that the aggregate amount of unrestricted cash and unrestricted Permitted Investments of Foreign Subsidiaries shall not at any time exceed 25% of all Liquidity.",
       "lme_vectors": [
         {
           "vector": "dropdown_jcrew",
-          "risk": "protected",
-          "rationale": "The agreement defines Material IP and Material IP Subsidiaries and excludes IP-only subsidiaries from the Excluded Subsidiary guarantee carve-out only if they are not obligors on additional debt, evidencing a mechanism to keep material IP within the credit group and prevent J.Crew-style transfers to non-guarantors.",
-          "basis": "'Material IP' defined as IP material to the business taken as a whole; 'Material IP Subsidiary' defined as any subsidiary owning Material IP; Excluded Subsidiary clause (x) covers only IP-holding subs not obligated on Permitted Additional Indebtedness; Investments valuation rules capture transfers to/from Unrestricted Subsidiaries at fair market value.",
-          "quote": "that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness"
-        },
-        {
-          "vector": "rp_leakage",
           "risk": "unclear",
-          "rationale": "The excerpt defines Permitted Payees (including officers, directors and affiliates/transferees) and references restricted-payment concepts, but the numeric restricted-payment basket and its conditions are not contained in the provided text, so leakage capacity cannot be quantified.",
-          "basis": "'Permitted Payee' definition covers broad classes of recipients; restricted payment covenant (Section 6.xx) and its baskets are not included in the excerpt.",
-          "quote": "\"Permitted Payee\" means, collectively (i) any future, current or former officer, director, manager, member, member of management, employee, consultant, distributor or independent contractor of the Borrower, any Subsidiary or any direct or indirect parent company thereof"
+          "rationale": "The text carries the machinery for IP dropdowns (Material IP, Material IP Subsidiary, Unrestricted Subsidiary, and an Excluded Subsidiary limb for IP-only subsidiaries) but the operative transfer restriction / J.Crew blocker was not included in the excerpt.",
+          "basis": "'Material IP' and 'Material IP Subsidiary' are defined; the Excluded Subsidiary definition includes a subsidiary that 'does not own any assets ... that are not Intellectual Property'; Investments definition values property transferred to/from an Unrestricted Subsidiary at fair market value.",
+          "quote": "that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness"
         },
         {
           "vector": "incremental_debt",
           "risk": "unclear",
-          "rationale": "The text references Permitted Additional Indebtedness, Permitted Refinancing and Permitted Convertible Notes under Section 6.01, but the incremental/ratio debt capacity, caps and MFN terms are not set out in the excerpt provided.",
-          "basis": "'Permitted Refinancing' and 'Permitted Convertible Notes' defined by reference to Section 6.01(s)/(t); Schedule 6.01 lists existing Debt; no incremental facility sizing appears in the excerpt.",
-          "quote": "\"Permitted Refinancing\" shall mean Debt constituting a refinancing or extension of Debt permitted under Section 6.01 hereunder that (a) has an aggregate outstanding principal amount not greater than the aggregate principal amount of the Debt being refinanced or extended"
+          "rationale": "The text references incremental/additional debt concepts (Permitted Additional Indebtedness, Permitted Refinancing sized to refinanced principal plus premium/fees, Permitted Convertible Notes under Sections 6.01(s)/(t)) but the incremental facility sizing and the operative Section 6.01 debt basket schedule were not included.",
+          "basis": "Permitted Refinancing capped at refinanced principal plus accrued interest/premium/fees; Permitted Convertible Notes tied to Section 6.01(s)/(t); 'Permitted Additional Indebtedness' referenced in the Excluded Subsidiary IP limb.",
+          "quote": "has an aggregate outstanding principal amount not greater than the aggregate principal amount of the Debt being refinanced or extended plus an amount equal to accrued and unpaid interest and any premium thereon"
         },
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The provided text contains no voting/sacred-rights or pro rata sharing provisions (Section 9.02 amendments language is not included), so priming/uptier protection cannot be assessed from this excerpt.",
-          "basis": "No amendment/waiver, sacred-rights, or lien-subordination provisions are present in the definitions and clauses supplied.",
-          "quote": ""
+          "rationale": "The excerpt does not include the voting/amendment (sacred rights) or pro rata sharing provisions needed to assess uptier/priming protection.",
+          "basis": "No amendment, sacred-rights, or pro rata sharing provisions appear in the provided text; only definitions and Permitted Encumbrances/Liens definitions are present.",
+          "quote": "Section 9.24. Release of Liens and Guarantees"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "The operative restricted payments covenant (Section 6.x) is not in the excerpt; only definitional building blocks (Permitted Payee, Permitted Party, Disqualified Equity Interests) appear, so RP capacity cannot be assessed.",
+          "basis": "'Permitted Payee' and 'Permitted Party' are defined but no restricted-payment basket or builder-basket text is included.",
+          "quote": "\"Permitted Payee\" means, collectively (i) any future, current or former officer, director, manager, member ... of the Borrower, any Subsidiary or any direct or indirect parent company thereof"
         }
       ],
       "citation": {
@@ -2029,11 +2333,11 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828024034724/q2fy24form8-kxex102.htm",
-        "quote": "\"Material IP Subsidiary\" means each Subsidiary that owns, directly or indirectly through one or more of its subsidiaries, any Material IP; and an \"Excluded Subsidiary\" includes any subsidiary \"that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness.\""
+        "quote": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries ... provided that the aggregate amount of unrestricted cash and unrestricted Permitted Investments of Foreign Subsidiaries shall not at any time exceed 25% of all Liquidity."
       },
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "Liquidity (minimum liquidity covenant, likely applicable given the defined term)",
-      "leverage_ratio_threshold": "Not specified in the excerpt — only the definition of 'Liquidity' is provided (Availability under the ABL Credit Agreement plus unrestricted cash and Permitted Investments, with Foreign Liquidity capped at 25% of all Liquidity); the numeric minimum threshold and test frequency appear in the covenant article (Article VI) not included in the excerpt.",
+      "leverage_covenant_type": "Minimum Liquidity (financial-condition metric referenced in definitions; the maintenance covenant clause itself, Section 6.x, was not included in the excerpt)",
+      "leverage_ratio_threshold": "Not stated in the provided text — the excerpt defines 'Liquidity' (Availability under the ABL plus unrestricted cash/Permitted Investments, with Foreign Liquidity capped at 25%) but does not include the operative covenant threshold.",
       "restricted_payments_basket_size": null,
       "lme_risk_notes": null
     }
@@ -2194,7 +2498,37 @@
       "leverage": null
     }
   ],
-  "maturity_wall": [],
+  "maturity_wall": [
+    {
+      "year": 2026,
+      "face": 203900000.0,
+      "instruments": [
+        "2026 Notes"
+      ]
+    },
+    {
+      "year": 2028,
+      "face": 2393500000.0,
+      "instruments": [
+        "2025 GIB Credit Facility",
+        "GIB credit facility"
+      ]
+    },
+    {
+      "year": 2030,
+      "face": 1085000000.0,
+      "instruments": [
+        "2030 Notes"
+      ]
+    },
+    {
+      "year": 2031,
+      "face": 962800000.0,
+      "instruments": [
+        "2031 Notes"
+      ]
+    }
+  ],
   "what_changed": [
     {
       "metric": "Cash & equivalents",
@@ -3008,7 +3342,7 @@
     }
   ],
   "warnings": [
-    "Prior analysis from 2026-07-15 — LLM analysis is off. Re-enable to refresh."
+    "Debt schedule sums to $4,645M vs $2,718M reported total debt (latest FY) — instruments may overlap (a facility and its sub-facility) or be missing; review the schedule citations."
   ],
-  "llm_fallback_note": "Prior analysis from 2026-07-15 — LLM analysis is off. Re-enable to refresh."
+  "llm_fallback_note": null
 }
