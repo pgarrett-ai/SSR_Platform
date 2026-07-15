@@ -254,18 +254,35 @@ def build_bridge(
 def _leverage_ratios(rep_val: float, econ_val: float,
                      ebitda: Optional[CitedValue]) -> tuple[Optional[CitedValue], Optional[CitedValue]]:
     rep_lev = econ_lev = None
-    if ebitda and ebitda.value:
+    if ebitda is None or ebitda.value is None:
+        return rep_lev, econ_lev
+    if ebitda.value <= 0:
+        # Debt over negative (or zero) EBITDA is not a ratio — a sign-flipped multiple
+        # reads MORE debt as LESS levered. Present-but-valueless = "n.m."; the dollar
+        # bridge lines carry the story for these issuers.
+        note = f"not meaningful — negative EBITDA ({ebitda.display})"
         rep_lev = CitedValue(
-            value=rep_val / ebitda.value, display=fmt_ratio(rep_val / ebitda.value), derived=True,
+            value=None, display="n.m.", derived=True,
             formula=f"reported debt {fmt_money_millions(rep_val)} / EBITDA {ebitda.display}",
+            note=note,
         )
         econ_lev = CitedValue(
-            value=econ_val / ebitda.value, display=fmt_ratio(econ_val / ebitda.value),
-            derived=True,
+            value=None, display="n.m.", derived=True,
             formula=f"economic debt {fmt_money_millions(econ_val)} / EBITDA {ebitda.display}",
-            note="Economic debt (incl. lease liabilities) over plain EBITDA — no rent "
-                 "add-back to the denominator.",
+            note=note,
         )
+        return rep_lev, econ_lev
+    rep_lev = CitedValue(
+        value=rep_val / ebitda.value, display=fmt_ratio(rep_val / ebitda.value), derived=True,
+        formula=f"reported debt {fmt_money_millions(rep_val)} / EBITDA {ebitda.display}",
+    )
+    econ_lev = CitedValue(
+        value=econ_val / ebitda.value, display=fmt_ratio(econ_val / ebitda.value),
+        derived=True,
+        formula=f"economic debt {fmt_money_millions(econ_val)} / EBITDA {ebitda.display}",
+        note="Economic debt (incl. lease liabilities) over plain EBITDA — no rent "
+             "add-back to the denominator.",
+    )
     return rep_lev, econ_lev
 
 

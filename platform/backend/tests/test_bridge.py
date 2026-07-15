@@ -46,6 +46,21 @@ def test_ebitda_prefers_net_income_walk():
     assert "net income" in bridge.ebitda.formula
 
 
+def test_negative_ebitda_leverage_is_not_meaningful():
+    # Cash-burner (LCID-style): OI -4.0 + D&A 2.2 = EBITDA -1.8e9. Debt / negative EBITDA
+    # sign-flips into "less levered than reported" — must render n.m., never a number.
+    neg = dict(BASE, operating_income=-4.0e9)
+    bridge, _ = build_bridge(_series(**neg), [], None)
+    assert bridge.ebitda.value < 0
+    for lev in (bridge.reported_leverage, bridge.economic_leverage):
+        assert lev is not None
+        assert lev.value is None and lev.display == "n.m."
+        assert "negative EBITDA" in lev.note
+    # dollar lines untouched — they carry the story for negative-EBITDA issuers
+    assert bridge.economic_debt.value == 31e9
+    assert bridge.reported_debt.value == 24e9
+
+
 def test_no_cash_or_net_debt_lines():
     bridge, _ = build_bridge(_series(**BASE, cash=3e9, restricted_cash=1e9), [], None)
     keys = [ln.key for ln in bridge.lines]
