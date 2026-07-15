@@ -39,6 +39,9 @@ def main(argv: list[str]) -> int:
         tickers.append(a.upper())
         i += 1
 
+    from app.core.db import init_db
+    init_db()   # the app's lifespan does this; standalone runs must too (new tables)
+
     settings = get_settings()
     if not tickers:
         tickers = sorted(settings.hero_ticker_set)
