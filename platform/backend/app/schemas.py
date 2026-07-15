@@ -74,6 +74,11 @@ class DebtInstrument(BaseModel):
     xbrl_member: Optional[str] = None
     obligor: Optional[str] = None            # LegalEntityAxis member, when tagged
     governed_by: Optional[str] = None        # agreement-family label (or known-creditor note)
+    # facility fields — undrawn committed capacity is liquidity, not debt, but it belongs
+    # on the schedule (an undrawn revolver is the runway for a cash-burner)
+    facility_type: Optional[str] = None      # 'revolver' | 'term loan' | 'notes' | …
+    commitment: Optional[CitedValue] = None  # total committed size, latest tagged instant
+    undrawn: Optional[CitedValue] = None     # remaining borrowing capacity
 
 
 class ForensicTableRow(BaseModel):

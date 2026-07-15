@@ -25,6 +25,7 @@ export default function DebtScheduleTable({ instruments }) {
     );
   }
   const hasObligor = instruments.some((d) => d.obligor);
+  const hasCapacity = instruments.some((d) => d.commitment || d.undrawn);
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -32,6 +33,7 @@ export default function DebtScheduleTable({ instruments }) {
           <tr className="border-b border-ink-600">
             <Th>Instrument</Th>
             <Th right>Outstanding</Th>
+            {hasCapacity && <Th right>Undrawn / commitment</Th>}
             <Th>Coupon</Th>
             <Th>Maturity</Th>
             <Th>Lien / seniority</Th>
@@ -41,10 +43,34 @@ export default function DebtScheduleTable({ instruments }) {
         <tbody>
           {instruments.map((d, i) => (
             <tr key={i} className={rowClass}>
-              <Td className="text-slate-200">{d.instrument}</Td>
+              <Td className="text-slate-200">
+                {d.instrument}
+                {d.facility_type && d.facility_type !== "notes" && (
+                  <span className="ml-2 text-[10px] uppercase tracking-wide text-slate-500">
+                    {d.facility_type}
+                  </span>
+                )}
+              </Td>
               <Td right>
                 <CitedNumber cv={d.outstanding || d.principal} />
               </Td>
+              {hasCapacity && (
+                <Td right mono className="text-[12px] text-slate-400">
+                  {d.undrawn || d.commitment ? (
+                    <>
+                      {d.undrawn ? <CitedNumber cv={d.undrawn} /> : "—"}
+                      {d.commitment && (
+                        <span className="text-slate-500">
+                          {" / "}
+                          <CitedNumber cv={d.commitment} />
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </Td>
+              )}
               <Td mono className="text-[12px] text-slate-300">
                 <span title={d.coupon || undefined}>{compactCoupon(d.coupon) || d.coupon || "—"}</span>
               </Td>

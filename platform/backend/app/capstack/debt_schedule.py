@@ -134,6 +134,29 @@ def drop_retired(instruments: list[DebtInstrument], asof: Optional[str]) -> list
     return out
 
 
+def fill_maturity_from_name(instruments: list[DebtInstrument],
+                            asof: Optional[str] = None) -> int:
+    """Deterministic maturity fallback: '2030 Notes' names its due year; 'Notes due 2028'
+    states it outright. Facility vintage years ('2025 GIB Credit Facility') are NOT
+    maturities and are skipped — only notes/bonds carry the year-as-maturity convention.
+    Returns the number of maturities filled."""
+    asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
+    filled = 0
+    for inst in instruments:
+        if inst.maturity:
+            continue
+        name = f"{inst.instrument} {inst.xbrl_member or ''}"
+        m = re.search(r"(?:due|matur\w*)\s+.{0,12}?((?:19|20)\d{2})", name, re.I)
+        year = int(m.group(1)) if m else None
+        if year is None and inst.facility_type == "notes":
+            ys = re.findall(r"\b(20[2-6]\d)\b", name)
+            year = int(ys[0]) if ys else None
+        if year and (asof_year is None or year >= asof_year):
+            inst.maturity = str(year)
+            filled += 1
+    return filled
+
+
 _ANNOTATE_SYSTEM = (
     "You are annotating an issuer's debt schedule. The instrument list and all amounts are "
     "already known from XBRL — do NOT supply numbers. For each listed instrument, find its "

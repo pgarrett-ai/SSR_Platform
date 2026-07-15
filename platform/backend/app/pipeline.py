@@ -14,9 +14,10 @@ from .capstack.bridge import build_bridge, build_ebitda_box, renormalize_spliced
 from .capstack.agreements import group_families, map_instruments
 from .capstack.covenants import extract_covenant_package, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
-from .capstack.debt_schedule import annotate_maturities, drop_retired, extract_debt_schedule
+from .capstack.debt_schedule import (annotate_maturities, drop_retired,
+                                     extract_debt_schedule, fill_maturity_from_name)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
-from .capstack.forensic import build_forensic_table, detect_flags, quarter_forensic_row
+from .capstack.forensic import build_forensic_table, detect_flags, quarter_forensic_row, total_debt
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .core.config import get_settings
@@ -27,7 +28,7 @@ from .edgar.client import (
     TickerNotFoundError,
 )
 from .edgar.documents import get_filing_text
-from .edgar.facts import build_financial_series
+from .edgar.facts import build_financial_series, fmt_money_millions
 from .core.progress import ProgressLog
 from .schemas import IssuerHeader, Overview
 from .store import (
@@ -142,12 +143,13 @@ def run_overview(
 
     # --- debt schedule from dimensional XBRL — deterministic, runs with the LLM off ---
     debt_asof = None
+    debt_ft = None   # text of the SAME filing the XBRL schedule came from (10-Q ≠ latest 10-K)
     try:
         progress.emit("Building debt schedule from XBRL dimensions…", step="debt", pct=66)
         from .rates import get_key_rates
         with session_scope() as session:
             rate_map = {r["series"]: r["value"] for r in get_key_rates(session)}
-        debt_schedule, debt_asof = build_xbrl_debt_schedule(company, rate_map)
+        debt_schedule, debt_asof, debt_filing = build_xbrl_debt_schedule(company, rate_map)
         if debt_schedule:
             progress.emit(
                 f"{len(debt_schedule)} instruments from XBRL dimensions (as of {debt_asof}).",
@@ -156,8 +158,12 @@ def run_overview(
         else:
             progress.emit("No dimensioned debt in XBRL — footnote extraction will be used.",
                           step="debt", pct=67)
+        if debt_filing is not None and ft is not None and \
+                str(getattr(debt_filing, "accession_no", "")) != ft.accession_no:
+            debt_ft = get_filing_text(debt_filing)   # usually the latest 10-Q
     except Exception as exc:
         warnings.append(f"XBRL debt schedule failed: {exc}")
+    debt_ft = debt_ft or ft
 
     if settings.llm_enabled:
         try:
@@ -174,11 +180,11 @@ def run_overview(
                     with session_scope() as session:
                         persist_obs(session, ticker, obs_items)
                 if debt_schedule:   # XBRL numbers stand; the LLM only annotates text
-                    ann_err = annotate_maturities(debt_schedule, ft, debt_asof)
+                    ann_err = annotate_maturities(debt_schedule, debt_ft or ft, debt_asof)
                     if ann_err:
                         warnings.append(f"Maturity annotation: {ann_err}")
                 else:               # undimensioned issuer: legacy extraction + hard filters
-                    instruments, debt_err = extract_debt_schedule(ft)
+                    instruments, debt_err = extract_debt_schedule(debt_ft or ft)
                     debt_schedule = drop_retired(instruments, debt_asof)
                     if debt_err:
                         warnings.append(f"Debt-schedule extraction error: {debt_err}")
@@ -190,6 +196,36 @@ def run_overview(
         except Exception as exc:
             warnings.append(f"OBS/bridge step failed: {exc}")
             progress.emit(f"OBS/bridge step failed: {exc}", step="obs", pct=80)
+
+    # --- deterministic debt-schedule sanity passes (run with the LLM on or off) ---
+    if debt_schedule:
+        filled = fill_maturity_from_name(debt_schedule, debt_asof)
+        if filled:
+            progress.emit(f"Filled {filled} maturity year(s) from instrument names.",
+                          step="debt", pct=81)
+        # tie-out: instrument sum vs the reported balance-sheet total. A big gap means
+        # double-counted members (facility + its sub-facility) or missing instruments.
+        try:
+            if series is not None and series.years:
+                reported, _parts = total_debt(series.years[-1])
+                sched_sum = sum((i.outstanding.value or 0) for i in debt_schedule
+                                if i.outstanding and i.outstanding.value)
+                if reported and sched_sum and abs(sched_sum - reported) / reported > 0.15:
+                    warnings.append(
+                        f"Debt schedule sums to {fmt_money_millions(sched_sum)} vs "
+                        f"{fmt_money_millions(reported)} reported total debt "
+                        f"(latest FY) — instruments may overlap (a facility and its "
+                        f"sub-facility) or be missing; review the schedule citations."
+                    )
+        except Exception:
+            pass
+        missing_mat = [i.instrument for i in debt_schedule
+                       if not i.maturity and (i.outstanding and (i.outstanding.value or 0) > 0)]
+        if missing_mat:
+            warnings.append(
+                f"Maturity unknown for {len(missing_mat)} instrument(s) "
+                f"({', '.join(missing_mat[:6])}) — they are missing from the maturity wall."
+            )
 
     # --- Phase 4: covenant extraction from credit agreements / indentures (§5) ---
     credit_docs = []
