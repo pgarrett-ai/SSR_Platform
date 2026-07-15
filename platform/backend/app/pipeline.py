@@ -189,9 +189,28 @@ def run_overview(
                     with session_scope() as session:
                         persist_obs(session, ticker, obs_items)
                 if debt_schedule:   # XBRL numbers stand; the LLM only annotates text
-                    ann_err = annotate_maturities(debt_schedule, debt_ft or ft, debt_asof)
+                    from .store import load_aliases, record_aliases
+                    with session_scope() as session:
+                        known_aliases = load_aliases(session, ticker)
+                    ann_err, learned = annotate_maturities(
+                        debt_schedule, debt_ft or ft, debt_asof, aliases=known_aliases)
                     if ann_err:
                         warnings.append(f"Maturity annotation: {ann_err}")
+                    with session_scope() as session:
+                        if learned:
+                            record_aliases(session, ticker, learned, source="fuzzy")
+                        # targeted re-search over the persisted corpus for what's still
+                        # missing — small model, snippet-scoped, alias-recording
+                        from .capstack.gapfill import gap_fill_maturities
+                        n_filled, gf_err = gap_fill_maturities(
+                            session, ticker, debt_schedule, debt_ft or ft, debt_asof,
+                            aliases=known_aliases)
+                    if n_filled:
+                        progress.emit(f"Gap-fill re-search recovered {n_filled} "
+                                      "annotation(s) from the persisted corpus.",
+                                      step="debt", pct=79)
+                    if gf_err:
+                        warnings.append(f"Gap-fill re-search: {gf_err}")
                 else:               # undimensioned issuer: legacy extraction + hard filters
                     instruments, debt_err = extract_debt_schedule(debt_ft or ft)
                     debt_schedule = drop_retired(instruments, debt_asof)

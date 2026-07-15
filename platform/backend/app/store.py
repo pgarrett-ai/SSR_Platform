@@ -128,6 +128,30 @@ def persist_obs(session: Session, ticker: str, items: list[ObsItemSchema]) -> No
     rebuild_fts(session, ticker)
 
 
+def load_aliases(session: Session, ticker: str) -> dict[str, list[str]]:
+    """{xbrl_member: [prose names]} learned on prior runs — consumed by the annotation
+    matcher before any LLM call."""
+    out: dict[str, list[str]] = {}
+    for row in session.scalars(
+        select(models.ExtractionAlias).where(models.ExtractionAlias.ticker == ticker)
+    ).all():
+        out.setdefault(row.xbrl_member, []).append(row.alias)
+    return out
+
+
+def record_aliases(session: Session, ticker: str, pairs, source: str) -> None:
+    """Save newly learned (xbrl_member, prose alias) pairs, skipping known ones."""
+    known = {(r.xbrl_member, r.alias.lower()) for r in session.scalars(
+        select(models.ExtractionAlias).where(models.ExtractionAlias.ticker == ticker)
+    ).all()}
+    for member, alias in pairs:
+        if not member or not alias or (member, alias.lower()) in known:
+            continue
+        known.add((member, alias.lower()))
+        session.add(models.ExtractionAlias(
+            ticker=ticker, xbrl_member=member, alias=alias, source=source))
+
+
 def persist_filing_notes(session: Session, ticker: str, fts) -> None:
     """Store the full notes text of the analyzed filings (10-K + the schedule's 10-Q),
     replacing prior rows per (ticker, accession). `fts` = FilingText objects."""

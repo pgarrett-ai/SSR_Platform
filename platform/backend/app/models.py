@@ -179,6 +179,22 @@ class ForensicFlag(Base):
     pointer: Mapped[Optional[str]] = mapped_column(Text)  # footnote/MD&A to read next
 
 
+class ExtractionAlias(Base):
+    """Learned name mapping: an XBRL dimension member ('lcid:A2030NotesMember') to the
+    prose name filings actually use ('5.00% Convertible Senior Notes due 2030'). Written
+    when a fuzzy or gap-fill match succeeds; consumed on later runs so the annotation
+    matcher hits exactly before any LLM call. This is the extraction knowledge base."""
+
+    __tablename__ = "extraction_aliases"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    ticker: Mapped[str] = mapped_column(String(16), index=True)
+    xbrl_member: Mapped[str] = mapped_column(String(128), index=True)
+    alias: Mapped[str] = mapped_column(Text)
+    source: Mapped[Optional[str]] = mapped_column(String(32))   # 'fuzzy' | 'gapfill'
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
 class FilingNotes(Base):
     """Full financial-statement notes text per analyzed filing — the persisted corpus the
     gap-fill re-search (and /api/search) queries. Extraction windows are transient; this
