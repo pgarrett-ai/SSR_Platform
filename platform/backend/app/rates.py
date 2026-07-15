@@ -1,11 +1,10 @@
 """Key reference rates — deterministic, keyless fetches from the NY Fed API (SOFR, EFFR)
-and FRED's fredgraph.csv (Fed Funds target, prime, 3M T-bill, 10Y Treasury). Each
+and FRED's fredgraph.csv (Fed Funds target, prime, 3M T-bill, 10Y/30Y Treasury). Each
 observation is stored per (series, date) in the `rates` table; the store is refreshed when
 stale and served fail-soft — a dead source just means yesterday's rate with its date shown.
 
 Note: credit agreements typically reference *Term* SOFR (CME-licensed, not free); overnight
 SOFR is the free proxy and is labeled as such wherever a floater is resolved against it.
-LIBOR ceased publication June 2023 — SOFR is the fallback successor.
 """
 from __future__ import annotations
 
@@ -32,10 +31,8 @@ SERIES: dict[str, tuple[str, str, str]] = {
     "DPRIME": ("Prime rate", "fred", "DPRIME"),
     "DTB3": ("3M T-bill", "fred", "DTB3"),
     "DGS10": ("10Y Treasury", "fred", "DGS10"),
+    "DGS30": ("30Y Treasury", "fred", "DGS30"),
 }
-
-LIBOR_NOTE = ("LIBOR ceased publication June 2023; SOFR (+ the contractual spread "
-              "adjustment) is the successor reference rate.")
 
 
 def _get(url: str) -> str:
@@ -86,7 +83,8 @@ def refresh_if_stale(session) -> None:
         select(models.Rate.fetched_at).order_by(models.Rate.fetched_at.desc()).limit(1)
     ).first()
     now = dt.datetime.now(dt.timezone.utc)
-    if newest:
+    stored = set(session.scalars(select(models.Rate.series).distinct()).all())
+    if newest and SERIES.keys() <= stored:   # a newly added series must fetch immediately
         try:
             if now - dt.datetime.fromisoformat(newest) < _STALE_AFTER:
                 return

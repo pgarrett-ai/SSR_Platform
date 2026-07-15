@@ -17,9 +17,6 @@ function KeyRates() {
           <span className="font-mono text-slate-200">{r.value.toFixed(2)}%</span>
         </span>
       ))}
-      <span className="ml-auto text-[10px] text-slate-600" title={data.note}>
-        LIBOR discontinued 6/2023
-      </span>
     </div>
   );
 }
