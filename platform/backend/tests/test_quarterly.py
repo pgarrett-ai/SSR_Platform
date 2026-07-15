@@ -98,3 +98,36 @@ def test_quarterly_timeline_and_changes():
     assert by["Cash & equivalents"].direction == "worse"
     assert changes[0].prior_label == "Q2 2025" and changes[0].latest_label == "Q3 2025"
     assert what_changed_quarterly([q3]) == []
+
+
+def test_quarter_forensic_row_snapshot_plus_ttm():
+    from app.capstack.forensic import quarter_forensic_row
+
+    qf = QuarterFacts(
+        period_end=D(2026, 3, 31), label="Q1 2026",
+        metrics={
+            "lt_debt_noncurrent": SimpleNamespace(
+                numeric_value=2.0e9, concept="LongTermDebtNoncurrent", label="LT debt",
+                period_end=D(2026, 3, 31), accession="0000000000-26-000002",
+                form_type="10-Q", filing_date=D(2026, 5, 5)),
+            "cash": SimpleNamespace(
+                numeric_value=0.7e9, concept="Cash", label="Cash",
+                period_end=D(2026, 3, 31), accession="0000000000-26-000002",
+                form_type="10-Q", filing_date=D(2026, 5, 5)),
+            "accounts_payable": SimpleNamespace(
+                numeric_value=0.4e9, concept="AccountsPayable", label="AP",
+                period_end=D(2026, 3, 31), accession="0000000000-26-000002",
+                form_type="10-Q", filing_date=D(2026, 5, 5)),
+        },
+        ttm={"operating_income": -3.5e9, "d_and_a": 0.5e9, "revenue": 1.4e9,
+             "cogs": 2.9e9, "operating_cash_flow": -3.7e9, "capex": 0.95e9},
+    )
+    row = quarter_forensic_row(qf, cik="1811210")
+    assert row.label == "Q1 2026" and row.fiscal_year == 2026
+    assert row.total_debt.value == 2.0e9                       # snapshot, not TTM
+    assert row.cash.citation is not None                       # instants cite the 10-Q
+    assert row.revenue.value == 1.4e9 and row.revenue.derived  # flows are TTM, derived
+    assert "TTM" in row.revenue.formula
+    assert row.ebitda.value == -3.0e9                          # TTM OI + D&A
+    assert row.free_cash_flow.value == -3.7e9 - 0.95e9         # TTM OCF − capex
+    assert abs(row.dpo.value - 0.4e9 / 2.9e9 * 365.0) < 1e-9   # AP snapshot / TTM COGS

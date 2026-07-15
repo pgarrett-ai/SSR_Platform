@@ -27,7 +27,7 @@ export default function ForensicTable({ rows }) {
           <tr className="border-b border-ink-600">
             <Th>Metric</Th>
             {rows.map((r) => (
-              <Th key={r.fiscal_year} right>FY{r.fiscal_year}</Th>
+              <Th key={r.label ?? r.fiscal_year} right>{r.label || `FY${r.fiscal_year}`}</Th>
             ))}
           </tr>
         </thead>
@@ -39,7 +39,7 @@ export default function ForensicTable({ rows }) {
               <tr key={key} className={rowClass}>
                 <Td className="text-slate-300">{label}</Td>
                 {rows.map((r) => (
-                  <Td key={r.fiscal_year} right>
+                  <Td key={r.label ?? r.fiscal_year} right>
                     <CitedNumber cv={r[key]} />
                   </Td>
                 ))}
@@ -49,7 +49,8 @@ export default function ForensicTable({ rows }) {
         </tbody>
       </table>
       <p className="mt-2 text-[11px] text-slate-500">
-        EBITDA and FCF are XBRL proxies (op. income + D&A; OCF − capex).
+        EBITDA and FCF are XBRL proxies (op. income + D&A; OCF − capex). A quarter column
+        shows 10-Q balance-sheet snapshots with trailing-12-month flows.
       </p>
     </div>
   );
