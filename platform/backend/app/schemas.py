@@ -242,6 +242,28 @@ class MaturityBucket(BaseModel):
     instruments: list[str] = Field(default_factory=list)
 
 
+class NextMaturity(BaseModel):
+    """The nearest bucket on the maturity wall — the next wall a distressed issuer faces."""
+
+    year: int
+    face: float
+    instruments: list[str] = Field(default_factory=list)
+
+
+class LiquidityRunway(BaseModel):
+    """Distressed-mode framing: cash + undrawn credit, burn, months of runway, next wall.
+    is_distressed (EBITDA <= 0) drives the Overview to lead with this over leverage."""
+
+    is_distressed: bool = False
+    as_of_label: Optional[str] = None            # 'Q1 2026' / 'FY2025'
+    cash: Optional[CitedValue] = None
+    undrawn_committed: Optional[CitedValue] = None   # sum of tagged undrawn facility capacity
+    total_liquidity: Optional[CitedValue] = None     # cash + undrawn
+    annual_burn: Optional[CitedValue] = None         # |FCF| when burning
+    runway_months: Optional[float] = None            # total liquidity / monthly burn
+    next_maturity: Optional[NextMaturity] = None
+
+
 class ChangeItem(BaseModel):
     """One year-over-year move for the Overview 'what changed' card."""
 
@@ -268,6 +290,7 @@ class Overview(BaseModel):
     obs_items: list[ObsItem] = Field(default_factory=list)
     covenants: list[CovenantPackage] = Field(default_factory=list)
     subsidiaries: list[Subsidiary] = Field(default_factory=list)
+    liquidity: Optional[LiquidityRunway] = None   # distressed-mode: cash/burn/runway/wall
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY
