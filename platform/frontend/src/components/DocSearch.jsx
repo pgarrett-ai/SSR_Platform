@@ -65,8 +65,8 @@ export default function DocSearch({ ticker }) {
             <button
               key={i}
               onClick={() =>
-                document.getElementById(SECTION_IDS[h.source_kind])
-                  ?.scrollIntoView({ behavior: "smooth" })}
+                // plain scrollIntoView: smooth-behavior is a no-op under reduced-motion
+                document.getElementById(SECTION_IDS[h.source_kind])?.scrollIntoView()}
               className="mb-1 block w-full rounded-md border border-ink-700 px-3 py-2 text-left text-sm hover:border-accent"
               title="jump to the matching section"
             >
