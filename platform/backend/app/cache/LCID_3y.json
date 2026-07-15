@@ -6,9 +6,9 @@
     "cik": "1811210",
     "years": 3,
     "n_filings": 76,
-    "last_updated": "2026-07-15T15:52:34.114573+00:00",
+    "last_updated": "2026-07-15T16:09:59.114108+00:00",
     "from_cache": false,
-    "llm_enabled": true
+    "llm_enabled": false
   },
   "economic_debt_bridge": {
     "lines": [
@@ -322,28 +322,19 @@
         "note": null
       },
       "coupon": "SOFR + 1.40% → 5.03%",
-      "maturity": "February 24, 2028",
+      "maturity": null,
       "secured": null,
       "seniority": null,
-      "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
-        "exhibit": null,
-        "section": "gap-fill re-search (persisted corpus)",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "On February 24, 2025, Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028"
-      },
+      "citation": null,
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": 1.4,
       "effective_rate_pct": null,
       "rate_type": "floating",
-      "rate_base": "SAIBOR",
+      "rate_base": "SOFR",
       "xbrl_member": "lcid:A2025GIBCreditFacilityMember",
       "obligor": null,
-      "governed_by": "credit agreement dated November 4, 2025",
+      "governed_by": null,
       "facility_type": "revolver",
       "commitment": {
         "value": 1900000000.0,
@@ -404,19 +395,10 @@
         "note": null
       },
       "coupon": "5.00%",
-      "maturity": "April 2030",
+      "maturity": "2030",
       "secured": false,
       "seniority": "convertible",
-      "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
-        "exhibit": null,
-        "section": "Long-term debt footnote",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "The 2030 Notes will mature on April 1, 2030, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
-      },
+      "citation": null,
       "coupon_pct": 5.0,
       "coupon_pct_max": 5.0,
       "spread_pct": null,
@@ -425,7 +407,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2030NotesMember",
       "obligor": null,
-      "governed_by": "5% notes due 2030",
+      "governed_by": null,
       "facility_type": "notes",
       "commitment": null,
       "undrawn": null
@@ -452,19 +434,10 @@
         "note": null
       },
       "coupon": "7.00%",
-      "maturity": "November 2031",
+      "maturity": "2031",
       "secured": false,
       "seniority": "convertible",
-      "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
-        "exhibit": null,
-        "section": "Long-term debt footnote",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "The 2031 Notes will mature on November 1, 2031, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
-      },
+      "citation": null,
       "coupon_pct": 7.0,
       "coupon_pct_max": 7.0,
       "spread_pct": null,
@@ -473,7 +446,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2031NotesMember",
       "obligor": null,
-      "governed_by": "7% notes due 2031",
+      "governed_by": null,
       "facility_type": "notes",
       "commitment": null,
       "undrawn": null
@@ -500,19 +473,10 @@
         "note": null
       },
       "coupon": null,
-      "maturity": "February 24, 2028",
+      "maturity": null,
       "secured": null,
       "seniority": null,
-      "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
-        "exhibit": null,
-        "section": "gap-fill re-search (persisted corpus)",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028"
-      },
+      "citation": null,
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -548,19 +512,10 @@
         "note": null
       },
       "coupon": "1.25%",
-      "maturity": "December 2026",
+      "maturity": "2026",
       "secured": false,
       "seniority": "convertible",
-      "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
-        "exhibit": null,
-        "section": "Long-term debt footnote",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "The 2026 Notes will mature on December 15, 2026, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
-      },
+      "citation": null,
       "coupon_pct": 1.25,
       "coupon_pct_max": 1.25,
       "spread_pct": null,
@@ -569,7 +524,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2026NotesMember",
       "obligor": null,
-      "governed_by": "credit agreement dated April 14, 2026",
+      "governed_by": null,
       "facility_type": "notes",
       "commitment": null,
       "undrawn": null
@@ -720,7 +675,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2025DDTLCreditFacilityMember",
       "obligor": null,
-      "governed_by": "credit agreement dated November 4, 2025",
+      "governed_by": null,
       "facility_type": null,
       "commitment": {
         "value": 1980000000.0,
@@ -2416,6 +2371,63 @@
       }
     }
   ],
+  "liquidity": {
+    "is_distressed": true,
+    "as_of_label": "Q1 2026",
+    "cash": {
+      "value": 700356000.0,
+      "display": "$700M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001628280-26-030517",
+        "form_type": "10-Q",
+        "filing_date": "2026-05-05",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+        "quote": "Cash and Cash Equivalents, at Carrying Value = $700M (as of 2026-03-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "undrawn_committed": {
+      "value": 618700000.0,
+      "display": "$619M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "2025 GIB Credit Facility $9M + ABL Credit Facility $610M",
+      "note": "Sum of tagged undrawn revolver / facility capacity. Facilities without a separately tagged headroom are excluded — see the debt schedule for their commitments."
+    },
+    "total_liquidity": {
+      "value": 1319056000.0,
+      "display": "$1,319M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "cash $700M + undrawn credit $619M",
+      "note": "Cash and equivalents plus tagged undrawn committed credit."
+    },
+    "annual_burn": {
+      "value": 4649042000.0,
+      "display": "$4,649M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "|free cash flow| (Q1 2026)",
+      "note": "Annual cash burn = negative free cash flow (OCF − capex)."
+    },
+    "runway_months": 3.4,
+    "next_maturity": {
+      "year": 2026,
+      "face": 203900000.0,
+      "instruments": [
+        "2026 Notes"
+      ]
+    }
+  },
   "leverage_timeline": [
     {
       "fiscal_year": 2023,
@@ -2504,14 +2516,6 @@
       "face": 203900000.0,
       "instruments": [
         "2026 Notes"
-      ]
-    },
-    {
-      "year": 2028,
-      "face": 2393500000.0,
-      "instruments": [
-        "2025 GIB Credit Facility",
-        "GIB credit facility"
       ]
     },
     {
@@ -3342,7 +3346,9 @@
     }
   ],
   "warnings": [
-    "Debt schedule sums to $4,645M vs $2,718M reported total debt (latest FY) — instruments may overlap (a facility and its sub-facility) or be missing; review the schedule citations."
+    "Debt schedule sums to $4,645M vs $2,718M reported total debt (latest FY) — instruments may overlap (a facility and its sub-facility) or be missing; review the schedule citations.",
+    "Maturity unknown for 2 instrument(s) (2025 GIB Credit Facility, GIB credit facility) — they are missing from the maturity wall.",
+    "Prior analysis from 2026-07-15 — LLM analysis is off. Re-enable to refresh."
   ],
-  "llm_fallback_note": null
+  "llm_fallback_note": "Prior analysis from 2026-07-15 — LLM analysis is off. Re-enable to refresh."
 }
