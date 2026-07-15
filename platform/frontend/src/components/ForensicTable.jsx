@@ -20,25 +20,27 @@ export default function ForensicTable({ rows }) {
   if (!rows || rows.length === 0) {
     return <p className="text-sm text-slate-400">No annual XBRL facts available for this issuer.</p>;
   }
+  // Newest period leftmost. Spread before reversing — the payload array is shared.
+  const cols = [...rows].reverse();
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-ink-600">
             <Th>Metric</Th>
-            {rows.map((r) => (
+            {cols.map((r) => (
               <Th key={r.label ?? r.fiscal_year} right>{r.label || `FY${r.fiscal_year}`}</Th>
             ))}
           </tr>
         </thead>
         <tbody>
           {ROWS.map(([key, label]) => {
-            const anyPresent = rows.some((r) => r[key]);
+            const anyPresent = cols.some((r) => r[key]);
             if (!anyPresent) return null;
             return (
               <tr key={key} className={rowClass}>
                 <Td className="text-slate-300">{label}</Td>
-                {rows.map((r) => (
+                {cols.map((r) => (
                   <Td key={r.label ?? r.fiscal_year} right>
                     <CitedNumber cv={r[key]} />
                   </Td>
