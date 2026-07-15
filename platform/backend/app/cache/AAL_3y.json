@@ -6,9 +6,9 @@
     "cik": "6201",
     "years": 3,
     "n_filings": 55,
-    "last_updated": "2026-07-14T10:19:34.043919+00:00",
+    "last_updated": "2026-07-15T10:44:10.899666+00:00",
     "from_cache": false,
-    "llm_enabled": false
+    "llm_enabled": true
   },
   "economic_debt_bridge": {
     "lines": [
@@ -87,7 +87,7 @@
             "section": "Consolidated Balance Sheets - Noncurrent liabilities",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-            "quote": "Pension and postretirement benefits 1,568 2,128"
+            "quote": "Pension and postretirement benefits 1,568"
           },
           "derived": false,
           "formula": null,
@@ -299,18 +299,28 @@
     },
     "addbacks": [
       {
-        "category": "Extraordinary loss and net loss on Disposition of assets",
-        "label": "Extraordinary loss and net loss on Disposition of assets",
+        "category": "Extraordinary/nonrecurring, special or unusual losses on Dispositions",
+        "label": "Extraordinary/nonrecurring, special or unusual losses on Dispositions",
         "amount": null
       },
       {
-        "category": "Foreign currency translation losses (including Indebtedness remeasurement)",
-        "label": "Foreign currency translation losses (including Indebtedness remeasurement)",
+        "category": "Fixed Charges",
+        "label": "Fixed Charges",
         "amount": null
       },
       {
-        "category": "Net loss on sale/exchange/disposition of capital assets",
-        "label": "Net loss on sale/exchange/disposition of capital assets",
+        "category": "Foreign currency translation losses (including debt remeasurement)",
+        "label": "Foreign currency translation losses (including debt remeasurement)",
+        "amount": null
+      },
+      {
+        "category": "Deductions for equity grants to employees",
+        "label": "Deductions for equity grants to employees",
+        "amount": null
+      },
+      {
+        "category": "Net loss on sale/exchange of capital assets",
+        "label": "Net loss on sale/exchange of capital assets",
         "amount": null
       },
       {
@@ -319,23 +329,53 @@
         "amount": null
       },
       {
+        "category": "Proceeds from business interruption insurance",
+        "label": "Proceeds from business interruption insurance",
+        "amount": null
+      },
+      {
+        "category": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt incurrence, equity issuance or investments",
+        "label": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt incurrence, equity issuance or investments",
+        "amount": null
+      },
+      {
+        "category": "Non-cash items increasing income (subtracted)",
+        "label": "Non-cash items increasing income (subtracted)",
+        "amount": null
+      },
+      {
+        "category": "Extraordinary loss / net loss on Disposition of assets",
+        "label": "Extraordinary loss / net loss on Disposition of assets",
+        "amount": null
+      },
+      {
+        "category": "Foreign currency translation losses (incl. currency remeasurements of Indebtedness)",
+        "label": "Foreign currency translation losses (incl. currency remeasurements of Indebtedness)",
+        "amount": null
+      },
+      {
+        "category": "Net loss on sale/exchange/disposition of capital assets",
+        "label": "Net loss on sale/exchange/disposition of capital assets",
+        "amount": null
+      },
+      {
+        "category": "Fuel hedging losses (pre-Closing arrangements; realized post-Closing losses)",
+        "label": "Fuel hedging losses (pre-Closing arrangements; realized post-Closing losses)",
+        "amount": null
+      },
+      {
         "category": "Business interruption insurance proceeds",
         "label": "Business interruption insurance proceeds",
         "amount": null
       },
       {
-        "category": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions/mergers/dispositions/debt or equity issuances/investments",
-        "label": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions/mergers/dispositions/debt or equity issuances/investments",
+        "category": "Expenses covered by indemnification/reimbursement in permitted acquisitions/mergers/dispositions/financings",
+        "label": "Expenses covered by indemnification/reimbursement in permitted acquisitions/mergers/dispositions/financings",
         "amount": null
       },
       {
-        "category": "Non-cash items (other than accrual of revenue in Ordinary Course) that increased Consolidated Net Income (minus)",
-        "label": "Non-cash items (other than accrual of revenue in Ordinary Course) that increased Consolidated Net Income (minus)",
-        "amount": null
-      },
-      {
-        "category": "Extraordinary loss / net loss on dispositions of assets",
-        "label": "Extraordinary loss / net loss on dispositions of assets",
+        "category": "Extraordinary losses and net losses on Disposition of assets",
+        "label": "Extraordinary losses and net losses on Disposition of assets",
         "amount": null
       },
       {
@@ -349,13 +389,38 @@
         "amount": null
       },
       {
-        "category": "Proceeds from business interruption insurance",
-        "label": "Proceeds from business interruption insurance",
+        "category": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions/mergers/dispositions/debt/equity/investments",
+        "label": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions/mergers/dispositions/debt/equity/investments",
         "amount": null
       },
       {
-        "category": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt/equity issuances or investments",
-        "label": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt/equity issuances or investments",
+        "category": "Extraordinary losses and net losses on Dispositions of assets",
+        "label": "Extraordinary losses and net losses on Dispositions of assets",
+        "amount": null
+      },
+      {
+        "category": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers (incl. AMR/US Airways Merger, Airlines Merger, Airline/Parent Merger), dispositions, debt incurrence, equity issuance or investments",
+        "label": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers (incl. AMR/US Airways Merger, Airlines Merger, Airline/Parent Merger), dispositions, debt incurrence, equity issuance or investments",
+        "amount": null
+      },
+      {
+        "category": "Foreign currency translation losses (including on debt remeasurement)",
+        "label": "Foreign currency translation losses (including on debt remeasurement)",
+        "amount": null
+      },
+      {
+        "category": "Non-cash equity-based compensation grants to employees",
+        "label": "Non-cash equity-based compensation grants to employees",
+        "amount": null
+      },
+      {
+        "category": "Net loss on sale/disposition of capital assets",
+        "label": "Net loss on sale/disposition of capital assets",
+        "amount": null
+      },
+      {
+        "category": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers (AMR Merger, Airlines Merger), dispositions, debt incurrence, equity issuances or investments",
+        "label": "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers (AMR Merger, Airlines Merger), dispositions, debt incurrence, equity issuances or investments",
         "amount": null
       }
     ]
@@ -383,10 +448,19 @@
         "note": null
       },
       "coupon": "2.88%–7.15%",
-      "maturity": null,
+      "maturity": "2026 to 2038",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "Enhanced equipment trust certificates (EETCs), fixed interest rates ranging from 2.88% to 7.15%, averaging 3.95%, maturing from 2026 to 2038"
+      },
       "coupon_pct": 2.88,
       "coupon_pct_max": 7.15,
       "spread_pct": null,
@@ -419,10 +493,19 @@
         "note": null
       },
       "coupon": "2.55%–6.29%",
-      "maturity": null,
+      "maturity": "2026 to 2037",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "Equipment loans and other notes payable, fixed and variable interest rates ranging from 2.55% to 6.56%, averaging 5.57%, maturing from 2026 to 2037"
+      },
       "coupon_pct": 2.55,
       "coupon_pct_max": 6.29,
       "spread_pct": null,
@@ -455,10 +538,19 @@
         "note": null
       },
       "coupon": "5.75%",
-      "maturity": null,
+      "maturity": "April 2029",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "5.75% senior secured notes, installments beginning in July 2026 until due in April 2029"
+      },
       "coupon_pct": 5.75,
       "coupon_pct_max": 5.75,
       "spread_pct": null,
@@ -491,10 +583,19 @@
         "note": null
       },
       "coupon": "variable → 5.92%",
-      "maturity": null,
+      "maturity": "April 2028",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "2021 AAdvantage Term Loan Facility, variable interest rate of 6.13%, installments until due in April 2028"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -503,7 +604,7 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:A2021AAdvantageTermLoanFacilityMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "credit agreement dated March 24, 2021"
     },
     {
       "instrument": "Payroll Support Program Promissory Note One, CARES Act",
@@ -527,10 +628,19 @@
         "note": null
       },
       "coupon": "variable → 5.57%",
-      "maturity": null,
+      "maturity": "April 2030",
       "secured": false,
       "seniority": "unsecured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "PSP1 Promissory Note, variable interest rate of 5.92%, interest only payments until due in April 2030"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -539,7 +649,7 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:PayrollSupportProgramPromissoryNoteOneCARESActMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)"
     },
     {
       "instrument": "2014 Revolving Facility",
@@ -635,10 +745,19 @@
         "note": null
       },
       "coupon": "variable → 5.57%",
-      "maturity": null,
+      "maturity": "January 2031",
       "secured": false,
       "seniority": "unsecured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "PSP2 Promissory Note, interest only payments until due in January 2031"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -647,7 +766,7 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:PayrollSupportProgramPromissoryNoteTwoCARESActMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)"
     },
     {
       "instrument": "2025 AAdvantage Term Loan Facility",
@@ -671,10 +790,19 @@
         "note": null
       },
       "coupon": "variable → 6.42%",
-      "maturity": null,
+      "maturity": "May 2032",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "2025 AAdvantage Term Loan Facility, variable interest rate of 7.13%, installments until due in May 2032"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -683,7 +811,7 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:A2025AAdvantageTermLoanFacilityMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "credit agreement dated March 24, 2025"
     },
     {
       "instrument": "2013 Revolving Facility",
@@ -707,10 +835,19 @@
         "note": null
       },
       "coupon": "variable → 6.00%",
-      "maturity": null,
+      "maturity": "June 2029",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "The 2013 Revolving Facility matures in June 2029 and bears interest at a base rate (subject to a floor of 1.00%) plus an applicable margin of 2.00%, 2.25% or 2.50%, depending on AAG’s public corporate credit rating, or, at American’s option, the SOFR rate for a tenor of one, three or six months"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -742,11 +879,20 @@
         "formula": null,
         "note": null
       },
-      "coupon": "SOFR + 2.00% → 5.55%",
-      "maturity": null,
+      "coupon": "SOFR + 2.00% → 5.60%",
+      "maturity": "April 2031",
       "secured": false,
       "seniority": "unsecured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "PSP3 Promissory Note, interest only payments until due in April 2031"
+      },
       "coupon_pct": 1.0,
       "coupon_pct_max": null,
       "spread_pct": 2.0,
@@ -755,7 +901,7 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:PayrollSupportProgramPromissoryNoteThreeCARESActMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)"
     },
     {
       "instrument": "Special Facility Revenue Bonds",
@@ -779,10 +925,19 @@
         "note": null
       },
       "coupon": "2.25%–5.38%",
-      "maturity": null,
+      "maturity": "2026 to 2036",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "Special facility revenue bonds, fixed interest rates ranging from 2.25% to 5.38%, maturing from 2026 to 2036"
+      },
       "coupon_pct": 2.25,
       "coupon_pct_max": 5.38,
       "spread_pct": null,
@@ -815,10 +970,19 @@
         "note": null
       },
       "coupon": "7.25%",
-      "maturity": null,
+      "maturity": "February 2028",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "7.25% senior secured notes, interest only payments until due in February 2028"
+      },
       "coupon_pct": 7.25,
       "coupon_pct_max": 7.25,
       "spread_pct": null,
@@ -851,10 +1015,19 @@
         "note": null
       },
       "coupon": "5.50%",
-      "maturity": null,
+      "maturity": "April 2026",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "5.50% senior secured notes, installments until due in April 2026"
+      },
       "coupon_pct": 5.5,
       "coupon_pct_max": 5.5,
       "spread_pct": null,
@@ -863,7 +1036,7 @@
       "rate_base": null,
       "xbrl_member": "aal:SeniorNote550Matures2026Member",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "5.5% notes due 2026"
     }
   ],
   "debt_schedule_asof": "2026-03-31",
@@ -1481,7 +1654,7 @@
   "obs_items": [
     {
       "category": "pension_opeb",
-      "label": "Pension and postretirement benefits (net underfunded, balance sheet)",
+      "label": "Pension and postretirement benefits (net liability recognized)",
       "amount": {
         "value": 1568000000.0,
         "display": "$1,568M",
@@ -1494,7 +1667,7 @@
           "section": "Consolidated Balance Sheets - Noncurrent liabilities",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Pension and postretirement benefits 1,568 2,128"
+          "quote": "Pension and postretirement benefits 1,568"
         },
         "derived": false,
         "formula": null,
@@ -1533,7 +1706,7 @@
     },
     {
       "category": "supplier_finance",
-      "label": "Fuel financing facility (supplier/supply-chain financing)",
+      "label": "Fuel financing facility (supplier/supply-chain finance)",
       "amount": {
         "value": 914000000.0,
         "display": "$914M",
@@ -1585,23 +1758,23 @@
     },
     {
       "category": "take_or_pay",
-      "label": "Capacity purchase agreements with third-party regional carriers (e.g., Republic)",
+      "label": "Regional capacity purchase agreements (Republic and other third-party regional carriers)",
       "amount": null,
       "tax_effect": null,
       "net": null,
       "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "Capacity purchase agreements with third-party regional carriers are take-or-pay style commitments; the lease component is capitalized within operating/finance leases but the non-lease (crew/maintenance) service commitments represent ongoing contractual obligations. No aggregate future minimum commitment dollar amount is disclosed in the provided text (only annual expense of $658M under Republic CPA in 2025), so the incremental off-balance-sheet amount cannot be quantified; recorded with null amount and excluded from bridge."
+      "notes": "Capacity purchase agreements with third-party regional carriers are take-or-pay-style commitments; the lease component of certain CPA aircraft is already reflected as deemed leases. Only the annual expense is disclosed in this excerpt, not the total future minimum contractual commitment, so no reliable dollar amount can be added to the bridge. Included with null amount for completeness."
     },
     {
-      "category": "guarantee",
-      "label": "AAG parent guarantee of American's Credit Facilities and Senior Secured Notes",
+      "category": "related_party",
+      "label": "Equity interest in Republic Airways Holdings / GOL commercial agreement",
       "amount": null,
       "tax_effect": null,
       "net": null,
-      "recourse": "recourse",
+      "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "AAG guarantees American's obligations under the Credit Facilities and the 7.25%/8.50% Senior Secured Notes. Because American is a consolidated wholly-owned subsidiary, the guaranteed debt is already reflected in consolidated reported long-term debt; the guarantee is not incremental at the consolidated level. Recorded with null amount, excluded from bridge."
+      "notes": "Related-party equity relationship with a regional partner from whom the company also purchases capacity. No related-party financing/guarantee dollar amount is disclosed in this excerpt, so it is informational only and not added to the bridge."
     },
     {
       "category": "litigation_env",
@@ -1618,11 +1791,11 @@
           "section": "Note 2 Special Items, Net",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Litigation reserve adjustments $77 $— $—"
+          "quote": "Litigation reserve adjustments $77 — —"
         },
         "derived": false,
         "formula": null,
-        "note": "A $77M litigation reserve adjustment was recognized in special items in 2025. This is an accrued/expensed reserve already reflected in the financial statements (within other accrued liabilities), not an incremental off-balance-sheet debt-like claim, and it is a P&L adjustment rather than a stated balance-sheet contingent amount. Excluded from bridge."
+        "note": "This is the 2025 income-statement charge for litigation reserve adjustments, not a disclosed off-balance-sheet contingent exposure amount. The accrued reserve, to the extent recorded, is already within other accrued/other liabilities. Excerpt does not provide an additional unaccrued reasonably-possible loss estimate, so it is not added to the incremental bridge."
       },
       "tax_effect": {
         "value": 31724000.0,
@@ -1653,43 +1826,409 @@
       },
       "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "A $77M litigation reserve adjustment was recognized in special items in 2025. This is an accrued/expensed reserve already reflected in the financial statements (within other accrued liabilities), not an incremental off-balance-sheet debt-like claim, and it is a P&L adjustment rather than a stated balance-sheet contingent amount. Excluded from bridge."
+      "notes": "This is the 2025 income-statement charge for litigation reserve adjustments, not a disclosed off-balance-sheet contingent exposure amount. The accrued reserve, to the extent recorded, is already within other accrued/other liabilities. Excerpt does not provide an additional unaccrued reasonably-possible loss estimate, so it is not added to the incremental bridge."
+    },
+    {
+      "category": "guarantee",
+      "label": "AAG guarantee of American's obligations under Credit Facilities and Senior Secured Notes",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "recourse",
+      "include_in_bridge": false,
+      "notes": "These are parent guarantees of subsidiary (American) debt that is already consolidated and reported as long-term debt on AAG's balance sheet. Adding the guarantee would double-count already-reported debt; therefore excluded from the bridge."
     }
   ],
   "covenants": [
     {
-      "family_label": null,
-      "doc_class": null,
-      "operative_date": null,
+      "family_label": "5.5% notes due 2026",
+      "doc_class": "indenture",
+      "operative_date": "2026-02-18",
       "amendment_count": 0,
       "base_missing": false,
-      "governs_instruments": [],
+      "governs_instruments": [
+        "5.50% Senior Notes"
+      ],
       "admin_agent": null,
-      "trustee": null,
+      "trustee": "Wilmington Trust, National Association",
       "collateral_agent": null,
-      "creditor_note": null,
-      "guarantors": null,
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "The Guaranteeing Subsidiaries — Madrid IP Lux GP S.à r.l., Madrid IP Lux Holdco SCS (\"Madrid IP Lux 1\"), and Madrid IP Lux Holdco 2 SCS (\"Madrid IP Lux 2\") — each joining as a Guarantor under the Indenture; original Guarantors as defined in the base Indenture are not reproduced in this text.",
       "financial_covenants": [],
       "baskets": [],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"Each Guaranteeing Subsidiary hereby agrees to be a Guarantor under the Indenture and to be bound by the terms of the Indenture applicable to a Guarantor, including Article 10 thereof, as if it were an original signatory thereto.\"",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "This supplemental indenture is a guarantee-joinder only and contains no lien, priming, or sacred-rights provisions.",
+          "basis": "The document's operative clauses cover only agreement to guarantee, execution, governing law, and ratification; substantive covenants reside in the base Indenture not reproduced here.",
+          "quote": "Each Guaranteeing Subsidiary hereby agrees to be a Guarantor under the Indenture and to be bound by the terms of the Indenture applicable to a Guarantor, including Article 10 thereof"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "No unrestricted-subsidiary or IP/asset-transfer provisions appear; the text only adds three Luxembourg IP entities as guarantors.",
+          "basis": "Parties include 'Madrid IP Lux' entities and 'AAdvantage Loyalty IP Ltd.,' but the supplement contains no transfer or designation mechanics.",
+          "quote": "together with Madrid IP Lux GP and Madrid IP Lux 1, the “ Guaranteeing Subsidiaries ”"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "The supplement references the existing Notes but establishes no debt-incurrence capacity or ratios.",
+          "basis": "Recitals describe the already-issued $3.5bn 5.500% 2026 Notes and $3.0bn 5.750% 2029 Notes; no incurrence covenant is set out.",
+          "quote": "providing for the initial issuance of $3,500,000,000 of 5.500% Senior Secured Notes due 2026 ... and $3,000,000,000 of 5.750% Senior Secured Notes due 2029"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "No restricted-payments covenant or basket is contained in this guarantee-joinder supplement.",
+          "basis": "Operative provisions are limited to the guarantee agreement and boilerplate; RP mechanics are in the base Indenture, not this text.",
+          "quote": "Each Guaranteeing Subsidiary agrees that the Guarantee shall remain in full force and effect"
+        }
+      ],
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": "EX-4.167",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/a4167firstsupplementalinde.htm",
+        "quote": "\"Each Guaranteeing Subsidiary hereby agrees to be a Guarantor under the Indenture and to be bound by the terms of the Indenture applicable to a Guarantor, including Article 10 thereof, as if it were an original signatory thereto.\""
+      },
+      "agreement_type": "indenture",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated March 24, 2025",
+      "doc_class": "credit_agreement",
+      "operative_date": "2025-05-29",
+      "amendment_count": 1,
+      "base_missing": false,
+      "governs_instruments": [
+        "2025 AAdvantage Term Loan Facility"
+      ],
+      "admin_agent": "BARCLAYS BANK PLC",
+      "trustee": null,
+      "collateral_agent": "Wilmington Trust, National Association (as Collateral Administrator)",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Loan Parties (including the SPV Parties); Borrowers are AAdvantage Loyalty IP Ltd. (Loyalty Co) and American Airlines, Inc.; incremental debt may not be guaranteed by any Person other than a Loan Party",
+      "financial_covenants": [
+        {
+          "kind": "Maintenance / incurrence LTV Ratio (loan-to-value) test",
+          "threshold": "no more than 55%",
+          "test_frequency": "Pro forma upon incurrence of Incremental Term Loans / additional indebtedness",
+          "springing_trigger": null,
+          "quote": "the pro forma LTV Ratio, immediately after giving effect to the making of the Incremental Term Loans, shall be no more than 55%"
+        },
+        {
+          "kind": "Peak Debt Service Coverage Cure (Section 2.24) — referenced in TOC",
+          "threshold": "Not specified in provided excerpt",
+          "test_frequency": "Not specified in provided excerpt",
+          "springing_trigger": null,
+          "quote": "Section 2.24 Peak Debt Service Coverage Cure"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "2025 Incremental Term Loans (this amendment)",
+          "value": "$1,000,000,000",
+          "quote": "the Designated 2025 Incremental Term Lender hereby agree to make the 2025 Incremental Term Loans to the Borrowers on the Third Amendment Effective Date in the aggregate principal amount of $1,000,000,000."
+        },
+        {
+          "name": "Incremental Term Loans capacity (ratio-based, LTV governed)",
+          "value": "Unlimited subject to pro forma LTV Ratio no more than 55%",
+          "quote": "the pro forma LTV Ratio, immediately after giving effect to the making of the Incremental Term Loans, shall be no more than 55%"
+        },
+        {
+          "name": "Permitted First Lien Notes / secured debt",
+          "value": "Subject to pro forma LTV Ratio not more than 55%",
+          "quote": "after giving effect to such indebtedness, the pro forma LTV Ratio shall not be more than 55%"
+        },
+        {
+          "name": "Retained Agreements not transferred to Collateral (leakage limit)",
+          "value": "less than 15.0% of AAdvantage Revenue on a pro forma basis",
+          "quote": "the aggregate amount of payments in cash produced by the Retained Agreements not so transferred is less than 15.0% of the AAdvantage Revenue in such period (on a pro forma basis)"
+        }
+      ],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": "Six months after the Third Amendment Effective Date (MFN applies to Incremental Term Loans incurred prior to that date)",
+      "j_crew_blocker_present": true,
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.06 governs Designation of Restricted and Unrestricted Subsidiaries; specific mechanics not reproduced in the provided excerpt. The AAdvantage IP/loyalty collateral structure is ring-fenced in SPV Parties and subject to the AAdvantage Agreement transfer/re-designation regime (Retained Agreements capped at less than 15.0% of AAdvantage Revenue on a pro forma basis).",
+      "anchor_clause": "(a) the pro forma LTV Ratio, immediately after giving effect to the making of the Incremental Term Loans, shall be no more than 55%; ... (g) the All-In Yield applicable to any Incremental Term Loans shall be determined by the Borrowers and the applicable Lenders providing such Incremental Term Loans; provided, that if the All-In Yield of any such Incremental Term Loans that are incurred prior to the date that is six months after the Third Amendment Effective Date exceeds the All-In Yield on any then-outstanding 2025 Incremental Term Loans ... by more than 0.50%, the applicable margins applicable to such outstanding 2025 Incremental Term Loans shall be increased to the extent necessary so that the yield on such 2025 Incremental Term Loans is 0.50% less than the All-In Yield on such Incremental Term Loans.",
+      "lme_vectors": [
+        {
+          "vector": "incremental_debt",
+          "risk": "open",
+          "rationale": "Incremental Term Loans and Permitted First Lien Notes may be incurred without a hard dollar cap, subject only to a pro forma LTV Ratio of no more than 55%, no default, and MFN/maturity conditions.",
+          "basis": "Annex A Specified Terms condition (a) sets a 55% LTV incurrence test; Negative Covenants section likewise permits secured debt subject to 55% pro forma LTV; this amendment adds $1.0bn of incremental term loans.",
+          "quote": "the pro forma LTV Ratio, immediately after giving effect to the making of the Incremental Term Loans, shall be no more than 55%"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "The amendment relies on Required Lenders consent under Section 10.08 for the Specified Amendment and pre-wires consent of the Designated 2025 Incremental Term Lender, but the sacred-rights / voting provisions of Section 10.08 are not reproduced, so priming protection cannot be confirmed.",
+          "basis": "Effectiveness of the Specified Amendment is tied to Required Lenders consent 'in accordance with the provisions of Section 10.08'; the substance of Section 10.08 is not in the excerpt.",
+          "quote": "the Required Lenders (and taking into account the consent of the Designated 2025 Incremental Term Lender and its assignees provided in the foregoing clause (a)) consenting to the terms of the Specified Terms ... in accordance with the provisions of Section 10.08"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "The structure ring-fences AAdvantage IP in SPV Parties and requires transferred Retained Agreements to be pledged as first-lien Collateral, with leakage of unpledged Retained Agreements capped below 15% of AAdvantage Revenue, constraining value transfer away from lenders.",
+          "basis": "Retained Agreement transfer/re-designation regime caps unpledged cash flows at <15.0% of AAdvantage Revenue; transferred agreements 'shall be pledged as Collateral on a first lien basis'; dedicated IP Contribution Structure and SPV covenants (5.06-5.13).",
+          "quote": "Any Retained Agreements so transferred to the Borrower shall be pledged as Collateral on a first lien basis and shall thereafter be an AAdvantage Agreement"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "Section 6.01 Restricted Payments exists but its baskets and thresholds are not reproduced in the provided excerpt, so restricted-payment leakage capacity cannot be assessed from the text.",
+          "basis": "Table of contents lists Section 6.01 Restricted Payments (p.151) but the operative RP baskets are not in the excerpt.",
+          "quote": "Section 6.01 Restricted Payments 151"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001193125-25-130155",
+        "form_type": "8-K",
+        "filing_date": "2025-05-29",
+        "exhibit": "EX-10.1",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312525130155/d919118dex101.htm",
+        "quote": "(a) the pro forma LTV Ratio, immediately after giving effect to the making of the Incremental Term Loans, shall be no more than 55%; ... (g) the All-In Yield applicable to any Incremental Term Loans shall be determined by the Borrowers and the applicable Lenders providing such Incremental Term Loans; provided, that if the All-In Yield of any such Incremental Term Loans that are incurred prior to the date that is six months after the Third Amendment Effective Date exceeds the All-In Yield on any then-outstanding 2025 Incremental Term Loans ... by more than 0.50%, the applicable margins applicable to such outstanding 2025 Incremental Term Loans shall be increased to the extent necessary so that the yield on such 2025 Incremental Term Loans is 0.50% less than the All-In Yield on such Incremental Term Loans."
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "Maintenance / incurrence LTV Ratio (loan-to-value) test",
+      "leverage_ratio_threshold": "no more than 55%",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated March 24, 2021",
+      "doc_class": "credit_agreement",
+      "operative_date": "2025-03-28",
+      "amendment_count": 1,
+      "base_missing": false,
+      "governs_instruments": [
+        "2021 AAdvantage Term Loan Facility"
+      ],
+      "admin_agent": "BARCLAYS BANK PLC",
+      "trustee": null,
+      "collateral_agent": "Master Collateral Agent (per Collateral Agency and Accounts Agreement); Depositary is Wilmington Trust, National Association",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "American Airlines Group Inc. (Parent) is a guarantor per the Lender Consent recital; the facility is a Term Loan Credit and Guaranty Agreement with the SPV loyalty structure (Loyalty Co, HoldCo 1, HoldCo 2)",
+      "financial_covenants": [
+        {
+          "kind": "Liquidity (minimum liquidity covenant)",
+          "threshold": "Not stated in provided text — Section 6.08 (Liquidity) appears in the negative covenants index but the operative threshold is not included in the excerpt",
+          "test_frequency": "Not stated in provided text",
+          "springing_trigger": null,
+          "quote": "Section 6.08 | Liquidity | 157161"
+        },
+        {
+          "kind": "Peak Debt Service Coverage (cure mechanic referenced)",
+          "threshold": "Not stated in provided text — Section 2.24 'Peak Debt Service Coverage Cure' is indexed but the coverage ratio threshold is not included in the excerpt",
+          "test_frequency": "Not stated in provided text",
+          "springing_trigger": null,
+          "quote": "Section 2.24 | Peak Debt Service Coverage Cure | 103106"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Restricted Payments (Section 6.01)",
+          "value": "Governed by Section 6.01; specific basket sizes not included in provided excerpt",
+          "quote": "Section 6.01 | Restricted Payments | 146149"
+        },
+        {
+          "name": "Incurrence of Indebtedness and Issuance of Preferred Stock (Section 6.02)",
+          "value": "Governed by Section 6.02; specific capacity not included in provided excerpt",
+          "quote": "Section 6.02 | Incurrence of Indebtedness and Issuance of Preferred Stock | 152156"
+        },
+        {
+          "name": "Liens (Section 6.06)",
+          "value": "Governed by Section 6.06; specific capacity not included in provided excerpt",
+          "quote": "Section 6.06 | Liens | 157160"
+        },
+        {
+          "name": "Disposition of Collateral (Section 6.04)",
+          "value": "Governed by Section 6.04; specific capacity not included in provided excerpt",
+          "quote": "Section 6.04 | Disposition of Collateral | 154158"
+        },
+        {
+          "name": "Incremental Term Loans (Section 2.27)",
+          "value": "Governed by Section 2.27; specific capacity not included in provided excerpt",
+          "quote": "Section 2.27 | Incremental Term Loans | 105109"
+        }
+      ],
       "ebitda_addback_categories": [
-        "Extraordinary loss and net loss on Disposition of assets",
-        "Provision for income/profits taxes",
-        "Fixed Charges (interest)",
-        "Foreign currency translation losses (including Indebtedness remeasurement)",
-        "Depreciation, amortization (including intangibles) and other non-cash charges/expenses",
+        "Extraordinary/nonrecurring, special or unusual losses on Dispositions",
+        "Provision for taxes based on income/profits",
+        "Fixed Charges",
+        "Foreign currency translation losses (including debt remeasurement)",
+        "Depreciation, amortization (including intangibles) and other non-cash charges",
         "Amortization of debt discount",
-        "Equity/Equity Interest grants to employees",
-        "Net loss on sale/exchange/disposition of capital assets",
+        "Deductions for equity grants to employees",
+        "Net loss on sale/exchange of capital assets",
         "Losses under fuel hedging arrangements",
-        "Business interruption insurance proceeds",
-        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions/mergers/dispositions/debt or equity issuances/investments",
-        "Non-cash items (other than accrual of revenue in Ordinary Course) that increased Consolidated Net Income (minus)"
+        "Proceeds from business interruption insurance",
+        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt incurrence, equity issuance or investments",
+        "Non-cash items increasing income (subtracted)"
       ],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries.\" Consolidated Net Income and Consolidated EBITDAR exclude the net income (loss) of any Unrestricted Subsidiary, confirming the restricted/unrestricted subsidiary architecture; specific designation conditions/caps are not reproduced in the provided text.",
-      "anchor_clause": null,
-      "lme_vectors": [],
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.06 governs 'Designation of Restricted and Unrestricted Subsidiaries'; the definition of Consolidated Net Income excludes the net income/loss of any Unrestricted Subsidiary, confirming an Unrestricted Subsidiary concept exists. Operative designation limits are not included in the provided excerpt.",
+      "anchor_clause": "Section 5.07 — Contribution of AAdvantage Intellectual Property; and the Contribution Agreements definition: American, HoldCo 1 or HoldCo 2 \"contributes, assigns or transfers (i) all of its rights, title and interest in and to the AAdvantage Intellectual Property that it owns or purports to own, or later develops (and owns) or acquires … directly or indirectly to Loyalty Co.\"",
+      "lme_vectors": [
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "unclear",
+          "rationale": "The structure is built around mandatory contribution of AAdvantage IP to Loyalty Co and there is an Unrestricted Subsidiary concept (Section 5.06; Consolidated Net Income excludes Unrestricted Subsidiaries), but the provided text does not contain the operative transfer restrictions or designation limits needed to assess IP leakage.",
+          "basis": "Contribution Agreements require American/HoldCos to contribute AAdvantage IP to Loyalty Co; Section 5.06 addresses designation of Restricted/Unrestricted Subsidiaries; Consolidated Net Income excludes Unrestricted Subsidiary results.",
+          "quote": "excluding the net income (loss) of any Unrestricted Subsidiary of such Person"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "An Incremental Term Loan facility exists (Section 2.27 and the Class definition distinguishing Incremental Term Loans), but the excerpt does not include the incremental capacity, ratio caps, or MFN terms.",
+          "basis": "Section 2.27 'Incremental Term Loans' is indexed; the Class definition references 'Incremental Term Loans that are not Initial/2025 Replacement Term Loans.'",
+          "quote": "Initial2025 ReplacementTerm Loans or Incremental Term Loans that are notInitial2025 ReplacementTerm Loans"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The provided text is an amendment refinancing plus definitions and section index; it does not include the voting/sacred-rights or pro rata sharing provisions needed to assess uptier priming risk.",
+          "basis": "No amendment/voting, sacred rights, or pro rata sharing provisions appear in the excerpt; only Section 10.04 (expenses) and generic amendment mechanics are referenced.",
+          "quote": "the provisions of Section 10.04 of the Credit Agreement shall apply to, and inure to the benefit of, each Lead Arranger"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "A Restricted Payments covenant exists (Section 6.01) and Disqualified Stock is defined by reference to it, but the excerpt lacks the RP basket sizes, builder mechanics, and carve-outs required to assess leakage.",
+          "basis": "Section 6.01 'Restricted Payments' is indexed; Disqualified Stock definition cross-references compliance with Section 6.01.",
+          "quote": "may not repurchase or redeem any such Capital Stock pursuant to such provisions unless such repurchase or redemption complies with Section 6.01"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001193125-25-067150",
+        "form_type": "8-K",
+        "filing_date": "2025-03-28",
+        "exhibit": "EX-10.1",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312525067150/d941564dex101.htm",
+        "quote": "Section 5.07 — Contribution of AAdvantage Intellectual Property; and the Contribution Agreements definition: American, HoldCo 1 or HoldCo 2 \"contributes, assigns or transfers (i) all of its rights, title and interest in and to the AAdvantage Intellectual Property that it owns or purports to own, or later develops (and owns) or acquires … directly or indirectly to Loyalty Co.\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "Liquidity (minimum liquidity covenant)",
+      "leverage_ratio_threshold": "Not stated in provided text — Section 6.08 (Liquidity) appears in the negative covenants index but the operative threshold is not included in the excerpt",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated December 19, 2024",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-03-09",
+      "amendment_count": 1,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "Barclays Bank PLC (as Administrative Agent). Wilmington Trust, National Association served as trustee/collateral agent for the 2023 Secured Notes; Citibank, N.A. is a lead arranger/bookrunner for this Eleventh Amendment.",
+      "trustee": "Wilmington Trust, National Association (trustee and collateral agent for the 2023 Secured Notes indenture; not necessarily the trustee for this credit facility).",
+      "collateral_agent": "Collateral Agent as defined in the preamble to the Credit Agreement (successor provisions per Section 1.02(b)); the specific named entity is not identified in the excerpt.",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "American Airlines Group Inc. (Parent) guarantees the Obligations of the Borrower (American Airlines, Inc.) pursuant to Article IX; \"Guaranteed Obligations\" expressly include obligations under the 2026 Incremental Revolving Commitments.",
+      "financial_covenants": [
+        {
+          "kind": "Collateral Coverage Ratio (maintenance / secured-asset coverage)",
+          "threshold": "At least 1.6 to 1.0 (a 'Collateral Coverage Ratio Failure' is failure to be at least 1.6 to 1.0)",
+          "test_frequency": "As of any date of determination; certified via Collateral Coverage Ratio Certificate (Certificate Delivery Date per Section 6.09(a))",
+          "springing_trigger": null,
+          "quote": "“Collateral Coverage Ratio Failure” shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
+        },
+        {
+          "kind": "Liquidity covenant (Section 6.08)",
+          "threshold": "Threshold not stated in the provided excerpt (Section 6.08 'Liquidity' listed in ToC; Officer's Certificate certifying Liquidity required as a closing condition)",
+          "test_frequency": "Certified by Officer's Certificate; specific frequency/threshold not in excerpt",
+          "springing_trigger": null,
+          "quote": "the Administrative Agent shall have received an Officer’s Certificate certifying as to the Collateral Coverage Ratio and Liquidity in accordance with of the Credit Agreement"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "2026 Incremental Revolving Commitments (established by this Eleventh Amendment)",
+          "value": "$362,833,333.30",
+          "quote": "of the Borrower’s request for new Incremental Revolving Commitments to be established on the Eleventh Amendment Effective Date in an aggregate amount of $362,833,333.30 (the “2026 Incremental Revolving Commitments”)"
+        },
+        {
+          "name": "New LC Commitments (established by this Eleventh Amendment)",
+          "value": "$155,000,000",
+          "quote": "of the Borrower’s request for new LC Commitments to be established on the Eleventh Amendment Effective Date in an aggregate amount of $155,000,000"
+        },
+        {
+          "name": "Restricted Payments (Section 6.01)",
+          "value": "Capacity governed by Section 6.01; specific baskets not contained in the provided excerpt",
+          "quote": "SECTION 6.01. Restricted Payments 141"
+        },
+        {
+          "name": "Liens (Section 6.06)",
+          "value": "Governed by Section 6.06; specific permitted-lien capacities not in excerpt",
+          "quote": "SECTION 6.06. Liens 154"
+        }
+      ],
+      "ebitda_addback_categories": [
+        "Extraordinary loss / net loss on Disposition of assets",
+        "Provision for income/profits taxes",
+        "Fixed Charges (interest, etc.)",
+        "Foreign currency translation losses (incl. currency remeasurements of Indebtedness)",
+        "Depreciation, amortization (incl. intangibles) and other non-cash charges",
+        "Amortization of debt discount",
+        "Equity Interest grants to employees (non-cash)",
+        "Net loss on sale/exchange/disposition of capital assets",
+        "Fuel hedging losses (pre-Closing arrangements; realized post-Closing losses)",
+        "Business interruption insurance proceeds",
+        "Expenses covered by indemnification/reimbursement in permitted acquisitions/mergers/dispositions/financings",
+        "Non-cash items increasing Consolidated Net Income (subtracted); income tax credits and interest income (subtracted)"
+      ],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 governs \"Designation of Restricted and Unrestricted Subsidiaries\"; Consolidated Net Income excludes the net income (loss) of any Unrestricted Subsidiary. The mechanics, conditions, and any caps on designation are not set out in the provided excerpt, so the degree of flexibility cannot be assessed from this text.",
+      "anchor_clause": "\"Collateral Coverage Ratio Failure\" shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0. — where the Collateral Coverage Ratio is the ratio of the Appraised Value of the Collateral to the sum (without duplication) of Total Revolving Extensions of Credit, all Term Loans, all Pari Passu Senior Secured Debt, and Designated Hedging/Banking Product Obligations then outstanding (the \"Total Obligations\").",
+      "lme_vectors": [
+        {
+          "vector": "incremental_debt",
+          "risk": "open",
+          "rationale": "The facility expressly permits establishment of Incremental Revolving Commitments, and this Eleventh Amendment adds $362.8mm of new revolving commitments plus $155mm of LC commitments, sharing in the same Collateral and guarantees.",
+          "basis": "Incremental Revolving Commitments are contemplated by the Credit Agreement; the amendment establishes 2026 Incremental Revolving Commitments of $362,833,333.30 and new LC Commitments of $155,000,000, added as pari passu secured Obligations.",
+          "quote": "the Borrower may request the establishment of Incremental Revolving Commitments, subject to and on the terms and conditions provided therein"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "The amendment relies on Required Lenders consent for a 'Specified Amendment' and pre-baked consent mechanics, but the sacred-rights / voting protections and any priming carve-outs are not set out in the provided excerpt.",
+          "basis": "Specified Amendment becomes effective upon Required Lenders consenting (taking into account 2026 Incremental Revolving Lenders' pre-given consent), but no amendment/sacred-rights section text is included.",
+          "quote": "Such Specified Amendment shall become effective upon (i) the Required Lenders ... consenting to the terms of the Specified Terms"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "The excerpt contains a Section 5.05 designation covenant reference and excludes Unrestricted Subsidiary income from CNI, but no text restricting transfers of material assets/IP to unrestricted subsidiaries is present.",
+          "basis": "Only definitional references (Unrestricted Subsidiary designation in Section 5.05; CNI exclusion) appear; the operative transfer-blocker language is not in the provided text.",
+          "quote": "excluding the net income (loss) of any Unrestricted Subsidiary of such Person"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "Section 6.01 Restricted Payments is listed in the table of contents but its operative capacity and builder-basket terms are not contained in the provided excerpt.",
+          "basis": "Only the ToC reference to Section 6.01 Restricted Payments is present; no basket sizes or build-up mechanics are quoted.",
+          "quote": "SECTION 6.01. Restricted Payments 141"
+        }
+      ],
       "citation": {
         "accession_no": "0001193125-26-098647",
         "form_type": "8-K",
@@ -1698,46 +2237,106 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312526098647/d35934dex102.htm",
-        "quote": "\"Collateral Coverage Ratio Failure\" shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
+        "quote": "\"Collateral Coverage Ratio Failure\" shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0. — where the Collateral Coverage Ratio is the ratio of the Appraised Value of the Collateral to the sum (without duplication) of Total Revolving Extensions of Credit, all Term Loans, all Pari Passu Senior Secured Debt, and Designated Hedging/Banking Product Obligations then outstanding (the \"Total Obligations\")."
       },
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "None (no leverage-ratio maintenance covenant); this secured facility instead relies on a Collateral Coverage Ratio maintenance covenant (Section 6.09) and a Liquidity covenant (Section 6.08)",
-      "leverage_ratio_threshold": "No leverage ratio. Collateral Coverage Ratio maintenance test: a \"Collateral Coverage Ratio Failure\" occurs if the ratio falls below 1.6 to 1.0 (Appraised Value of Collateral / Total Obligations)",
+      "leverage_covenant_type": "Collateral Coverage Ratio (maintenance / secured-asset coverage)",
+      "leverage_ratio_threshold": "At least 1.6 to 1.0 (a 'Collateral Coverage Ratio Failure' is failure to be at least 1.6 to 1.0)",
       "restricted_payments_basket_size": null,
-      "lme_risk_notes": "This document is the Eleventh Amendment establishing $362,833,333.30 of 2026 Incremental Revolving Commitments and $155,000,000 of LC Commitments, replacing terminated Existing Revolving/LC Commitments; it is not a new LME transaction. Notable feature: Section Three contains a broad pre-wired consent/authorization mechanism — the 2026 Incremental Revolving Lenders irrevocably consent to and authorize the Administrative Agent, Borrower and Guarantor to enter a future \"Specified Amendment\" implementing \"Specified Terms\" without further lender consent, effective upon Required Lenders consenting or, if earlier, upon repayment/repricing/replacement of the 2024 Replacement Term Loans; this reduces individual-lender control and is a coordination/uptier-type flexibility. This is a secured airline facility (SGR/route/slot/gate collateral) protected by a 1.6:1.0 Collateral Coverage Ratio and a Liquidity covenant rather than by a leverage covenant; priming risk is mitigated by the collateral-coverage maintenance test but drop-down/uptier protections are not evident in the excerpted text. J.Crew blocker and MFN sunset provisions are not addressed in the provided sections."
+      "lme_risk_notes": null
     },
     {
-      "family_label": null,
-      "doc_class": null,
-      "operative_date": null,
-      "amendment_count": 0,
+      "family_label": "credit agreement dated December 23, 2024",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-03-09",
+      "amendment_count": 1,
       "base_missing": false,
       "governs_instruments": [],
-      "admin_agent": null,
+      "admin_agent": "Citibank, N.A.",
       "trustee": null,
-      "collateral_agent": null,
-      "creditor_note": null,
-      "guarantors": null,
-      "financial_covenants": [],
-      "baskets": [],
+      "collateral_agent": "Wilmington Trust, National Association (Collateral Trustee under the Collateral Trust Agreement dated December 4, 2023)",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "American Airlines Group Inc. (Parent) and the domestic Subsidiaries of Parent from time to time party to the agreement (other than the Borrower), each providing a guaranty of the Obligations pursuant to Article IX",
+      "financial_covenants": [
+        {
+          "kind": "Collateral Coverage Ratio (maintenance)",
+          "threshold": "At least 1.6 to 1.0 (a 'Collateral Coverage Ratio Failure' occurs if the ratio is less than 1.6:1.0); ratio = Appraised Value of Collateral / Total Obligations",
+          "test_frequency": "As of any date of determination / per Certificate Delivery Date (Section 6.09)",
+          "springing_trigger": null,
+          "quote": "“Collateral Coverage Ratio Failure” shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
+        },
+        {
+          "kind": "Minimum Liquidity (maintenance)",
+          "threshold": "Not quantified in the excerpted text (Section 6.08 'Liquidity'); Officer's Certificate must certify as to Liquidity",
+          "test_frequency": "As certified per the Credit Agreement (Section 6.08)",
+          "springing_trigger": null,
+          "quote": "the Administrative Agent shall have received an Officer’s Certificate certifying as to the Collateral Coverage Ratio and Liquidity in accordance with of the Credit Agreement"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "2026 Incremental Revolving Commitments (established via Fourth Amendment)",
+          "value": "$1,451,333,333.35",
+          "quote": "the Borrower’s request for new Incremental Revolving Commitments to be established on the Fourth Amendment Effective Date in an aggregate amount of $1,451,333,333.35 (the “2026 Incremental Revolving Commitments”)"
+        },
+        {
+          "name": "Restricted Payments (Section 6.01)",
+          "value": "Not quantified in excerpted text",
+          "quote": "SECTION 6.01. Restricted Payments"
+        },
+        {
+          "name": "Liens (Section 6.06)",
+          "value": "Not quantified in excerpted text",
+          "quote": "SECTION 6.06. Liens"
+        }
+      ],
       "ebitda_addback_categories": [
-        "Extraordinary loss / net loss on dispositions of assets",
-        "Provision for income/profit taxes",
-        "Fixed Charges (interest, etc.)",
+        "Extraordinary losses and net losses on Disposition of assets",
+        "Provision for income/profits taxes",
+        "Fixed Charges (interest expense)",
         "Foreign currency translation losses (including on Indebtedness remeasurement)",
-        "Depreciation and amortization (including intangibles) and other non-cash charges/expenses",
+        "Depreciation, amortization (including of intangibles) and other non-cash charges/expenses",
         "Amortization of debt discount",
         "Equity-based compensation grants to employees",
         "Net loss on sale/exchange/disposition of capital assets",
         "Losses under fuel hedging arrangements",
-        "Proceeds from business interruption insurance",
-        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt/equity issuances or investments"
+        "Business interruption insurance proceeds",
+        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions/mergers/dispositions/debt/equity/investments"
       ],
-      "mfn_sunset_period": "Not present in the provided excerpts. The agreement defines \"All-In/Initial Yield\" (relevant to MFN pricing on Incremental Term Loans referencing the Original Term Loans' Adjusted Term SOFR floor), but no MFN spread cushion or sunset period is stated in the text provided.",
+      "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries\" and Consolidated Net Income excludes the net income (loss) of any Unrestricted Subsidiary, confirming an unrestricted-subsidiary construct exists. The specific designation mechanics/limitations are not reproduced in the provided excerpts.",
-      "anchor_clause": null,
-      "lme_vectors": [],
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 governs \"Designation of Restricted and Unrestricted Subsidiaries.\" Consolidated Net Income excludes the net income (loss) of any Unrestricted Subsidiary, confirming an unrestricted-subsidiary concept exists, but the specific designation conditions/limits are not set out in the excerpted text.",
+      "anchor_clause": "\"Collateral Coverage Ratio\" shall mean, as of any date of determination, the ratio of (i) the Appraised Value of the Collateral with respect to such date of determination to (ii) the sum, without duplication, of (w) the Total Revolving Extensions of Credit then outstanding ... plus (x) the aggregate principal amount of all Term Loans then outstanding, plus (y) the aggregate principal amount of all Pari Passu Senior Secured Debt then outstanding plus (z) the aggregate amount of all Designated Hedging Obligations and Designated Banking Product Obligations that constitute \"Obligations\" then outstanding (such sum, the \"Total Obligations\").",
+      "lme_vectors": [
+        {
+          "vector": "incremental_debt",
+          "risk": "open",
+          "rationale": "The Fourth Amendment itself establishes $1.45 billion of new Incremental Revolving Commitments pursuant to the Credit Agreement's incremental facility provisions (Section 2.27), demonstrating available capacity to add pari passu revolving debt.",
+          "basis": "The amendment terminates existing revolving/LC commitments and replaces them with 2026 Incremental Revolving Commitments; the Credit Agreement expressly permits the Borrower to request Incremental Revolving Commitments subject to conditions.",
+          "quote": "the Borrower may request the establishment of Incremental Revolving Commitments, subject to and on the terms and conditions provided therein"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The excerpted text addresses reaffirmation of liens and incremental revolving capacity but does not contain voting/sacred-rights or priming provisions governing whether existing lenders can be subordinated.",
+          "basis": "No amendment or waterfall/sacred-rights provisions appear in the excerpt; only lien reaffirmation and the Collateral Trust structure are shown.",
+          "quote": "reaffirm the grant of Liens on the Collateral to secure the Obligations ... pursuant to the Collateral Documents"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "unclear",
+          "rationale": "The agreement contemplates Restricted and Unrestricted Subsidiaries and excludes Unrestricted Subsidiary income from EBITDA/Net Income, but the excerpt does not show any blocker restricting transfers of collateral (Route Authorities, Slots, Gate Leaseholds) to Unrestricted Subsidiaries.",
+          "basis": "Section 5.05 designation mechanic and Consolidated Net Income exclusion of Unrestricted Subsidiaries confirm an unrestricted-sub concept; Section 6.04 governs Disposition of Collateral but its terms are not in the excerpt.",
+          "quote": "excluding the net income (loss) of any Unrestricted Subsidiary of such Person"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "A Restricted Payments covenant (Section 6.01) and a covenant restricting subsidiary dividend/payment ability (Section 6.02) exist, but no thresholds or builder-basket terms are contained in the excerpted text.",
+          "basis": "The table of contents lists Section 6.01 Restricted Payments and Section 6.02 restrictions on Restricted Subsidiaries' ability to pay dividends; substance is not excerpted.",
+          "quote": "SECTION 6.01. Restricted Payments"
+        }
+      ],
       "citation": {
         "accession_no": "0001193125-26-098647",
         "form_type": "8-K",
@@ -1746,13 +2345,427 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312526098647/d35934dex103.htm",
-        "quote": "\"Collateral Coverage Ratio Failure\" shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
+        "quote": "\"Collateral Coverage Ratio\" shall mean, as of any date of determination, the ratio of (i) the Appraised Value of the Collateral with respect to such date of determination to (ii) the sum, without duplication, of (w) the Total Revolving Extensions of Credit then outstanding ... plus (x) the aggregate principal amount of all Term Loans then outstanding, plus (y) the aggregate principal amount of all Pari Passu Senior Secured Debt then outstanding plus (z) the aggregate amount of all Designated Hedging Obligations and Designated Banking Product Obligations that constitute \"Obligations\" then outstanding (such sum, the \"Total Obligations\")."
       },
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "None (no total-leverage maintenance financial covenant); the deal instead uses a Collateral Coverage Ratio maintenance test and a Liquidity covenant",
-      "leverage_ratio_threshold": "No leverage ratio. Maintenance tests are: Collateral Coverage Ratio (Section 6.09) with a Collateral Coverage Ratio Failure defined as failure to be at least 1.6 to 1.0; plus a minimum Liquidity covenant (Section 6.08) — dollar threshold not stated in the excerpts provided.",
-      "restricted_payments_basket_size": "Not specified in the excerpts (Section 6.01 Restricted Payments referenced but basket amounts not reproduced in the provided text).",
-      "lme_risk_notes": "This is a secured airline financing (American Airlines) collateralized by route authorities, slots, foreign gate leaseholds, aircraft/spare engines, ground equipment, spare parts and related assets held by a Collateral Trustee. Rather than a leverage covenant, credit protection runs through the Collateral Coverage Ratio (must stay ≥ 1.6:1.0) plus a Liquidity covenant and Collateral disposition controls (Section 6.04). The presence of an Unrestricted Subsidiary designation construct (Section 5.05) plus CNI exclusion of Unrestricted Subsidiary results creates potential drop-down/collateral-leakage capacity typical of J.Crew-style risk — though the excerpts do not reproduce a specific IP/asset-transfer blocker, so the strength of any drop-down protection cannot be confirmed from the text provided. The Fourth Amendment itself terminates existing revolver/LC commitments and establishes $1,451,333,333.35 of 2026 Incremental Revolving Commitments; incremental capacity (Section 2.27) is a priming/dilution vector. Uptier risk turns on amendment/voting provisions not included in these excerpts."
+      "leverage_covenant_type": "Collateral Coverage Ratio (maintenance)",
+      "leverage_ratio_threshold": "At least 1.6 to 1.0 (a 'Collateral Coverage Ratio Failure' occurs if the ratio is less than 1.6:1.0); ratio = Appraised Value of Collateral / Total Obligations",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated June 4, 2024",
+      "doc_class": "credit_agreement",
+      "operative_date": "2024-12-23",
+      "amendment_count": 2,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "Citibank, N.A.",
+      "trustee": null,
+      "collateral_agent": "Collateral Trustee (Wilmington Trust, N.A. under the Collateral Trust Agreement dated December 4, 2023)",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "American Airlines Group Inc. (Parent) as Guarantor, together with the Subsidiary Guarantors (certain direct Domestic Subsidiaries of Parent from time to time party to the Credit Agreement), each guaranteeing the Obligations of the Borrower pursuant to Article IX",
+      "financial_covenants": [
+        {
+          "kind": "Collateral Coverage Ratio (maintenance / collateral-value covenant)",
+          "threshold": "At least 1.6 to 1.0 (a ratio below this level is a 'Collateral Coverage Ratio Failure')",
+          "test_frequency": "As of any date of determination (tested via Collateral Coverage Ratio Certificate; see Section 6.09 and Certificate Delivery Date)",
+          "springing_trigger": null,
+          "quote": "Collateral Coverage Ratio Failure shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
+        },
+        {
+          "kind": "Liquidity (minimum liquidity covenant, Section 6.08)",
+          "threshold": "Not specified in the provided text (Section 6.08 'Liquidity' listed in table of contents; threshold not quoted here)",
+          "test_frequency": "Not specified in the provided text",
+          "springing_trigger": null,
+          "quote": "SECTION 6.08. | |Liquidity | |133 |"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Restricted Payments (Section 6.01)",
+          "value": "Capacity/threshold not set out in the provided text",
+          "quote": "SECTION 6.01. | |Restricted Payments | |122 |"
+        },
+        {
+          "name": "Liens (Section 6.06)",
+          "value": "Capacity/threshold not set out in the provided text",
+          "quote": "SECTION 6.06. | |Liens | |133 |"
+        },
+        {
+          "name": "Incremental Term Loans / 2024 Incremental Revolving Commitments",
+          "value": "2024 Incremental Revolving Commitments not to exceed the amount set opposite each Revolving Lender's name; aggregate cap not quoted in provided text",
+          "quote": "2024 Incremental Revolving Commitments shall mean the commitment of each applicable Revolving Lender to make Revolving Loans and participate in Letters of Credit hereunder in an aggregate principal and/or face amount not to exceed the amount set forth under the heading 2024 Incremental Revolving Commitments opposite its name"
+        },
+        {
+          "name": "Disposition of Collateral (Section 6.04)",
+          "value": "Capacity not set out in the provided text",
+          "quote": "SECTION 6.04. | |Disposition of Collateral | |130 |"
+        },
+        {
+          "name": "Transactions with Affiliates (Section 6.05)",
+          "value": "Capacity/threshold not set out in the provided text",
+          "quote": "SECTION 6.05. | |Transactions with Affiliates | |131 |"
+        }
+      ],
+      "ebitda_addback_categories": [
+        "Extraordinary losses and net losses on Dispositions of assets",
+        "Provision for taxes based on income or profits",
+        "Fixed Charges (interest expense)",
+        "Foreign currency translation losses (including on Indebtedness remeasurement)",
+        "Depreciation, amortization of intangibles and other non-cash charges",
+        "Amortization of debt discount",
+        "Deductions for grants of Equity Interests to employees",
+        "Net loss on sale/exchange/disposition of capital assets",
+        "Losses under fuel hedging arrangements",
+        "Proceeds from business interruption insurance",
+        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers (incl. AMR/US Airways Merger, Airlines Merger, Airline/Parent Merger), dispositions, debt incurrence, equity issuance or investments"
+      ],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 governs \"Designation of Restricted and Unrestricted Subsidiaries\"; Consolidated Net Income expressly \"excluding the net income (loss) of any Unrestricted Subsidiary.\" The specific mechanics/conditions for designation are not set out in the provided text.",
+      "anchor_clause": "\"Collateral Coverage Ratio Failure shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.\"",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "This is a Third Amendment effecting a refinancing/replacement of the Existing Term Loans consented to via Lender Consents; the provided text does not contain the sacred-rights/voting or pro rata sharing provisions needed to assess priming protection, though the collateral trust and Pari Passu Senior Secured Debt concept exist.",
+          "basis": "Refinancing done pursuant to Section 10.08(e) with Lender Consents; Collateral Coverage Ratio includes 'Pari Passu Senior Secured Debt then outstanding'; amendment voting provisions not in excerpt.",
+          "quote": "pursuant to Section 10.08(e) of the Credit Agreement, the Borrower desires to refinance in full the Existing Term Loans with the proceeds of the Third Amendment Replacement Term Loans"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "unclear",
+          "rationale": "The agreement contemplates Unrestricted Subsidiaries and excludes their net income, and Section 5.05 governs designation, but the provided text does not include any transfer restriction on moving material IP/routes/slots to Unrestricted Subsidiaries, so J. Crew protection cannot be confirmed.",
+          "basis": "Consolidated Net Income excludes Unrestricted Subsidiary income; Section 5.05 'Designation of Restricted and Unrestricted Subsidiaries'; Core Collateral requires maintaining >=90% of specified Foreign Slots as collateral.",
+          "quote": "excluding the net income (loss) of any Unrestricted Subsidiary of such Person"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "The deal has an Incremental Term Loan / 2024 Incremental Revolving Commitment framework with an MFN concept embedded in the All-In Initial Yield / Adjusted Term SOFR floor definition, but the incremental cap, ratio conditions and MFN sunset are not set out in the provided text.",
+          "basis": "Definitions of '2024 Incremental Revolving Commitments', 'Incremental Term Loans', and 'All-In Initial Yield' referencing OID and Adjusted Term SOFR floor comparisons to the Original Term Loans.",
+          "quote": "with respect to any Class of Incremental Term Loans that contains an interest rate floor with respect to Adjusted Term SOFR, the amount, if any, by which (1) such Adjusted Term SOFR floor exceeds (2) the Adjusted Term SOFR floor applicable to the Original Term Loans"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "Section 6.01 Restricted Payments and Section 6.02 (restrictions on subsidiary dividends) exist in the table of contents but the operative RP builder basket and carve-out text are not included in the provided excerpt, so leakage capacity cannot be assessed.",
+          "basis": "Section 6.01 'Restricted Payments' and Section 6.02 restrictions on Restricted Subsidiaries paying dividends listed in ToC; no operative RP text quoted.",
+          "quote": "SECTION 6.01. | |Restricted Payments | |122 |"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001193125-24-284304",
+        "form_type": "8-K",
+        "filing_date": "2024-12-23",
+        "exhibit": "EX-10.2",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312524284304/d714079dex102.htm",
+        "quote": "\"Collateral Coverage Ratio Failure shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "Collateral Coverage Ratio (maintenance / collateral-value covenant)",
+      "leverage_ratio_threshold": "At least 1.6 to 1.0 (a ratio below this level is a 'Collateral Coverage Ratio Failure')",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated September 22, 2016",
+      "doc_class": "credit_agreement",
+      "operative_date": "2024-02-21",
+      "amendment_count": 1,
+      "base_missing": true,
+      "governs_instruments": [],
+      "admin_agent": "Citibank N.A.",
+      "trustee": null,
+      "collateral_agent": "Collateral Agent (party to the SGR Security Agreement Supplement; specific entity not named in the excerpt)",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "American Airlines Group Inc. (the Parent / Guarantor)",
+      "financial_covenants": [],
+      "baskets": [],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"THIS SIXTH AMENDMENT TO AMENDED AND RESTATED CREDIT AND GUARANTY AGREEMENT (this \"Sixth Amendment\"), is dated as of December 10, 2018 and is among American Airlines, Inc., a Delaware corporation (the \"Borrower\"), American Airlines Group Inc., a Delaware corporation (the \"Parent\" or the \"Guarantor\"), the Consenting Revolving Lenders ... and Citibank N.A., as administrative agent ... and as an issuing lender.\"",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "This excerpt is a Sixth Amendment concerned solely with revolving commitment extensions, notice waivers, and agent-role designations, and contains no sacred-rights, voting, or priming provisions.",
+          "basis": "The amendment text addresses only establishment of New Revolving Commitments, the Revolver Extension, notice waivers under Sections 2.27(a) and 2.28(e), and arranger/agent designations.",
+          "quote": "the Administrative Agent hereby waives (a) the minimum notice required by Section 2.27(a) of the Credit Agreement in connection with the establishment of the New Revolving Commitments and (b) the minimum notice required by Section 2.28(e) of the Credit Agreement in connection with the Revolver Extension"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "The excerpt contains no unrestricted-subsidiary designation mechanics or IP/asset-transfer restrictions; it is limited to revolving-facility amendment logistics.",
+          "basis": "No definitions or negative covenants relating to investments, restricted/unrestricted subsidiaries, or IP transfers appear in the provided text.",
+          "quote": "each capitalized terms used herein and not otherwise defined shall have the respective meanings provided to such terms in the Credit Agreement as defined below."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "While the amendment establishes New Revolving Commitments, the excerpt provides no incremental-facility cap, ratio test, or MFN terms to assess capacity.",
+          "basis": "The text references establishment of New Revolving Commitments and a Revolver Extension but recites no sizing, ratio, or MFN provisions.",
+          "quote": "the establishment of the New Revolving Commitments"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "The excerpt contains no restricted-payments covenant, basket, or builder provision; it is silent on dividends, distributions, or investments.",
+          "basis": "The provided clauses cover only commitment mechanics, conditions to effectiveness, expense reimbursement, and agent roles.",
+          "quote": "all accrued and unpaid fees (other than the Commitment Fee, which shall be payable in accordance with the Credit Agreement)"
+        }
+      ],
+      "citation": {
+        "accession_no": "0000006201-24-000010",
+        "form_type": "10-K",
+        "filing_date": "2024-02-21",
+        "exhibit": "EX-10.24",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620124000010/ex1024-sixthamendmenttoame.htm",
+        "quote": "\"THIS SIXTH AMENDMENT TO AMENDED AND RESTATED CREDIT AND GUARANTY AGREEMENT (this \"Sixth Amendment\"), is dated as of December 10, 2018 and is among American Airlines, Inc., a Delaware corporation (the \"Borrower\"), American Airlines Group Inc., a Delaware corporation (the \"Parent\" or the \"Guarantor\"), the Consenting Revolving Lenders ... and Citibank N.A., as administrative agent ... and as an issuing lender.\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated May 15, 2018",
+      "doc_class": "credit_agreement",
+      "operative_date": "2024-02-21",
+      "amendment_count": 1,
+      "base_missing": true,
+      "governs_instruments": [],
+      "admin_agent": "Deutsche Bank AG New York Branch",
+      "trustee": null,
+      "collateral_agent": null,
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "American Airlines Group Inc. (the Parent/Guarantor)",
+      "financial_covenants": [],
+      "baskets": [],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"Notwithstanding anything in this Fifth Amendment or the Credit Agreement to the contrary, the Administrative Agent hereby waives the minimum notice required by Section 2.28(e) of the Credit Agreement in connection with the Revolver Extension to be effected pursuant to this Fifth Amendment.\"",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "This Fifth Amendment addresses only a revolver extension, lender roles/titles, and closing conditions; it contains no lien subordination, sacred-rights, or voting provisions bearing on priming.",
+          "basis": "The excerpted text covers Revolver Extension mechanics, arranger/agent titles, and conditions to effectiveness only.",
+          "quote": "in connection with the Revolver Extension to be effected pursuant to this Fifth Amendment"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "No provisions concerning unrestricted subsidiaries or transfer of material IP/assets appear in the excerpt.",
+          "basis": "The amendment text is limited to revolver extension, roles, and effectiveness conditions.",
+          "quote": "each of the following conditions specified below shall have been satisfied"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "The excerpt adds new/extending revolving lenders and commitments but does not set out any incremental facility or ratio-debt capacity terms.",
+          "basis": "New Revolving Lenders and Extending Revolving Lenders are named but no incremental sizing or ratio test is provided in the text.",
+          "quote": "the New Revolving Lenders ... and each New Revolving Lender shall have signed a counterpart hereof"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "No restricted-payments basket or capacity language is present in the provided excerpt.",
+          "basis": "The text concerns amendment mechanics, fees, and agent titles only.",
+          "quote": "a one time, non-refundable fee equal to the amount set forth in that certain Extending Revolving Len"
+        }
+      ],
+      "citation": {
+        "accession_no": "0000006201-24-000010",
+        "form_type": "10-K",
+        "filing_date": "2024-02-21",
+        "exhibit": "EX-10.31",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620124000010/ex1031-fifthamendmenttoame.htm",
+        "quote": "\"Notwithstanding anything in this Fifth Amendment or the Credit Agreement to the contrary, the Administrative Agent hereby waives the minimum notice required by Section 2.28(e) of the Credit Agreement in connection with the Revolver Extension to be effected pursuant to this Fifth Amendment.\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated April 29, 2016",
+      "doc_class": "credit_agreement",
+      "operative_date": "2024-02-21",
+      "amendment_count": 1,
+      "base_missing": true,
+      "governs_instruments": [],
+      "admin_agent": "Barclays Bank PLC",
+      "trustee": null,
+      "collateral_agent": null,
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "American Airlines Group Inc. (the \"Parent\" or \"Guarantor\")",
+      "financial_covenants": [],
+      "baskets": [],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"the Borrower may make a Revolver Extension Offer to all Revolving Lenders holding Revolving Commitments under the Credit Agreement to extend the maturity date of each such Revolving Lender's Revolving Commitment\" (Section 2.28(b) of the Credit Agreement, as referenced in the Fourth Amendment).",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "This Fourth Amendment addresses only a revolving commitment maturity extension and related agent/arranger titles; it contains no lien subordination, priming, or voting-mechanics provisions.",
+          "basis": "The amendment operates under Section 2.28(b) (Revolver Extension Offer) and amends Annex A, fees, and titles/roles only.",
+          "quote": "the Borrower may make a Revolver Extension Offer to all Revolving Lenders holding Revolving Commitments under the Credit Agreement to extend the maturity date of each such Revolving Lender's Revolving Commitment"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "The text is silent on unrestricted subsidiaries, IP/asset transfers, or investment capacity; it covers only the revolver extension mechanics.",
+          "basis": "No definitions or covenants concerning unrestricted subsidiaries or asset transfers appear in the excerpted amendment.",
+          "quote": "each Revolving Lender that is a party to the Credit Agreement immediately prior to the Fourth Amendment"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "The amendment extends existing revolving commitments and adds new revolving lenders' commitments as a maturity extension, but does not set out incremental facility capacity, ratio debt, or MFN terms.",
+          "basis": "New Revolving Lenders (HSBC, MUFG, BoT) join in connection with a Revolver Extension Offer under Section 2.28(b); no incremental sizing or ratio tests are quoted.",
+          "quote": "HSBC Bank USA, N.A. ... MUFG Union Bank, N.A. ... and BOKF, NA dba Bank of Texas ... collectively, the \"New Revolving Lenders\""
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "The excerpt contains no restricted-payment, dividend, or investment covenant language; it addresses fees, conditions to effectiveness, and titles/roles only.",
+          "basis": "Provisions cover the Upfront Fee, Commitment Fee, expense reimbursement under Section 10.04, and agent designations only.",
+          "quote": "the Borrower shall have paid (or caused to be paid), for the account of each Extending Revolving Lender, a one time, non-refundable fee"
+        }
+      ],
+      "citation": {
+        "accession_no": "0000006201-24-000010",
+        "form_type": "10-K",
+        "filing_date": "2024-02-21",
+        "exhibit": "EX-10.37",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620124000010/ex1037-fourthamendmenttoam.htm",
+        "quote": "\"the Borrower may make a Revolver Extension Offer to all Revolving Lenders holding Revolving Commitments under the Credit Agreement to extend the maturity date of each such Revolving Lender's Revolving Commitment\" (Section 2.28(b) of the Credit Agreement, as referenced in the Fourth Amendment)."
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "indenture dated December 4, 2023",
+      "doc_class": "indenture",
+      "operative_date": "2023-12-04",
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "Citibank, N.A. (administrative agent under the 2023 Credit Agreement)",
+      "trustee": "URE Dated as of December 4, 2023 Wilmington Trust, National Association",
+      "collateral_agent": "Wilmington Trust, National Association (as Collateral Trustee)",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "The Guarantors party hereto from time to time; the Note Guarantee is provided by the Parent (guaranteeing the Company's obligations) and any other person providing a Guarantee pursuant to Section 9.01(i)",
+      "financial_covenants": [
+        {
+          "kind": "Collateral Coverage Ratio (maintenance)",
+          "threshold": "at least 1.6 to 1.0",
+          "test_frequency": "As of any date of determination (see Section 4.14; appraisals delivered under Section 4.13)",
+          "springing_trigger": null,
+          "quote": "Collateral Coverage Deficiency means, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Fixed Charge Coverage Ratio (ratio debt incurrence test)",
+          "value": "Used as the ratio-based incurrence test under Section 4.08; specific required ratio not shown in provided excerpt",
+          "quote": "Fixed Charge Coverage Ratio means with respect to any specified Person for any specified period, the ratio of the Consolidated EBITDAR of such Person for such period to the Fixed Charges of such Person for such period."
+        },
+        {
+          "name": "Permitted Disposition (de minimis Collateral disposal basket)",
+          "value": "Less than $50,000,000 aggregate Fair Market Value during any six-month period",
+          "quote": "one or more transactions that involves the Disposition of assets having a Fair Market Value in aggregate of less than $50,000,000 during any six-month period"
+        },
+        {
+          "name": "Material Indebtedness threshold",
+          "value": "$150,000,000 (principal outstanding under same agreement, other than the Notes)",
+          "quote": "Material Indebtedness means Indebtedness of the Company and/or Restricted Subsidiaries (other than the Notes) outstanding under the same agreement in a principal amount exceeding $150,000,000."
+        }
+      ],
+      "ebitda_addback_categories": [
+        "Extraordinary losses and net losses on Disposition of assets",
+        "Provision for income/profit taxes",
+        "Fixed Charges (interest expense, finance lease interest component, guaranteed/secured interest, preferred dividends grossed-up, cash aircraft rent expense)",
+        "Foreign currency translation losses (including on debt remeasurement)",
+        "Depreciation, amortization (including intangibles) and other non-cash charges",
+        "Amortization of debt discount",
+        "Non-cash equity-based compensation grants to employees",
+        "Net loss on sale/disposition of capital assets",
+        "Losses under fuel hedging arrangements",
+        "Business interruption insurance proceeds",
+        "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers (AMR Merger, Airlines Merger), dispositions, debt incurrence, equity issuances or investments"
+      ],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": "Section 4.11 governs designation of Restricted and Unrestricted Subsidiaries. The text contemplates Unrestricted Subsidiaries including Non-Recourse Financing Subsidiaries; Non-Recourse Debt holders may have recourse to the Equity Interests of an Unrestricted Subsidiary, and Consolidated Net Income excludes the net income/loss of any Unrestricted Subsidiary. Full designation mechanics/conditions in Section 4.11 are not reproduced in the provided text.",
+      "anchor_clause": "Collateral Coverage Deficiency means, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "Collateral is governed by a Collateral Trust Agreement with a Pari Passu Lien Debt regime allowing future secured debt to share ratably on a first-lien basis, but the provided text does not reproduce the sacred-rights/voting or lien-subordination protections needed to assess priming risk.",
+          "basis": "Pari Passu Lien Debt definition permits new first-lien debt secured equally and ratably with the Notes via a Collateral Trust Joinder; Junior Lien Debt regime also exists. Amendment/sacred-rights provisions not in excerpt.",
+          "quote": "Indebtedness ... that is secured equally and ratably with the Notes and the 2023 Credit Agreement on a first-lien basis (with respect to the Collateral) by a Pari Passu Lien that is permitted to be incurred and so secured under each then extant Secured Debt Document"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "unclear",
+          "rationale": "The indenture permits Unrestricted Subsidiaries and Non-Recourse Financing Subsidiaries to which assets could migrate, but the provided text does not include an explicit IP/collateral-transfer blocker or the Section 4.11 designation limits and Section 4.07/4.15 asset-transfer restrictions needed to assess dropdown risk.",
+          "basis": "Existence of Unrestricted Subsidiary and Non-Recourse Financing Subsidiary concepts; Section 4.15 governs Dispositions and Release of Collateral (not reproduced); Section 4.11 designation mechanics not reproduced.",
+          "quote": "Non-Recourse Financing Subsidiary means any Unrestricted Subsidiary that (a) has no Indebtedness other than Non-Recourse Debt and (b) engages in no activities other than those relating to the financing of specified assets and other activities incidental thereto."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "open",
+          "rationale": "The indenture expressly allows incurrence of additional Pari Passu Lien Debt sharing first-lien collateral ratably with the Notes, and Additional Notes plus Junior Lien Debt, subject to Section 4.08 and collateral-trust designation, indicating meaningful capacity for additional secured debt.",
+          "basis": "Additional Notes permitted under Section 2.02 subject to Section 4.08; Pari Passu Lien Debt and Junior Lien Debt definitions permit additional secured debt sharing the Collateral; incurrence tested via Fixed Charge Coverage Ratio / Permitted Debt.",
+          "quote": "Indebtedness represented by notes issued by the Company under this Indenture or any other indenture, Indebtedness under any Pari Passu Credit Agreement or other Indebtedness ... that is secured equally and ratably with the Notes and the 2023 Credit Agreement on a first-lien basis"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "Section 4.07 (Restricted Payments) exists and defined terms (Excluded Contributions, builder-basket references to Section 4.07(a)(2)) suggest a builder basket, but the operative RP baskets, thresholds and carve-outs are not reproduced in the provided text.",
+          "basis": "Section 4.07 Restricted Payments referenced; Excluded Contributions feed into Section 4.07(a)(2); Investments and Disqualified Stock definitions tie into RP capacity. Actual RP builder-basket figures not in excerpt.",
+          "quote": "Excluded Contributions will not be considered to be net proceeds of Qualifying Equity Interests for purposes of Section 4.07(a)(2) hereof."
+        }
+      ],
+      "citation": {
+        "accession_no": "0001193125-23-288364",
+        "form_type": "8-K",
+        "filing_date": "2023-12-04",
+        "exhibit": "EX-4.1",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312523288364/d247933dex41.htm",
+        "quote": "Collateral Coverage Deficiency means, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0."
+      },
+      "agreement_type": "indenture",
+      "leverage_covenant_type": "Collateral Coverage Ratio (maintenance)",
+      "leverage_ratio_threshold": "at least 1.6 to 1.0",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
     }
   ],
   "subsidiaries": [
@@ -2459,7 +3472,131 @@
       "leverage": 15.929834905660377
     }
   ],
-  "maturity_wall": [],
+  "maturity_wall": [
+    {
+      "year": 2026,
+      "face": 1337515734.2657342,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Special Facility Revenue Bonds",
+        "5.50% Senior Notes"
+      ]
+    },
+    {
+      "year": 2027,
+      "face": 1045515734.2657343,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2028,
+      "face": 4053515734.265734,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "2021 AAdvantage Term Loan Facility",
+        "Special Facility Revenue Bonds",
+        "7.25% Senior Notes"
+      ]
+    },
+    {
+      "year": 2029,
+      "face": 5015515734.265735,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "5.75% Senior Notes",
+        "2013 Revolving Facility",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2030,
+      "face": 2802515734.265734,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Payroll Support Program Promissory Note One, CARES Act",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2031,
+      "face": 3034515734.265734,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Payroll Support Program Promissory Note Two, CARES Act",
+        "Payroll Support Program Promissory Note Three, CARES Act",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2032,
+      "face": 2038515734.2657344,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "2025 AAdvantage Term Loan Facility",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2033,
+      "face": 1045515734.2657343,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2034,
+      "face": 1045515734.2657343,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2035,
+      "face": 1045515734.2657343,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2036,
+      "face": 1045515734.2657343,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Special Facility Revenue Bonds"
+      ]
+    },
+    {
+      "year": 2037,
+      "face": 973788461.5384616,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable"
+      ]
+    },
+    {
+      "year": 2038,
+      "face": 596538461.5384616,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)"
+      ]
+    }
+  ],
   "what_changed": [
     {
       "metric": "Free cash flow (TTM)",
@@ -3086,8 +4223,6 @@
       "n_credit_docs": 0
     }
   ],
-  "warnings": [
-    "Prior analysis from 2026-07-14 — LLM analysis is off. Re-enable to refresh."
-  ],
-  "llm_fallback_note": "Prior analysis from 2026-07-14 — LLM analysis is off. Re-enable to refresh."
+  "warnings": [],
+  "llm_fallback_note": null
 }
