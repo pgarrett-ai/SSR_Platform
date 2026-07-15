@@ -46,7 +46,12 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [query, setQuery] = useState("AAL");
+  // Draft vs committed lookback: the input edits `years` freely with no side effects;
+  // only the explicit Open action commits it. Everything reactive keys off appliedYears —
+  // otherwise each keystroke in the number field kicked off refetches (worst case the
+  // ~3-min pipeline for a disk-uncached year).
   const [years, setYears] = useState(3);
+  const [appliedYears, setAppliedYears] = useState(3);
   const [health, setHealth] = useState(null);
   const searchRef = useRef(null);
   const pendingG = useRef(false);
@@ -62,7 +67,7 @@ export default function App() {
   const [ovError, setOvError] = useState(null);
   const streamRef = useRef(null);
   const lastKeyRef = useRef(null);
-  const cacheKey = activeTicker ? `overview:${activeTicker}:${years}` : null;
+  const cacheKey = activeTicker ? `overview:${activeTicker}:${appliedYears}` : null;
 
   async function runOverview(live = false) {
     if (!activeTicker) return;
@@ -72,7 +77,7 @@ export default function App() {
     setOvEvents([]);
     setOverview(null);
     const key = cacheKey;
-    const ctrl = streamOverview(activeTicker, years, live, (e) => setOvEvents((prev) => [...prev, e]));
+    const ctrl = streamOverview(activeTicker, appliedYears, live, (e) => setOvEvents((prev) => [...prev, e]));
     streamRef.current = ctrl;
     try {
       const ov = await ctrl.promise;
@@ -134,6 +139,7 @@ export default function App() {
     const t = tk.trim().toUpperCase();
     if (!t) return;
     setQuery(t);
+    setAppliedYears(years);   // Open commits the drafted lookback
     const tab = location.pathname.match(/^\/company\/[^/]+\/([^/]+)/)?.[1] || "overview";
     navigate(`/company/${t}/${tab}`);
   }
@@ -282,7 +288,7 @@ export default function App() {
             <Route path="/" element={<Landing onPick={go} />} />
             <Route
               path="/company/:ticker/*"
-              element={<CompanyLayout years={years} health={health} overview={overview} />}
+              element={<CompanyLayout years={appliedYears} health={health} overview={overview} />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

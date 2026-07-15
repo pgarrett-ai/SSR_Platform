@@ -16,7 +16,7 @@ from .capstack.covenants import extract_covenant_package, find_credit_documents
 from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
 from .capstack.debt_schedule import annotate_maturities, drop_retired, extract_debt_schedule
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
-from .capstack.forensic import build_forensic_table, detect_flags
+from .capstack.forensic import build_forensic_table, detect_flags, quarter_forensic_row
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .core.config import get_settings
@@ -264,6 +264,19 @@ def run_overview(
     lev_timeline = quarterly_leverage_timeline(quarters) or leverage_timeline(forensic_table)
     maturities = maturity_wall(debt_schedule)
     changes = what_changed_quarterly(quarters) or what_changed(forensic_table)
+
+    # Latest-quarter forensic column: 10-Q snapshots + TTM flows, appended only when the
+    # quarter post-dates the last fiscal year (else it would duplicate the FY column).
+    # Appended to the table only — detect_flags/timelines read series/quarters directly.
+    if quarters and forensic_table:
+        try:
+            latest_q = quarters[-1]
+            if latest_q.period_end.isoformat() > (forensic_table[-1].period_end or ""):
+                forensic_table.append(quarter_forensic_row(latest_q, cik))
+                progress.emit(f"Appended latest-quarter column ({latest_q.label}) to the "
+                              "forensic table.", step="quarterly", pct=96)
+        except Exception as exc:
+            warnings.append(f"Latest-quarter forensic column failed: {exc}")
 
     # --- Phase 5: MD&A section retention — deterministic, runs even without an API key ---
     try:

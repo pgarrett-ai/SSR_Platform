@@ -150,7 +150,7 @@ def _native(obj):
     return obj
 
 
-def _hazard_section(ticker: str, years: int, live: bool) -> dict:
+def _hazard_section(ticker: str, years: int, live: bool, progress: ProgressLog | None = None) -> dict:
     """Same-day disk cache around the hazard pipeline. Market data moves daily and EDGAR on
     filings, so a day-fresh payload serves page reloads instantly instead of re-running the
     ~30s pipeline; live=True bypasses. Kept in its own subdir so the overview-cache globs
@@ -161,10 +161,12 @@ def _hazard_section(ticker: str, years: int, live: bool) -> dict:
         try:
             blob = json.loads(p.read_text(encoding="utf-8"))
             if blob.get("as_of") == today:
+                if progress:
+                    progress.emit("Served from today's hazard cache.", step="cache", pct=100)
                 return blob["data"]
         except Exception:
             pass
-    data = jsonable(_native(hazard_analyze(ticker, years)))
+    data = jsonable(_native(hazard_analyze(ticker, years, progress=progress)))
     try:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps({"as_of": today, "data": data}), encoding="utf-8")
@@ -234,13 +236,13 @@ def screen() -> JSONResponse:
 
 @app.get("/api/rates")
 def key_rates() -> JSONResponse:
-    """Latest key reference rates (SOFR, EFFR, Fed Funds target, prime, T-bill, 10Y) —
+    """Latest key reference rates (SOFR, EFFR, Fed Funds target, prime, T-bill, 10Y/30Y) —
     stored in the DB, refreshed when stale, served with their observation dates."""
-    from .rates import LIBOR_NOTE, get_key_rates, refresh_if_stale
+    from .rates import get_key_rates, refresh_if_stale
 
     with session_scope() as session:
         refresh_if_stale(session)
-        return JSONResponse(content={"rates": get_key_rates(session), "note": LIBOR_NOTE})
+        return JSONResponse(content={"rates": get_key_rates(session)})
 
 
 @app.get("/api/company/{ticker}/holders")
@@ -524,6 +526,49 @@ async def overview_stream(
             event_q.put({"event": "error", "data": {"error": "ticker_not_found", "detail": str(exc)}})
         except NoFilingsError as exc:
             event_q.put({"event": "error", "data": {"error": "no_filings", "detail": str(exc)}})
+        except Exception as exc:
+            event_q.put({"event": "error", "data": {"error": "pipeline_error", "detail": str(exc)}})
+        finally:
+            event_q.put({"event": "__done__", "data": {}})
+
+    threading.Thread(target=worker, daemon=True).start()
+
+    async def event_generator():
+        loop = asyncio.get_event_loop()
+        while True:
+            item = await loop.run_in_executor(None, event_q.get)
+            if item["event"] == "__done__":
+                break
+            yield {"event": item["event"], "data": json.dumps(item["data"])}
+
+    return EventSourceResponse(event_generator())
+
+
+@app.get("/api/hazard/stream")
+async def hazard_stream(
+    ticker: str = Query(..., min_length=1, max_length=12),
+    years: int = Query(10, ge=1, le=10),
+    live: bool = Query(False),
+):
+    """Stream hazard-pipeline progress as SSE, then a final `hazard` (or `error`) event.
+    A same-day cache hit emits a single pct=100 event and resolves immediately."""
+    event_q: "queue.Queue[dict]" = queue.Queue()
+
+    def sink(evt: ProgressEvent) -> None:
+        event_q.put({"event": "progress", "data": evt.to_dict()})
+
+    def worker() -> None:
+        log = ProgressLog(sink=sink)
+        try:
+            data = _hazard_section(ticker, years, live, progress=log)
+            event_q.put({"event": "hazard", "data": data})
+            try:   # fill the screening index's risk columns; never fail the stream
+                with session_scope() as session:
+                    update_snapshot_risk(session, ticker.strip().upper(), data)
+            except Exception:
+                pass
+        except TickerNotFoundError as exc:
+            event_q.put({"event": "error", "data": {"error": "ticker_not_found", "detail": str(exc)}})
         except Exception as exc:
             event_q.put({"event": "error", "data": {"error": "pipeline_error", "detail": str(exc)}})
         finally:

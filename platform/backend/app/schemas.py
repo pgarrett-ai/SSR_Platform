@@ -78,6 +78,7 @@ class DebtInstrument(BaseModel):
 
 class ForensicTableRow(BaseModel):
     fiscal_year: int
+    label: Optional[str] = None            # quarter columns ("Q1 2026"); annuals render FY{year}
     period_end: Optional[str] = None
     total_debt: Optional[CitedValue] = None
     cash: Optional[CitedValue] = None

@@ -11,6 +11,7 @@ import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
 import CovenantPackages from "../components/CovenantPackages.jsx";
+import DocSearch from "../components/DocSearch.jsx";
 import HoldersPanel from "../components/HoldersPanel.jsx";
 import MdnaReader from "../components/MdnaReader.jsx";
 
@@ -111,6 +112,7 @@ export default function CapitalPage({ ticker, health, overview }) {
           </Section>
 
           <Section
+            id="obs"
             title="Off-balance-sheet findings"
             subtitle={`${overview.obs_items?.length || 0} items extracted from footnotes & MD&A`}
             badge={llmBadge}
@@ -132,7 +134,10 @@ export default function CapitalPage({ ticker, health, overview }) {
             </Section>
           )}
 
+          <DocSearch ticker={ticker} />
+
           <Section
+            id="covenants"
             title="Covenants & creditors"
             subtitle={`${overview.covenants?.length || 0} agreement famil${
               (overview.covenants?.length || 0) === 1 ? "y" : "ies"
@@ -147,7 +152,7 @@ export default function CapitalPage({ ticker, health, overview }) {
 
           <HoldersPanel ticker={ticker} />
 
-          <Section title="MD&A" subtitle="management's discussion, per filing period">
+          <Section id="mdna" title="MD&A" subtitle="management's discussion, per filing period">
             <MdnaReader ticker={ticker} />
           </Section>
 

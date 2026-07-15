@@ -128,6 +128,62 @@ def build_forensic_table(series: FinancialSeries) -> list[ForensicTableRow]:
     return rows
 
 
+class _TTMFact:
+    """Fact-shaped wrapper so the raw_value-based helpers can read TTM floats."""
+    __slots__ = ("numeric_value",)
+
+    def __init__(self, v: float) -> None:
+        self.numeric_value = v
+
+
+def quarter_forensic_row(qf, cik: str) -> ForensicTableRow:
+    """Latest-10-Q column: balance-sheet metrics as of the quarter date (cited XBRL facts)
+    + trailing-12-month flows. TTM cells are derived — a TTM sum has no single source fact
+    to cite — so they carry the construction as their formula instead."""
+    view = YearFacts(fiscal_year=qf.period_end.year, period_end=qf.period_end,
+                     metrics={**{k: _TTMFact(v) for k, v in qf.ttm.items() if v is not None},
+                              **qf.metrics})
+    ttm_note = f"TTM through {qf.label} (last annual + YTD − prior-year YTD)"
+
+    def ttm_cv(key: str) -> Optional[CitedValue]:
+        v = qf.ttm.get(key)
+        if v is None:
+            return None
+        return derived_value(v, ttm_note, fmt_money_millions(v))
+
+    td_val, td_parts = total_debt(view)          # debt components are instants → real facts
+    ebitda_val = _ebitda(view)
+    fcf_val = _fcf(view)
+    dpo_val, denom_label = _dpo(view)
+
+    return ForensicTableRow(
+        fiscal_year=qf.period_end.year,
+        label=qf.label,
+        period_end=qf.period_end.isoformat(),
+        total_debt=(derived_value(td_val, " + ".join(td_parts), fmt_money_millions(td_val),
+                                  note="Sum of reported debt components as of the 10-Q date.")
+                    if td_val is not None else None),
+        cash=cited_metric(view, "cash", cik),
+        free_cash_flow=(derived_value(fcf_val, f"OCF − capex, {ttm_note}",
+                                      fmt_money_millions(fcf_val))
+                        if fcf_val is not None else None),
+        capex=ttm_cv("capex"),
+        accounts_payable=cited_metric(view, "accounts_payable", cik),
+        inventory=cited_metric(view, "inventory", cik),
+        revenue=ttm_cv("revenue"),
+        cogs=ttm_cv("cogs"),
+        ebitda=(derived_value(ebitda_val, f"operating_income + D&A, {ttm_note}",
+                              fmt_money_millions(ebitda_val),
+                              note="Proxy EBITDA = operating income + D&A (TTM).")
+                if ebitda_val is not None else None),
+        operating_cash_flow=ttm_cv("operating_cash_flow"),
+        dpo=(derived_value(dpo_val, f"accounts_payable (as of {qf.label}) / {denom_label} (TTM) x 365",
+                           fmt_days(dpo_val),
+                           note=f"Days payable outstanding (denominator: {denom_label}, TTM).")
+             if dpo_val is not None else None),
+    )
+
+
 # ---- flags -----------------------------------------------------------------
 
 

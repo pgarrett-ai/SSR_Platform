@@ -50,6 +50,9 @@ const RAW_COLS = [
 // ponytail: raw th/td, not kit Th/Td — these two tables are denser (text-xs, py-1.5)
 // than the kit cells, and header/body padding must match for the sticky FY column.
 function Table({ rows, cols }) {
+  // Newest FY on top. Spread before reversing — `rows` is the shared features_timeline
+  // array that the sparklines (and HealthRadar) read with last-element-is-latest.
+  const ordered = [...rows].reverse();
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-xs">
@@ -62,7 +65,7 @@ function Table({ rows, cols }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
+          {ordered.map((r) => (
             <tr key={r.fiscal_year} className="border-b border-ink-700/50">
               <td className="py-1.5 pr-3 font-mono text-slate-300 sticky left-0 bg-ink-800/60">{r.fiscal_year}</td>
               {cols.map(([key, , fmt]) => (

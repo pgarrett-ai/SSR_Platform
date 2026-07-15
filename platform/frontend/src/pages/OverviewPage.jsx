@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { fetchHazard, fetchOverview, fetchRates, searchText, simulateRecovery } from "../api.js";
+import React from "react";
+import { Link } from "react-router-dom";
+import { fetchHazard, fetchOverview, fetchRates, simulateRecovery } from "../api.js";
 import { useAsync } from "../cache.js";
-import { Badge, Button, Card, Input, Loading, Section, fmt, riskColor } from "../ui/index.jsx";
+import { Badge, Card, Loading, fmt, riskColor } from "../ui/index.jsx";
 
 // Key reference rates strip — DB-stored observations with their as-of dates.
 function KeyRates() {
@@ -17,87 +17,7 @@ function KeyRates() {
           <span className="font-mono text-slate-200">{r.value.toFixed(2)}%</span>
         </span>
       ))}
-      <span className="ml-auto text-[10px] text-slate-600" title={data.note}>
-        LIBOR discontinued 6/2023
-      </span>
     </div>
-  );
-}
-
-// Snippets come from filing text via FTS5 snippet(); the only HTML we allow through
-// is our own <mark> markers — everything else is escaped before rendering.
-function markOnly(snippet) {
-  const esc = snippet
-    .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-  return esc
-    .replaceAll("&lt;mark&gt;", "<mark class=\"bg-accent/30 text-white rounded px-0.5\">")
-    .replaceAll("&lt;/mark&gt;", "</mark>");
-}
-
-// Badge uppercases its label, so raw source kinds need display names ("mdna" → MD&A).
-const KIND_LABELS = { mdna: "MD&A" };
-
-// Full-text search over this issuer's analyzed filings; hits open the Capital page,
-// where the covenant packages and MD&A reader live.
-function DocSearch({ ticker }) {
-  const navigate = useNavigate();
-  const [q, setQ] = useState("");
-  const [hits, setHits] = useState(null);   // null = no search yet
-
-  async function run(e) {
-    e.preventDefault();
-    if (!q.trim()) { setHits(null); return; }
-    try {
-      // The corpus stores the same clause across amendments/periods — dedupe for display.
-      const seen = new Set();
-      setHits((await searchText(q.trim(), ticker)).hits.filter((h) => {
-        const k = `${h.source_kind}|${h.snippet}`;
-        if (seen.has(k)) return false;
-        seen.add(k);
-        return true;
-      }));
-    } catch {
-      setHits([]);
-    }
-  }
-
-  return (
-    <Section title="Document search" subtitle="covenants · OBS findings · MD&A for this issuer"
-      className="mt-6">
-      <form onSubmit={run} className="flex gap-2">
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="e.g. springing lien, restricted payments, going concern"
-          className="w-full"
-        />
-        <Button type="submit">Search</Button>
-      </form>
-      {hits !== null && (
-        <div className="mt-3">
-          <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">
-            {hits.length} hit{hits.length === 1 ? "" : "s"}
-          </div>
-          {hits.length === 0 && (
-            <p className="text-sm text-slate-500">No matches in this issuer's analyzed filings.</p>
-          )}
-          {hits.map((h, i) => (
-            <button
-              key={i}
-              onClick={() => navigate(`/company/${ticker}/capital`)}
-              className="mb-1 block w-full rounded-md border border-ink-700 px-3 py-2 text-left text-sm hover:border-accent"
-              title="open on the Capital Structure page"
-            >
-              <Badge>{KIND_LABELS[h.source_kind] || h.source_kind}</Badge>
-              <span
-                className="ml-2 text-slate-400"
-                dangerouslySetInnerHTML={{ __html: markOnly(h.snippet || "") }}
-              />
-            </button>
-          ))}
-        </div>
-      )}
-    </Section>
   );
 }
 
@@ -243,8 +163,6 @@ export default function OverviewPage({ ticker, years }) {
       </div>
 
       <WhatChangedCard ov={ov.data} />
-
-      <DocSearch ticker={ticker} />
     </div>
   );
 }

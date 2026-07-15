@@ -21,7 +21,7 @@ function LeverageCallout({ bridge }) {
         <span className="text-[11px] uppercase tracking-wide text-slate-500">Economic lev</span>
         <CitedNumber cv={e} className="text-3xl font-bold text-rose-300" />
       </div>
-      {r?.value != null && e?.value != null && (
+      {r?.value > 0 && e?.value > 0 ? (
         <div className={`ml-auto rounded-md px-3 py-1.5 text-sm ${e.value >= r.value ? "bg-rose-500/10 text-rose-200" : "bg-emerald-500/10 text-emerald-200"}`}>
           {e.value >= r.value ? "Hidden leverage: " : "Below reported: "}
           <span className="font-mono font-semibold">
@@ -29,7 +29,17 @@ function LeverageCallout({ bridge }) {
           </span>{" "}
           turns vs reported
         </div>
-      )}
+      ) : bridge.reported_debt?.value != null && bridge.economic_debt?.value != null ? (
+        // Ratios n.m. (negative EBITDA) — the dollar gap is the story instead.
+        <div className={`ml-auto rounded-md px-3 py-1.5 text-sm ${bridge.economic_debt.value >= bridge.reported_debt.value ? "bg-rose-500/10 text-rose-200" : "bg-emerald-500/10 text-emerald-200"}`}>
+          Hidden debt:{" "}
+          <span className="font-mono font-semibold">
+            {bridge.economic_debt.value >= bridge.reported_debt.value ? "+" : "−"}
+            {B(Math.abs(bridge.economic_debt.value - bridge.reported_debt.value))}
+          </span>{" "}
+          vs reported
+        </div>
+      ) : null}
     </div>
   );
 }
