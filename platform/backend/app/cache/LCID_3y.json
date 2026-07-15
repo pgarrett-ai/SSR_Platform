@@ -6,7 +6,7 @@
     "cik": "1811210",
     "years": 3,
     "n_filings": 76,
-    "last_updated": "2026-07-15T14:45:15.803809+00:00",
+    "last_updated": "2026-07-15T15:01:26.452082+00:00",
     "from_cache": false,
     "llm_enabled": false
   },
@@ -419,6 +419,7 @@
   "forensic_table": [
     {
       "fiscal_year": 2022,
+      "label": null,
       "period_end": "2022-12-31",
       "total_debt": {
         "value": 2001435000.0,
@@ -585,6 +586,7 @@
     },
     {
       "fiscal_year": 2023,
+      "label": null,
       "period_end": "2023-12-31",
       "total_debt": {
         "value": 2069493000.0,
@@ -751,6 +753,7 @@
     },
     {
       "fiscal_year": 2024,
+      "label": null,
       "period_end": "2024-12-31",
       "total_debt": {
         "value": 2254985000.0,
@@ -917,6 +920,7 @@
     },
     {
       "fiscal_year": 2025,
+      "label": null,
       "period_end": "2025-12-31",
       "total_debt": {
         "value": 2718322000.0,
@@ -1079,6 +1083,137 @@
         "derived": true,
         "formula": "accounts_payable / COGS x 365",
         "note": "Days payable outstanding (denominator: COGS)."
+      }
+    },
+    {
+      "fiscal_year": 2026,
+      "label": "Q1 2026",
+      "period_end": "2026-03-31",
+      "total_debt": {
+        "value": 2755293000.0,
+        "display": "$2,755M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$2,048M + lt_debt_current=$707M",
+        "note": "Sum of reported debt components as of the 10-Q date."
+      },
+      "cash": {
+        "value": 700356000.0,
+        "display": "$700M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $700M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "free_cash_flow": {
+        "value": -4649042000.0,
+        "display": "-$4,649M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF − capex, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "capex": {
+        "value": 960084000.0,
+        "display": "$960M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "accounts_payable": {
+        "value": 484853000.0,
+        "display": "$485M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "Accounts Payable, Current = $485M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "inventory": {
+        "value": 1468853000.0,
+        "display": "$1,469M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "Inventory, Net = $1,469M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "revenue": {
+        "value": 1401207000.0,
+        "display": "$1,401M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "cogs": {
+        "value": 2740786000.0,
+        "display": "$2,741M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "ebitda": {
+        "value": -3329705000.0,
+        "display": "-$3,330M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income + D&A, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": "Proxy EBITDA = operating income + D&A (TTM)."
+      },
+      "operating_cash_flow": {
+        "value": -3688958000.0,
+        "display": "-$3,689M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "dpo": {
+        "value": 64.56955960808322,
+        "display": "65 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable (as of Q1 2026) / COGS (TTM) x 365",
+        "note": "Days payable outstanding (denominator: COGS, TTM)."
       }
     }
   ],
