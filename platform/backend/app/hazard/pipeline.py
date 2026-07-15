@@ -20,6 +20,7 @@ from .market import get_market_data
 from .score import all_scorers
 from .trace import get_credit_backdrop, get_issuer_bonds
 from ..core.config import get_settings
+from ..core.progress import ProgressLog
 
 
 def _altman_to_risk(z: Optional[float]) -> Optional[float]:
@@ -112,12 +113,15 @@ def _trend(risk_series: list[Optional[float]], steps_per_year: int = 1) -> dict:
     return {"direction": direction, "slope": round(slope, 2)}
 
 
-def analyze(ticker: str, years: int = 10) -> dict:
+def analyze(ticker: str, years: int = 10, progress: Optional[ProgressLog] = None) -> dict:
     if not ticker or not ticker.strip():
         raise ValueError("ticker/CIK is required")
     years = max(1, min(int(years), 10))
+    progress = progress or ProgressLog()
 
+    progress.emit(f"Resolving ticker {ticker} → CIK…", step="resolve", pct=5)
     company = edgar.resolve_company(ticker)          # raises TickerNotFoundError
+    progress.emit(f"Pulling XBRL financial series ({years}y) from EDGAR…", step="xbrl", pct=15)
     series = edgar.build_financial_series(company, years)
     if not series.years:
         raise ValueError(f"No XBRL financial facts found for {ticker}.")
@@ -127,17 +131,22 @@ def analyze(ticker: str, years: int = 10) -> dict:
         row["cited"] = features.year_citations(yf, str(company.cik))
     latest = timeline[-1]
     sym = edgar.current_ticker(company) or ticker.upper()
+    progress.emit(f"Built {len(timeline)} fiscal-year feature rows.", step="xbrl", pct=35)
 
+    progress.emit("Fetching market data (equity price, vol, index)…", step="market", pct=45)
     market = get_market_data(sym, index=get_settings().market_index)
+    progress.emit("Fetching credit backdrop + issuer bond quotes…", step="market", pct=55)
     backdrop = get_credit_backdrop()   # market-level credit regime (cached per day)
 
     # Scores on the latest year.
+    progress.emit("Scoring Merton / Altman / trained hazard model…", step="score", pct=65)
     scorers = all_scorers()
     scores = {s.name: s.score(latest, market) for s in scorers}
     contributions = {s.name: s.contributions(latest, market) for s in scorers
                      if s.contributions(latest, market) is not None}
 
     # Risk timeline: quarterly composite when 10-Q XBRL supports it; annual Altman fallback.
+    progress.emit("Building quarterly risk timeline from 10-Q XBRL…", step="timeline", pct=75)
     altman = next(s for s in scorers if s.name == "Altman Z''")
     risk_timeline = _quarterly_risk_timeline(company, sym, altman, years)
     steps_per_year = 4 if risk_timeline else 1
@@ -172,6 +181,7 @@ def analyze(ticker: str, years: int = 10) -> dict:
         risk_timeline[-1]["risk"] = overall_risk
         risk_timeline[-1]["components"] = composite_of
 
+    progress.emit("Assembling payload (filings timeline, bonds, scores)…", step="assemble", pct=90)
     return {
         "issuer": {"ticker": sym, "name": getattr(company, "name", None),
                    "cik": str(company.cik)},

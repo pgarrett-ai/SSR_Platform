@@ -87,6 +87,49 @@ export async function fetchHazard(ticker, years = 10) {
   return hz;
 }
 
+// Same payload as fetchHazard, streamed: progress events over SSE, then the final data.
+// Mirrors streamOverview's { promise, cancel } contract.
+export function streamHazard(ticker, years, onProgress) {
+  const url = `/api/hazard/stream?ticker=${encodeURIComponent(ticker)}&years=${years}`;
+  const es = new EventSource(url);
+  let settled = false;
+
+  const promise = new Promise((resolve, reject) => {
+    es.addEventListener("progress", (e) => {
+      try {
+        onProgress?.(JSON.parse(e.data));
+      } catch (_) {}
+    });
+    es.addEventListener("hazard", (e) => {
+      settled = true;
+      es.close();
+      resolve(JSON.parse(e.data));
+    });
+    es.addEventListener("error", (e) => {
+      if (e?.data) {
+        settled = true;
+        es.close();
+        try {
+          reject(new Error(JSON.parse(e.data)?.detail || "hazard pipeline error"));
+        } catch (_) {
+          reject(new Error("hazard pipeline error"));
+        }
+      } else if (!settled) {
+        es.close();
+        reject(new Error("connection to server lost"));
+      }
+    });
+  });
+
+  return {
+    promise,
+    cancel: () => {
+      settled = true;
+      es.close();
+    },
+  };
+}
+
 // ---- Key rates -----------------------------------------------------------------
 
 export async function fetchRates() {
