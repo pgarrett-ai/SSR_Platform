@@ -319,3 +319,44 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
         ))
 
     return flags
+
+
+def build_asset_snapshot(series: FinancialSeries, cik: str):
+    """Latest balance-sheet asset categories for the liquidation waterfall (Moyer
+    asset-based valuation). Intangibles = goodwill + other intangibles (derived sum);
+    `other` = total assets − categorized residual (derived)."""
+    from ..schemas import AssetSnapshot
+
+    yf = series.latest()
+    if yf is None:
+        return None
+
+    cash = cited_metric(yf, "cash", cik)
+    ar = cited_metric(yf, "accounts_receivable", cik)
+    inv = cited_metric(yf, "inventory", cik)
+    ppe = cited_metric(yf, "ppe_net", cik)
+    total = cited_metric(yf, "total_assets", cik)
+
+    gw, oi = raw_value(yf, "goodwill"), raw_value(yf, "intangibles")
+    intang = None
+    if gw is not None or oi is not None:
+        v = (gw or 0.0) + (oi or 0.0)
+        intang = derived_value(
+            v, f"goodwill ({fmt_money_millions(gw)}) + other intangibles ({fmt_money_millions(oi)})",
+            fmt_money_millions(v))
+
+    other = None
+    if total is not None and total.value is not None:
+        known = sum(cv.value for cv in (cash, ar, inv, ppe, intang)
+                    if cv is not None and cv.value is not None)
+        v = max(total.value - known, 0.0)
+        other = derived_value(
+            v, f"total assets ({total.display}) − categorized ({fmt_money_millions(known)})",
+            fmt_money_millions(v),
+            note="uncategorized residual — lease ROU assets, deferred taxes, investments, etc.")
+
+    if all(cv is None for cv in (cash, ar, inv, ppe, intang, total)):
+        return None
+    return AssetSnapshot(as_of_fy=yf.fiscal_year, cash=cash, accounts_receivable=ar,
+                         inventory=inv, ppe=ppe, intangibles=intang, other=other,
+                         total_assets=total)

@@ -418,6 +418,11 @@ def jsonable(obj):
 class SimulateBody(BaseModel):
     sim: dict = {}                      # SimConfig overrides (base_ebitda, corr, n_draws, ...)
     structure: Optional[dict] = None    # explicit {entities, tranches, admin_fees}; else derived
+    petition_date: Optional[str] = None  # derives accrual_years vs debt_schedule_asof (Moyer:
+                                         # unsecured interest tolls at the petition date)
+    attack: Optional[str] = None         # priority-attack scenario (fulcrum.attacks)
+    attack_target: Optional[str] = None  # tranche name; default = all secured
+    mode: Optional[str] = None           # "liquidation" forces the asset-based waterfall
 
 
 def _structure_dict(structure: CapitalStructure) -> dict:
@@ -426,13 +431,14 @@ def _structure_dict(structure: CapitalStructure) -> dict:
         "entities": [e.__dict__ for e in structure.entities],
         "tranches": [t.__dict__ for t in structure.tranches],
         "admin_fees": structure.admin_fees,
+        "admin_pct": structure.admin_pct,
     }
 
 
-def _derive_structure(ticker: str, years: int) -> tuple[CapitalStructure, Optional[float], str, dict, list]:
+def _derive_structure(ticker: str, years: int) -> tuple[CapitalStructure, Optional[float], str, dict, list, dict]:
     """Cap table from the capstack overview (cache-first). If no debt schedule was extracted,
     seed one editable tranche from the forensic table's latest cited total debt. Also returns the
-    Exhibit 21 subsidiary list so the Recovery editor can seed entities."""
+    Exhibit 21 subsidiary list (Recovery editor entity seed) and the raw overview dict."""
     ov = json.loads(run_overview(ticker, years).model_dump_json())
     structure, ebitda, citations = overview_to_structure(ov)
     subsidiaries = ov.get("subsidiaries") or []
@@ -453,7 +459,7 @@ def _derive_structure(ticker: str, years: int) -> tuple[CapitalStructure, Option
                               face=total_debt or 100.0, lien_rank=1, secured=True)],
         )
         source = "XBRL total-debt seed" if total_debt else "manual seed"
-    return structure, ebitda, source, citations, subsidiaries
+    return structure, ebitda, source, citations, subsidiaries, ov
 
 
 def _structure_from_body(ticker: str, s: dict) -> CapitalStructure:
@@ -462,14 +468,41 @@ def _structure_from_body(ticker: str, s: dict) -> CapitalStructure:
         entities=[Entity(**e) for e in s.get("entities", [])],
         tranches=[Tranche(**t) for t in s.get("tranches", [])],
         admin_fees=float(s.get("admin_fees", 0.0)),
+        admin_pct=float(s.get("admin_pct", 0.0)),
     )
+
+
+def _accrual_from_petition(petition_date: str, ov: dict) -> float:
+    """accrual_years = (petition − debt_schedule_asof)/365.25, floored at 0. The schedule
+    as-of is when accrued interest was last settled on the balance sheet."""
+    asof = ov.get("debt_schedule_asof")
+    if not asof:
+        return 0.0
+    petition = dt.date.fromisoformat(petition_date)
+    start = dt.date.fromisoformat(str(asof)[:10])
+    return max((petition - start).days, 0) / 365.25
+
+
+def _suggested_other_claims(ov: dict) -> Optional[dict]:
+    """Σ bridge-included OBS items ($mm) — the pre-seed for the 'other unsecured claims'
+    dilution row (rejection damages, pension, leases dilute the unsecured pool)."""
+    items = [it for it in ov.get("obs_items") or []
+             if it.get("include_in_bridge") and (it.get("amount") or {}).get("value")]
+    if not items:
+        return None
+    total = sum(float(it["amount"]["value"]) for it in items) / 1e6
+    return {"value": round(total, 1),
+            "formula": " + ".join(f"{it.get('category')} ({it.get('label', '')[:40]})"
+                                  for it in items),
+            "note": "bridge-included OBS extractions — lease/pension/claim amounts that can "
+                    "dilute the unsecured pool in chapter 11 (Moyer ch. 12)"}
 
 
 @app.get("/api/company/{ticker}/recovery/structure")
 def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
     """The editable cap table for the Recovery page — derived, never re-entered."""
     try:
-        structure, ebitda, source, citations, subsidiaries = _derive_structure(ticker, years)
+        structure, ebitda, source, citations, subsidiaries, ov = _derive_structure(ticker, years)
     except (TickerNotFoundError, NoFilingsError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     available_entities = [{"name": s.get("name"), "jurisdiction": s.get("jurisdiction")}
@@ -477,25 +510,77 @@ def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
     return JSONResponse(content=jsonable({
         "structure": _structure_dict(structure), "base_ebitda": ebitda, "source": source,
         "citations": citations, "available_entities": available_entities,
+        "suggested_other_claims": _suggested_other_claims(ov),
+        "asset_snapshot": ov.get("asset_snapshot"),
     }))
+
+
+def _liquidation_response(ticker: str, structure: CapitalStructure, ov: dict,
+                          accrual_years: float, note: str, body_rates=None,
+                          body_admin=None, body_assets=None) -> JSONResponse:
+    """Asset-based waterfall payload (Moyer: cash-flow metrics are irrelevant when positive
+    EBITDA is unattainable). Degrades with a note when no asset snapshot was extracted."""
+    from .fulcrum.liquidation import assets_from_snapshot, liquidate
+
+    assets = body_assets or assets_from_snapshot(ov.get("asset_snapshot"))
+    if assets is None:
+        return JSONResponse(content=jsonable({
+            "mode": "liquidation", "available": False,
+            "structure": _structure_dict(structure), "note": note,
+            "detail": "no balance-sheet asset snapshot in this cached overview — "
+                      "re-run the pipeline (Run live) to extract asset categories"}))
+    out = liquidate(assets, structure, rates=body_rates, admin_pct=body_admin,
+                    accrual_years=accrual_years)
+    out.update({"available": True, "structure": _structure_dict(structure), "note": note,
+                "asset_snapshot": ov.get("asset_snapshot")})
+    return JSONResponse(content=jsonable(out))
 
 
 @app.post("/api/company/{ticker}/recovery/simulate")
 def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=1, le=10)):
     """Fulcrum Monte Carlo. Cap table comes from the request body if given, otherwise it is
-    derived from the capstack overview (cache-first) — no manual re-entry."""
+    derived from the capstack overview (cache-first) — no manual re-entry.
+
+    EBITDA ≤ 0 (or mode="liquidation") switches to the asset-based liquidation waterfall
+    instead of failing: a going-concern EV simulation is meaningless below zero EBITDA."""
     sim_kwargs = dict(body.sim)
     try:
+        ov: dict = {}
         if body.structure is not None:
             structure = _structure_from_body(ticker, body.structure)
             source = "request body"
+            if body.petition_date or body.mode == "liquidation" or not sim_kwargs.get("base_ebitda"):
+                try:   # cache-first; only needed for petition accrual / liquidation assets
+                    ov = json.loads(run_overview(ticker, years).model_dump_json())
+                except Exception:
+                    ov = {}
         else:
-            structure, ebitda, source, _, _ = _derive_structure(ticker, years)
+            structure, ebitda, source, _, _, ov = _derive_structure(ticker, years)
             sim_kwargs.setdefault("base_ebitda", ebitda)
-        if not sim_kwargs.get("base_ebitda"):
-            return JSONResponse(status_code=422, content={
-                "error": "base_ebitda unavailable from filings — pass it in body.sim"})
+
+        if body.petition_date and "accrual_years" not in body.sim:
+            sim_kwargs["accrual_years"] = _accrual_from_petition(body.petition_date, ov)
+
+        base_ebitda = sim_kwargs.get("base_ebitda")
+        if body.mode == "liquidation" or base_ebitda is None or base_ebitda <= 0:
+            note = ("forced liquidation mode" if body.mode == "liquidation" else
+                    "EBITDA ≤ 0 — going-concern EV simulation replaced by asset-based "
+                    "liquidation (Moyer ch. 5)")
+            return _liquidation_response(ticker, structure, ov,
+                                         float(sim_kwargs.get("accrual_years") or 0.0), note)
+
         result = fulcrum_analyze(structure, SimConfig(**sim_kwargs))
+        attack_rows = None
+        if body.attack:
+            from .fulcrum.attacks import apply_attack
+            attacked = apply_attack(structure, body.attack, body.attack_target)
+            wf = run_waterfall(attacked, result.sim.ev, result.accrual_years)
+            amap = {t.name: t for t in attacked.tranches}
+            attack_rows = [
+                {"tranche": n, "mean_recovery_%":
+                    float(100 * (wf[n] / amap[n].claim(result.accrual_years)).mean())
+                    if amap[n].claim(result.accrual_years) > 0 else None}
+                for n in attacked.priority_order()]
     except (TickerNotFoundError, NoFilingsError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except (ValueError, TypeError) as exc:   # engine validators = the input trust boundary
@@ -525,6 +610,11 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         for n in order
     ]
 
+    # §506 postpetition-interest headroom per secured tranche with a collateral value
+    headroom_506 = {
+        t.name: round(max(t.collateral_value - t.claim(ay), 0.0), 1)
+        for t in structure.tranches if t.secured and t.collateral_value is not None}
+
     return JSONResponse(content=jsonable({
         "source": source,
         "structure": _structure_dict(structure),
@@ -540,7 +630,74 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         "cdf": {"grid": pct_grid.tolist(), "series": cdf},
         "histograms": histograms,
         "waterfall_at_median": waterfall_at_median,
+        "headroom_506": headroom_506,
+        "attack": body.attack,
+        "attack_tranches": attack_rows,
     }))
+
+
+@app.post("/api/company/{ticker}/recovery/explore")
+def recovery_explore(ticker: str, body: SimulateBody, years: int = Query(3, ge=1, le=10)):
+    """Deterministic EV explorer: per-tranche recovery curves over an EV grid, breakpoints,
+    coverage-vs-multiple, and the 'market has not repriced' flag. Works at negative EBITDA."""
+    from .capstack.quotes import match_quotes
+    from .fulcrum.explore import explore
+    from .hazard.trace import get_issuer_bonds
+
+    try:
+        ov: dict = {}
+        ebitda = body.sim.get("base_ebitda")
+        if body.structure is not None:
+            structure = _structure_from_body(ticker, body.structure)
+            try:
+                ov = json.loads(run_overview(ticker, years).model_dump_json())
+            except Exception:
+                ov = {}
+        else:
+            structure, derived_ebitda, _, _, _, ov = _derive_structure(ticker, years)
+            ebitda = ebitda if ebitda is not None else derived_ebitda
+        accrual = float(body.sim.get("accrual_years") or 0.0)
+        if body.petition_date and "accrual_years" not in body.sim:
+            accrual = _accrual_from_petition(body.petition_date, ov)
+        matches, _ = match_quotes(ov.get("debt_schedule") or [],
+                                  get_issuer_bonds(ticker).get("bonds") or [])
+        prices = [q["last_price"] for q in matches.values() if q.get("last_price") is not None]
+        out = explore(structure, ebitda, accrual, quotes=prices or None)
+    except (TickerNotFoundError, NoFilingsError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except (ValueError, TypeError) as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+    out["structure"] = _structure_dict(structure)
+    return JSONResponse(content=jsonable(out))
+
+
+class LiquidationBody(BaseModel):
+    structure: Optional[dict] = None
+    rates: Optional[dict] = None        # {category: advance rate 0..1}; default orderly preset
+    admin_pct: Optional[float] = None   # default 7% (ch11 orderly)
+    accrual_years: float = 0.0
+    assets: Optional[dict] = None       # {category: book $mm} override (manual entry)
+
+
+@app.post("/api/company/{ticker}/recovery/liquidation")
+def recovery_liquidation(ticker: str, body: LiquidationBody, years: int = Query(3, ge=1, le=10)):
+    """Asset-based liquidation waterfall with editable advance rates and the
+    ch11-orderly vs ch7-fire-sale comparison."""
+    try:
+        if body.structure is not None:
+            structure = _structure_from_body(ticker, body.structure)
+            ov = {}
+            if body.assets is None:
+                ov = json.loads(run_overview(ticker, years).model_dump_json())
+        else:
+            structure, _, _, _, _, ov = _derive_structure(ticker, years)
+        return _liquidation_response(ticker, structure, ov, body.accrual_years,
+                                     "liquidation analysis", body.rates, body.admin_pct,
+                                     body.assets)
+    except (TickerNotFoundError, NoFilingsError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except (ValueError, TypeError) as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
 
 
 # ---- scenarios: save / list / delete (compare happens client-side) -----------------

@@ -64,12 +64,19 @@ class Tranche:
     maturity: Optional[str] = None    # informational only
     accrued_interest: float = 0.0     # explicit $ accrued to petition; else derived from coupon
     make_whole: float = 0.0           # explicit $ make-whole / prepayment premium (default: none)
+    collateral_value: Optional[float] = None  # caps the secured claim (§506); deficiency joins
+                                              # the unsecured pool. None = all-asset pledge.
+    subordinated_to: Optional[str] = None     # contractual subordination: this tranche's recovery
+                                              # is redirected to the named tranche until it is
+                                              # paid in full (Moyer ch. 7 subrogation)
 
     def __post_init__(self) -> None:
         if self.face < 0:
             raise ValueError(f"{self.name}: face must be non-negative")
         if self.accrued_interest < 0 or self.make_whole < 0:
             raise ValueError(f"{self.name}: accrued_interest / make_whole must be non-negative")
+        if self.collateral_value is not None and self.collateral_value < 0:
+            raise ValueError(f"{self.name}: collateral_value must be non-negative")
         if self.preferred:
             self.secured = False
         if not self.secured:
@@ -101,6 +108,9 @@ class CapitalStructure:
     entities: list[Entity]
     tranches: list[Tranche]
     admin_fees: float = 0.0
+    admin_pct: float = 0.0            # admin/deadweight cost as a fraction of EV, deducted
+                                      # before distribution (Moyer: outsiders underestimate;
+                                      # UI defaults 7%). Stacks with the $ admin_fees.
 
     def __post_init__(self) -> None:
         self.validate()
@@ -194,6 +204,21 @@ class CapitalStructure:
             )
         if self.admin_fees < 0:
             raise ValueError("admin_fees must be non-negative")
+        if not 0.0 <= self.admin_pct < 0.5:
+            raise ValueError("admin_pct must be in [0, 0.5)")
+        tmap = {t.name: t for t in self.tranches}
+        for t in self.tranches:
+            if t.subordinated_to is not None:
+                target = tmap.get(t.subordinated_to)
+                if target is None:
+                    raise ValueError(
+                        f"Tranche '{t.name}' subordinated to unknown tranche '{t.subordinated_to}'")
+                if target.entity != t.entity:
+                    raise ValueError(
+                        f"Tranche '{t.name}' subordinated to '{t.subordinated_to}' at a different "
+                        "entity — contractual subordination only reroutes within an entity")
+                if target.name == t.name:
+                    raise ValueError(f"Tranche '{t.name}' cannot be subordinated to itself")
         # post_order also checks for cycles
         self.post_order()
 

@@ -152,7 +152,32 @@ export default function OverviewPage({ ticker, years }) {
 
         <OverviewCard title="Recovery" to={`/company/${ticker}/recovery`}
           loading={rec.loading} error={rec.error}>
-          {rec.data && (
+          {rec.data?.mode === "liquidation" && (
+            <div>
+              <div className="mb-2 text-xs text-amber-200/90">{rec.data.note}</div>
+              {rec.data.available === false ? (
+                <div className="text-xs text-slate-500">{rec.data.detail}</div>
+              ) : (
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-400">
+                    net liquidation proceeds:{" "}
+                    <span className="font-mono text-slate-200">{fmt(rec.data.scenario?.net_proceeds, 0)} $mm</span>
+                    <span className="ml-2 text-slate-600">orderly, net of {Math.round(100 * (rec.data.scenario?.admin_pct || 0))}% costs</span>
+                  </div>
+                  {(rec.data.scenario?.tranches || []).slice(0, 4).map((t) => (
+                    <div key={t.tranche} className="flex items-center gap-2">
+                      <span className={`w-44 truncate ${t.is_fulcrum ? "text-rose-300" : "text-slate-400"}`} title={t.tranche}>{t.tranche}</span>
+                      <div className="h-1.5 flex-1 rounded bg-ink-700">
+                        <div className="h-1.5 rounded bg-accent" style={{ width: `${Math.min(100, t.recovery_pct || 0)}%` }} />
+                      </div>
+                      <span className="w-12 text-right font-mono text-slate-200">{fmt(t.recovery_pct, 0)}¢</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          {rec.data && !rec.data.mode && (
             <>
               <div className="mb-2">
                 <span className="font-mono text-lg text-rose-300">{rec.data.fulcrum || "no fulcrum — all classes covered"}</span>

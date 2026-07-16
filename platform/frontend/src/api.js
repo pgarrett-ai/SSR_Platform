@@ -187,12 +187,32 @@ export async function fetchRecoveryStructure(ticker, years = 3) {
   return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/structure?years=${years}`));
 }
 
-export async function simulateRecovery(ticker, structure, sim, years = 3) {
+export async function simulateRecovery(ticker, structure, sim, years = 3, extra = {}) {
   return jsonOrThrow(
     await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/simulate?years=${years}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ structure, sim }),
+      body: JSON.stringify({ structure, sim, ...extra }),
+    })
+  );
+}
+
+export async function exploreRecovery(ticker, body, years = 3) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/explore?years=${years}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+  );
+}
+
+export async function liquidateRecovery(ticker, body, years = 3) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/liquidation?years=${years}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     })
   );
 }

@@ -17,7 +17,8 @@ from .core.cache import is_hero, load_latest_overview, load_overview, save_overv
 from .capstack.debt_schedule import (annotate_maturities, drop_retired,
                                      extract_debt_schedule, fill_maturity_from_name)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
-from .capstack.forensic import build_forensic_table, detect_flags, quarter_forensic_row, total_debt
+from .capstack.forensic import (build_asset_snapshot, build_forensic_table, detect_flags,
+                                quarter_forensic_row, total_debt)
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .core.config import get_settings
@@ -426,6 +427,14 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"EBITDA box step failed: {exc}")
 
+    # --- Asset snapshot (liquidation-waterfall inputs) — deterministic, from Phase-2 facts ---
+    asset_snapshot = None
+    try:
+        if series is not None and series.years:
+            asset_snapshot = build_asset_snapshot(series, series.cik)
+    except Exception as exc:
+        warnings.append(f"Asset snapshot step failed: {exc}")
+
     # --- Liquidity & runway (distressed-mode framing) — deterministic, LLM-independent ---
     liquidity = None
     try:
@@ -471,6 +480,7 @@ def run_overview(
         covenants=covenants,
         subsidiaries=subsidiaries,
         liquidity=liquidity,
+        asset_snapshot=asset_snapshot,
         leverage_timeline=lev_timeline,
         maturity_wall=maturities,
         what_changed=changes,

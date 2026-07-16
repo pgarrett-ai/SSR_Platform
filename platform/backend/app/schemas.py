@@ -264,6 +264,20 @@ class LiquidityRunway(BaseModel):
     next_maturity: Optional[NextMaturity] = None
 
 
+class AssetSnapshot(BaseModel):
+    """Latest balance-sheet asset categories — feeds the liquidation waterfall (Moyer
+    asset-based valuation). `other` is the derived residual vs total assets."""
+
+    as_of_fy: Optional[int] = None
+    cash: Optional[CitedValue] = None
+    accounts_receivable: Optional[CitedValue] = None
+    inventory: Optional[CitedValue] = None
+    ppe: Optional[CitedValue] = None
+    intangibles: Optional[CitedValue] = None       # goodwill + other intangibles, derived sum
+    other: Optional[CitedValue] = None             # total assets − categorized, derived
+    total_assets: Optional[CitedValue] = None
+
+
 class ChangeItem(BaseModel):
     """One year-over-year move for the Overview 'what changed' card."""
 
@@ -291,6 +305,7 @@ class Overview(BaseModel):
     covenants: list[CovenantPackage] = Field(default_factory=list)
     subsidiaries: list[Subsidiary] = Field(default_factory=list)
     liquidity: Optional[LiquidityRunway] = None   # distressed-mode: cash/burn/runway/wall
+    asset_snapshot: Optional[AssetSnapshot] = None  # liquidation-waterfall inputs
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY
