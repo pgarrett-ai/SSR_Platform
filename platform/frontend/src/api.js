@@ -164,6 +164,12 @@ export async function fetchLadder(ticker, years = 3) {
   );
 }
 
+export async function fetchCapacity(ticker, years = 3) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/capacity?years=${years}`)
+  );
+}
+
 // ---- Screening + full-text search --------------------------------------------
 
 export async function fetchScreen() {

@@ -125,6 +125,15 @@ export default function OverviewPage({ ticker, years }) {
                   </div>
                   <div>annual burn: <span className="font-mono text-rose-300">{liq.annual_burn?.display || "—"}</span></div>
                   <div>next maturity: <span className="font-mono text-slate-200">{liq.next_maturity ? `${fmtB(liq.next_maturity.face)} in ${liq.next_maturity.year}` : "—"}</span></div>
+                  {liq.next_event && (
+                    <div>
+                      next event:{" "}
+                      <span className="font-mono text-slate-200">
+                        {liq.next_event.kind} · {liq.next_event.amount?.display} · {liq.next_event.date}
+                      </span>
+                      {liq.next_event.flags?.length > 0 && <Badge tone="high" className="ml-2">{liq.next_event.flags[0].replace(/_/g, " ")}</Badge>}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="mt-2 text-[10px] text-slate-600">
@@ -145,6 +154,29 @@ export default function OverviewPage({ ticker, years }) {
                 <div>reported debt: <span className="font-mono text-slate-200">{bridge?.reported_debt?.display || "—"}</span></div>
                 <div>economic debt: <span className="font-mono text-slate-200">{bridge?.economic_debt?.display || "—"}</span></div>
                 <div>{(ov.data?.obs_items || []).length} off-balance-sheet findings</div>
+                {ov.data?.coverage_chips?.debt_ebitda_capex && (
+                  <div title="quoted EBITDA leverage understates true leverage when capex is heavy (Moyer ch. 6)">
+                    debt/(EBITDA−capex): <CitedNumber cv={ov.data.coverage_chips.debt_ebitda_capex} className="text-slate-200" />
+                    {ov.data.coverage_chips.capex_pct_ebitda != null && (
+                      <span className="text-slate-600"> (capex {ov.data.coverage_chips.capex_pct_ebitda}% of EBITDA)</span>
+                    )}
+                  </div>
+                )}
+                {ov.data?.coverage_chips?.ebitda_interest && (
+                  <div title="paired coverage: 2.0x EBITDA/interest with 1.2x (EBITDA−capex)/interest is already declinable credit (Moyer ch. 6)">
+                    coverage: <CitedNumber cv={ov.data.coverage_chips.ebitda_interest} className="text-slate-200" />
+                    {ov.data.coverage_chips.ebitda_capex_interest?.display && (
+                      <span className="text-slate-500"> / <CitedNumber cv={ov.data.coverage_chips.ebitda_capex_interest} className="text-slate-400" /></span>
+                    )}
+                  </div>
+                )}
+                {ladder.data?.net_market_leverage && (
+                  <div>net-at-mkt lev: <CitedNumber cv={ladder.data.net_market_leverage} className="text-slate-200" />
+                    {ladder.data.creation_multiple_fulcrum != null && (
+                      <span className="text-slate-500"> · creation @ fulcrum <span className="font-mono">{ladder.data.creation_multiple_fulcrum.toFixed(1)}x</span></span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
