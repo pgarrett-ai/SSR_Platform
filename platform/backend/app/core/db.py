@@ -36,12 +36,31 @@ def init_db() -> None:
     from .. import models  # noqa: F401  (register mappers)
 
     models.Base.metadata.create_all(bind=engine)
+    _ensure_columns()
     try:
         with engine.begin() as con:
             con.exec_driver_sql(_FTS_DDL)
     except Exception:   # this Python's sqlite3 lacks FTS5 -> search degrades to empty
         FTS_AVAILABLE = False
     _backfill()
+
+
+def _ensure_columns() -> None:
+    """Idempotent micro-migration: create_all never ALTERs an existing table, so add any
+    mapped columns missing from the live SQLite file. Nullable ADD COLUMN only."""
+    from .. import models
+
+    with engine.begin() as con:
+        for table in models.Base.metadata.tables.values():
+            have = {row[1] for row in
+                    con.exec_driver_sql(f"PRAGMA table_info({table.name})").fetchall()}
+            if not have:   # table doesn't exist yet; create_all handled it
+                continue
+            for col in table.columns:
+                if col.name not in have:
+                    con.exec_driver_sql(
+                        f"ALTER TABLE {table.name} ADD COLUMN {col.name} "
+                        f"{col.type.compile(engine.dialect)}")
 
 
 def _backfill() -> None:

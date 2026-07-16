@@ -72,6 +72,44 @@ def test_risk_update_survives_resave(tmp_path, monkeypatch):
     _cleanup()
 
 
+def test_screen_market_columns_and_badge(tmp_path, monkeypatch):
+    """New Moyer columns ride the snapshot; the distress badge computes live against
+    the drop-file (None here — no quotes for ZZTEST)."""
+    monkeypatch.setattr(cache, "CACHE_DIR", tmp_path)
+    cache.save_overview("ZZTEST", 3, _overview())
+    with session_scope() as s:
+        row = s.get(models.Snapshot, "ZZTEST")
+        row.net_market_leverage = 4.1
+        row.creation_multiple_fulcrum = 3.0
+        row.last_price = 0.5
+    row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
+    assert row["net_market_leverage"] == 4.1
+    assert row["creation_multiple_fulcrum"] == 3.0
+    assert row["distress_badge"] is None      # no drop-file quotes for ZZTEST
+    _cleanup()
+
+
+def test_distress_badge_predicate(monkeypatch):
+    """stock < $1 AND an unsecured quote < 60 -> badge; either leg failing -> off/None."""
+    import app.hazard.trace as trace
+    from app.main import _distress_badge
+
+    quotes = {"ZZTEST": [{"coupon": 8.0, "maturity": "2030-06-15", "last_price": 55.0,
+                          "as_of": "2026-07-01"}]}
+    monkeypatch.setattr(trace, "get_issuer_bonds", lambda t: {
+        "enabled": True, "bonds": quotes.get(t.upper()) or []})
+    with session_scope() as s:
+        s.add(models.DebtInstrumentRow(ticker="ZZTEST", instrument="8% Notes 2030",
+                                       coupon_pct=8.0, maturity="2030", secured=False))
+        s.flush()
+        assert _distress_badge(s, "ZZTEST", 0.5) is True
+        assert _distress_badge(s, "ZZTEST", 2.0) is False   # equity leg fails
+        assert _distress_badge(s, "ZZTEST", None) is None
+        for r in s.query(models.DebtInstrumentRow).filter_by(ticker="ZZTEST").all():
+            s.delete(r)
+    _cleanup()
+
+
 def test_fts_rebuild_and_search():
     with session_scope() as s:
         s.add(models.Covenant(ticker="ZZTEST",

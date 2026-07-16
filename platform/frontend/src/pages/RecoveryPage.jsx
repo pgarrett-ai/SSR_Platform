@@ -9,8 +9,10 @@ import {
   chartTooltipStyle, fmt,
 } from "../ui/index.jsx";
 import {
-  deleteScenario, fetchRecoveryStructure, listScenarios, saveScenario, simulateRecovery,
+  deleteScenario, fetchLadder, fetchRecoveryStructure, listScenarios, saveScenario,
+  simulateRecovery,
 } from "../api.js";
+import IrrMatrix from "../components/IrrMatrix.jsx";
 
 // Provenance marker: § next to a tranche pops the filing citation behind its face amount.
 function CiteMark({ citation }) {
@@ -87,6 +89,14 @@ export default function RecoveryPage({ ticker, years }) {
   const [loading, setLoading] = useState(false);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState(null);
+  const [quotedByName, setQuotedByName] = useState({});   // instrument -> drop-file quote
+
+  useEffect(() => {
+    if (!ticker) return;
+    fetchLadder(ticker, years)
+      .then((d) => setQuotedByName(d.quote_by_instrument || {}))
+      .catch(() => setQuotedByName({}));
+  }, [ticker, years]);
 
   useEffect(() => {
     if (!ticker) return;
@@ -349,7 +359,7 @@ export default function RecoveryPage({ ticker, years }) {
         </>
       )}
 
-      {result && <Results result={result} citations={citations} />}
+      {result && <Results result={result} citations={citations} quotedByName={quotedByName} />}
 
       {result && (
         <Section title="Scenarios" subtitle="save this run, compare side-by-side">
@@ -395,7 +405,7 @@ export default function RecoveryPage({ ticker, years }) {
   );
 }
 
-function Results({ result, citations = {} }) {
+function Results({ result, citations = {}, quotedByName = {} }) {
   const order = result.tranches.map((t) => t.tranche);
   const histTranches = order.slice(0, 8);
   const cdfData = result.cdf.grid.map((g, i) => {
@@ -442,6 +452,7 @@ function Results({ result, citations = {} }) {
                 <Th>Tranche</Th><Th>Entity</Th><Th right>Face</Th><Th right>Claim</Th><Th right>Mean %</Th><Th right>Mean $</Th>
                 <Th right>Median %</Th><Th right>P10 %</Th><Th right>P90 %</Th><Th right>LGD %</Th>
                 <Th right>P(impaired)</Th><Th right>P(zero)</Th>
+                <Th right title="33.4% of class face blocks plan acceptance (66.7%-in-amount vote test) · cost at the drop-file quote when matched">Block 33.4%</Th>
               </tr>
             </thead>
             <tbody>
@@ -462,6 +473,14 @@ function Results({ result, citations = {} }) {
                   <td className="px-2 py-1.5 text-right">{fmt(t["lgd_%"])}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(t["prob_impaired_%"])}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(t["prob_zero_%"])}</td>
+                  <td className="px-2 py-1.5 text-right">
+                    {fmt(0.334 * t.face, 0)}
+                    {quotedByName[t.tranche]?.last_price != null && (
+                      <span className="text-slate-500" title={`at quote ${quotedByName[t.tranche].last_price}`}>
+                        {" "}(${fmt(0.334 * t.face * quotedByName[t.tranche].last_price / 100, 0)})
+                      </span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -520,6 +539,8 @@ function Results({ result, citations = {} }) {
           </LineChart>
         </ResponsiveContainer>
       </Section>
+
+      <IrrMatrix tranches={result.tranches} quotedByName={quotedByName} />
 
       <Section title="Waterfall at median EV" subtitle="single-path allocation at the median draw · recovery % of allowed claim">
         <table className="w-full border-collapse text-xs">

@@ -22,8 +22,11 @@ export default function ScreenTable({ onPick }) {
                   <Th>Issuer</Th>
                   <Th right>Reported lev</Th>
                   <Th right>Economic lev</Th>
+                  <Th right className="cursor-help" title="(Σ debt at market − cash) ÷ EBITDA — TRACE drop-file quotes; computed at snapshot time, so it lags a quotes refresh until the next run">Net@mkt lev</Th>
+                  <Th right className="cursor-help" title="creation multiple through the fulcrum class at market (Moyer) — computed at snapshot time">Creation x</Th>
                   <Th right>Flags</Th>
                   <Th right className="cursor-help" title="composite risk 0-100 · trained PD implied rating — fills in after a Default Risk run">Risk</Th>
+                  <Th right className="cursor-help" title="Moyer distressed fact pattern: stock < $1 and an unsecured quote < 60">⚑</Th>
                 </tr>
               </thead>
               <tbody>
@@ -37,10 +40,13 @@ export default function ScreenTable({ onPick }) {
                     <Td className="text-slate-400">{r.issuer || "—"}</Td>
                     <Td right mono className="text-slate-300">{fmtLev(r.reported_leverage)}</Td>
                     <Td right mono className="text-slate-300">{fmtLev(r.economic_leverage)}</Td>
+                    <Td right mono className="text-slate-300">{fmtLev(r.net_market_leverage)}</Td>
+                    <Td right mono className="text-slate-300">{fmtLev(r.creation_multiple_fulcrum)}</Td>
                     <Td right mono className="text-slate-400">{r.flag_count ?? "—"}</Td>
                     <Td right mono className="text-slate-300">
                       {r.overall_risk == null ? "—" : `${r.overall_risk.toFixed(1)}${r.implied_rating ? ` · ${r.implied_rating}` : ""}`}
                     </Td>
+                    <Td right className="text-rose-300">{r.distress_badge ? "⚑" : ""}</Td>
                   </tr>
                 ))}
               </tbody>
