@@ -233,6 +233,24 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         return cv.value if cv is not None else None
 
     bridge = overview.economic_debt_bridge
+
+    # Market-layer columns (Moyer creation ladder) — best-effort; quotes are a manual
+    # drop-file so these lag a refresh until the next overview run (tooltip notes it).
+    net_mkt_lev = creation_mult = None
+    try:
+        import json as _json
+
+        from .capstack.creation import build_creation_ladder
+        from .hazard.trace import get_issuer_bonds
+        ladder = build_creation_ladder(
+            _json.loads(overview.model_dump_json()),
+            (get_issuer_bonds(ticker).get("bonds") or []))
+        nml = ladder.get("net_market_leverage")
+        net_mkt_lev = nml.get("value") if nml else None
+        creation_mult = ladder.get("creation_multiple_fulcrum")
+    except Exception:
+        pass
+
     prior = session.get(models.Snapshot, ticker)
     session.merge(models.Snapshot(
         ticker=ticker,
@@ -243,9 +261,14 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         reported_leverage=_val(bridge.reported_leverage) if bridge else None,
         economic_leverage=_val(bridge.economic_leverage) if bridge else None,
         flag_count=len(overview.forensic_flags),
+        net_market_leverage=net_mkt_lev,
+        creation_multiple_fulcrum=creation_mult,
         overall_risk=prior.overall_risk if prior else None,
         trained_pd=prior.trained_pd if prior else None,
         implied_rating=prior.implied_rating if prior else None,
+        ebitda_capex_leverage=prior.ebitda_capex_leverage if prior else None,
+        interest_coverage=prior.interest_coverage if prior else None,
+        last_price=prior.last_price if prior else None,
     ))
 
 
@@ -260,6 +283,7 @@ def update_snapshot_risk(session: Session, ticker: str, hz: dict) -> None:
     trained = (hz.get("scores") or {}).get("Trained hazard") or {}
     row.trained_pd = trained.get("value")
     row.implied_rating = trained.get("implied_rating")
+    row.last_price = (hz.get("market") or {}).get("price")   # feeds the distress badge
 
 
 def rebuild_fts(session: Session, ticker: str) -> None:

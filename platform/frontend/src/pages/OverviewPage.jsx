@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { fetchHazard, fetchOverview, fetchRates, simulateRecovery } from "../api.js";
+import { fetchHazard, fetchLadder, fetchOverview, fetchRates, simulateRecovery } from "../api.js";
 import { useAsync } from "../cache.js";
 import { Badge, Card, Loading, fmt, riskColor } from "../ui/index.jsx";
+import CitedNumber from "../components/CitedNumber.jsx";
 
 // Key reference rates strip — DB-stored observations with their as-of dates.
 function KeyRates() {
@@ -55,6 +56,7 @@ export default function OverviewPage({ ticker, years }) {
   const hz = useAsync(`hazard:${ticker}`, () => fetchHazard(ticker, 10), [ticker]);
   const rec = useAsync(`recovery-quick:${ticker}:${years}`,
     () => simulateRecovery(ticker, null, { n_draws: 20000 }, years), [ticker, years]);
+  const ladder = useAsync(`ladder:${ticker}:${years}`, () => fetchLadder(ticker, years), [ticker, years]);
 
   const bridge = ov.data?.economic_debt_bridge;
   const liq = ov.data?.liquidity;
@@ -66,6 +68,10 @@ export default function OverviewPage({ ticker, years }) {
   const elTotal = pd12 == null || !rec.data ? null
     : pd12 * (rec.data.tranches || []).reduce((s, t) => s + t.face * (1 - t["mean_recovery_%"] / 100), 0);
   const issuer = ov.data?.header?.issuer || hz.data?.issuer?.name || ticker;
+  // Moyer distress fact pattern (ch. 1): equity de minimis AND unsecured debt > 40% discount.
+  const eqPrice = hz.data?.market?.price;
+  const minUnsec = ladder.data?.min_unsecured_quote;
+  const moyerBadge = eqPrice != null && minUnsec != null && eqPrice < 1 && minUnsec < 60;
 
   return (
     <div>
@@ -73,6 +79,11 @@ export default function OverviewPage({ ticker, years }) {
         <h1 className="text-xl font-semibold text-slate-100">{issuer}</h1>
         <span className="font-mono text-sm text-slate-500">{ticker}</span>
         {ov.data?.header?.from_cache && <Badge>cached</Badge>}
+        {moyerBadge && (
+          <span title={`stock $${eqPrice.toFixed(2)} < $1 · unsecured quote ${minUnsec} < 60 — balance-sheet restructuring fact pattern (Moyer ch. 1)`}>
+            <Badge tone="high">distressed fact pattern</Badge>
+          </span>
+        )}
       </div>
 
       <KeyRates />

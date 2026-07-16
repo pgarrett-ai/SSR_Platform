@@ -11,6 +11,7 @@ import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
 import CovenantPackages from "../components/CovenantPackages.jsx";
+import CreationLadder from "../components/CreationLadder.jsx";
 import DocSearch from "../components/DocSearch.jsx";
 import HoldersPanel from "../components/HoldersPanel.jsx";
 import MdnaReader from "../components/MdnaReader.jsx";
@@ -98,6 +99,13 @@ export default function CapitalPage({ ticker, health, overview }) {
           >
             <DebtScheduleTable instruments={overview.debt_schedule} />
             {overview.maturity_wall?.length > 0 && <MaturityWall wall={overview.maturity_wall} />}
+          </Section>
+
+          <Section
+            title="Creation-multiple ladder"
+            subtitle="cumulative claims through each class ÷ EBITDA, at face and at market (Moyer)"
+          >
+            <CreationLadder ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">

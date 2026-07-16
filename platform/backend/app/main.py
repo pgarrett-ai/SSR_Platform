@@ -216,6 +216,28 @@ def company(
     return JSONResponse(content=jsonable(out))
 
 
+def _distress_badge(session, ticker: str, last_price: Optional[float]) -> Optional[bool]:
+    """Moyer fact pattern (ch. 1): equity de minimis (< $1) AND any unsecured quote < 60
+    (> 40% discount). Live against the drop-file; None when either input is missing."""
+    from .capstack.quotes import match_quotes
+    from .hazard.trace import get_issuer_bonds
+
+    if last_price is None:
+        return None
+    bonds = get_issuer_bonds(ticker).get("bonds") or []
+    if not bonds:
+        return None
+    rows = (session.query(models.DebtInstrumentRow)
+            .filter(models.DebtInstrumentRow.ticker == ticker).all())
+    sched = [{"instrument": r.instrument, "coupon_pct": r.coupon_pct,
+              "maturity": r.maturity} for r in rows if r.secured is False]
+    matches, _ = match_quotes(sched, bonds)
+    prices = [q.get("last_price") for q in matches.values() if q.get("last_price") is not None]
+    if not prices:
+        return None
+    return bool(last_price < 1.0 and min(prices) < 60.0)
+
+
 @app.get("/api/screen")
 def screen() -> JSONResponse:
     """Every analyzed company's headline metrics — filtering happens client-side."""
@@ -224,14 +246,70 @@ def screen() -> JSONResponse:
     with session_scope() as session:
         rows = (session.query(models.Snapshot)
                 .order_by(nulls_last(desc(models.Snapshot.economic_leverage))).all())
-        return JSONResponse(content=jsonable([{
-            "ticker": r.ticker, "issuer": r.issuer, "last_updated": r.last_updated,
-            "reported_leverage": r.reported_leverage,
-            "economic_leverage": r.economic_leverage,
-            "flag_count": r.flag_count,
-            "overall_risk": r.overall_risk, "trained_pd": r.trained_pd,
-            "implied_rating": r.implied_rating,
-        } for r in rows]))
+        out = []
+        for r in rows:
+            try:
+                badge = _distress_badge(session, r.ticker, r.last_price)
+            except Exception:
+                badge = None
+            out.append({
+                "ticker": r.ticker, "issuer": r.issuer, "last_updated": r.last_updated,
+                "reported_leverage": r.reported_leverage,
+                "economic_leverage": r.economic_leverage,
+                "net_market_leverage": r.net_market_leverage,
+                "creation_multiple_fulcrum": r.creation_multiple_fulcrum,
+                "ebitda_capex_leverage": r.ebitda_capex_leverage,
+                "flag_count": r.flag_count,
+                "overall_risk": r.overall_risk, "trained_pd": r.trained_pd,
+                "implied_rating": r.implied_rating,
+                "distress_badge": badge,
+            })
+        return JSONResponse(content=jsonable(out))
+
+
+@app.get("/api/company/{ticker}/bonds")
+def issuer_bonds(ticker: str) -> JSONResponse:
+    """Per-issuer TRACE quotes from the manual drop-file (graceful when absent)."""
+    from .hazard.trace import get_issuer_bonds
+
+    return JSONResponse(content=jsonable(get_issuer_bonds(ticker)))
+
+
+@app.get("/api/company/{ticker}/capital/ladder")
+def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Creation-multiple ladder (Moyer): cumulative claims through each class at face and
+    at market ÷ EBITDA. On-demand (not cached in the overview) so a drop-file refresh
+    reprices without a pipeline run."""
+    from .capstack.creation import build_creation_ladder
+    from .capstack.quotes import spread_bps
+    from .hazard.trace import get_issuer_bonds
+
+    def _run():
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+        feed = get_issuer_bonds(ticker)
+        bonds = feed.get("bonds") or []
+        payload = build_creation_ladder(ov, bonds)
+
+        # per-quote spread flags (F7c) off the coarse 3-point treasury curve
+        treasuries: dict[str, float] = {}
+        try:
+            from .rates import get_key_rates, refresh_if_stale
+            with session_scope() as session:
+                refresh_if_stale(session)
+                for row in get_key_rates(session):
+                    treasuries[row["series"]] = row["value"]
+        except Exception:
+            pass
+        quotes_out = []
+        for b in bonds:
+            spr = spread_bps(b, treasuries) if treasuries else None
+            quotes_out.append({**b, "spread_bps": spr,
+                               "wide_spread": bool(spr is not None and spr > 1000)})
+        payload["quotes"] = quotes_out
+        payload["quote_feed"] = {k: v for k, v in feed.items() if k != "bonds"}
+        return JSONResponse(content=jsonable(payload))
+
+    return _handle_pipeline_errors(_run)
 
 
 @app.get("/api/rates")

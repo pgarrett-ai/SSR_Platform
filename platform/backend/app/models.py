@@ -317,3 +317,10 @@ class Snapshot(Base):
     overall_risk: Mapped[Optional[float]] = mapped_column(Float)        # hazard composite
     trained_pd: Mapped[Optional[float]] = mapped_column(Float)          # calibrated 12m PD
     implied_rating: Mapped[Optional[str]] = mapped_column(String(8))
+    # Market-layer columns (Moyer): filled at snapshot-write time from the TRACE drop-file,
+    # so they lag a quotes refresh until the next overview/risk run for the ticker.
+    net_market_leverage: Mapped[Optional[float]] = mapped_column(Float)
+    creation_multiple_fulcrum: Mapped[Optional[float]] = mapped_column(Float)
+    ebitda_capex_leverage: Mapped[Optional[float]] = mapped_column(Float)   # Debt/(EBITDA−CAPX)
+    interest_coverage: Mapped[Optional[float]] = mapped_column(Float)       # EBITDA/interest
+    last_price: Mapped[Optional[float]] = mapped_column(Float)              # equity, from hazard run
