@@ -275,6 +275,19 @@ def issuer_bonds(ticker: str) -> JSONResponse:
     return JSONResponse(content=jsonable(get_issuer_bonds(ticker)))
 
 
+@app.get("/api/company/{ticker}/capacity")
+def credit_capacity(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Credit-capacity card (Moyer ch. 6): cash-sweep repayment %, leverage×growth
+    heatmap, cycle-severity slices. Deterministic, from the cached overview."""
+    from .capstack.capacity import build_capacity
+
+    def _run():
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+        return JSONResponse(content=jsonable(build_capacity(ov)))
+
+    return _handle_pipeline_errors(_run)
+
+
 @app.get("/api/company/{ticker}/capital/ladder")
 def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10)):
     """Creation-multiple ladder (Moyer): cumulative claims through each class at face and

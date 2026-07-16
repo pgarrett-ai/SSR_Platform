@@ -1,7 +1,8 @@
-"""Liquidity/runway assembly: undrawn sum (no double-count), burn → runway, distress flag."""
+"""Liquidity/runway assembly: undrawn sum (no double-count), burn → runway, distress flag,
+and the liquidity-event calendar (coupons + maturities vs liquidity)."""
 from __future__ import annotations
 
-from app.capstack.liquidity import build_liquidity
+from app.capstack.liquidity import build_event_calendar, build_liquidity
 from app.schemas import (CitedValue, DebtInstrument, ForensicTableRow, MaturityBucket)
 
 
@@ -62,3 +63,63 @@ def test_not_distressed_when_ebitda_positive_and_no_runway_without_burn():
 
 def test_none_without_forensic_rows():
     assert build_liquidity([], [], [], ebitda=-1e9) is None
+
+
+# --------------------------------------------------------------------------- #
+# Event calendar (Moyer ch. 8)
+# --------------------------------------------------------------------------- #
+
+def _note(name, outstanding, coupon_pct, maturity, facility_type="notes"):
+    return DebtInstrument(instrument=name, outstanding=_cv(outstanding),
+                          coupon_pct=coupon_pct, maturity=maturity,
+                          facility_type=facility_type)
+
+
+def test_calendar_coupons_and_maturity():
+    # LCID-shaped: 1.25% converts due Dec 2026 ($204M), 5.00% notes due March 2030
+    sched = [_note("1.25% Convertible Notes due 2026", 204e6, 1.25, "December 2026"),
+             _note("5.00% Notes due 2030", 51e6, 5.0, "March 2030")]
+    events, note = build_event_calendar(sched, liquidity_total=1319e6, ebitda=-2.154e9,
+                                        asof="2026-03-31")
+    kinds = {(e.kind, e.instrument) for e in events}
+    assert ("maturity", "1.25% Convertible Notes due 2026") in kinds
+    coupons = [e for e in events if e.kind == "coupon"]
+    assert coupons, "semiannual coupons expected"
+    c = next(e for e in coupons if "1.25%" in e.instrument)
+    # 204 × 1.25% ÷ 2 = 1.275M
+    assert abs(c.amount.value - 1.275e6) < 1e3
+    assert "semiannual" in c.assumption
+    # coupons stop at the instrument's maturity
+    assert all(e.date <= "2026-12" for e in coupons if "1.25%" in e.instrument)
+    assert note is None
+
+
+def test_calendar_flags():
+    sched = [_note("Big Notes", 2000e6, 10.0, "June 2027")]
+    events, _ = build_event_calendar(sched, liquidity_total=1000e6, ebitda=-1e9,
+                                     asof="2026-06-30")
+    mat = next(e for e in events if e.kind == "maturity")
+    assert "maturity_unfundable" in mat.flags        # 2,000 face > 1,000 liquidity
+    coup = next(e for e in events if e.kind == "coupon")
+    # 2,000 × 10% ÷ 2 = 100 = 10% of liquidity -> not > 10%; use amount vs threshold
+    # payment 100 > 0.10 × 1000 is False (equal); the next test uses a bigger coupon
+    sched2 = [_note("Bigger Notes", 3000e6, 10.0, "June 2027")]
+    events2, _ = build_event_calendar(sched2, liquidity_total=1000e6, ebitda=-1e9,
+                                      asof="2026-06-30")
+    coup2 = next(e for e in events2 if e.kind == "coupon")
+    assert "coupon_at_risk" in coup2.flags           # 150 > 100 while EBITDA <= 0
+
+
+def test_calendar_excludes_rateless_maturityless():
+    sched = [DebtInstrument(instrument="GIB facility", outstanding=_cv(1890e6)),
+             _note("5% Notes due 2030", 100e6, 5.0, "2030")]
+    events, note = build_event_calendar(sched, None, None, "2026-03-31")
+    assert "1 instrument(s) excluded" in note
+    assert all("GIB" not in e.instrument for e in events)
+
+
+def test_next_event_is_earliest():
+    sched = [_note("A Notes", 100e6, 8.0, "December 2027"),
+             _note("B Notes", 100e6, 6.0, "July 2026")]
+    events, _ = build_event_calendar(sched, 1000e6, 100e6, "2026-06-30")
+    assert events == sorted(events, key=lambda e: e.date)

@@ -437,16 +437,41 @@ def run_overview(
 
     # --- Liquidity & runway (distressed-mode framing) — deterministic, LLM-independent ---
     liquidity = None
+    liquidity_events: list = []
+    liquidity_events_note = None
+    ebitda_v = None
     try:
-        from .capstack.liquidity import build_liquidity
-        ebitda_v = None
+        from .capstack.liquidity import build_event_calendar, build_liquidity
         if economic_debt_bridge and economic_debt_bridge.ebitda:
             ebitda_v = economic_debt_bridge.ebitda.value      # canonical NI-walk EBITDA
         elif forensic_table and forensic_table[-1].ebitda:
             ebitda_v = forensic_table[-1].ebitda.value        # proxy fallback (LLM off)
         liquidity = build_liquidity(forensic_table, debt_schedule, maturities, ebitda_v)
+        total_liq = (liquidity.total_liquidity.value
+                     if liquidity and liquidity.total_liquidity else None)
+        liquidity_events, liquidity_events_note = build_event_calendar(
+            debt_schedule, total_liq, ebitda_v, debt_asof)
+        if liquidity and liquidity_events:
+            liquidity.next_event = liquidity_events[0]
     except Exception as exc:
         warnings.append(f"Liquidity/runway step failed: {exc}")
+
+    # --- Capacity-ratio chips (Moyer ch. 6 dual leverage + paired coverage) ---
+    coverage = None
+    try:
+        from .capstack.capacity import coverage_chips
+        from .edgar.facts import raw_value
+        if series is not None and series.years:
+            yf = series.latest()
+            debt_v = None
+            if economic_debt_bridge and economic_debt_bridge.reported_debt:
+                debt_v = economic_debt_bridge.reported_debt.value
+            elif forensic_table and forensic_table[-1].total_debt:
+                debt_v = forensic_table[-1].total_debt.value
+            coverage = coverage_chips(debt_v, ebitda_v, raw_value(yf, "capex"),
+                                      raw_value(yf, "interest_expense"))
+    except Exception as exc:
+        warnings.append(f"Coverage chips step failed: {exc}")
 
     header = IssuerHeader(
         issuer=issuer_name,
@@ -480,7 +505,10 @@ def run_overview(
         covenants=covenants,
         subsidiaries=subsidiaries,
         liquidity=liquidity,
+        liquidity_events=liquidity_events,
+        liquidity_events_note=liquidity_events_note,
         asset_snapshot=asset_snapshot,
+        coverage_chips=coverage,
         leverage_timeline=lev_timeline,
         maturity_wall=maturities,
         what_changed=changes,

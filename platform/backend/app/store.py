@@ -266,8 +266,12 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         overall_risk=prior.overall_risk if prior else None,
         trained_pd=prior.trained_pd if prior else None,
         implied_rating=prior.implied_rating if prior else None,
-        ebitda_capex_leverage=prior.ebitda_capex_leverage if prior else None,
-        interest_coverage=prior.interest_coverage if prior else None,
+        ebitda_capex_leverage=(overview.coverage_chips.debt_ebitda_capex.value
+                               if overview.coverage_chips
+                               and overview.coverage_chips.debt_ebitda_capex else None),
+        interest_coverage=(overview.coverage_chips.ebitda_interest.value
+                           if overview.coverage_chips
+                           and overview.coverage_chips.ebitda_interest else None),
         last_price=prior.last_price if prior else None,
     ))
 
