@@ -339,6 +339,42 @@ def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
     return _handle_pipeline_errors(_run)
 
 
+@app.get("/api/company/{ticker}/capital/refi")
+def capital_refi(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Refi-wall sequencing (Moyer ch. 6/10): per maturity bucket, internal repayability
+    (sequential sweep funding), the conditional-PD leg from the cached hazard inputs,
+    and the drop-file market overlay. On-demand so a quote refresh reprices without a
+    pipeline run."""
+    from .capstack.refi import build_refi_wall, hazard_inputs
+    from .hazard.trace import get_issuer_bonds
+
+    def _run():
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+        bonds = get_issuer_bonds(ticker).get("bonds") or []
+        return JSONResponse(content=jsonable(
+            build_refi_wall(ov, bonds, hazard_inputs(ticker))))
+
+    return _handle_pipeline_errors(_run)
+
+
+@app.get("/api/company/{ticker}/telegraph")
+def telegraph(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Bank-position triage + filing-telegraph signals (Moyer ch. 8) in one payload.
+    An empty debt schedule (ATUS/TSE) degrades to bank.available: false while the
+    disclosure/payables signals still evaluate."""
+    from .capstack.triage import bank_triage, filing_telegraph
+
+    def _run():
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+        bank = bank_triage(ov)
+        with session_scope() as session:   # FTS phrase scan
+            tel = filing_telegraph(ov, session)
+        return JSONResponse(content=jsonable(
+            {"available": True, "bank": bank, "telegraph": tel}))
+
+    return _handle_pipeline_errors(_run)
+
+
 @app.get("/api/rates")
 def key_rates() -> JSONResponse:
     """Latest key reference rates (SOFR, EFFR, Fed Funds target, prime, T-bill, 10Y/30Y) —
