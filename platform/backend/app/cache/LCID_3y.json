@@ -6,7 +6,7 @@
     "cik": "1811210",
     "years": 3,
     "n_filings": 76,
-    "last_updated": "2026-07-17T00:27:28.558140+00:00",
+    "last_updated": "2026-07-17T17:23:21.128228+00:00",
     "from_cache": false,
     "llm_enabled": false
   },
@@ -371,7 +371,11 @@
         "derived": false,
         "formula": null,
         "note": null
-      }
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2030 Notes",
@@ -410,7 +414,45 @@
       "governed_by": null,
       "facility_type": "notes",
       "commitment": null,
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": {
+        "value": 1100000000.0,
+        "display": "$1,100M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [lcid:A2030NotesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2030 Notes: $1,100M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, lcid:A2030NotesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": {
+        "value": 30.0,
+        "display": "$30.00",
+        "unit": "USD/share",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentConvertibleConversionPrice1 [lcid:A2030NotesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2030 Notes: conversion price $30.00/share as of 2026-03-31 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2030NotesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "pik": null
     },
     {
       "instrument": "2031 Notes",
@@ -449,7 +491,45 @@
       "governed_by": null,
       "facility_type": "notes",
       "commitment": null,
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": {
+        "value": 975000000.0,
+        "display": "$975M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [lcid:A2031NotesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2031 Notes: $975M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, lcid:A2031NotesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": {
+        "value": 20.81,
+        "display": "$20.81",
+        "unit": "USD/share",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentConvertibleConversionPrice1 [lcid:A2031NotesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2031 Notes: conversion price $20.81/share as of 2026-03-31 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2031NotesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "pik": null
     },
     {
       "instrument": "GIB credit facility",
@@ -488,7 +568,11 @@
       "governed_by": null,
       "facility_type": "credit facility",
       "commitment": null,
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2026 Notes",
@@ -527,7 +611,45 @@
       "governed_by": null,
       "facility_type": "notes",
       "commitment": null,
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": {
+        "value": 204300000.0,
+        "display": "$204M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [lcid:A2026NotesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2026 Notes: $204M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, lcid:A2026NotesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": {
+        "value": 547.8,
+        "display": "$547.80",
+        "unit": "USD/share",
+        "citation": {
+          "accession_no": "0001628280-26-030517",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-05",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentConvertibleConversionPrice1 [lcid:A2026NotesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "quote": "2026 Notes: conversion price $547.80/share as of 2026-03-31 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2026NotesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "pik": null
     },
     {
       "instrument": "ABL Credit Facility",
@@ -600,7 +722,11 @@
         "derived": false,
         "formula": null,
         "note": null
-      }
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "DDTL Credit Facility",
@@ -656,7 +782,11 @@
         "formula": null,
         "note": null
       },
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2025 DDTL Credit Facility",
@@ -695,7 +825,11 @@
         "formula": null,
         "note": null
       },
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "GIB Facility Agreement",
@@ -734,7 +868,11 @@
         "formula": null,
         "note": null
       },
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2023 Amended GIB Facility Agreement",
@@ -773,7 +911,11 @@
         "formula": null,
         "note": null
       },
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "DDTL Amendment",
@@ -812,7 +954,11 @@
         "formula": null,
         "note": null
       },
-      "undrawn": null
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     }
   ],
   "debt_schedule_asof": "2026-03-31",
@@ -2879,6 +3025,191 @@
     },
     "capex_pct_ebitda": null
   },
+  "mezzanine": {
+    "value": 2283490000.0,
+    "display": "$2,283M",
+    "unit": "USD",
+    "citation": {
+      "accession_no": "0001628280-26-011053",
+      "form_type": "10-K",
+      "filing_date": "2026-02-24",
+      "exhibit": null,
+      "section": "XBRL concept us-gaap:TemporaryEquityCarryingAmountAttributableToParent",
+      "page": null,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+      "quote": "Temporary Equity, Carrying Amount, Attributable to Parent = $2,283M (as of 2025-12-31) [XBRL]"
+    },
+    "derived": false,
+    "formula": null,
+    "note": null
+  },
+  "rp_basket": {
+    "available": true,
+    "covenant_status": "none",
+    "starter": {
+      "value": 0.0,
+      "display": "$0M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "builder-only (starter basket not extracted) — $0 assumed",
+      "note": null
+    },
+    "points": [
+      {
+        "label": "Q3 2023",
+        "period_end": "2023-09-30",
+        "net_income": -630.9,
+        "ni_credit": -630.9,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -630.9,
+        "cumulative": -630.9
+      },
+      {
+        "label": "Q4 2023",
+        "period_end": "2023-12-31",
+        "net_income": -653.8,
+        "ni_credit": -653.8,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -653.8,
+        "cumulative": -1284.7
+      },
+      {
+        "label": "Q1 2024",
+        "period_end": "2024-03-31",
+        "net_income": -680.9,
+        "ni_credit": -680.9,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -680.9,
+        "cumulative": -1965.5
+      },
+      {
+        "label": "Q2 2024",
+        "period_end": "2024-06-30",
+        "net_income": -643.4,
+        "ni_credit": -643.4,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -643.4,
+        "cumulative": -2608.9
+      },
+      {
+        "label": "Q3 2024",
+        "period_end": "2024-09-30",
+        "net_income": -949.6,
+        "ni_credit": -949.6,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -949.6,
+        "cumulative": -3558.5
+      },
+      {
+        "label": "Q4 2024",
+        "period_end": "2024-12-31",
+        "net_income": -744.8,
+        "ni_credit": -744.8,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -744.8,
+        "cumulative": -4303.4
+      },
+      {
+        "label": "Q1 2025",
+        "period_end": "2025-03-31",
+        "net_income": -366.2,
+        "ni_credit": -366.2,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -366.2,
+        "cumulative": -4669.5
+      },
+      {
+        "label": "Q2 2025",
+        "period_end": "2025-06-30",
+        "net_income": -539.4,
+        "ni_credit": -539.4,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -539.4,
+        "cumulative": -5209.0
+      },
+      {
+        "label": "Q3 2025",
+        "period_end": "2025-09-30",
+        "net_income": -978.4,
+        "ni_credit": -978.4,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -978.4,
+        "cumulative": -6187.4
+      },
+      {
+        "label": "Q4 2025",
+        "period_end": "2025-12-31",
+        "net_income": -1797.7,
+        "ni_credit": -1797.7,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -1797.7,
+        "cumulative": -7985.1
+      },
+      {
+        "label": "Q1 2026",
+        "period_end": "2026-03-31",
+        "net_income": -1028.3,
+        "ni_credit": -1028.3,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -1028.3,
+        "cumulative": -9013.4
+      }
+    ],
+    "capacity": {
+      "value": 0.0,
+      "display": "$0M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 ($-9,013M), floored at 0",
+      "note": "omits junior-debt-issuance proceeds and unrestricted-subsidiary investment returns (not deterministically extractable); cumulation anchors at the lookback-window start — a proxy for the issuance-date build convention; builder negative — cumulative deductions exceed credits, $0 capacity"
+    },
+    "formula_note": "equity_issuance_proceeds, dividends_paid not tagged in XBRL — treated as $0",
+    "covenant_family": null,
+    "covenant_value": null,
+    "covenant_quote": null,
+    "notes": [
+      "no RP covenant extracted — distributions contractually unrestricted (unbounded leakage, Moyer ch. 9)"
+    ]
+  },
+  "liens_headroom": {
+    "available": true,
+    "archetype": "unbounded",
+    "unbounded_instruments": [
+      "2030 Notes",
+      "2031 Notes",
+      "2026 Notes"
+    ],
+    "unbounded_note": "no lien covenant extracted in the famil(ies) governing 2030 Notes, 2031 Notes, 2026 Notes — unbounded priming risk (covenant-lite; Moyer ch. 9)",
+    "rows": [],
+    "uptier_priming": null,
+    "j_crew_blocker_present": false,
+    "suggested_priming": null,
+    "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom (Moyer ch. 9)"
+  },
   "leverage_timeline": [
     {
       "fiscal_year": 2023,
@@ -3799,7 +4130,7 @@
   "warnings": [
     "Debt schedule sums to $4,645M vs $2,718M reported total debt (latest FY) — instruments may overlap (a facility and its sub-facility) or be missing; review the schedule citations.",
     "Maturity unknown for 2 instrument(s) (2025 GIB Credit Facility, GIB credit facility) — they are missing from the maturity wall.",
-    "Prior analysis from 2026-07-15 — LLM analysis is off. Re-enable to refresh."
+    "Prior analysis from 2026-07-17 — LLM analysis is off. Re-enable to refresh."
   ],
-  "llm_fallback_note": "Prior analysis from 2026-07-15 — LLM analysis is off. Re-enable to refresh."
+  "llm_fallback_note": "Prior analysis from 2026-07-17 — LLM analysis is off. Re-enable to refresh."
 }

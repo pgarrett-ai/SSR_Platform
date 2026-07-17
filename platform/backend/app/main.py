@@ -339,6 +339,58 @@ def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
     return _handle_pipeline_errors(_run)
 
 
+@app.get("/api/company/{ticker}/capital/refi")
+def capital_refi(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Refi-wall sequencing (Moyer ch. 6/10): per maturity bucket, internal repayability
+    (sequential sweep funding), the conditional-PD leg from the cached hazard inputs,
+    and the drop-file market overlay. On-demand so a quote refresh reprices without a
+    pipeline run."""
+    from .capstack.refi import build_refi_wall, hazard_inputs
+    from .hazard.trace import get_issuer_bonds
+
+    def _run():
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+        bonds = get_issuer_bonds(ticker).get("bonds") or []
+        return JSONResponse(content=jsonable(
+            build_refi_wall(ov, bonds, hazard_inputs(ticker))))
+
+    return _handle_pipeline_errors(_run)
+
+
+@app.get("/api/company/{ticker}/telegraph")
+def telegraph(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Bank-position triage + filing-telegraph signals (Moyer ch. 8) in one payload.
+    An empty debt schedule (ATUS/TSE) degrades to bank.available: false while the
+    disclosure/payables signals still evaluate."""
+    from .capstack.triage import bank_triage, filing_telegraph
+
+    def _run():
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+        bank = bank_triage(ov)
+        with session_scope() as session:   # FTS phrase scan
+            tel = filing_telegraph(ov, session)
+        return JSONResponse(content=jsonable(
+            {"available": True, "bank": bank, "telegraph": tel}))
+
+    return _handle_pipeline_errors(_run)
+
+
+@app.get("/api/company/{ticker}/options")
+def company_options(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Company-options feasibility card (Moyer ch. 11): the clock, the buyback math,
+    the exchange gate, and the asset-sale explorer inputs. On-demand so a drop-file
+    refresh reprices without a pipeline run."""
+    from .capstack.options import build_options
+    from .hazard.trace import get_issuer_bonds
+
+    def _run():
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+        bonds = get_issuer_bonds(ticker).get("bonds") or []
+        return JSONResponse(content=jsonable(build_options(ov, bonds)))
+
+    return _handle_pipeline_errors(_run)
+
+
 @app.get("/api/rates")
 def key_rates() -> JSONResponse:
     """Latest key reference rates (SOFR, EFFR, Fed Funds target, prime, T-bill, 10Y/30Y) —
@@ -450,6 +502,8 @@ class SimulateBody(BaseModel):
     attack: Optional[str] = None         # priority-attack scenario (fulcrum.attacks)
     attack_target: Optional[str] = None  # tranche name; default = all secured
     mode: Optional[str] = None           # "liquidation" forces the asset-based waterfall
+    priming: Optional[dict] = None       # {face ($mm), entity?} — rank-0 secured layer
+                                         # (fulcrum.proforma.prime, Moyer ch. 9)
 
 
 def _structure_dict(structure: CapitalStructure) -> dict:
@@ -553,6 +607,8 @@ def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
         "suggested_other_claims": _suggested_other_claims(ov),
         "suggested_mezzanine": _suggested_mezzanine(ov),
         "asset_snapshot": ov.get("asset_snapshot"),
+        # priming pre-seed: the covenant-dollars liens read (suggested_priming inside)
+        "liens_headroom": ov.get("liens_headroom"),
     }))
 
 
@@ -622,6 +678,20 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
                     float(100 * (wf[n] / amap[n].claim(result.accrual_years)).mean())
                     if amap[n].claim(result.accrual_years) > 0 else None}
                 for n in attacked.priority_order()]
+        priming_rows = None
+        primed_dict = None
+        if body.priming is not None:   # attack-block mirror: same EV draws (Moyer ch. 9)
+            from .fulcrum.proforma import prime
+            primed = prime(structure, float(body.priming.get("face") or 0.0),
+                           body.priming.get("entity"))
+            wf = run_waterfall(primed, result.sim.ev, result.accrual_years)
+            pmap = {t.name: t for t in primed.tranches}
+            priming_rows = [
+                {"tranche": n, "mean_recovery_%":
+                    float(100 * (wf[n] / pmap[n].claim(result.accrual_years)).mean())
+                    if pmap[n].claim(result.accrual_years) > 0 else None}
+                for n in primed.priority_order()]
+            primed_dict = _structure_dict(primed)
     except (TickerNotFoundError, NoFilingsError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except (ValueError, TypeError) as exc:   # engine validators = the input trust boundary
@@ -674,6 +744,8 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         "headroom_506": headroom_506,
         "attack": body.attack,
         "attack_tranches": attack_rows,
+        "priming_tranches": priming_rows,
+        "primed_structure": primed_dict,
     }))
 
 
@@ -710,6 +782,174 @@ def recovery_explore(ticker: str, body: SimulateBody, years: int = Query(3, ge=1
         return JSONResponse(status_code=400, content={"error": str(exc)})
     out["structure"] = _structure_dict(structure)
     return JSONResponse(content=jsonable(out))
+
+
+class ExchangeBody(BaseModel):
+    sim: dict = {}                       # base_ebitda, accrual_years
+    structure: Optional[dict] = None     # explicit (edited) cap table; else derived
+    petition_date: Optional[str] = None
+    target: str                          # tranche name to exchange
+    ratio_pct: float                     # new face per 100 old face tendered
+    participation_pct: float = 90.0      # the user's own scenario row
+    seniority: str = "priming"           # priming | second_lien | unsecured
+    coupon_pct: float = 0.0              # new-paper coupon (%)
+    cash_per_100: float = 0.0            # cash consideration (face-valued, no EV depletion)
+    equity_pct_at_full: float = 0.0      # e — equity to tendering holders at p=100
+    min_tender_pct: Optional[float] = None
+    exit_consent: bool = False           # stub contractually subordinated to the new paper
+
+
+_EXCHANGE_GRID_P = (0.0, 25.0, 50.0, 75.0, 90.0, 100.0)
+
+
+@app.post("/api/company/{ticker}/recovery/exchange")
+def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=1, le=10)):
+    """Exchange-offer analyzer (Moyer ch. 11): a calculator over typed offer terms —
+    holdout-vs-tender payoff curves per participation level, direct run_waterfall per
+    scenario over the BASE structure's EV grid (clones recovery_explore's shell)."""
+    from .capstack.quotes import match_quotes
+    from .edgar.facts import derived_value
+    from .fulcrum.explore import _cross
+    from .fulcrum.proforma import exchange_scenario
+    from .hazard.trace import get_issuer_bonds
+
+    try:
+        ov: dict = {}
+        ebitda = body.sim.get("base_ebitda")
+        if body.structure is not None:
+            structure = _structure_from_body(ticker, body.structure)
+            try:
+                ov = json.loads(run_overview(ticker, years).model_dump_json())
+            except Exception:
+                ov = {}
+        else:
+            structure, derived_ebitda, _, _, _, ov = _derive_structure(ticker, years)
+            ebitda = ebitda if ebitda is not None else derived_ebitda
+        accrual = float(body.sim.get("accrual_years") or 0.0)
+        if body.petition_date and "accrual_years" not in body.sim:
+            accrual = _accrual_from_petition(body.petition_date, ov)
+
+        tmap = {t.name: t for t in structure.tranches}
+        if body.target not in tmap:
+            raise ValueError(f"unknown exchange target '{body.target}'")
+        F = tmap[body.target].face
+        total_claim = sum(t.claim(accrual) for t in structure.tranches)
+        if total_claim <= 0:
+            return JSONResponse(content={"available": False,
+                                         "note": "no claims in the structure"})
+        grid = np.linspace(0.0, 1.5 * total_claim, 241)
+        base_wf = run_waterfall(structure, grid, accrual_years=accrual)
+        c = tmap[body.target].claim(accrual)
+        base_pct = (np.round(100 * base_wf[body.target] / c, 2) if c > 0
+                    else np.zeros_like(grid))
+
+        user_p = round(float(body.participation_pct), 4)
+        scenarios = []
+        for p in sorted(set(_EXCHANGE_GRID_P) | {user_p}):
+            sc = exchange_scenario(
+                structure, body.target, grid, ratio_pct=body.ratio_pct,
+                participation_pct=p, seniority=body.seniority,
+                coupon=body.coupon_pct / 100.0, exit_consent=body.exit_consent,
+                cash_per_100=body.cash_per_100,
+                equity_pct_at_full=body.equity_pct_at_full, accrual_years=accrual)
+            tender, holdout = sc["tender"], sc["holdout"]
+            face2 = sc["structure"].total_face()
+            # EV where holding out overtakes tendering (piecewise-linear curves).
+            # Skip the leading plateau where both payoffs are 0 (EV at/below the
+            # admin-fee floor): diff >= 0 holds trivially there, so _cross over the
+            # full grid reported a spurious crossover at ~0.
+            crossover = None
+            if tender is not None and holdout is not None:
+                alive = (tender > 0) | (holdout > 0)
+                if alive.any():
+                    j = int(np.argmax(alive))
+                    crossover = _cross(grid[j:], (holdout - tender)[j:], 0.0)
+            scenarios.append({
+                "participation_pct": p,
+                "proforma_face": round(face2, 1),
+                "proforma_leverage": (round(face2 / ebitda, 2)
+                                      if ebitda is not None and ebitda > 0 else None),
+                "stub_pct": (np.round(sc["stub_pct"], 2).tolist()
+                             if sc["stub_pct"] is not None else None),
+                "new_pct": (np.round(sc["new_pct"], 2).tolist()
+                            if sc["new_pct"] is not None else None),
+                "equity_mm": np.round(sc["equity"], 1).tolist(),
+                "tender": np.round(tender, 2).tolist() if tender is not None else None,
+                "holdout": (np.round(holdout, 2).tolist()
+                            if holdout is not None else None),
+                "crossover_ev": crossover,
+                "fails": bool(body.min_tender_pct is not None
+                              and p < body.min_tender_pct),
+            })
+
+        # reference EV for the scalar chips: 6.0x EBITDA when positive, else midpoint
+        ref_idx = 120
+        if ebitda is not None and ebitda > 0:
+            ref_idx = int(np.clip(np.searchsorted(grid, 6.0 * ebitda),
+                                  0, len(grid) - 1))
+
+        # target quote premium (unquoted-degrading)
+        matches, _ = match_quotes(ov.get("debt_schedule") or [],
+                                  get_issuer_bonds(ticker).get("bonds") or [])
+        tgt_key = body.target.rstrip(" *")
+        price = next((q.get("last_price") for n, q in matches.items()
+                      if n[:80] == tgt_key), None)
+        user_sc = next(s for s in scenarios if s["participation_pct"] == user_p)
+        premium = None
+        if price is not None and user_sc["tender"] is not None:
+            pkg = user_sc["tender"][ref_idx]
+            premium = {"target_quote": price, "package_at_ref": pkg,
+                       "premium_per_100": round(pkg - price, 2),
+                       "ref_ev_mm": round(float(grid[ref_idx]), 1)}
+
+        # holdout runway (ch. 11): can the estate carry a holdout fight?
+        cash = burn = None
+        for row in reversed(ov.get("forensic_table") or []):
+            if cash is None and (row.get("cash") or {}).get("value") is not None:
+                cash = float(row["cash"]["value"]) / 1e6
+            fcv = (row.get("free_cash_flow") or {}).get("value")
+            if burn is None and fcv is not None:
+                burn = max(-float(fcv), 0.0) / 1e6
+            if cash is not None and burn is not None:
+                break
+        runway = None
+        if cash is not None and burn is not None and burn > 0:
+            spend = body.cash_per_100 / 100.0 * user_p / 100.0 * F
+            rq = (cash - spend) / (burn / 4.0)
+            runway = derived_value(
+                round(rq, 1),
+                f"(cash ${cash:,.0f}M − tender cash spend ${spend:,.0f}M) ÷ quarterly "
+                f"burn ${burn / 4.0:,.0f}M — quarters the company can carry a holdout "
+                "fight (the book's cash-depletion point)",
+                f"{rq:,.1f} qtrs").model_dump()
+    except (TickerNotFoundError, NoFilingsError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except (ValueError, TypeError) as exc:   # engine validators = the 400 boundary
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+
+    return JSONResponse(content=jsonable({
+        "available": True,
+        "ev_grid": np.round(grid, 1).tolist(),
+        "multiple_grid": (np.round(grid / ebitda, 3).tolist()
+                          if ebitda is not None and ebitda > 0 else None),
+        "ebitda": ebitda,
+        "accrual_years": accrual,
+        "target": body.target,
+        "target_face": round(F, 1),
+        "base_pct": base_pct.tolist(),
+        "scenarios": scenarios,
+        "min_tender_pct": body.min_tender_pct,
+        "quote_premium": premium,
+        "holdout_runway_quarters": runway,
+        "terms": {"ratio_pct": body.ratio_pct, "seniority": body.seniority,
+                  "coupon_pct": body.coupon_pct, "cash_per_100": body.cash_per_100,
+                  "equity_pct_at_full": body.equity_pct_at_full,
+                  "exit_consent": body.exit_consent},
+        "note": "maturity-based coercion is not modeled — seniority expresses through "
+                "lien rank and exit-consent subordination; cash consideration is "
+                "valued at face and does not deplete waterfall EV (going-concern "
+                "convention)",
+    }))
 
 
 class LiquidationBody(BaseModel):

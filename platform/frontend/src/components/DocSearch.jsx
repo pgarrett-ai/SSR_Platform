@@ -4,7 +4,8 @@ import { Badge, Button, Input, Section } from "../ui/index.jsx";
 
 // Snippets come from filing text via FTS5 snippet(); the only HTML we allow through
 // is our own <mark> markers — everything else is escaped before rendering.
-function markOnly(snippet) {
+// (exported: Telegraph renders its FTS evidence through the same sanitizer)
+export function markOnly(snippet) {
   const esc = snippet
     .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
   return esc

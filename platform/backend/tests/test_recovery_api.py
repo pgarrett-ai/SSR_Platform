@@ -71,6 +71,32 @@ def test_attack_scenario_rides_same_draws():
     assert hit["OpCo Unsecured"] > base["OpCo Unsecured"]      # pool gains
 
 
+def test_priming_scenario_rides_same_draws():
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 20_000},
+        "priming": {"face": 300.0}})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    base = {t["tranche"]: t["mean_recovery_%"] for t in d["tranches"]}
+    primed = {t["tranche"]: t["mean_recovery_%"] for t in d["priming_tranches"]}
+    assert primed["Priming loan"] > base["1L Term Loan"]         # rank 0 pays first
+    assert primed["1L Term Loan"] < base["1L Term Loan"]         # primed down
+    assert primed["OpCo Unsecured"] < base["OpCo Unsecured"]     # the Moyer point
+    assert d["primed_structure"]["tranches"][0]["lien_rank"] == 0
+    # same EV draws: the base tranche table is unchanged by the priming overlay
+    plain = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 20_000}}).json()
+    assert [t["mean_recovery_%"] for t in d["tranches"]] == \
+           [t["mean_recovery_%"] for t in plain["tranches"]]
+
+
+def test_priming_negative_face_400():
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 5_000},
+        "priming": {"face": -100.0}})
+    assert r.status_code == 400
+
+
 def test_506_headroom_reported():
     s = {**APEX_STRUCTURE, "tranches": [
         {**APEX_STRUCTURE["tranches"][0], "collateral_value": 900.0},
@@ -81,6 +107,53 @@ def test_506_headroom_reported():
     hr = r.json()["headroom_506"]
     # collateral 900 vs claim 500 (accrual 0) -> 400 of postpetition-interest headroom
     assert abs(hr["1L Term Loan"] - 400.0) < 0.5
+
+
+def _patch_offline(monkeypatch):
+    """No cached overview / drop-file needed — the endpoint's ov + bonds legs degrade."""
+    import app.hazard.trace as trace
+    import app.main as main
+    from app.schemas import IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Apex", ticker="APEX", years=3)))
+    monkeypatch.setattr(trace, "get_issuer_bonds", lambda t: {"bonds": []})
+
+
+def test_exchange_endpoint_smoke(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/exchange", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": 120.0},
+        "target": "OpCo Unsecured", "ratio_pct": 50.0, "participation_pct": 90.0,
+        "seniority": "priming", "equity_pct_at_full": 90.0, "min_tender_pct": 50.0})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["available"] is True and len(d["ev_grid"]) == 241
+    ps = [s["participation_pct"] for s in d["scenarios"]]
+    assert ps == sorted(ps) and {0.0, 90.0, 100.0} <= set(ps)
+    s0 = next(s for s in d["scenarios"] if s["participation_pct"] == 0.0)
+    assert s0["holdout"] == d["base_pct"]          # p=0 ≡ base on the same grid
+    s90 = next(s for s in d["scenarios"] if s["participation_pct"] == 90.0)
+    assert len(s90["tender"]) == 241 and s90["fails"] is False
+    # Cash-free crossover regression: the leading both-zero plateau (EV under the
+    # 30 admin floor) must not read as a crossover at ~0. Hand check: the stub's
+    # holdout line starts after admin 30 + 1L 500 + 2L 250 + new paper p·F·ratio,
+    # and catches the 50-per-100 tender plateau after (1−p)·F·ratio more —
+    # 30 + 500 + 250 + 0.5·120 = 840 at any p.
+    assert abs(s90["crossover_ev"] - 840.0) < 0.01
+    s25 = next(s for s in d["scenarios"] if s["participation_pct"] == 25.0)
+    assert s25["fails"] is True                    # below min_tender 50
+    assert abs(s25["crossover_ev"] - 840.0) < 0.01               # p-invariant here
+    assert d["min_tender_pct"] == 50.0
+    assert d["quote_premium"] is None              # unquoted-degrading
+
+
+def test_exchange_unknown_target_400(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/exchange", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": 120.0},
+        "target": "Nope", "ratio_pct": 50.0})
+    assert r.status_code == 400
 
 
 def test_scenarios_roundtrip():
