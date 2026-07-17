@@ -125,6 +125,15 @@ export default function OverviewPage({ ticker, years }) {
                   </div>
                   <div>annual burn: <span className="font-mono text-rose-300">{liq.annual_burn?.display || "—"}</span></div>
                   <div>next maturity: <span className="font-mono text-slate-200">{liq.next_maturity ? `${fmtB(liq.next_maturity.face)} in ${liq.next_maturity.year}` : "—"}</span></div>
+                  {liq.next_event && (
+                    <div>
+                      next event:{" "}
+                      <span className="font-mono text-slate-200">
+                        {liq.next_event.kind} · {liq.next_event.amount?.display} · {liq.next_event.date}
+                      </span>
+                      {liq.next_event.flags?.length > 0 && <Badge tone="high" className="ml-2">{liq.next_event.flags[0].replace(/_/g, " ")}</Badge>}
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="mt-2 text-[10px] text-slate-600">
@@ -145,6 +154,29 @@ export default function OverviewPage({ ticker, years }) {
                 <div>reported debt: <span className="font-mono text-slate-200">{bridge?.reported_debt?.display || "—"}</span></div>
                 <div>economic debt: <span className="font-mono text-slate-200">{bridge?.economic_debt?.display || "—"}</span></div>
                 <div>{(ov.data?.obs_items || []).length} off-balance-sheet findings</div>
+                {ov.data?.coverage_chips?.debt_ebitda_capex && (
+                  <div title="quoted EBITDA leverage understates true leverage when capex is heavy (Moyer ch. 6)">
+                    debt/(EBITDA−capex): <CitedNumber cv={ov.data.coverage_chips.debt_ebitda_capex} className="text-slate-200" />
+                    {ov.data.coverage_chips.capex_pct_ebitda != null && (
+                      <span className="text-slate-600"> (capex {ov.data.coverage_chips.capex_pct_ebitda}% of EBITDA)</span>
+                    )}
+                  </div>
+                )}
+                {ov.data?.coverage_chips?.ebitda_interest && (
+                  <div title="paired coverage: 2.0x EBITDA/interest with 1.2x (EBITDA−capex)/interest is already declinable credit (Moyer ch. 6)">
+                    coverage: <CitedNumber cv={ov.data.coverage_chips.ebitda_interest} className="text-slate-200" />
+                    {ov.data.coverage_chips.ebitda_capex_interest?.display && (
+                      <span className="text-slate-500"> / <CitedNumber cv={ov.data.coverage_chips.ebitda_capex_interest} className="text-slate-400" /></span>
+                    )}
+                  </div>
+                )}
+                {ladder.data?.net_market_leverage && (
+                  <div>net-at-mkt lev: <CitedNumber cv={ladder.data.net_market_leverage} className="text-slate-200" />
+                    {ladder.data.creation_multiple_fulcrum != null && (
+                      <span className="text-slate-500"> · creation @ fulcrum <span className="font-mono">{ladder.data.creation_multiple_fulcrum.toFixed(1)}x</span></span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -152,7 +184,32 @@ export default function OverviewPage({ ticker, years }) {
 
         <OverviewCard title="Recovery" to={`/company/${ticker}/recovery`}
           loading={rec.loading} error={rec.error}>
-          {rec.data && (
+          {rec.data?.mode === "liquidation" && (
+            <div>
+              <div className="mb-2 text-xs text-amber-200/90">{rec.data.note}</div>
+              {rec.data.available === false ? (
+                <div className="text-xs text-slate-500">{rec.data.detail}</div>
+              ) : (
+                <div className="space-y-1 text-xs">
+                  <div className="text-slate-400">
+                    net liquidation proceeds:{" "}
+                    <span className="font-mono text-slate-200">{fmt(rec.data.scenario?.net_proceeds, 0)} $mm</span>
+                    <span className="ml-2 text-slate-600">orderly, net of {Math.round(100 * (rec.data.scenario?.admin_pct || 0))}% costs</span>
+                  </div>
+                  {(rec.data.scenario?.tranches || []).slice(0, 4).map((t) => (
+                    <div key={t.tranche} className="flex items-center gap-2">
+                      <span className={`w-44 truncate ${t.is_fulcrum ? "text-rose-300" : "text-slate-400"}`} title={t.tranche}>{t.tranche}</span>
+                      <div className="h-1.5 flex-1 rounded bg-ink-700">
+                        <div className="h-1.5 rounded bg-accent" style={{ width: `${Math.min(100, t.recovery_pct || 0)}%` }} />
+                      </div>
+                      <span className="w-12 text-right font-mono text-slate-200">{fmt(t.recovery_pct, 0)}¢</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          {rec.data && !rec.data.mode && (
             <>
               <div className="mb-2">
                 <span className="font-mono text-lg text-rose-300">{rec.data.fulcrum || "no fulcrum — all classes covered"}</span>

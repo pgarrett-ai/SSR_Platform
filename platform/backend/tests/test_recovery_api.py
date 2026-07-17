@@ -49,6 +49,40 @@ def test_project_apex_via_api():
     assert len(d["waterfall_at_median"]) == 4
 
 
+def test_petition_date_derives_accrual():
+    from app.main import _accrual_from_petition
+
+    ov = {"debt_schedule_asof": "2026-03-31"}
+    assert abs(_accrual_from_petition("2026-09-30", ov) - 183 / 365.25) < 1e-9
+    assert _accrual_from_petition("2026-01-01", ov) == 0.0     # floored at 0
+    assert _accrual_from_petition("2026-09-30", {}) == 0.0     # no as-of
+
+
+def test_attack_scenario_rides_same_draws():
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 20_000},
+        "attack": "lien_avoidance"})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["attack"] == "lien_avoidance"
+    base = {t["tranche"]: t["mean_recovery_%"] for t in d["tranches"]}
+    hit = {t["tranche"]: t["mean_recovery_%"] for t in d["attack_tranches"]}
+    assert hit["1L Term Loan"] < base["1L Term Loan"]          # lien avoided
+    assert hit["OpCo Unsecured"] > base["OpCo Unsecured"]      # pool gains
+
+
+def test_506_headroom_reported():
+    s = {**APEX_STRUCTURE, "tranches": [
+        {**APEX_STRUCTURE["tranches"][0], "collateral_value": 900.0},
+        *APEX_STRUCTURE["tranches"][1:]]}
+    r = client.post("/api/company/APEX/recovery/simulate",
+                    json={"structure": s, "sim": {**APEX_SIM, "n_draws": 20_000}})
+    assert r.status_code == 200, r.text
+    hr = r.json()["headroom_506"]
+    # collateral 900 vs claim 500 (accrual 0) -> 400 of postpetition-interest headroom
+    assert abs(hr["1L Term Loan"] - 400.0) < 0.5
+
+
 def test_scenarios_roundtrip():
     saved = client.post("/api/company/APEX/scenarios", json={
         "name": "Base", "sim": APEX_SIM, "structure": APEX_STRUCTURE,

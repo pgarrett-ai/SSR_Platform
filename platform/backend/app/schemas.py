@@ -250,6 +250,20 @@ class NextMaturity(BaseModel):
     instruments: list[str] = Field(default_factory=list)
 
 
+class LiquidityEvent(BaseModel):
+    """One cash-critical date: a coupon payment or a maturity, sized against liquidity
+    (Moyer ch. 8: every coupon is a potential filing trigger for a cash-burner)."""
+
+    date: str                              # YYYY-MM (coupon dates aren't in XBRL — month
+                                           # anchored on the maturity anniversary, assumed)
+    kind: str                              # 'coupon' | 'maturity'
+    instrument: str
+    amount: CitedValue                     # derived formula (face × rate ÷ frequency)
+    pct_of_liquidity: Optional[float] = None
+    flags: list[str] = Field(default_factory=list)   # 'coupon_at_risk' | 'maturity_unfundable'
+    assumption: Optional[str] = None
+
+
 class LiquidityRunway(BaseModel):
     """Distressed-mode framing: cash + undrawn credit, burn, months of runway, next wall.
     is_distressed (EBITDA <= 0) drives the Overview to lead with this over leverage."""
@@ -262,6 +276,33 @@ class LiquidityRunway(BaseModel):
     annual_burn: Optional[CitedValue] = None         # |FCF| when burning
     runway_months: Optional[float] = None            # total liquidity / monthly burn
     next_maturity: Optional[NextMaturity] = None
+    next_event: Optional[LiquidityEvent] = None      # nearest calendar event, named
+
+
+class CoverageChips(BaseModel):
+    """Moyer ch. 6 capacity-ratio discipline: quoted EBITDA leverage understates true
+    leverage when capex is heavy — always pair with Debt/(EBITDA−CAPX); interest coverage
+    reads as a pair too (2.0x/1.2x is already declinable credit for a volatile business)."""
+
+    debt_ebitda: Optional[CitedValue] = None
+    debt_ebitda_capex: Optional[CitedValue] = None
+    ebitda_interest: Optional[CitedValue] = None
+    ebitda_capex_interest: Optional[CitedValue] = None
+    capex_pct_ebitda: Optional[float] = None
+
+
+class AssetSnapshot(BaseModel):
+    """Latest balance-sheet asset categories — feeds the liquidation waterfall (Moyer
+    asset-based valuation). `other` is the derived residual vs total assets."""
+
+    as_of_fy: Optional[int] = None
+    cash: Optional[CitedValue] = None
+    accounts_receivable: Optional[CitedValue] = None
+    inventory: Optional[CitedValue] = None
+    ppe: Optional[CitedValue] = None
+    intangibles: Optional[CitedValue] = None       # goodwill + other intangibles, derived sum
+    other: Optional[CitedValue] = None             # total assets − categorized, derived
+    total_assets: Optional[CitedValue] = None
 
 
 class ChangeItem(BaseModel):
@@ -291,6 +332,10 @@ class Overview(BaseModel):
     covenants: list[CovenantPackage] = Field(default_factory=list)
     subsidiaries: list[Subsidiary] = Field(default_factory=list)
     liquidity: Optional[LiquidityRunway] = None   # distressed-mode: cash/burn/runway/wall
+    liquidity_events: list[LiquidityEvent] = Field(default_factory=list)  # next-24m calendar
+    liquidity_events_note: Optional[str] = None   # excluded-instrument caveat
+    asset_snapshot: Optional[AssetSnapshot] = None  # liquidation-waterfall inputs
+    coverage_chips: Optional["CoverageChips"] = None  # dual-leverage + interest-coverage pairs
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY

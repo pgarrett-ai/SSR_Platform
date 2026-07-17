@@ -17,7 +17,8 @@ from .core.cache import is_hero, load_latest_overview, load_overview, save_overv
 from .capstack.debt_schedule import (annotate_maturities, drop_retired,
                                      extract_debt_schedule, fill_maturity_from_name)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
-from .capstack.forensic import build_forensic_table, detect_flags, quarter_forensic_row, total_debt
+from .capstack.forensic import (build_asset_snapshot, build_forensic_table, detect_flags,
+                                quarter_forensic_row, total_debt)
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .core.config import get_settings
@@ -426,18 +427,51 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"EBITDA box step failed: {exc}")
 
+    # --- Asset snapshot (liquidation-waterfall inputs) — deterministic, from Phase-2 facts ---
+    asset_snapshot = None
+    try:
+        if series is not None and series.years:
+            asset_snapshot = build_asset_snapshot(series, series.cik)
+    except Exception as exc:
+        warnings.append(f"Asset snapshot step failed: {exc}")
+
     # --- Liquidity & runway (distressed-mode framing) — deterministic, LLM-independent ---
     liquidity = None
+    liquidity_events: list = []
+    liquidity_events_note = None
+    ebitda_v = None
     try:
-        from .capstack.liquidity import build_liquidity
-        ebitda_v = None
+        from .capstack.liquidity import build_event_calendar, build_liquidity
         if economic_debt_bridge and economic_debt_bridge.ebitda:
             ebitda_v = economic_debt_bridge.ebitda.value      # canonical NI-walk EBITDA
         elif forensic_table and forensic_table[-1].ebitda:
             ebitda_v = forensic_table[-1].ebitda.value        # proxy fallback (LLM off)
         liquidity = build_liquidity(forensic_table, debt_schedule, maturities, ebitda_v)
+        total_liq = (liquidity.total_liquidity.value
+                     if liquidity and liquidity.total_liquidity else None)
+        liquidity_events, liquidity_events_note = build_event_calendar(
+            debt_schedule, total_liq, ebitda_v, debt_asof)
+        if liquidity and liquidity_events:
+            liquidity.next_event = liquidity_events[0]
     except Exception as exc:
         warnings.append(f"Liquidity/runway step failed: {exc}")
+
+    # --- Capacity-ratio chips (Moyer ch. 6 dual leverage + paired coverage) ---
+    coverage = None
+    try:
+        from .capstack.capacity import coverage_chips
+        from .edgar.facts import raw_value
+        if series is not None and series.years:
+            yf = series.latest()
+            debt_v = None
+            if economic_debt_bridge and economic_debt_bridge.reported_debt:
+                debt_v = economic_debt_bridge.reported_debt.value
+            elif forensic_table and forensic_table[-1].total_debt:
+                debt_v = forensic_table[-1].total_debt.value
+            coverage = coverage_chips(debt_v, ebitda_v, raw_value(yf, "capex"),
+                                      raw_value(yf, "interest_expense"))
+    except Exception as exc:
+        warnings.append(f"Coverage chips step failed: {exc}")
 
     header = IssuerHeader(
         issuer=issuer_name,
@@ -471,6 +505,10 @@ def run_overview(
         covenants=covenants,
         subsidiaries=subsidiaries,
         liquidity=liquidity,
+        liquidity_events=liquidity_events,
+        liquidity_events_note=liquidity_events_note,
+        asset_snapshot=asset_snapshot,
+        coverage_chips=coverage,
         leverage_timeline=lev_timeline,
         maturity_wall=maturities,
         what_changed=changes,

@@ -69,11 +69,15 @@ def allocate_entity(
         return t.claim(accrual_years)
 
     # 1. Secured, by lien rank; tranches sharing a rank are pari passu (pro rata).
+    #    A collateral_value caps the SECURED claim (§506); the shortfall vs the full
+    #    allowed claim becomes an unsecured deficiency either way.
     secured = [t for t in tranches if t.secured]
     deficiency: list[tuple[str, np.ndarray]] = []
     for rank in sorted({t.lien_rank for t in secured}):
         group = [t for t in secured if t.lien_rank == rank]
-        _pay_pro_rata([(t.name, np.full_like(value, _claim(t))) for t in group])
+        _pay_pro_rata([(t.name, np.full_like(value, min(_claim(t), t.collateral_value)
+                                             if t.collateral_value is not None else _claim(t)))
+                       for t in group])
         for t in group:
             shortfall = _claim(t) - recoveries[t.name]  # deficiency, pari with unsecured
             deficiency.append((t.name, shortfall))
@@ -85,6 +89,19 @@ def allocate_entity(
             recoveries.setdefault(t.name, np.zeros_like(value))
             unsecured_claims.append((t.name, np.full_like(value, _claim(t))))
     _pay_pro_rata(unsecured_claims + deficiency)
+
+    # 2b. Contractual subordination (Moyer ch. 7 subrogation): redirect a subordinated
+    # tranche's recovery to its benefited tranche until that claim is paid in full.
+    # ponytail: edges processed in tranche-list order; chained subordination (A->B->C)
+    # would need a topological pass nobody has modeled yet.
+    for t in tranches:
+        if t.subordinated_to is not None and t.name in recoveries:
+            target = next(x for x in tranches if x.name == t.subordinated_to)
+            recoveries.setdefault(target.name, np.zeros_like(value))
+            shortfall = np.maximum(_claim(target) - recoveries[target.name], 0.0)
+            transfer = np.minimum(recoveries[t.name], shortfall)
+            recoveries[t.name] = recoveries[t.name] - transfer
+            recoveries[target.name] = recoveries[target.name] + transfer
 
     # 3. Preferred stock: after all debt, before common equity.
     preferred_claims = []
@@ -108,7 +125,7 @@ def run_waterfall(structure: CapitalStructure, ev: np.ndarray,
     entities are resolved children-first.
     """
     ev = np.asarray(ev, dtype=float)
-    ev_net = np.maximum(ev - structure.admin_fees, 0.0)
+    ev_net = np.maximum(ev * (1.0 - structure.admin_pct) - structure.admin_fees, 0.0)
 
     emap = structure.entity_map()
     upstream: dict[str, np.ndarray] = {e.name: np.zeros_like(ev_net) for e in structure.entities}

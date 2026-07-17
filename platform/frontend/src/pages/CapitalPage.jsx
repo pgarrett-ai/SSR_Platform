@@ -11,7 +11,9 @@ import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
 import CovenantPackages from "../components/CovenantPackages.jsx";
+import CapacityCard from "../components/CapacityCard.jsx";
 import CreationLadder from "../components/CreationLadder.jsx";
+import LiquidityCalendar from "../components/LiquidityCalendar.jsx";
 import DocSearch from "../components/DocSearch.jsx";
 import HoldersPanel from "../components/HoldersPanel.jsx";
 import MdnaReader from "../components/MdnaReader.jsx";
@@ -106,6 +108,20 @@ export default function CapitalPage({ ticker, health, overview }) {
             subtitle="cumulative claims through each class ÷ EBITDA, at face and at market (Moyer)"
           >
             <CreationLadder ticker={ticker} years={overview.header?.years || 3} />
+          </Section>
+
+          <Section
+            title="Liquidity event calendar"
+            subtitle="coupons and maturities over the next 24 months vs cash + undrawn credit (Moyer ch. 8)"
+          >
+            <LiquidityCalendar events={overview.liquidity_events} note={overview.liquidity_events_note} />
+          </Section>
+
+          <Section
+            title="Credit capacity"
+            subtitle="can the structure repay itself internally? cash-sweep model, leverage × growth grid, cycle stress (Moyer ch. 6)"
+          >
+            <CapacityCard ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">

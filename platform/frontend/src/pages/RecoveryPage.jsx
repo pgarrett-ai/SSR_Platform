@@ -12,7 +12,9 @@ import {
   deleteScenario, fetchLadder, fetchRecoveryStructure, listScenarios, saveScenario,
   simulateRecovery,
 } from "../api.js";
+import EvExplorer from "../components/EvExplorer.jsx";
 import IrrMatrix from "../components/IrrMatrix.jsx";
+import LiquidationPanel from "../components/LiquidationPanel.jsx";
 
 // Provenance marker: § next to a tranche pops the filing citation behind its face amount.
 function CiteMark({ citation }) {
@@ -26,7 +28,8 @@ function CiteMark({ citation }) {
 const SIM_DEFAULTS = {
   base_ebitda: 100, horizon_years: 1.5, ebitda_vol: 0.28, mean_reversion: 0.6,
   stress_prob: 0.3, stress_vol: 0.55, stress_log_drift: -0.35, base_multiple: 6.0,
-  distress_multiple: 4.5, multiple_vol: 0.18, corr: 0.55, accrual_years: 0.25,
+  distress_multiple: 4.5, multiple_vol: 0.18, corr: 0.55,
+  accrual_years: null,   // empty = derived from the petition date; a number overrides
   n_draws: 50000, seed: 42,
 };
 
@@ -90,6 +93,9 @@ export default function RecoveryPage({ ticker, years }) {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState(null);
   const [quotedByName, setQuotedByName] = useState({});   // instrument -> drop-file quote
+  const [petitionDate, setPetitionDate] = useState(new Date().toISOString().slice(0, 10));
+  const [attack, setAttack] = useState(null);              // priority-attack scenario
+  const [suggestedClaims, setSuggestedClaims] = useState(null);
 
   useEffect(() => {
     if (!ticker) return;
@@ -105,10 +111,12 @@ export default function RecoveryPage({ ticker, years }) {
     setResult(null);
     fetchRecoveryStructure(ticker, years)
       .then((d) => {
-        setStructure(d.structure);
+        // UI defaults 7% estate costs (Moyer: outsiders underestimate); engine default is 0
+        setStructure({ ...d.structure, admin_pct: d.structure.admin_pct || 0.07 });
         setSource(d.source);
         setCitations(d.citations || {});
         setAvailableEntities(d.available_entities || []);
+        setSuggestedClaims(d.suggested_other_claims || null);
         if (d.base_ebitda) setSim((s) => ({ ...s, base_ebitda: Math.round(d.base_ebitda) }));
       })
       .catch((e) => setError(e.message))
@@ -152,23 +160,45 @@ export default function RecoveryPage({ ticker, years }) {
     );
   }
 
-  async function run() {
+  function cleanStructure() {
+    return {
+      ...structure,
+      entities: structure.entities
+        .filter((e) => (e.name || "").trim())
+        .map((e) => ({ ...e, parent: (e.parent || "").trim() || null })),
+      tranches: structure.tranches
+        .filter((t) => (t.name || "").trim() && t.face > 0)
+        .map((t) => ({ ...t, subordinated_to: (t.subordinated_to || "").trim() || null })),
+    };
+  }
+
+  async function run(attackKind = attack) {
     setRunning(true);
     setError(null);
     try {
-      const clean = {
-        ...structure,
-        entities: structure.entities
-          .filter((e) => (e.name || "").trim())
-          .map((e) => ({ ...e, parent: (e.parent || "").trim() || null })),
-        tranches: structure.tranches.filter((t) => (t.name || "").trim() && t.face > 0),
-      };
-      setResult(await simulateRecovery(ticker, clean, sim, years));
+      const simBody = { ...sim };
+      if (simBody.accrual_years == null) delete simBody.accrual_years;  // petition date derives it
+      setResult(await simulateRecovery(ticker, cleanStructure(), simBody, years, {
+        petition_date: petitionDate || null,
+        attack: attackKind || null,
+      }));
+      setAttack(attackKind || null);
     } catch (e) {
       setError(e.message);
     } finally {
       setRunning(false);
     }
+  }
+
+  function addOtherClaimsRow() {
+    setStructure((s) => ({
+      ...s,
+      tranches: [...s.tranches, {
+        name: "Other unsecured claims", entity: s.entities[0]?.name || "OpCo",
+        face: suggestedClaims?.value || 100, lien_rank: 99, secured: false,
+        preferred: false, coupon: 0, make_whole: 0, maturity: "",
+      }],
+    }));
   }
 
   async function onSaveScenario() {
@@ -221,7 +251,10 @@ export default function RecoveryPage({ ticker, years }) {
                 <thead>
                   <tr className="border-b border-ink-600">
                     <Th>Tranche</Th><Th>Entity</Th><Th right>Face $mm</Th><Th>Secured</Th>
-                    <Th right>Lien</Th><Th>Preferred</Th><Th right>Coupon %</Th><Th right>Make-whole $mm</Th><Th>Maturity</Th><Th />
+                    <Th right>Lien</Th>
+                    <Th right title="caps the secured claim (§506); the shortfall becomes an unsecured deficiency. Empty = all-asset pledge">Collateral $mm</Th>
+                    <Th title="contractual subordination: this tranche's recovery redirects to the named tranche until it is paid in full (Moyer ch. 7)">Sub. to</Th>
+                    <Th>Preferred</Th><Th right>Coupon %</Th><Th right>Make-whole $mm</Th><Th>Maturity</Th><Th />
                   </tr>
                 </thead>
                 <tbody>
@@ -239,6 +272,8 @@ export default function RecoveryPage({ ticker, years }) {
                         <input type="checkbox" checked={!!t.secured} onChange={(e) => patchTranche(i, { secured: e.target.checked, lien_rank: e.target.checked ? Math.min(t.lien_rank, 3) || 1 : 99 })} className="accent-accent" />
                       </td>
                       <td className="px-2 py-1 text-right"><NumCell value={t.lien_rank} onChange={(v) => patchTranche(i, { lien_rank: v ?? 99 })} className="w-14" /></td>
+                      <td className="px-2 py-1 text-right"><NumCell value={t.collateral_value} step={25} onChange={(v) => patchTranche(i, { collateral_value: v })} className="w-20" /></td>
+                      <td className="px-2 py-1"><TextCell value={t.subordinated_to} onChange={(v) => patchTranche(i, { subordinated_to: v })} className="w-24" /></td>
                       <td className="px-2 py-1 text-center">
                         <input type="checkbox" checked={!!t.preferred} onChange={(e) => patchTranche(i, { preferred: e.target.checked })} className="accent-accent" />
                       </td>
@@ -255,12 +290,17 @@ export default function RecoveryPage({ ticker, years }) {
                 </tbody>
               </table>
             </div>
-            <Button
-              onClick={() => setStructure((s) => ({ ...s, tranches: [...s.tranches, { name: "New tranche", entity: s.entities[0]?.name || "OpCo", face: 100, lien_rank: 99, secured: false, preferred: false, coupon: 0, make_whole: 0, maturity: "" }] }))}
-              className="mt-3"
-            >
-              + Add tranche
-            </Button>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Button
+                onClick={() => setStructure((s) => ({ ...s, tranches: [...s.tranches, { name: "New tranche", entity: s.entities[0]?.name || "OpCo", face: 100, lien_rank: 99, secured: false, preferred: false, coupon: 0, make_whole: 0, maturity: "" }] }))}
+              >
+                + Add tranche
+              </Button>
+              <Button onClick={addOtherClaimsRow}
+                title={suggestedClaims?.formula || "rejection damages / pension / lease claims dilute the unsecured pool in chapter 11 (Moyer ch. 12)"}>
+                + Other unsecured claims{suggestedClaims?.value ? ` (suggested ${Math.round(suggestedClaims.value).toLocaleString()} $mm)` : ""}
+              </Button>
+            </div>
           </Section>
 
           <div className="grid md:grid-cols-2 md:gap-x-6">
@@ -307,8 +347,12 @@ export default function RecoveryPage({ ticker, years }) {
                     </select>
                   )}
                 </div>
-                <NumField label="Admin / estate fees ($mm)" value={structure.admin_fees} step={5}
-                  onChange={(v) => setStructure((s) => ({ ...s, admin_fees: v }))} />
+                <div className="flex gap-3">
+                  <NumField label="Admin / estate fees ($mm)" value={structure.admin_fees} step={5}
+                    onChange={(v) => setStructure((s) => ({ ...s, admin_fees: v }))} />
+                  <NumField label="Estate costs (% of EV)" value={structure.admin_pct ?? 0} step={0.01}
+                    onChange={(v) => setStructure((s) => ({ ...s, admin_pct: v }))} />
+                </div>
               </div>
             </Section>
 
@@ -346,22 +390,58 @@ export default function RecoveryPage({ ticker, years }) {
               <NumField label="Multiple (stress)" value={sim.distress_multiple} step={0.25} onChange={(v) => setSim({ ...sim, distress_multiple: v })} />
               <NumField label="Multiple vol" value={sim.multiple_vol} step={0.01} onChange={(v) => setSim({ ...sim, multiple_vol: v })} />
               <NumField label="EBITDA×mult corr" value={sim.corr} step={0.05} onChange={(v) => setSim({ ...sim, corr: v })} />
-              <NumField label="Accrued (yrs coupon)" value={sim.accrual_years} step={0.05} onChange={(v) => setSim({ ...sim, accrual_years: v })} />
+              <Field label="Petition date (tolls accrual)">
+                <input type="date" value={petitionDate}
+                  onChange={(e) => setPetitionDate(e.target.value)}
+                  title="unsecured interest accrues only to the petition date (Moyer); derives the accrual unless set explicitly below"
+                  className="w-36 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent" />
+              </Field>
+              <Field label="Accrued (yrs, explicit)">
+                <NumCell value={sim.accrual_years} step={0.05}
+                  onChange={(v) => setSim({ ...sim, accrual_years: v })} className="w-28 py-1.5" />
+              </Field>
               <NumField label="Draws" value={sim.n_draws} step={10000} onChange={(v) => setSim({ ...sim, n_draws: v })} />
               <NumField label="Seed" value={sim.seed} step={1} onChange={(v) => setSim({ ...sim, seed: v })} />
               <div className="flex items-end">
-                <Button variant="primary" onClick={run} disabled={running}>
+                <Button variant="primary" onClick={() => run()} disabled={running}>
                   {running ? "Simulating…" : "Run simulation"}
                 </Button>
               </div>
             </div>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <span className="text-[10px] uppercase tracking-wide text-slate-500"
+                title="never take the stated priority stack as fixed (Moyer ch. 12) — re-runs the waterfall on the same EV draws">
+                Priority attacks:
+              </span>
+              {[["lien_avoidance", "lien avoidance"], ["equitable_subordination", "equitable subordination"],
+                ["substantive_consolidation", "substantive consolidation"]].map(([k, label]) => (
+                <Button key={k} onClick={() => run(attack === k ? null : k)} disabled={running}
+                  className={attack === k ? "border-rose-500/60 text-rose-200" : ""}>
+                  {label}{attack === k ? " ✕" : ""}
+                </Button>
+              ))}
+            </div>
           </Section>
+
+          <EvExplorer ticker={ticker} years={years} structure={structure}
+            baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0} />
         </>
       )}
 
-      {result && <Results result={result} citations={citations} quotedByName={quotedByName} />}
+      {result?.mode === "liquidation" && (
+        <>
+          <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-100">
+            {result.note}
+          </div>
+          <LiquidationPanel ticker={ticker} years={years} structure={structure} initial={result} />
+        </>
+      )}
 
-      {result && (
+      {result && !result.mode && (
+        <Results result={result} citations={citations} quotedByName={quotedByName} />
+      )}
+
+      {result && !result.mode && (
         <Section title="Scenarios" subtitle="save this run, compare side-by-side">
           <div className="mb-4 flex gap-2">
             <Input value={scenarioName} onChange={(e) => setScenarioName(e.target.value)}
@@ -429,6 +509,48 @@ function Results({ result, citations = {}, quotedByName = {} }) {
           "No fulcrum — all classes covered at median EV."
         )}
       </div>
+
+      {Object.keys(result.headroom_506 || {}).length > 0 && (
+        <div className="mb-6 text-xs text-slate-400">
+          <span className="text-[10px] uppercase tracking-wide text-slate-500"
+            title="postpetition interest accrues only to the extent collateral value exceeds the claim (§506)">
+            §506 postpetition-interest headroom:
+          </span>{" "}
+          {Object.entries(result.headroom_506).map(([n, v]) => (
+            <span key={n} className="mr-4">{n}: <span className="font-mono text-slate-200">{fmt(v, 0)} $mm</span></span>
+          ))}
+        </div>
+      )}
+
+      {result.attack_tranches && (
+        <Section title={`Priority attack: ${result.attack.replace(/_/g, " ")}`}
+          subtitle="same EV draws, transformed structure — mean recovery vs base (Moyer ch. 12)">
+          <table className="w-full max-w-xl border-collapse text-xs">
+            <thead>
+              <tr className="border-b border-ink-600">
+                <Th>Tranche</Th><Th right>Base mean %</Th><Th right>Attacked mean %</Th><Th right>Δ</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {result.attack_tranches.map((a) => {
+                const base = result.tranches.find((t) => t.tranche === a.tranche);
+                const delta = base && a["mean_recovery_%"] != null
+                  ? a["mean_recovery_%"] - base["mean_recovery_%"] : null;
+                return (
+                  <tr key={a.tranche} className="border-b border-ink-700/60 font-mono text-slate-300">
+                    <td className="px-2 py-1.5 font-sans">{a.tranche}</td>
+                    <td className="px-2 py-1.5 text-right">{base ? fmt(base["mean_recovery_%"]) : "—"}</td>
+                    <td className="px-2 py-1.5 text-right">{fmt(a["mean_recovery_%"])}</td>
+                    <td className={`px-2 py-1.5 text-right font-semibold ${delta > 0 ? "text-emerald-300" : delta < 0 ? "text-rose-300" : "text-slate-500"}`}>
+                      {delta == null ? "—" : `${delta > 0 ? "+" : ""}${fmt(delta)}`}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Section>
+      )}
 
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
