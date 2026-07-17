@@ -55,6 +55,13 @@ _EFFECTIVE_PCT = "LongTermDebtPercentageBearingVariableInterestRate"
 _SPREAD_TOKEN = "BasisSpreadOnVariableRate"
 _MIN_MEMBERS = 3   # fewer dimensioned members than this -> issuer doesn't tag debt; fall back
 
+# OID / convert trade-mechanics concepts (Moyer ch. 5/6): principal at maturity vs the
+# accreted carrying amount, the conversion strike, and PIK detection.
+_FACE_CONCEPTS = {"us-gaap:DebtInstrumentFaceAmount"}
+_DISCOUNT_CONCEPTS = {"us-gaap:DebtInstrumentUnamortizedDiscount"}
+_CONV_PRICE_CONCEPTS = {"us-gaap:DebtInstrumentConvertibleConversionPrice1"}
+_PIK_RE = re.compile(r"\bpik\b|paid[- ]in[- ]kind", re.IGNORECASE)
+
 _SENIORITY_BY_TYPE = {
     "SecuredDebtMember": (True, "senior secured"),
     "SeniorNotesMember": (False, "senior notes"),
@@ -143,6 +150,16 @@ def rate_display(coupon_pct, coupon_pct_max, spread_pct, effective_rate_pct,
     return None
 
 
+def _latest_related(related: list[dict], concepts: set[str]) -> Optional[dict]:
+    """Newest-instant fact among `related` matching `concepts` — related spans the
+    comparative balance-sheet columns, so max by period_instant picks the current one."""
+    cands = [f for f in related
+             if str(f.get("concept")) in concepts and _num(f) is not None]
+    if not cands:
+        return None
+    return max(cands, key=lambda f: str(f.get("period_instant") or ""))
+
+
 def _capacity_cv(fact: Optional[dict], member: str, label: str) -> Optional[CitedValue]:
     if fact is None:
         return None
@@ -223,11 +240,25 @@ def _instrument_from_member(member: str, carrying: Optional[dict], related: list
             ),
         )
 
-    if seniority is None:
-        concepts = " ".join(str(f.get("concept") or "") for f in related)
-        blob = f"{member} {tagged_label or ''} {concepts}"
-        if "convertible" in blob.lower():
-            seniority = "convertible"
+    concepts = " ".join(str(f.get("concept") or "") for f in related)
+    blob = f"{member} {tagged_label or ''} {concepts}"
+    if seniority is None and "convertible" in blob.lower():
+        seniority = "convertible"
+    # PIK: dedicated concept token, or the member/label says so; None (not False) when
+    # undetected — absence of a tag can't prove cash-pay.
+    pik = True if ("PaidInKind" in concepts or _PIK_RE.search(blob)) else None
+
+    conv_price = None
+    conv_f = _latest_related(related, _CONV_PRICE_CONCEPTS)
+    if conv_f is not None and (cp := _num(conv_f)) and cp > 0:
+        conv_price = CitedValue(
+            value=cp, display=f"${cp:,.2f}", unit="USD/share",
+            citation=Citation(
+                form_type="XBRL",
+                section=f"XBRL {conv_f.get('concept')} [{member}]",
+                quote=f"{label}: conversion price ${cp:,.2f}/share as of "
+                      f"{conv_f.get('period_instant') or ''} [{conv_f.get('concept')}, {member}]",
+            ))
 
     slot = capacity or {}
     return DebtInstrument(
@@ -248,6 +279,11 @@ def _instrument_from_member(member: str, carrying: Optional[dict], related: list
         facility_type=facility_type_of(f"{member} {tagged_label or ''}"),
         commitment=_capacity_cv(slot.get("commitment"), member, label),
         undrawn=_capacity_cv(slot.get("undrawn"), member, label),
+        face_amount=_capacity_cv(_latest_related(related, _FACE_CONCEPTS), member, label),
+        unamortized_discount=_capacity_cv(_latest_related(related, _DISCOUNT_CONCEPTS),
+                                          member, label),
+        conversion_price=conv_price,
+        pik=pik,
     )
 
 
@@ -340,7 +376,8 @@ def build_xbrl_debt_schedule(company, rates: Optional[dict] = None
         inst = _instrument_from_member(member, cf, related, rates,
                                        used_labels=used_labels, capacity=slot)
         used_labels.add(inst.instrument)
-        for cv in (inst.outstanding, inst.commitment, inst.undrawn):
+        for cv in (inst.outstanding, inst.commitment, inst.undrawn,
+                   inst.face_amount, inst.unamortized_discount, inst.conversion_price):
             stamp(cv)
         instruments.append(inst)
     return instruments, asof, filing

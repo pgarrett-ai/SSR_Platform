@@ -156,6 +156,16 @@ def capacity_inputs(ov: dict) -> Optional[dict]:
     }
 
 
+def _has_oid_or_pik(schedule: Optional[list[dict]]) -> bool:
+    for i in schedule or []:
+        face = ((i.get("face_amount") or {}).get("value") or 0)
+        acc = ((i.get("outstanding") or {}).get("value") or 0)
+        if (i.get("pik") or ((i.get("unamortized_discount") or {}).get("value") or 0) > 0
+                or (acc and face > acc * 1.005)):
+            return True
+    return False
+
+
 def build_capacity(ov: dict) -> dict:
     """The interactive card payload: base sweep + heatmap + severity slices."""
     inp = capacity_inputs(ov)
@@ -166,7 +176,11 @@ def build_capacity(ov: dict) -> dict:
     debt, e, capex, rate = inp["debt"], inp["ebitda"], inp["capex"], inp["rate"]
     wall = [{"year": b.get("year"), "face": (b.get("face") or 0) / 1e6}
             for b in sorted(ov.get("maturity_wall") or [], key=lambda b: b.get("year") or 0)]
+    oid_pik_note = ("OID/PIK present — GAAP interest includes non-cash accretion; "
+                    "the sweep model uses cash coupons"
+                    if _has_oid_or_pik(ov.get("debt_schedule")) else None)
     return {
+        "oid_pik_note": oid_pik_note,
         "available": True,
         "inputs": {**inp, "leverage": round(debt / e, 2), "capex_pct": round(100 * capex / e, 1)},
         "base_sweep": sweep(debt, e, rate, capex, [0.02] * 5),

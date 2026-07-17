@@ -14,5 +14,52 @@
    "source": "https://www.finra.org/finra-data/fixed-income/bond?symbol=AAL5147600&bondType=CA",
    "as_of": "2026-07-03"
   }
+ ],
+ "LCID": [
+  {
+   "symbol": "LCID5321247",
+   "cusip": "549498AA1",
+   "issuer": "Lucid Group Inc",
+   "coupon": 1.25,
+   "maturity": "2026-12-15",
+   "callable": false,
+   "convertible": true,
+   "last_price": 85.25,
+   "last_yield": 43.215,
+   "last_trade": "2026-07-15",
+   "rating": "NR",
+   "source": "https://www.finra.org/finra-data/fixed-income/bond?symbol=LCID5321247&bondType=CA",
+   "as_of": "2026-07-16"
+  },
+  {
+   "symbol": "LCID6045692",
+   "cusip": "549498AC7",
+   "issuer": "Lucid Group Inc",
+   "coupon": 5.0,
+   "maturity": "2030-04-01",
+   "callable": false,
+   "convertible": true,
+   "last_price": 40.0,
+   "last_yield": 35.162,
+   "last_trade": "2026-07-16",
+   "rating": "NR",
+   "source": "https://www.finra.org/finra-data/fixed-income/bond?symbol=LCID6045692&bondType=CA",
+   "as_of": "2026-07-16"
+  },
+  {
+   "symbol": "LCID6231883",
+   "cusip": "549498AE3",
+   "issuer": "Lucid Group Inc",
+   "coupon": 7.0,
+   "maturity": "2031-11-01",
+   "callable": false,
+   "convertible": true,
+   "last_price": 51.75,
+   "last_yield": 23.3,
+   "last_trade": "2026-07-10",
+   "rating": "NR",
+   "source": "https://www.finra.org/finra-data/fixed-income/bond?symbol=LCID6231883&bondType=CA",
+   "as_of": "2026-07-16"
+  }
  ]
 }

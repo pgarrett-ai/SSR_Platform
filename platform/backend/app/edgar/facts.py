@@ -91,6 +91,11 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("stockholders_equity", "Stockholders' equity", "BalanceSheet", "instant",
                ("StockholdersEquity",
                 "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest")),
+    # mezzanine (temporary equity) — the recast-as-debt input (Moyer ch. 6); the
+    # including-NCI variant may carry redeemable NCI (caveated where displayed)
+    MetricSpec("temporary_equity", "Temporary equity (mezzanine)", "BalanceSheet", "instant",
+               ("TemporaryEquityCarryingAmountAttributableToParent",
+                "TemporaryEquityCarryingAmountIncludingPortionAttributableToNoncontrollingInterests")),
     # per-quarter Merton E = shares × price. us-gaap concept lands exactly on the balance-sheet
     # date; the dei cover-page tag is dated days later so it rarely anchors — kept as fallback.
     MetricSpec("shares_outstanding", "Common shares outstanding", "BalanceSheet", "instant",

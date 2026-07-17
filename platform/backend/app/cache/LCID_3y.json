@@ -6,7 +6,7 @@
     "cik": "1811210",
     "years": 3,
     "n_filings": 76,
-    "last_updated": "2026-07-15T16:09:59.114108+00:00",
+    "last_updated": "2026-07-17T00:27:28.558140+00:00",
     "from_cache": false,
     "llm_enabled": false
   },
@@ -321,7 +321,7 @@
         "formula": null,
         "note": null
       },
-      "coupon": "SOFR + 1.40% → 5.03%",
+      "coupon": "SOFR + 1.40% → 5.04%",
       "maturity": null,
       "secured": null,
       "seniority": null,
@@ -740,7 +740,7 @@
       "instrument": "2023 Amended GIB Facility Agreement",
       "principal": null,
       "outstanding": null,
-      "coupon": "SOFR + 1.40% → 5.03%",
+      "coupon": "SOFR + 1.40% → 5.04%",
       "maturity": null,
       "secured": null,
       "seniority": null,
@@ -2426,7 +2426,458 @@
       "instruments": [
         "2026 Notes"
       ]
+    },
+    "next_event": {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
     }
+  },
+  "liquidity_events": [
+    {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2030 Notes",
+      "amount": {
+        "value": 27125000.0,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,085M face × 5.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2031 Notes",
+      "amount": {
+        "value": 33698000.0,
+        "display": "$34M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$963M face × 7.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.6,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2026 Notes",
+      "amount": {
+        "value": 1274375.0,
+        "display": "$1M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$204M face × 1.25% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.1,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-12",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-12",
+      "kind": "maturity",
+      "instrument": "2026 Notes",
+      "amount": {
+        "value": 203900000.0,
+        "display": "$204M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "face due at maturity (2026)",
+        "note": null
+      },
+      "pct_of_liquidity": 15.5,
+      "flags": [],
+      "assumption": "month unknown — placed at year-end"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "2030 Notes",
+      "amount": {
+        "value": 27125000.0,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,085M face × 5.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "2031 Notes",
+      "amount": {
+        "value": 33698000.0,
+        "display": "$34M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$963M face × 7.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.6,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-06",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "2030 Notes",
+      "amount": {
+        "value": 27125000.0,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,085M face × 5.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "2031 Notes",
+      "amount": {
+        "value": 33698000.0,
+        "display": "$34M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$963M face × 7.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.6,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-12",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23814000.0,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.04% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "2030 Notes",
+      "amount": {
+        "value": 27125000.0,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,085M face × 5.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "2031 Notes",
+      "amount": {
+        "value": 33698000.0,
+        "display": "$34M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$963M face × 7.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.6,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    }
+  ],
+  "liquidity_events_note": "7 instrument(s) excluded (no tagged rate or maturity)",
+  "asset_snapshot": {
+    "as_of_fy": 2025,
+    "cash": {
+      "value": 997827000.0,
+      "display": "$998M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+        "quote": "Cash and Cash Equivalents, at Carrying Value = $998M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "accounts_receivable": {
+      "value": 177162000.0,
+      "display": "$177M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:AccountsReceivableNetCurrent",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+        "quote": "Accounts Receivable, after Allowance for Credit Loss, Current = $177M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "inventory": {
+      "value": 1109529000.0,
+      "display": "$1,110M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:InventoryNet",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+        "quote": "Inventory, Net = $1,110M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "ppe": null,
+    "intangibles": null,
+    "other": {
+      "value": 6102463000.0,
+      "display": "$6,102M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "total assets ($8,387M) − categorized ($2,285M)",
+      "note": "uncategorized residual — lease ROU assets, deferred taxes, investments, etc."
+    },
+    "total_assets": {
+      "value": 8386981000.0,
+      "display": "$8,387M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:Assets",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+        "quote": "Assets = $8,387M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    }
+  },
+  "coverage_chips": {
+    "debt_ebitda": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "debt $2,718M ÷ EBITDA -$2,154M",
+      "note": "n.m. — non-positive denominator"
+    },
+    "debt_ebitda_capex": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "debt ÷ (EBITDA − capex $868M)",
+      "note": "n.m. — non-positive denominator"
+    },
+    "ebitda_interest": {
+      "value": -22.65,
+      "display": "-22.6x",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "EBITDA ÷ interest $95M",
+      "note": null
+    },
+    "ebitda_capex_interest": {
+      "value": -31.78,
+      "display": "-31.8x",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "(EBITDA − capex) ÷ interest",
+      "note": null
+    },
+    "capex_pct_ebitda": null
   },
   "leverage_timeline": [
     {

@@ -13,6 +13,7 @@ import SubsidiariesList from "../components/SubsidiariesList.jsx";
 import CovenantPackages from "../components/CovenantPackages.jsx";
 import CapacityCard from "../components/CapacityCard.jsx";
 import CreationLadder from "../components/CreationLadder.jsx";
+import TradeBasis from "../components/TradeBasis.jsx";
 import LiquidityCalendar from "../components/LiquidityCalendar.jsx";
 import DocSearch from "../components/DocSearch.jsx";
 import HoldersPanel from "../components/HoldersPanel.jsx";
@@ -108,6 +109,13 @@ export default function CapitalPage({ ticker, health, overview }) {
             subtitle="cumulative claims through each class ÷ EBITDA, at face and at market (Moyer)"
           >
             <CreationLadder ticker={ticker} years={overview.header?.years || 3} />
+          </Section>
+
+          <Section
+            title="Trade basis"
+            subtitle="effective cost basis per matched quote — accrued, trading flat, claim per 100, cash-at-risk (Moyer ch. 5)"
+          >
+            <TradeBasis ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section

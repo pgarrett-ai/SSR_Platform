@@ -125,6 +125,45 @@ def test_undrawn_facility_kept_and_convertible_seniority():
     assert notes.facility_type == "notes"
 
 
+# OID / convert / PIK trade-mechanics facts (Moyer ch. 5/6)
+OID_FACTS = [
+    _fact("us-gaap:DebtInstrumentCarryingAmount", 962.8e6, "stlb:DiscountNotesMember",
+          dimension_member_label="Senior Discount Notes"),
+    _fact("us-gaap:DebtInstrumentFaceAmount", 1100e6, "stlb:DiscountNotesMember"),
+    _fact("us-gaap:DebtInstrumentFaceAmount", 1080e6, "stlb:DiscountNotesMember",
+          instant="2025-12-31"),          # comparative column — latest instant must win
+    _fact("us-gaap:DebtInstrumentUnamortizedDiscount", 137.2e6, "stlb:DiscountNotesMember"),
+    _fact("us-gaap:DebtInstrumentConvertibleConversionPrice1", 54.78,
+          "stlb:DiscountNotesMember"),
+    _fact("us-gaap:DebtInstrumentCarryingAmount", 200e6, "stlb:ToggleNotesMember",
+          dimension_member_label="Senior PIK Toggle Notes"),
+    _fact("us-gaap:DebtInstrumentCarryingAmount", 150e6, "stlb:HoldcoNotesMember",
+          dimension_member_label="Holdco Notes"),
+    _fact("us-gaap:InterestPaidInKind", 12e6, "stlb:HoldcoNotesMember"),
+]
+
+
+def _inst(member, facts=OID_FACTS):
+    by_member, debt, _ = group_debt_facts(facts)
+    rel = [f for f in debt if f.get("dim_us-gaap_DebtInstrumentAxis") == member]
+    return _instrument_from_member(member, by_member[member], rel, None)
+
+
+def test_face_discount_conversion_price_extracted():
+    inst = _inst("stlb:DiscountNotesMember")
+    assert inst.face_amount.value == 1100e6          # latest instant, not the comparative
+    assert inst.unamortized_discount.value == 137.2e6
+    assert inst.conversion_price.value == 54.78
+    assert inst.conversion_price.unit == "USD/share"
+    assert inst.conversion_price.display == "$54.78"
+    assert inst.pik is None                          # undetected, never False
+
+
+def test_pik_from_label_and_concept_token():
+    assert _inst("stlb:ToggleNotesMember").pik is True     # "PIK" in the tagged label
+    assert _inst("stlb:HoldcoNotesMember").pik is True     # InterestPaidInKind concept
+
+
 def test_fill_maturity_from_name():
     from app.capstack.debt_schedule import fill_maturity_from_name
 

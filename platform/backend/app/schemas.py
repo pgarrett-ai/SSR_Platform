@@ -79,6 +79,11 @@ class DebtInstrument(BaseModel):
     facility_type: Optional[str] = None      # 'revolver' | 'term loan' | 'notes' | …
     commitment: Optional[CitedValue] = None  # total committed size, latest tagged instant
     undrawn: Optional[CitedValue] = None     # remaining borrowing capacity
+    # OID / convert / PIK trade mechanics (Moyer ch. 5/6) — Optional so old caches load
+    face_amount: Optional[CitedValue] = None           # principal at maturity
+    unamortized_discount: Optional[CitedValue] = None  # face − accreted carrying
+    conversion_price: Optional[CitedValue] = None      # unit "USD/share"
+    pik: Optional[bool] = None               # True when tagged/named paid-in-kind
 
 
 class ForensicTableRow(BaseModel):
@@ -336,6 +341,7 @@ class Overview(BaseModel):
     liquidity_events_note: Optional[str] = None   # excluded-instrument caveat
     asset_snapshot: Optional[AssetSnapshot] = None  # liquidation-waterfall inputs
     coverage_chips: Optional["CoverageChips"] = None  # dual-leverage + interest-coverage pairs
+    mezzanine: Optional[CitedValue] = None   # temporary equity — the recast-as-debt input
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY

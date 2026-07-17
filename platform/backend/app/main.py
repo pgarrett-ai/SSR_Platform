@@ -289,11 +289,15 @@ def credit_capacity(ticker: str, years: int = Query(3, ge=1, le=10)):
 
 
 @app.get("/api/company/{ticker}/capital/ladder")
-def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10)):
+def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
+                   recast_mezz: int = Query(0, ge=0, le=1)):
     """Creation-multiple ladder (Moyer): cumulative claims through each class at face and
     at market ÷ EBITDA. On-demand (not cached in the overview) so a drop-file refresh
-    reprices without a pipeline run."""
-    from .capstack.creation import build_creation_ladder
+    reprices without a pipeline run. recast_mezz=1 appends temporary equity as a
+    preferred claim before the structure is derived (Moyer ch. 6)."""
+    from .capstack.basis import build_basis
+    from .capstack.creation import (build_creation_ladder, detect_capacity_avoidance,
+                                    mezz_recast_row)
     from .capstack.quotes import spread_bps
     from .hazard.trace import get_issuer_bonds
 
@@ -301,16 +305,24 @@ def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10)):
         ov = json.loads(run_overview(ticker, years).model_dump_json())
         feed = get_issuer_bonds(ticker)
         bonds = feed.get("bonds") or []
+        if recast_mezz:
+            mezz_row = mezz_recast_row(ov)
+            if mezz_row:
+                ov["debt_schedule"] = [*(ov.get("debt_schedule") or []), mezz_row]
         payload = build_creation_ladder(ov, bonds)
 
-        # per-quote spread flags (F7c) off the coarse 3-point treasury curve
+        # per-quote spread flags (F7c) off the coarse 3-point treasury curve;
+        # equity price (detector input) from the same session
         treasuries: dict[str, float] = {}
+        equity_price = None
         try:
             from .rates import get_key_rates, refresh_if_stale
             with session_scope() as session:
                 refresh_if_stale(session)
                 for row in get_key_rates(session):
                     treasuries[row["series"]] = row["value"]
+                snap = session.get(models.Snapshot, ticker.strip().upper())
+                equity_price = snap.last_price if snap else None
         except Exception:
             pass
         quotes_out = []
@@ -320,6 +332,8 @@ def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10)):
                                "wide_spread": bool(spr is not None and spr > 1000)})
         payload["quotes"] = quotes_out
         payload["quote_feed"] = {k: v for k, v in feed.items() if k != "bonds"}
+        payload["basis"] = build_basis(ov, bonds)
+        payload["detector"] = detect_capacity_avoidance(ov, equity_price, bonds)
         return JSONResponse(content=jsonable(payload))
 
     return _handle_pipeline_errors(_run)
@@ -496,6 +510,19 @@ def _accrual_from_petition(petition_date: str, ov: dict) -> float:
     return max((petition - start).days, 0) / 365.25
 
 
+def _suggested_mezzanine(ov: dict) -> Optional[dict]:
+    """Temporary-equity carrying ($mm) — the pre-seed for the 'mezzanine recast as debt'
+    row (Moyer ch. 6: debt-like redemption obligations dressed as equity)."""
+    cv = ov.get("mezzanine") or {}
+    if not cv.get("value") or float(cv["value"]) <= 0:
+        return None
+    return {"value": round(float(cv["value"]) / 1e6, 1),
+            "formula": "temporary-equity carrying amount",
+            "note": "recast as a preferred claim — pays after debt, before common "
+                    "(Moyer ch. 6); carrying ≈ liquidation preference + accrued "
+                    "dividends and may include redeemable NCI"}
+
+
 def _suggested_other_claims(ov: dict) -> Optional[dict]:
     """Σ bridge-included OBS items ($mm) — the pre-seed for the 'other unsecured claims'
     dilution row (rejection damages, pension, leases dilute the unsecured pool)."""
@@ -524,6 +551,7 @@ def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
         "structure": _structure_dict(structure), "base_ebitda": ebitda, "source": source,
         "citations": citations, "available_entities": available_entities,
         "suggested_other_claims": _suggested_other_claims(ov),
+        "suggested_mezzanine": _suggested_mezzanine(ov),
         "asset_snapshot": ov.get("asset_snapshot"),
     }))
 
