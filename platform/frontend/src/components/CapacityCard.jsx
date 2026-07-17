@@ -127,7 +127,10 @@ export default function CapacityCard({ ticker, years }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2 text-[11px] text-slate-600">{data.derivation}</div>
+      <div className="mt-2 text-[11px] text-slate-600">
+        {data.oid_pik_note && <div className="text-slate-500">⚠ {data.oid_pik_note}</div>}
+        {data.derivation}
+      </div>
     </div>
   );
 }

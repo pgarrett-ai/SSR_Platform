@@ -96,6 +96,7 @@ export default function RecoveryPage({ ticker, years }) {
   const [petitionDate, setPetitionDate] = useState(new Date().toISOString().slice(0, 10));
   const [attack, setAttack] = useState(null);              // priority-attack scenario
   const [suggestedClaims, setSuggestedClaims] = useState(null);
+  const [suggestedMezz, setSuggestedMezz] = useState(null);  // temporary equity ($mm)
 
   useEffect(() => {
     if (!ticker) return;
@@ -117,6 +118,7 @@ export default function RecoveryPage({ ticker, years }) {
         setCitations(d.citations || {});
         setAvailableEntities(d.available_entities || []);
         setSuggestedClaims(d.suggested_other_claims || null);
+        setSuggestedMezz(d.suggested_mezzanine || null);
         if (d.base_ebitda) setSim((s) => ({ ...s, base_ebitda: Math.round(d.base_ebitda) }));
       })
       .catch((e) => setError(e.message))
@@ -197,6 +199,17 @@ export default function RecoveryPage({ ticker, years }) {
         name: "Other unsecured claims", entity: s.entities[0]?.name || "OpCo",
         face: suggestedClaims?.value || 100, lien_rank: 99, secured: false,
         preferred: false, coupon: 0, make_whole: 0, maturity: "",
+      }],
+    }));
+  }
+
+  function addMezzanineRow() {
+    setStructure((s) => ({
+      ...s,
+      tranches: [...s.tranches, {
+        name: "Mezzanine (recast as debt)", entity: s.entities[0]?.name || "OpCo",
+        face: suggestedMezz?.value || 100, lien_rank: 99, secured: false,
+        preferred: true, coupon: 0, make_whole: 0, maturity: "",
       }],
     }));
   }
@@ -300,6 +313,11 @@ export default function RecoveryPage({ ticker, years }) {
                 title={suggestedClaims?.formula || "rejection damages / pension / lease claims dilute the unsecured pool in chapter 11 (Moyer ch. 12)"}>
                 + Other unsecured claims{suggestedClaims?.value ? ` (suggested ${Math.round(suggestedClaims.value).toLocaleString()} $mm)` : ""}
               </Button>
+              {suggestedMezz && (
+                <Button onClick={addMezzanineRow} title={suggestedMezz.note}>
+                  + Add mezzanine (recast as debt) ({Math.round(suggestedMezz.value).toLocaleString()} $mm)
+                </Button>
+              )}
             </div>
           </Section>
 

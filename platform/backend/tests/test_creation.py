@@ -85,6 +85,51 @@ def test_ladder_empty_schedule():
     assert ladder["classes"] == [] and ladder["n_instruments"] == 0
 
 
+def test_oid_market_leg_and_pct_of_accreted():
+    # Moyer Table 5-5 shape: face 100, carrying (accreted) 71.2, quote 65
+    sched = [
+        {"instrument": "Term Loan B", "outstanding": _cv(300e6), "coupon_pct": 7.0,
+         "maturity": "April 2028", "secured": True, "seniority": "senior secured"},
+        {"instrument": "OID Notes due 2030", "outstanding": _cv(71.2e6),
+         "face_amount": _cv(100e6), "coupon_pct": 8.0, "maturity": "2030",
+         "secured": False, "seniority": "senior unsecured"},
+    ]
+    bonds = [{"coupon": 8.0, "maturity": "2030-06-15", "last_price": 65.0}]
+    ladder = build_creation_ladder(_ov(schedule=sched), bonds)
+    assert ladder["has_oid"] is True and ladder["oid_note"]
+    q = ladder["quote_by_instrument"]["OID Notes due 2030"]
+    assert q["pct_of_accreted"] == 91.3 and q["oid"] is True
+    unsec = ladder["classes"][-1]
+    # market leg prices the PRINCIPAL: 65% × 100 face = 65, never 65% × 71.2 carrying
+    assert unsec["market"] == 65.0
+    assert unsec["face"] == 100.0                  # face column shows principal
+    assert unsec["accreted"] == 71.2               # accreted (carrying) tracked per class
+    assert unsec["cum_accreted"] == 371.2
+    # distress leg re-based: 91.3 (NOT a 40%+ discount), while the raw quote reads 65
+    assert ladder["min_unsecured_quote"] == 91.3
+
+
+def test_no_face_amount_keeps_phase1_behavior():
+    ladder = build_creation_ladder(_ov(), BONDS)
+    assert ladder["has_oid"] is False and ladder["oid_note"] is None
+    # face = accreted = carrying; market = quote% × carrying (unchanged)
+    last = ladder["classes"][-1]
+    assert last["cum_face"] == last["cum_accreted"] == 600.0
+    assert last["cum_market"] == 460.0
+    assert ladder["quote_by_instrument"]["8.00% Senior Notes due 2030"]["pct_of_accreted"] == 60.0
+
+
+def test_waterfall_claim_convention_is_carrying():
+    # the adapter feeds carrying (accreted), never face, as Tranche.face — the ch. 5
+    # claim convention holds with zero engine change
+    from app.fulcrum.adapter import overview_to_structure
+    sched = [{"instrument": "OID Notes due 2030", "outstanding": _cv(71.2e6),
+              "face_amount": _cv(100e6), "coupon_pct": 8.0, "maturity": "2030",
+              "secured": False}]
+    structure, _, _ = overview_to_structure(_ov(schedule=sched))
+    assert structure.tranches[0].face == 71.2
+
+
 def test_spread_bps_interpolation():
     tsy = {"DTB3": 4.0, "DGS10": 4.5, "DGS30": 5.0}
     import datetime as dt

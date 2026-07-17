@@ -10,9 +10,17 @@ import { Badge, Loading, Td, Th } from "../ui/index.jsx";
 
 const x = (v) => (v == null ? "—" : `${v.toFixed(2)}x`);
 
+// F9 detector chip label: busted-convert ratio, PIK, or mezzanine.
+const detectorLabel = (it) =>
+  it.kind === "busted_convert"
+    ? `convert ${it.ratio == null ? "?" : `${it.ratio.toFixed(2)}x`}`
+    : it.kind === "pik" ? "PIK" : "mezzanine";
+
 export default function CreationLadder({ ticker, years }) {
+  const [recast, setRecast] = useState(false);   // mezzanine recast-as-debt toggle
+  const key = recast ? `ladder:${ticker}:${years}:recast` : `ladder:${ticker}:${years}`;
   const { data, loading, error } = useAsync(
-    `ladder:${ticker}:${years}`, () => fetchLadder(ticker, years), [ticker, years]);
+    key, () => fetchLadder(ticker, years, recast), [ticker, years, recast]);
   const [variant, setVariant] = useState("ltm");
 
   if (loading) return <Loading />;
@@ -23,6 +31,8 @@ export default function CreationLadder({ ticker, years }) {
   const e = data.ebitda_mm?.[variant];
   const mult = (cum) => (e != null && e > 0 ? cum / e : null);
   const hasAdj = data.ebitda_mm?.covenant_adjusted != null;
+  const detector = data.detector?.items || [];
+  const hasMezz = detector.some((it) => it.kind === "mezzanine");
 
   return (
     <div>
@@ -48,6 +58,29 @@ export default function CreationLadder({ ticker, years }) {
         )}
       </div>
 
+      {detector.length > 0 && (
+        <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400">
+          <span className="text-[10px] uppercase tracking-wide text-slate-500"
+            title="instruments engineered around leverage optics — busted converts, PIK, mezzanine (Moyer ch. 6)">
+            Capacity avoidance:
+          </span>
+          {detector.map((it, i) => (
+            <span key={i} className="flex items-center gap-1.5" title={it.note}>
+              <Badge tone={it.tone || "neutral"}>{detectorLabel(it)}</Badge>
+              <span className="max-w-[280px] truncate">{it.instrument}</span>
+            </span>
+          ))}
+          {hasMezz && (
+            <label className="flex cursor-pointer items-center gap-1.5 text-slate-400"
+              title="append temporary equity as a preferred claim — pays after debt, before common">
+              <input type="checkbox" checked={recast}
+                onChange={(ev) => setRecast(ev.target.checked)} />
+              recast mezzanine as debt
+            </label>
+          )}
+        </div>
+      )}
+
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -55,6 +88,11 @@ export default function CreationLadder({ ticker, years }) {
               <Th>Class</Th>
               <Th right>Face $mm</Th>
               <Th right>Cum face</Th>
+              {data.has_oid && (
+                <Th right title="cumulative accreted (carrying) value — the claim; unamortized OID is not a claim (Moyer ch. 5)">
+                  Cum @ accreted
+                </Th>
+              )}
               <Th right>Cum @ market</Th>
               <Th right title="cumulative face ÷ EBITDA">Creation x (face)</Th>
               <Th right title="cumulative market value ÷ EBITDA — the Moyer cheapness test">
@@ -75,6 +113,9 @@ export default function CreationLadder({ ticker, years }) {
                 </Td>
                 <Td right mono className="text-slate-300">{c.face.toLocaleString()}</Td>
                 <Td right mono className="text-slate-300">{c.cum_face.toLocaleString()}</Td>
+                {data.has_oid && (
+                  <Td right mono className="text-slate-300">{c.cum_accreted?.toLocaleString()}</Td>
+                )}
                 <Td right mono className="text-slate-200">
                   {c.cum_market.toLocaleString()}
                   {c.unquoted && (
@@ -97,6 +138,8 @@ export default function CreationLadder({ ticker, years }) {
       <div className="mt-2 space-y-0.5 text-[11px] text-slate-500">
         <div>{data.derivation}{e == null || e <= 0 ? " — EBITDA ≤ 0: multiples n.m." : ""}</div>
         {data.fulcrum_class && <div>{data.fulcrum_note}</div>}
+        {data.has_oid && data.oid_note && <div>{data.oid_note}</div>}
+        {data.detector?.meta_note && <div>⚠ {data.detector.meta_note}</div>}
         {(data.notes || []).map((n, i) => (<div key={i}>⚠ {n}</div>))}
       </div>
     </div>

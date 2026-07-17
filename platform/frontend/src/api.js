@@ -158,9 +158,11 @@ export async function fetchBonds(ticker) {
   return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/bonds`));
 }
 
-export async function fetchLadder(ticker, years = 3) {
+export async function fetchLadder(ticker, years = 3, recast = false) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/capital/ladder?years=${years}`)
+    await fetch(
+      `/api/company/${encodeURIComponent(ticker)}/capital/ladder?years=${years}&recast_mezz=${recast ? 1 : 0}`
+    )
   );
 }
 

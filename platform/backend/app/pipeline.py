@@ -473,6 +473,15 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"Coverage chips step failed: {exc}")
 
+    # --- Mezzanine / temporary equity — the recast-as-debt input (Moyer ch. 6) ---
+    mezzanine = None
+    try:
+        from .edgar.facts import cited_metric
+        if series is not None and series.years:
+            mezzanine = cited_metric(series.latest(), "temporary_equity", series.cik)
+    except Exception as exc:
+        warnings.append(f"Mezzanine (temporary equity) step failed: {exc}")
+
     header = IssuerHeader(
         issuer=issuer_name,
         ticker=ticker,
@@ -509,6 +518,7 @@ def run_overview(
         liquidity_events_note=liquidity_events_note,
         asset_snapshot=asset_snapshot,
         coverage_chips=coverage,
+        mezzanine=mezzanine,
         leverage_timeline=lev_timeline,
         maturity_wall=maturities,
         what_changed=changes,
