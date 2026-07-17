@@ -854,6 +854,16 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
                 equity_pct_at_full=body.equity_pct_at_full, accrual_years=accrual)
             tender, holdout = sc["tender"], sc["holdout"]
             face2 = sc["structure"].total_face()
+            # EV where holding out overtakes tendering (piecewise-linear curves).
+            # Skip the leading plateau where both payoffs are 0 (EV at/below the
+            # admin-fee floor): diff >= 0 holds trivially there, so _cross over the
+            # full grid reported a spurious crossover at ~0.
+            crossover = None
+            if tender is not None and holdout is not None:
+                alive = (tender > 0) | (holdout > 0)
+                if alive.any():
+                    j = int(np.argmax(alive))
+                    crossover = _cross(grid[j:], (holdout - tender)[j:], 0.0)
             scenarios.append({
                 "participation_pct": p,
                 "proforma_face": round(face2, 1),
@@ -867,10 +877,7 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
                 "tender": np.round(tender, 2).tolist() if tender is not None else None,
                 "holdout": (np.round(holdout, 2).tolist()
                             if holdout is not None else None),
-                # EV where holding out overtakes tendering (piecewise-linear curves)
-                "crossover_ev": (_cross(grid, holdout - tender, 0.0)
-                                 if tender is not None and holdout is not None
-                                 else None),
+                "crossover_ev": crossover,
                 "fails": bool(body.min_tender_pct is not None
                               and p < body.min_tender_pct),
             })

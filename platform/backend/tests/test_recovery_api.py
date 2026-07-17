@@ -135,8 +135,15 @@ def test_exchange_endpoint_smoke(monkeypatch):
     assert s0["holdout"] == d["base_pct"]          # p=0 ≡ base on the same grid
     s90 = next(s for s in d["scenarios"] if s["participation_pct"] == 90.0)
     assert len(s90["tender"]) == 241 and s90["fails"] is False
+    # Cash-free crossover regression: the leading both-zero plateau (EV under the
+    # 30 admin floor) must not read as a crossover at ~0. Hand check: the stub's
+    # holdout line starts after admin 30 + 1L 500 + 2L 250 + new paper p·F·ratio,
+    # and catches the 50-per-100 tender plateau after (1−p)·F·ratio more —
+    # 30 + 500 + 250 + 0.5·120 = 840 at any p.
+    assert abs(s90["crossover_ev"] - 840.0) < 0.01
     s25 = next(s for s in d["scenarios"] if s["participation_pct"] == 25.0)
     assert s25["fails"] is True                    # below min_tender 50
+    assert abs(s25["crossover_ev"] - 840.0) < 0.01               # p-invariant here
     assert d["min_tender_pct"] == 50.0
     assert d["quote_premium"] is None              # unquoted-degrading
 
