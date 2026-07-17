@@ -325,6 +325,37 @@ class ChangeItem(BaseModel):
     latest_label: Optional[str] = None
 
 
+class RpBasketPoint(BaseModel):
+    """One quarter of the RP-basket build (all $mm, Moyer ch. 7)."""
+
+    label: str                              # calendar-quarter label, e.g. "Q1 2025"
+    period_end: str
+    net_income: Optional[float] = None
+    ni_credit: float = 0.0                  # 0.5×NI when positive, 1.0×NI when negative
+    equity_proceeds: float = 0.0
+    dividends: float = 0.0
+    buybacks: float = 0.0
+    contribution: float = 0.0
+    cumulative: float = 0.0
+
+
+class RpBasket(BaseModel):
+    """Cumulative restricted-payments basket build (Moyer ch. 7): builder-formula
+    quarterly contributions plus the extracted covenant layer (the issuer's own RP fact,
+    or the flag that none was extracted — unbounded leakage)."""
+
+    available: bool = True
+    covenant_status: str = "none"           # 'extracted' | 'stub' | 'none'
+    starter: Optional[CitedValue] = None    # $0 builder-only default unless a $-token hit
+    points: list[RpBasketPoint] = Field(default_factory=list)
+    capacity: Optional[CitedValue] = None   # starter + Σ contributions, floored at 0
+    formula_note: Optional[str] = None      # omitted legs / untagged concepts
+    covenant_family: Optional[str] = None
+    covenant_value: Optional[str] = None    # raw extracted basket string
+    covenant_quote: Optional[str] = None
+    notes: list[str] = Field(default_factory=list)
+
+
 class Overview(BaseModel):
     header: IssuerHeader
     economic_debt_bridge: Optional[EconomicDebtBridge] = None
@@ -342,6 +373,8 @@ class Overview(BaseModel):
     asset_snapshot: Optional[AssetSnapshot] = None  # liquidation-waterfall inputs
     coverage_chips: Optional["CoverageChips"] = None  # dual-leverage + interest-coverage pairs
     mezzanine: Optional[CitedValue] = None   # temporary equity — the recast-as-debt input
+    rp_basket: Optional[RpBasket] = None     # F1 RP-basket capacity build (Moyer ch. 7)
+    liens_headroom: Optional[dict] = None    # F2 permitted-liens headroom archetypes (ch. 9)
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY

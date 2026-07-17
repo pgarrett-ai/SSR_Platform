@@ -71,6 +71,32 @@ def test_attack_scenario_rides_same_draws():
     assert hit["OpCo Unsecured"] > base["OpCo Unsecured"]      # pool gains
 
 
+def test_priming_scenario_rides_same_draws():
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 20_000},
+        "priming": {"face": 300.0}})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    base = {t["tranche"]: t["mean_recovery_%"] for t in d["tranches"]}
+    primed = {t["tranche"]: t["mean_recovery_%"] for t in d["priming_tranches"]}
+    assert primed["Priming loan"] > base["1L Term Loan"]         # rank 0 pays first
+    assert primed["1L Term Loan"] < base["1L Term Loan"]         # primed down
+    assert primed["OpCo Unsecured"] < base["OpCo Unsecured"]     # the Moyer point
+    assert d["primed_structure"]["tranches"][0]["lien_rank"] == 0
+    # same EV draws: the base tranche table is unchanged by the priming overlay
+    plain = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 20_000}}).json()
+    assert [t["mean_recovery_%"] for t in d["tranches"]] == \
+           [t["mean_recovery_%"] for t in plain["tranches"]]
+
+
+def test_priming_negative_face_400():
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 5_000},
+        "priming": {"face": -100.0}})
+    assert r.status_code == 400
+
+
 def test_506_headroom_reported():
     s = {**APEX_STRUCTURE, "tranches": [
         {**APEX_STRUCTURE["tranches"][0], "collateral_value": 900.0},

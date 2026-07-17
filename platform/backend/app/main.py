@@ -486,6 +486,8 @@ class SimulateBody(BaseModel):
     attack: Optional[str] = None         # priority-attack scenario (fulcrum.attacks)
     attack_target: Optional[str] = None  # tranche name; default = all secured
     mode: Optional[str] = None           # "liquidation" forces the asset-based waterfall
+    priming: Optional[dict] = None       # {face ($mm), entity?} — rank-0 secured layer
+                                         # (fulcrum.proforma.prime, Moyer ch. 9)
 
 
 def _structure_dict(structure: CapitalStructure) -> dict:
@@ -589,6 +591,8 @@ def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
         "suggested_other_claims": _suggested_other_claims(ov),
         "suggested_mezzanine": _suggested_mezzanine(ov),
         "asset_snapshot": ov.get("asset_snapshot"),
+        # priming pre-seed: the covenant-dollars liens read (suggested_priming inside)
+        "liens_headroom": ov.get("liens_headroom"),
     }))
 
 
@@ -658,6 +662,20 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
                     float(100 * (wf[n] / amap[n].claim(result.accrual_years)).mean())
                     if amap[n].claim(result.accrual_years) > 0 else None}
                 for n in attacked.priority_order()]
+        priming_rows = None
+        primed_dict = None
+        if body.priming is not None:   # attack-block mirror: same EV draws (Moyer ch. 9)
+            from .fulcrum.proforma import prime
+            primed = prime(structure, float(body.priming.get("face") or 0.0),
+                           body.priming.get("entity"))
+            wf = run_waterfall(primed, result.sim.ev, result.accrual_years)
+            pmap = {t.name: t for t in primed.tranches}
+            priming_rows = [
+                {"tranche": n, "mean_recovery_%":
+                    float(100 * (wf[n] / pmap[n].claim(result.accrual_years)).mean())
+                    if pmap[n].claim(result.accrual_years) > 0 else None}
+                for n in primed.priority_order()]
+            primed_dict = _structure_dict(primed)
     except (TickerNotFoundError, NoFilingsError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except (ValueError, TypeError) as exc:   # engine validators = the input trust boundary
@@ -710,6 +728,8 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         "headroom_506": headroom_506,
         "attack": body.attack,
         "attack_tranches": attack_rows,
+        "priming_tranches": priming_rows,
+        "primed_structure": primed_dict,
     }))
 
 

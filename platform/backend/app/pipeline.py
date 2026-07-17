@@ -7,6 +7,7 @@ stream "what it's doing" to the UI.
 """
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -482,6 +483,26 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"Mezzanine (temporary equity) step failed: {exc}")
 
+    # --- Covenant dollars (Moyer ch. 7/9): RP-basket build + permitted-liens headroom —
+    # deterministic regex over the cached covenant extractions + XBRL quarterly flows ---
+    rp_basket = None
+    liens_headroom = None
+    try:
+        from .capstack.covenant_dollars import build_liens_headroom, build_rp_basket
+        cov_dicts = [json.loads(c.model_dump_json()) for c in covenants]
+        try:
+            rp_basket = build_rp_basket(company.get_facts(), cov_dicts, years)
+        except Exception as exc:
+            warnings.append(f"RP-basket step failed: {exc}")
+        liens_headroom = build_liens_headroom({
+            "covenants": cov_dicts,
+            "debt_schedule": [json.loads(i.model_dump_json()) for i in debt_schedule],
+            "asset_snapshot": (json.loads(asset_snapshot.model_dump_json())
+                               if asset_snapshot is not None else None),
+        })
+    except Exception as exc:
+        warnings.append(f"Liens-headroom step failed: {exc}")
+
     header = IssuerHeader(
         issuer=issuer_name,
         ticker=ticker,
@@ -519,6 +540,8 @@ def run_overview(
         asset_snapshot=asset_snapshot,
         coverage_chips=coverage,
         mezzanine=mezzanine,
+        rp_basket=rp_basket,
+        liens_headroom=liens_headroom,
         leverage_timeline=lev_timeline,
         maturity_wall=maturities,
         what_changed=changes,

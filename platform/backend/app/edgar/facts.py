@@ -136,6 +136,16 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("capex", "Capital expenditures", "CashFlowStatement", "duration",
                ("PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets",
                 "PaymentsForCapitalImprovements", "PaymentsToAcquireOtherProductiveAssets")),
+    # --- RP-basket builder flows (Moyer ch. 7) — data-only, consumed by quarterly_flows;
+    # three separate specs: _duration_periods is first-concept-wins per spec ---
+    MetricSpec("equity_issuance_proceeds", "Proceeds from equity issuance", "CashFlowStatement",
+               "duration",
+               ("ProceedsFromIssuanceOfCommonStock", "ProceedsFromIssuanceOrSaleOfEquity",
+                "ProceedsFromIssuanceOfPreferredStockAndPreferenceStock")),
+    MetricSpec("dividends_paid", "Dividends paid", "CashFlowStatement", "duration",
+               ("PaymentsOfDividends", "PaymentsOfDividendsCommonStock")),
+    MetricSpec("stock_repurchases", "Stock repurchases", "CashFlowStatement", "duration",
+               ("PaymentsForRepurchaseOfCommonStock", "PaymentsForRepurchaseOfEquity")),
     # --- common covenant EBITDA add-backs (quantified when tagged; no statement filter) ---
     MetricSpec("share_based_comp", "Stock-based compensation", None, "duration",
                ("ShareBasedCompensation", "AllocatedShareBasedCompensationExpense")),
@@ -390,6 +400,30 @@ def _duration_periods(entity_facts, spec: MetricSpec) -> list[tuple[dt.date, dt.
         if out:
             return sorted(set(out))
     return []
+
+
+def quarters_from_periods(periods: list[tuple[dt.date, dt.date, float]]) -> list[tuple[dt.date, float]]:
+    """Per-quarter values from duration facts: standalone Q buckets read directly; YTD
+    chains (shared period_start) differenced successively (10/25/30/45 → 10/15/5/15).
+    NOT TTM — the RP-basket convention is cumulative, not trailing. Pure — unit-tested."""
+    out: dict[dt.date, float] = {}
+    chains: dict[dt.date, list[tuple[dt.date, float]]] = {}
+    for ps, pe, v in periods:
+        if _bucket((pe - ps).days) == "Q":
+            out[pe] = v
+        chains.setdefault(ps, []).append((pe, v))
+    for chain in chains.values():   # successive differencing along each YTD chain
+        prev = 0.0
+        for pe, v in sorted(chain):
+            out.setdefault(pe, v - prev)
+            prev = v
+    return sorted(out.items())
+
+
+def quarterly_flows(entity_facts, spec: MetricSpec) -> list[tuple[dt.date, float]]:
+    """Quarterly (period_end, value) series for a duration metric — the RP-basket
+    builder's flow input (Moyer ch. 7)."""
+    return quarters_from_periods(_duration_periods(entity_facts, spec))
 
 
 def build_quarterly_series(company, lookback_years: int) -> list[QuarterFacts]:

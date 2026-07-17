@@ -97,6 +97,8 @@ export default function RecoveryPage({ ticker, years }) {
   const [attack, setAttack] = useState(null);              // priority-attack scenario
   const [suggestedClaims, setSuggestedClaims] = useState(null);
   const [suggestedMezz, setSuggestedMezz] = useState(null);  // temporary equity ($mm)
+  const [suggestedPriming, setSuggestedPriming] = useState(null); // liens-headroom pre-seed
+  const [primingFace, setPrimingFace] = useState(null);      // priming layer face ($mm)
 
   useEffect(() => {
     if (!ticker) return;
@@ -119,6 +121,9 @@ export default function RecoveryPage({ ticker, years }) {
         setAvailableEntities(d.available_entities || []);
         setSuggestedClaims(d.suggested_other_claims || null);
         setSuggestedMezz(d.suggested_mezzanine || null);
+        const sp = d.liens_headroom?.suggested_priming || null;
+        setSuggestedPriming(sp);
+        if (sp?.value) setPrimingFace(Math.round(sp.value));
         if (d.base_ebitda) setSim((s) => ({ ...s, base_ebitda: Math.round(d.base_ebitda) }));
       })
       .catch((e) => setError(e.message))
@@ -174,7 +179,7 @@ export default function RecoveryPage({ ticker, years }) {
     };
   }
 
-  async function run(attackKind = attack) {
+  async function run(attackKind = attack, primeFace = null) {
     setRunning(true);
     setError(null);
     try {
@@ -183,6 +188,7 @@ export default function RecoveryPage({ ticker, years }) {
       setResult(await simulateRecovery(ticker, cleanStructure(), simBody, years, {
         petition_date: petitionDate || null,
         attack: attackKind || null,
+        ...(primeFace > 0 ? { priming: { face: primeFace } } : {}),
       }));
       setAttack(attackKind || null);
     } catch (e) {
@@ -439,6 +445,22 @@ export default function RecoveryPage({ ticker, years }) {
                 </Button>
               ))}
             </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+              <span className="text-[10px] uppercase tracking-wide text-slate-500"
+                title="a new rank-0 secured layer under permitted-lien capacity (or a covenant-lite gap) — re-runs the waterfall on the same EV draws (Moyer ch. 9)">
+                Priming scenario:
+              </span>
+              <NumCell value={primingFace} step={100} onChange={setPrimingFace} className="w-28" />
+              <span className="text-slate-500">$mm</span>
+              <Button onClick={() => run(attack, primingFace)} disabled={running || !(primingFace > 0)}>
+                Run priming
+              </Button>
+              {suggestedPriming && (
+                <span className="text-slate-500" title={suggestedPriming.note}>
+                  pre-seeded from liens headroom — {suggestedPriming.basis}
+                </span>
+              )}
+            </div>
           </Section>
 
           <EvExplorer ticker={ticker} years={years} structure={structure}
@@ -567,6 +589,45 @@ function Results({ result, citations = {}, quotedByName = {} }) {
               })}
             </tbody>
           </table>
+        </Section>
+      )}
+
+      {result.priming_tranches && (
+        <Section title="Priming scenario"
+          subtitle="same EV draws, new rank-0 secured layer ahead of every lien — mean recovery vs base (Moyer ch. 9)">
+          <table className="w-full max-w-xl border-collapse text-xs">
+            <thead>
+              <tr className="border-b border-ink-600">
+                <Th>Tranche</Th><Th right>Base mean %</Th><Th right>Primed mean %</Th><Th right>Δ</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {result.priming_tranches.map((p) => {
+                const base = result.tranches.find((t) => t.tranche === p.tranche);
+                const delta = base && p["mean_recovery_%"] != null
+                  ? p["mean_recovery_%"] - base["mean_recovery_%"] : null;
+                const spec = (result.primed_structure?.tranches || [])
+                  .find((t) => t.name === p.tranche);
+                const unsecured = spec && !spec.secured && !spec.preferred;
+                return (
+                  <tr key={p.tranche}
+                    className={`border-b border-ink-700/60 font-mono ${unsecured ? "bg-rose-900/20 text-rose-200" : "text-slate-300"}`}>
+                    <td className="px-2 py-1.5 font-sans">{p.tranche}</td>
+                    <td className="px-2 py-1.5 text-right">{base ? fmt(base["mean_recovery_%"]) : "—"}</td>
+                    <td className="px-2 py-1.5 text-right">{fmt(p["mean_recovery_%"])}</td>
+                    <td className={`px-2 py-1.5 text-right font-semibold ${delta > 0 ? "text-emerald-300" : delta < 0 ? "text-rose-300" : "text-slate-500"}`}>
+                      {delta == null ? "—" : `${delta > 0 ? "+" : ""}${fmt(delta)}`}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="mt-1 text-[11px] text-slate-500">
+            unsecured rows highlighted — priming shifts their value up the stack. To explore
+            the primed structure at any EV, add the priming face as a lien-0 secured tranche
+            in the editor above (the EV explorer runs on the edited structure).
+          </div>
         </Section>
       )}
 

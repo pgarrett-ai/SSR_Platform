@@ -16,6 +16,7 @@ import CreationLadder from "../components/CreationLadder.jsx";
 import TradeBasis from "../components/TradeBasis.jsx";
 import RefiWall from "../components/RefiWall.jsx";
 import Telegraph from "../components/Telegraph.jsx";
+import CovenantDollars from "../components/CovenantDollars.jsx";
 import LiquidityCalendar from "../components/LiquidityCalendar.jsx";
 import DocSearch from "../components/DocSearch.jsx";
 import HoldersPanel from "../components/HoldersPanel.jsx";
@@ -140,6 +141,13 @@ export default function CapitalPage({ ticker, health, overview }) {
             subtitle="where the bank sits when trouble starts, and the five tells a filing is being telegraphed (Moyer ch. 8)"
           >
             <Telegraph ticker={ticker} years={overview.header?.years || 3} />
+          </Section>
+
+          <Section
+            title="Covenant dollars"
+            subtitle="RP-basket capacity build + permitted-liens headroom — what can leak out, what can prime you (Moyer ch. 7/9)"
+          >
+            <CovenantDollars overview={overview} />
           </Section>
 
           <Section title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">
