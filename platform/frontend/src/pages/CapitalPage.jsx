@@ -16,6 +16,7 @@ import CreationLadder from "../components/CreationLadder.jsx";
 import TradeBasis from "../components/TradeBasis.jsx";
 import RefiWall from "../components/RefiWall.jsx";
 import Telegraph from "../components/Telegraph.jsx";
+import OptionsCard from "../components/OptionsCard.jsx";
 import CovenantDollars from "../components/CovenantDollars.jsx";
 import LiquidityCalendar from "../components/LiquidityCalendar.jsx";
 import DocSearch from "../components/DocSearch.jsx";
@@ -141,6 +142,13 @@ export default function CapitalPage({ ticker, health, overview }) {
             subtitle="where the bank sits when trouble starts, and the five tells a filing is being telegraphed (Moyer ch. 8)"
           >
             <Telegraph ticker={ticker} years={overview.header?.years || 3} />
+          </Section>
+
+          <Section
+            title="Company options"
+            subtitle="buy back debt, exchange it, or sell assets — what the clock, cash, and covenants allow (Moyer ch. 11)"
+          >
+            <OptionsCard ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section

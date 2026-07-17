@@ -13,6 +13,7 @@ import {
   simulateRecovery,
 } from "../api.js";
 import EvExplorer from "../components/EvExplorer.jsx";
+import ExchangeAnalyzer from "../components/ExchangeAnalyzer.jsx";
 import IrrMatrix from "../components/IrrMatrix.jsx";
 import LiquidationPanel from "../components/LiquidationPanel.jsx";
 
@@ -464,6 +465,9 @@ export default function RecoveryPage({ ticker, years }) {
           </Section>
 
           <EvExplorer ticker={ticker} years={years} structure={structure}
+            baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0} />
+
+          <ExchangeAnalyzer ticker={ticker} years={years} structure={structure}
             baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0} />
         </>
       )}

@@ -184,6 +184,12 @@ export async function fetchTelegraph(ticker, years = 3) {
   );
 }
 
+export async function fetchOptions(ticker, years = 3) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/options?years=${years}`)
+  );
+}
+
 // ---- Screening + full-text search --------------------------------------------
 
 export async function fetchScreen() {
@@ -220,6 +226,16 @@ export async function simulateRecovery(ticker, structure, sim, years = 3, extra 
 export async function exploreRecovery(ticker, body, years = 3) {
   return jsonOrThrow(
     await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/explore?years=${years}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+  );
+}
+
+export async function exchangeRecovery(ticker, body, years = 3) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/exchange?years=${years}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

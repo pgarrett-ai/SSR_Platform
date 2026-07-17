@@ -109,6 +109,46 @@ def test_506_headroom_reported():
     assert abs(hr["1L Term Loan"] - 400.0) < 0.5
 
 
+def _patch_offline(monkeypatch):
+    """No cached overview / drop-file needed — the endpoint's ov + bonds legs degrade."""
+    import app.hazard.trace as trace
+    import app.main as main
+    from app.schemas import IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Apex", ticker="APEX", years=3)))
+    monkeypatch.setattr(trace, "get_issuer_bonds", lambda t: {"bonds": []})
+
+
+def test_exchange_endpoint_smoke(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/exchange", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": 120.0},
+        "target": "OpCo Unsecured", "ratio_pct": 50.0, "participation_pct": 90.0,
+        "seniority": "priming", "equity_pct_at_full": 90.0, "min_tender_pct": 50.0})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["available"] is True and len(d["ev_grid"]) == 241
+    ps = [s["participation_pct"] for s in d["scenarios"]]
+    assert ps == sorted(ps) and {0.0, 90.0, 100.0} <= set(ps)
+    s0 = next(s for s in d["scenarios"] if s["participation_pct"] == 0.0)
+    assert s0["holdout"] == d["base_pct"]          # p=0 ≡ base on the same grid
+    s90 = next(s for s in d["scenarios"] if s["participation_pct"] == 90.0)
+    assert len(s90["tender"]) == 241 and s90["fails"] is False
+    s25 = next(s for s in d["scenarios"] if s["participation_pct"] == 25.0)
+    assert s25["fails"] is True                    # below min_tender 50
+    assert d["min_tender_pct"] == 50.0
+    assert d["quote_premium"] is None              # unquoted-degrading
+
+
+def test_exchange_unknown_target_400(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/exchange", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": 120.0},
+        "target": "Nope", "ratio_pct": 50.0})
+    assert r.status_code == 400
+
+
 def test_scenarios_roundtrip():
     saved = client.post("/api/company/APEX/scenarios", json={
         "name": "Base", "sim": APEX_SIM, "structure": APEX_STRUCTURE,
