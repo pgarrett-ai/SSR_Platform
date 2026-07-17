@@ -5,8 +5,8 @@
     "resolved_ticker": "AAL",
     "cik": "6201",
     "years": 3,
-    "n_filings": 55,
-    "last_updated": "2026-07-15T10:44:10.899666+00:00",
+    "n_filings": 56,
+    "last_updated": "2026-07-17T17:37:51.585869+00:00",
     "from_cache": false,
     "llm_enabled": true
   },
@@ -84,10 +84,10 @@
             "form_type": "10-K",
             "filing_date": "2026-02-18",
             "exhibit": null,
-            "section": "Consolidated Balance Sheets - Noncurrent liabilities",
+            "section": "Consolidated Balance Sheets",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-            "quote": "Pension and postretirement benefits 1,568"
+            "quote": "Pension and postretirement benefits 1,568 2,128"
           },
           "derived": false,
           "formula": null,
@@ -469,7 +469,14 @@
       "rate_base": null,
       "xbrl_member": "us-gaap:EnhancedEquipmentTrustCertificateMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": null,
+      "facility_type": null,
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "Equipment Loans and Other Notes Payable",
@@ -514,7 +521,14 @@
       "rate_base": null,
       "xbrl_member": "aal:EquipmentLoansAndOtherNotesPayableMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": null,
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "5.75% Senior Notes",
@@ -559,7 +573,14 @@
       "rate_base": null,
       "xbrl_member": "aal:SeniorNote575Matures2029Member",
       "obligor": null,
-      "governed_by": null
+      "governed_by": null,
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2021 AAdvantage Term Loan Facility",
@@ -604,7 +625,14 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:A2021AAdvantageTermLoanFacilityMember",
       "obligor": null,
-      "governed_by": "credit agreement dated March 24, 2021"
+      "governed_by": "credit agreement dated March 24, 2021",
+      "facility_type": "term loan",
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "Payroll Support Program Promissory Note One, CARES Act",
@@ -636,7 +664,7 @@
         "form_type": "10-K",
         "filing_date": "2026-02-18",
         "exhibit": null,
-        "section": "Long-term debt footnote",
+        "section": "gap-fill re-search (persisted corpus)",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
         "quote": "PSP1 Promissory Note, variable interest rate of 5.92%, interest only payments until due in April 2030"
@@ -646,10 +674,17 @@
       "spread_pct": null,
       "effective_rate_pct": 5.57,
       "rate_type": "floating",
-      "rate_base": "SOFR",
+      "rate_base": "variable",
       "xbrl_member": "aal:PayrollSupportProgramPromissoryNoteOneCARESActMember",
       "obligor": null,
-      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)"
+      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)",
+      "facility_type": null,
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2014 Revolving Facility",
@@ -673,10 +708,19 @@
         "note": null
       },
       "coupon": "variable → 5.52%",
-      "maturity": null,
+      "maturity": "June 2029",
       "secured": true,
       "seniority": "senior secured",
-      "citation": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "gap-fill re-search (persisted corpus)",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "The 2014 Revolving Facility matures in June 2029 and bears interest at a base rate (subject to a floor of 1.00%) plus an applicable margin of 2.00%, 2.25% or 2.50%, depending on AAG's public corporate credit rating, or, at American's option, the SOFR rate for a tenor of one, three or six months"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -685,7 +729,48 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:CreditFacility2014Member",
       "obligor": null,
-      "governed_by": null
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 1300000000.0,
+        "display": "$1,300M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [aal:CreditFacility2014Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "2014 Revolving Facility: $1,300M as of 2026-03-31 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, aal:CreditFacility2014Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 1296000000.0,
+        "display": "$1,296M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [aal:CreditFacility2014Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "2014 Revolving Facility: $1,296M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, aal:CreditFacility2014Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2023 Revolving Facility",
@@ -721,7 +806,48 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:CreditFacility2023Member",
       "obligor": null,
-      "governed_by": null
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 1500000000.0,
+        "display": "$1,500M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [aal:CreditFacility2023Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "2023 Revolving Facility: $1,500M as of 2026-03-31 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, aal:CreditFacility2023Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 1451000000.0,
+        "display": "$1,451M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [aal:CreditFacility2023Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "2023 Revolving Facility: $1,451M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, aal:CreditFacility2023Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "Payroll Support Program Promissory Note Two, CARES Act",
@@ -753,7 +879,7 @@
         "form_type": "10-K",
         "filing_date": "2026-02-18",
         "exhibit": null,
-        "section": "Long-term debt footnote",
+        "section": "gap-fill re-search (persisted corpus)",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
         "quote": "PSP2 Promissory Note, interest only payments until due in January 2031"
@@ -766,7 +892,14 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:PayrollSupportProgramPromissoryNoteTwoCARESActMember",
       "obligor": null,
-      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)"
+      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)",
+      "facility_type": null,
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2025 AAdvantage Term Loan Facility",
@@ -811,7 +944,14 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:A2025AAdvantageTermLoanFacilityMember",
       "obligor": null,
-      "governed_by": "credit agreement dated March 24, 2025"
+      "governed_by": "credit agreement dated March 24, 2025",
+      "facility_type": "term loan",
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "2013 Revolving Facility",
@@ -846,7 +986,7 @@
         "section": "Long-term debt footnote",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-        "quote": "The 2013 Revolving Facility matures in June 2029 and bears interest at a base rate (subject to a floor of 1.00%) plus an applicable margin of 2.00%, 2.25% or 2.50%, depending on AAG’s public corporate credit rating, or, at American’s option, the SOFR rate for a tenor of one, three or six months"
+        "quote": "The 2013 Revolving Facility matures in June 2029 and bears interest at a base rate (subject to a floor of 1.00%) plus an applicable margin of 2.00%, 2.25% or 2.50%, depending on AAG's public corporate credit rating, or, at American's option, the SOFR rate"
       },
       "coupon_pct": null,
       "coupon_pct_max": null,
@@ -856,7 +996,48 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:CreditFacility2013Member",
       "obligor": null,
-      "governed_by": null
+      "governed_by": "credit agreement dated June 27, 2013",
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 363000000.0,
+        "display": "$363M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [aal:CreditFacility2013Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "2013 Revolving Facility: $363M as of 2026-03-31 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, aal:CreditFacility2013Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 363000000.0,
+        "display": "$363M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [aal:CreditFacility2013Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "2013 Revolving Facility: $363M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, aal:CreditFacility2013Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "Payroll Support Program Promissory Note Three, CARES Act",
@@ -879,7 +1060,7 @@
         "formula": null,
         "note": null
       },
-      "coupon": "SOFR + 2.00% → 5.60%",
+      "coupon": "SOFR + 2.00% → 5.64%",
       "maturity": "April 2031",
       "secured": false,
       "seniority": "unsecured",
@@ -888,7 +1069,7 @@
         "form_type": "10-K",
         "filing_date": "2026-02-18",
         "exhibit": null,
-        "section": "Long-term debt footnote",
+        "section": "gap-fill re-search (persisted corpus)",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
         "quote": "PSP3 Promissory Note, interest only payments until due in April 2031"
@@ -901,7 +1082,14 @@
       "rate_base": "SOFR",
       "xbrl_member": "aal:PayrollSupportProgramPromissoryNoteThreeCARESActMember",
       "obligor": null,
-      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)"
+      "governed_by": "U.S. Treasury promissory note (Payroll Support Program)",
+      "facility_type": null,
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "Special Facility Revenue Bonds",
@@ -946,7 +1134,14 @@
       "rate_base": null,
       "xbrl_member": "aal:SpecialFacilityRevenueBondsMember",
       "obligor": null,
-      "governed_by": null
+      "governed_by": null,
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "7.25% Senior Notes",
@@ -991,7 +1186,14 @@
       "rate_base": null,
       "xbrl_member": "aal:A725SeniorSecuredNotesDue2028Member",
       "obligor": null,
-      "governed_by": null
+      "governed_by": null,
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     },
     {
       "instrument": "5.50% Senior Notes",
@@ -1036,13 +1238,159 @@
       "rate_base": null,
       "xbrl_member": "aal:SeniorNote550Matures2026Member",
       "obligor": null,
-      "governed_by": "5.5% notes due 2026"
+      "governed_by": "5.5% notes due 2026",
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "Other Revolving Facility",
+      "principal": null,
+      "outstanding": null,
+      "coupon": null,
+      "maturity": null,
+      "secured": true,
+      "seniority": "senior secured",
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "aal:OtherRevolvingFacilityMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 350000000.0,
+        "display": "$350M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [aal:OtherRevolvingFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "Other Revolving Facility: $350M as of 2026-03-31 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, aal:OtherRevolvingFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "Short Term Revolving And Other Facilities",
+      "principal": null,
+      "outstanding": null,
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "aal:ShortTermRevolvingAndOtherFacilitiesMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": null,
+      "undrawn": {
+        "value": 400000000.0,
+        "display": "$400M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [aal:ShortTermRevolvingAndOtherFacilitiesMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "Short Term Revolving And Other Facilities: $400M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, aal:ShortTermRevolvingAndOtherFacilitiesMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "Cargo Receivable Facility",
+      "principal": null,
+      "outstanding": null,
+      "coupon": null,
+      "maturity": "December 2026",
+      "secured": null,
+      "seniority": null,
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+        "quote": "American currently has $47 million of available borrowing base under a cargo receivables facility that is scheduled to expire in December 2026"
+      },
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "aal:CargoReceivableFacilityMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": null,
+      "undrawn": {
+        "value": 50000000.0,
+        "display": "$50M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [aal:CargoReceivableFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "Cargo Receivable Facility: $50M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, aal:CargoReceivableFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
     }
   ],
   "debt_schedule_asof": "2026-03-31",
   "forensic_table": [
     {
       "fiscal_year": 2022,
+      "label": null,
       "period_end": "2022-12-31",
       "total_debt": {
         "value": 34903000000.0,
@@ -1192,6 +1540,7 @@
     },
     {
       "fiscal_year": 2023,
+      "label": null,
       "period_end": "2023-12-31",
       "total_debt": {
         "value": 32396000000.0,
@@ -1341,6 +1690,7 @@
     },
     {
       "fiscal_year": 2024,
+      "label": null,
       "period_end": "2024-12-31",
       "total_debt": {
         "value": 29813000000.0,
@@ -1490,6 +1840,7 @@
     },
     {
       "fiscal_year": 2025,
+      "label": null,
       "period_end": "2025-12-31",
       "total_debt": {
         "value": 28280000000.0,
@@ -1636,6 +1987,121 @@
         "formula": "accounts_payable / opex x 365",
         "note": "Days payable outstanding (denominator: opex)."
       }
+    },
+    {
+      "fiscal_year": 2026,
+      "label": "Q1 2026",
+      "period_end": "2026-03-31",
+      "total_debt": {
+        "value": 27017000000.0,
+        "display": "$27,017M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$22,934M + lt_debt_current=$4,083M",
+        "note": "Sum of reported debt components as of the 10-Q date."
+      },
+      "cash": {
+        "value": 1002000000.0,
+        "display": "$1,002M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "Cash, Cash Equivalents, Restricted Cash and Restricted Cash Equivalents = $1,002M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "free_cash_flow": {
+        "value": 1100000000.0,
+        "display": "$1,100M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF − capex, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "capex": {
+        "value": 3766000000.0,
+        "display": "$3,766M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "accounts_payable": {
+        "value": 3610000000.0,
+        "display": "$3,610M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "Accounts Payable, Current = $3,610M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "inventory": {
+        "value": 3131000000.0,
+        "display": "$3,131M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000032",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-23",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AirlineRelatedInventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+          "quote": "Airline Related Inventory, Net = $3,131M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "revenue": {
+        "value": 55994000000.0,
+        "display": "$55,994M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "cogs": null,
+      "ebitda": null,
+      "operating_cash_flow": {
+        "value": 4866000000.0,
+        "display": "$4,866M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "dpo": {
+        "value": 24.267007992927915,
+        "display": "24 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable (as of Q1 2026) / opex (TTM) x 365",
+        "note": "Days payable outstanding (denominator: opex, TTM)."
+      }
     }
   ],
   "forensic_flags": [
@@ -1654,7 +2120,7 @@
   "obs_items": [
     {
       "category": "pension_opeb",
-      "label": "Pension and postretirement benefits (net liability recognized)",
+      "label": "Pension and postretirement benefits (net underfunded liability recognized)",
       "amount": {
         "value": 1568000000.0,
         "display": "$1,568M",
@@ -1664,10 +2130,10 @@
           "form_type": "10-K",
           "filing_date": "2026-02-18",
           "exhibit": null,
-          "section": "Consolidated Balance Sheets - Noncurrent liabilities",
+          "section": "Consolidated Balance Sheets",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Pension and postretirement benefits 1,568"
+          "quote": "Pension and postretirement benefits 1,568 2,128"
         },
         "derived": false,
         "formula": null,
@@ -1706,7 +2172,7 @@
     },
     {
       "category": "supplier_finance",
-      "label": "Fuel financing facility (supplier/supply-chain finance)",
+      "label": "Fuel financing facility obligation",
       "amount": {
         "value": 914000000.0,
         "display": "$914M",
@@ -1757,26 +2223,6 @@
       "notes": "Supplier / supply-chain finance — economically a callable bank facility, disclosed as trade payables rather than debt."
     },
     {
-      "category": "take_or_pay",
-      "label": "Regional capacity purchase agreements (Republic and other third-party regional carriers)",
-      "amount": null,
-      "tax_effect": null,
-      "net": null,
-      "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "Capacity purchase agreements with third-party regional carriers are take-or-pay-style commitments; the lease component of certain CPA aircraft is already reflected as deemed leases. Only the annual expense is disclosed in this excerpt, not the total future minimum contractual commitment, so no reliable dollar amount can be added to the bridge. Included with null amount for completeness."
-    },
-    {
-      "category": "related_party",
-      "label": "Equity interest in Republic Airways Holdings / GOL commercial agreement",
-      "amount": null,
-      "tax_effect": null,
-      "net": null,
-      "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "Related-party equity relationship with a regional partner from whom the company also purchases capacity. No related-party financing/guarantee dollar amount is disclosed in this excerpt, so it is informational only and not added to the bridge."
-    },
-    {
       "category": "litigation_env",
       "label": "Litigation reserve adjustments (special items)",
       "amount": {
@@ -1791,11 +2237,11 @@
           "section": "Note 2 Special Items, Net",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
-          "quote": "Litigation reserve adjustments $77 — —"
+          "quote": "Litigation reserve adjustments $77 $— $—"
         },
         "derived": false,
         "formula": null,
-        "note": "This is the 2025 income-statement charge for litigation reserve adjustments, not a disclosed off-balance-sheet contingent exposure amount. The accrued reserve, to the extent recorded, is already within other accrued/other liabilities. Excerpt does not provide an additional unaccrued reasonably-possible loss estimate, so it is not added to the incremental bridge."
+        "note": "A $77M litigation reserve adjustment was recognized in special items during 2025. This is an expense/reserve item disclosed informationally; the underlying accrued liability (if any) is embedded in other accrued liabilities and this figure is a period charge, not a discrete off-balance-sheet debt-like claim to add to the bridge."
       },
       "tax_effect": {
         "value": 31724000.0,
@@ -1824,19 +2270,81 @@
         "formula": "gross $77M − tax effect $32M",
         "note": null
       },
-      "recourse": "recourse",
+      "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "This is the 2025 income-statement charge for litigation reserve adjustments, not a disclosed off-balance-sheet contingent exposure amount. The accrued reserve, to the extent recorded, is already within other accrued/other liabilities. Excerpt does not provide an additional unaccrued reasonably-possible loss estimate, so it is not added to the incremental bridge."
+      "notes": "A $77M litigation reserve adjustment was recognized in special items during 2025. This is an expense/reserve item disclosed informationally; the underlying accrued liability (if any) is embedded in other accrued liabilities and this figure is a period charge, not a discrete off-balance-sheet debt-like claim to add to the bridge."
+    },
+    {
+      "category": "related_party",
+      "label": "Capacity purchase agreement with Republic Airways (equity-method affiliate)",
+      "amount": {
+        "value": 658000000.0,
+        "display": "$658M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000014",
+          "form_type": "10-K",
+          "filing_date": "2026-02-18",
+          "exhibit": null,
+          "section": "Note 1(s) Regional Expenses",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000014-index.html",
+          "quote": "In 2025, 2024 and 2023, we recognized $658 million, $612 million and $636 million, respectively, of expense under our capacity purchase agreement with Republic Airways Inc. (Republic). We hold a 20.8% equity interest in Republic Airways Holdings Inc."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "The Company recognized $658M of expense under its capacity purchase agreement with Republic, in which it holds a 20.8% equity interest (related party). This is an annual operating expense disclosure, not a quantified off-balance-sheet financing obligation, so it is informational only; future minimum CPA commitments are not quantified in this excerpt."
+      },
+      "tax_effect": {
+        "value": 271096000.0,
+        "display": "$271M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0000006201-26-000014",
+          "form_type": "10-K",
+          "filing_date": "2026-02-18",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $658M × effective tax rate 41.2%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
+      },
+      "net": {
+        "value": 386904000.0,
+        "display": "$387M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $658M − tax effect $271M",
+        "note": null
+      },
+      "recourse": "unknown",
+      "include_in_bridge": false,
+      "notes": "The Company recognized $658M of expense under its capacity purchase agreement with Republic, in which it holds a 20.8% equity interest (related party). This is an annual operating expense disclosure, not a quantified off-balance-sheet financing obligation, so it is informational only; future minimum CPA commitments are not quantified in this excerpt."
+    },
+    {
+      "category": "take_or_pay",
+      "label": "Capacity purchase agreements (third-party regional carriers) - deemed aircraft leases",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "unknown",
+      "include_in_bridge": false,
+      "notes": "Capacity purchase agreements with third-party regional carriers contain embedded leases (aircraft deemed leased) and take-or-pay-like minimum payment features. No dollar amount for future minimum commitments is disclosed in the provided text, so the item is recorded with a null amount and cannot be quantified for the bridge."
     },
     {
       "category": "guarantee",
-      "label": "AAG guarantee of American's obligations under Credit Facilities and Senior Secured Notes",
+      "label": "AAG guarantee of American's Credit Facilities and senior secured notes",
       "amount": null,
       "tax_effect": null,
       "net": null,
       "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "These are parent guarantees of subsidiary (American) debt that is already consolidated and reported as long-term debt on AAG's balance sheet. Adding the guarantee would double-count already-reported debt; therefore excluded from the bridge."
+      "notes": "AAG guarantees American's obligations under the Credit Facilities and the 7.25% and 8.50% Senior Secured Notes. These are intercompany/parent guarantees of consolidated subsidiary debt already reflected in consolidated reported debt, so they are informational and must not be added again to avoid double counting."
     }
   ],
   "covenants": [
@@ -2128,6 +2636,87 @@
       "agreement_type": "credit_agreement",
       "leverage_covenant_type": "Liquidity (minimum liquidity covenant)",
       "leverage_ratio_threshold": "Not stated in provided text — Section 6.08 (Liquidity) appears in the negative covenants index but the operative threshold is not included in the excerpt",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated June 27, 2013",
+      "doc_class": "credit_agreement",
+      "operative_date": "2014-10-14",
+      "amendment_count": 1,
+      "base_missing": true,
+      "governs_instruments": [
+        "2013 Revolving Facility"
+      ],
+      "admin_agent": "Deutsche Bank AG New York Branch (DBNY)",
+      "trustee": null,
+      "collateral_agent": null,
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "American Airlines Group Inc. (formerly AMR Corporation, the Parent), US Airways Group, Inc., and US Airways, Inc. (collectively, the Guarantors)",
+      "financial_covenants": [
+        {
+          "kind": "Collateral Coverage Ratio / Liquidity condition (incremental facility condition, not a maintenance covenant)",
+          "threshold": "Not stated in excerpt — tested per Section 2.27(b)(iii) of the Credit Agreement",
+          "test_frequency": "As a condition precedent to the incremental facility (at the Third Amendment Effective Date)",
+          "springing_trigger": null,
+          "quote": "the Administrative Agent shall have received an Officers' Certificate certifying as to the Collateral Coverage Ratio and Liquidity in accordance with Section 2.27(b)(iii) of the Credit Agreement"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Incremental Revolving Commitments (New Revolving Commitments)",
+          "value": "$400,000,000",
+          "quote": "the Borrower hereby notifies the Administrative Agent of its request for $400,000,000 of Incremental Revolving Commitments (the \"New Revolving Commitments\") to be made available by the New Lenders"
+        }
+      ],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"New Revolving Commitments shall (i) become a part of the Revolving Commitments for all purposes of the Credit Agreement and the other Loan Documents and (ii) together with all related Revolving Loans and LC Exposure, be subject to the same Applicable Margin, Revolving Facility Maturity Date and other terms and conditions applicable to the Revolving Commitments … under the Credit Agreement (as amended hereby) … For purposes of the Credit Agreement, this Third Amendment shall constitute an Increase Joinder.\"",
+      "lme_vectors": [
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "This amendment exercises a $400,000,000 incremental revolving commitment under the existing Section 2.27 accordion, but the governing capacity, ratio and MFN mechanics live in the base Credit Agreement not reproduced here.",
+          "basis": "The amendment adds $400M of Incremental Revolving Commitments via an 'Increase Joinder' subject to a Collateral Coverage Ratio/Liquidity certification under Section 2.27(b)(iii), but the underlying incremental cap and pricing/MFN terms are not in this text.",
+          "quote": "pursuant to Section 2.27 of the Credit Agreement, the Borrower may request an increase to the existing Revolving Commitments … request for $400,000,000 of Incremental Revolving Commitments"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The amendment concerns only revolver extension and an incremental increase; it does not address voting sacred rights or priming of existing lenders.",
+          "basis": "Text covers Revolver Extension Offer mechanics (Section 2.28) and an incremental increase (Section 2.27); no lien-subordination or amendment-voting provisions appear.",
+          "quote": "the Borrower may make a Revolver Extension Offer to all Revolving Lenders holding Revolving Commitments"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "This amendment does not touch unrestricted subsidiary designation or IP/asset transfer restrictions.",
+          "basis": "The excerpt is limited to maturity extension, incremental revolving commitments, fees and conditions precedent; no investment or asset-transfer covenant text is present.",
+          "quote": "the Credit Agreement is modified as follows"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "No restricted-payments or distribution capacity is addressed in this amendment.",
+          "basis": "The document is a Third Amendment addressing revolver extension and a $400M incremental increase; it contains no restricted payment basket language.",
+          "quote": "in consideration of the foregoing … the parties hereto hereby agree as follows"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001193125-14-370145",
+        "form_type": "8-K",
+        "filing_date": "2014-10-14",
+        "exhibit": "EX-10.2",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000119312514370145/d803531dex102.htm",
+        "quote": "\"New Revolving Commitments shall (i) become a part of the Revolving Commitments for all purposes of the Credit Agreement and the other Loan Documents and (ii) together with all related Revolving Loans and LC Exposure, be subject to the same Applicable Margin, Revolving Facility Maturity Date and other terms and conditions applicable to the Revolving Commitments … under the Credit Agreement (as amended hereby) … For purposes of the Credit Agreement, this Third Amendment shall constitute an Increase Joinder.\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "Collateral Coverage Ratio / Liquidity condition (incremental facility condition, not a maintenance covenant)",
+      "leverage_ratio_threshold": "Not stated in excerpt — tested per Section 2.27(b)(iii) of the Credit Agreement",
       "restricted_payments_basket_size": null,
       "lme_risk_notes": null
     },
@@ -2468,201 +3057,6 @@
       "agreement_type": "credit_agreement",
       "leverage_covenant_type": "Collateral Coverage Ratio (maintenance / collateral-value covenant)",
       "leverage_ratio_threshold": "At least 1.6 to 1.0 (a ratio below this level is a 'Collateral Coverage Ratio Failure')",
-      "restricted_payments_basket_size": null,
-      "lme_risk_notes": null
-    },
-    {
-      "family_label": "credit agreement dated September 22, 2016",
-      "doc_class": "credit_agreement",
-      "operative_date": "2024-02-21",
-      "amendment_count": 1,
-      "base_missing": true,
-      "governs_instruments": [],
-      "admin_agent": "Citibank N.A.",
-      "trustee": null,
-      "collateral_agent": "Collateral Agent (party to the SGR Security Agreement Supplement; specific entity not named in the excerpt)",
-      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "American Airlines Group Inc. (the Parent / Guarantor)",
-      "financial_covenants": [],
-      "baskets": [],
-      "ebitda_addback_categories": [],
-      "mfn_sunset_period": null,
-      "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": null,
-      "anchor_clause": "\"THIS SIXTH AMENDMENT TO AMENDED AND RESTATED CREDIT AND GUARANTY AGREEMENT (this \"Sixth Amendment\"), is dated as of December 10, 2018 and is among American Airlines, Inc., a Delaware corporation (the \"Borrower\"), American Airlines Group Inc., a Delaware corporation (the \"Parent\" or the \"Guarantor\"), the Consenting Revolving Lenders ... and Citibank N.A., as administrative agent ... and as an issuing lender.\"",
-      "lme_vectors": [
-        {
-          "vector": "uptier_priming",
-          "risk": "not_addressed",
-          "rationale": "This excerpt is a Sixth Amendment concerned solely with revolving commitment extensions, notice waivers, and agent-role designations, and contains no sacred-rights, voting, or priming provisions.",
-          "basis": "The amendment text addresses only establishment of New Revolving Commitments, the Revolver Extension, notice waivers under Sections 2.27(a) and 2.28(e), and arranger/agent designations.",
-          "quote": "the Administrative Agent hereby waives (a) the minimum notice required by Section 2.27(a) of the Credit Agreement in connection with the establishment of the New Revolving Commitments and (b) the minimum notice required by Section 2.28(e) of the Credit Agreement in connection with the Revolver Extension"
-        },
-        {
-          "vector": "dropdown_jcrew",
-          "risk": "not_addressed",
-          "rationale": "The excerpt contains no unrestricted-subsidiary designation mechanics or IP/asset-transfer restrictions; it is limited to revolving-facility amendment logistics.",
-          "basis": "No definitions or negative covenants relating to investments, restricted/unrestricted subsidiaries, or IP transfers appear in the provided text.",
-          "quote": "each capitalized terms used herein and not otherwise defined shall have the respective meanings provided to such terms in the Credit Agreement as defined below."
-        },
-        {
-          "vector": "incremental_debt",
-          "risk": "not_addressed",
-          "rationale": "While the amendment establishes New Revolving Commitments, the excerpt provides no incremental-facility cap, ratio test, or MFN terms to assess capacity.",
-          "basis": "The text references establishment of New Revolving Commitments and a Revolver Extension but recites no sizing, ratio, or MFN provisions.",
-          "quote": "the establishment of the New Revolving Commitments"
-        },
-        {
-          "vector": "rp_leakage",
-          "risk": "not_addressed",
-          "rationale": "The excerpt contains no restricted-payments covenant, basket, or builder provision; it is silent on dividends, distributions, or investments.",
-          "basis": "The provided clauses cover only commitment mechanics, conditions to effectiveness, expense reimbursement, and agent roles.",
-          "quote": "all accrued and unpaid fees (other than the Commitment Fee, which shall be payable in accordance with the Credit Agreement)"
-        }
-      ],
-      "citation": {
-        "accession_no": "0000006201-24-000010",
-        "form_type": "10-K",
-        "filing_date": "2024-02-21",
-        "exhibit": "EX-10.24",
-        "section": "Negative covenants / Definitions",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620124000010/ex1024-sixthamendmenttoame.htm",
-        "quote": "\"THIS SIXTH AMENDMENT TO AMENDED AND RESTATED CREDIT AND GUARANTY AGREEMENT (this \"Sixth Amendment\"), is dated as of December 10, 2018 and is among American Airlines, Inc., a Delaware corporation (the \"Borrower\"), American Airlines Group Inc., a Delaware corporation (the \"Parent\" or the \"Guarantor\"), the Consenting Revolving Lenders ... and Citibank N.A., as administrative agent ... and as an issuing lender.\""
-      },
-      "agreement_type": "credit_agreement",
-      "leverage_covenant_type": null,
-      "leverage_ratio_threshold": null,
-      "restricted_payments_basket_size": null,
-      "lme_risk_notes": null
-    },
-    {
-      "family_label": "credit agreement dated May 15, 2018",
-      "doc_class": "credit_agreement",
-      "operative_date": "2024-02-21",
-      "amendment_count": 1,
-      "base_missing": true,
-      "governs_instruments": [],
-      "admin_agent": "Deutsche Bank AG New York Branch",
-      "trustee": null,
-      "collateral_agent": null,
-      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "American Airlines Group Inc. (the Parent/Guarantor)",
-      "financial_covenants": [],
-      "baskets": [],
-      "ebitda_addback_categories": [],
-      "mfn_sunset_period": null,
-      "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": null,
-      "anchor_clause": "\"Notwithstanding anything in this Fifth Amendment or the Credit Agreement to the contrary, the Administrative Agent hereby waives the minimum notice required by Section 2.28(e) of the Credit Agreement in connection with the Revolver Extension to be effected pursuant to this Fifth Amendment.\"",
-      "lme_vectors": [
-        {
-          "vector": "uptier_priming",
-          "risk": "not_addressed",
-          "rationale": "This Fifth Amendment addresses only a revolver extension, lender roles/titles, and closing conditions; it contains no lien subordination, sacred-rights, or voting provisions bearing on priming.",
-          "basis": "The excerpted text covers Revolver Extension mechanics, arranger/agent titles, and conditions to effectiveness only.",
-          "quote": "in connection with the Revolver Extension to be effected pursuant to this Fifth Amendment"
-        },
-        {
-          "vector": "dropdown_jcrew",
-          "risk": "not_addressed",
-          "rationale": "No provisions concerning unrestricted subsidiaries or transfer of material IP/assets appear in the excerpt.",
-          "basis": "The amendment text is limited to revolver extension, roles, and effectiveness conditions.",
-          "quote": "each of the following conditions specified below shall have been satisfied"
-        },
-        {
-          "vector": "incremental_debt",
-          "risk": "not_addressed",
-          "rationale": "The excerpt adds new/extending revolving lenders and commitments but does not set out any incremental facility or ratio-debt capacity terms.",
-          "basis": "New Revolving Lenders and Extending Revolving Lenders are named but no incremental sizing or ratio test is provided in the text.",
-          "quote": "the New Revolving Lenders ... and each New Revolving Lender shall have signed a counterpart hereof"
-        },
-        {
-          "vector": "rp_leakage",
-          "risk": "not_addressed",
-          "rationale": "No restricted-payments basket or capacity language is present in the provided excerpt.",
-          "basis": "The text concerns amendment mechanics, fees, and agent titles only.",
-          "quote": "a one time, non-refundable fee equal to the amount set forth in that certain Extending Revolving Len"
-        }
-      ],
-      "citation": {
-        "accession_no": "0000006201-24-000010",
-        "form_type": "10-K",
-        "filing_date": "2024-02-21",
-        "exhibit": "EX-10.31",
-        "section": "Negative covenants / Definitions",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620124000010/ex1031-fifthamendmenttoame.htm",
-        "quote": "\"Notwithstanding anything in this Fifth Amendment or the Credit Agreement to the contrary, the Administrative Agent hereby waives the minimum notice required by Section 2.28(e) of the Credit Agreement in connection with the Revolver Extension to be effected pursuant to this Fifth Amendment.\""
-      },
-      "agreement_type": "credit_agreement",
-      "leverage_covenant_type": null,
-      "leverage_ratio_threshold": null,
-      "restricted_payments_basket_size": null,
-      "lme_risk_notes": null
-    },
-    {
-      "family_label": "credit agreement dated April 29, 2016",
-      "doc_class": "credit_agreement",
-      "operative_date": "2024-02-21",
-      "amendment_count": 1,
-      "base_missing": true,
-      "governs_instruments": [],
-      "admin_agent": "Barclays Bank PLC",
-      "trustee": null,
-      "collateral_agent": null,
-      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "American Airlines Group Inc. (the \"Parent\" or \"Guarantor\")",
-      "financial_covenants": [],
-      "baskets": [],
-      "ebitda_addback_categories": [],
-      "mfn_sunset_period": null,
-      "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": null,
-      "anchor_clause": "\"the Borrower may make a Revolver Extension Offer to all Revolving Lenders holding Revolving Commitments under the Credit Agreement to extend the maturity date of each such Revolving Lender's Revolving Commitment\" (Section 2.28(b) of the Credit Agreement, as referenced in the Fourth Amendment).",
-      "lme_vectors": [
-        {
-          "vector": "uptier_priming",
-          "risk": "not_addressed",
-          "rationale": "This Fourth Amendment addresses only a revolving commitment maturity extension and related agent/arranger titles; it contains no lien subordination, priming, or voting-mechanics provisions.",
-          "basis": "The amendment operates under Section 2.28(b) (Revolver Extension Offer) and amends Annex A, fees, and titles/roles only.",
-          "quote": "the Borrower may make a Revolver Extension Offer to all Revolving Lenders holding Revolving Commitments under the Credit Agreement to extend the maturity date of each such Revolving Lender's Revolving Commitment"
-        },
-        {
-          "vector": "dropdown_jcrew",
-          "risk": "not_addressed",
-          "rationale": "The text is silent on unrestricted subsidiaries, IP/asset transfers, or investment capacity; it covers only the revolver extension mechanics.",
-          "basis": "No definitions or covenants concerning unrestricted subsidiaries or asset transfers appear in the excerpted amendment.",
-          "quote": "each Revolving Lender that is a party to the Credit Agreement immediately prior to the Fourth Amendment"
-        },
-        {
-          "vector": "incremental_debt",
-          "risk": "not_addressed",
-          "rationale": "The amendment extends existing revolving commitments and adds new revolving lenders' commitments as a maturity extension, but does not set out incremental facility capacity, ratio debt, or MFN terms.",
-          "basis": "New Revolving Lenders (HSBC, MUFG, BoT) join in connection with a Revolver Extension Offer under Section 2.28(b); no incremental sizing or ratio tests are quoted.",
-          "quote": "HSBC Bank USA, N.A. ... MUFG Union Bank, N.A. ... and BOKF, NA dba Bank of Texas ... collectively, the \"New Revolving Lenders\""
-        },
-        {
-          "vector": "rp_leakage",
-          "risk": "not_addressed",
-          "rationale": "The excerpt contains no restricted-payment, dividend, or investment covenant language; it addresses fees, conditions to effectiveness, and titles/roles only.",
-          "basis": "Provisions cover the Upfront Fee, Commitment Fee, expense reimbursement under Section 10.04, and agent designations only.",
-          "quote": "the Borrower shall have paid (or caused to be paid), for the account of each Extending Revolving Lender, a one time, non-refundable fee"
-        }
-      ],
-      "citation": {
-        "accession_no": "0000006201-24-000010",
-        "form_type": "10-K",
-        "filing_date": "2024-02-21",
-        "exhibit": "EX-10.37",
-        "section": "Negative covenants / Definitions",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620124000010/ex1037-fourthamendmenttoam.htm",
-        "quote": "\"the Borrower may make a Revolver Extension Offer to all Revolving Lenders holding Revolving Commitments under the Credit Agreement to extend the maturity date of each such Revolving Lender's Revolving Commitment\" (Section 2.28(b) of the Credit Agreement, as referenced in the Fourth Amendment)."
-      },
-      "agreement_type": "credit_agreement",
-      "leverage_covenant_type": null,
-      "leverage_ratio_threshold": null,
       "restricted_payments_basket_size": null,
       "lme_risk_notes": null
     },
@@ -3382,6 +3776,1926 @@
       }
     }
   ],
+  "liquidity": {
+    "is_distressed": false,
+    "as_of_label": "Q1 2026",
+    "cash": {
+      "value": 1002000000.0,
+      "display": "$1,002M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0000006201-26-000032",
+        "form_type": "10-Q",
+        "filing_date": "2026-04-23",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000032/0000006201-26-000032-index.htm",
+        "quote": "Cash, Cash Equivalents, Restricted Cash and Restricted Cash Equivalents = $1,002M (as of 2026-03-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "undrawn_committed": {
+      "value": 3560000000.0,
+      "display": "$3,560M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "2014 Revolving Facility $1,296M + 2023 Revolving Facility $1,451M + 2013 Revolving Facility $363M + Short Term Revolving And Other Facilities $400M + Cargo Receivable Facility $50M",
+      "note": "Sum of tagged undrawn revolver / facility capacity. Facilities without a separately tagged headroom are excluded — see the debt schedule for their commitments."
+    },
+    "total_liquidity": {
+      "value": 4562000000.0,
+      "display": "$4,562M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "cash $1,002M + undrawn credit $3,560M",
+      "note": "Cash and equivalents plus tagged undrawn committed credit."
+    },
+    "annual_burn": null,
+    "runway_months": null,
+    "next_maturity": {
+      "year": 2026,
+      "face": 1337515734.2657342,
+      "instruments": [
+        "Enhanced Equipment Trust Certificates (EETC)",
+        "Equipment Loans and Other Notes Payable",
+        "Special Facility Revenue Bonds",
+        "5.50% Senior Notes"
+      ]
+    },
+    "next_event": {
+      "date": "2026-04",
+      "kind": "coupon",
+      "instrument": "5.75% Senior Notes",
+      "amount": {
+        "value": 86250000.0,
+        "display": "$86M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$3,000M face × 5.75% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.9,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    }
+  },
+  "liquidity_events": [
+    {
+      "date": "2026-04",
+      "kind": "coupon",
+      "instrument": "5.75% Senior Notes",
+      "amount": {
+        "value": 86250000.0,
+        "display": "$86M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$3,000M face × 5.75% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.9,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-04",
+      "kind": "coupon",
+      "instrument": "2021 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 33418400.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$2,258M face × 5.92% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.7,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-04",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note One, CARES Act",
+      "amount": {
+        "value": 48932450.0,
+        "display": "$49M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,757M face × 5.57% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-04",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note Three, CARES Act",
+      "amount": {
+        "value": 4795000.0,
+        "display": "$5M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$959M face × 1.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-04",
+      "kind": "coupon",
+      "instrument": "5.50% Senior Notes",
+      "amount": {
+        "value": 8030000.0,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$292M face × 5.50% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.2,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-04",
+      "kind": "maturity",
+      "instrument": "5.50% Senior Notes",
+      "amount": {
+        "value": 292000000.0,
+        "display": "$292M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "face due at maturity (April 2026)",
+        "note": null
+      },
+      "pct_of_liquidity": 6.4,
+      "flags": [],
+      "assumption": null
+    },
+    {
+      "date": "2026-05",
+      "kind": "coupon",
+      "instrument": "2025 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 15937649.999999998,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$993M face × 6.42% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "Enhanced Equipment Trust Certificates (EETC)",
+      "amount": {
+        "value": 97228312.50000001,
+        "display": "$97M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$7,755M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "2014 Revolving Facility",
+      "amount": {
+        "value": 15828600.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,147M face × 5.52% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "2023 Revolving Facility",
+      "amount": {
+        "value": 15927450.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,078M face × 5.91% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "2013 Revolving Facility",
+      "amount": {
+        "value": 14550000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$970M face × 6.00% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-07",
+      "kind": "coupon",
+      "instrument": "2021 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 33418400.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$2,258M face × 5.92% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.7,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-07",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note Two, CARES Act",
+      "amount": {
+        "value": 28685500.0,
+        "display": "$29M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,030M face × 5.57% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.6,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-08",
+      "kind": "coupon",
+      "instrument": "2025 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 15937649.999999998,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$993M face × 6.42% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-08",
+      "kind": "coupon",
+      "instrument": "7.25% Senior Notes",
+      "amount": {
+        "value": 27187499.999999996,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$750M face × 7.25% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.6,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "Enhanced Equipment Trust Certificates (EETC)",
+      "amount": {
+        "value": 97228312.50000001,
+        "display": "$97M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$7,755M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "Equipment Loans and Other Notes Payable",
+      "amount": {
+        "value": 100046699.99999999,
+        "display": "$100M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$4,527M face × 4.42% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.2,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2014 Revolving Facility",
+      "amount": {
+        "value": 15828600.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,147M face × 5.52% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2023 Revolving Facility",
+      "amount": {
+        "value": 15927450.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,078M face × 5.91% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2013 Revolving Facility",
+      "amount": {
+        "value": 14550000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$970M face × 6.00% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "Special Facility Revenue Bonds",
+      "amount": {
+        "value": 15050174.999999998,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$789M face × 3.81% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-10",
+      "kind": "coupon",
+      "instrument": "5.75% Senior Notes",
+      "amount": {
+        "value": 86250000.0,
+        "display": "$86M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$3,000M face × 5.75% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.9,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-10",
+      "kind": "coupon",
+      "instrument": "2021 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 33418400.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$2,258M face × 5.92% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.7,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-10",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note One, CARES Act",
+      "amount": {
+        "value": 48932450.0,
+        "display": "$49M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,757M face × 5.57% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-10",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note Three, CARES Act",
+      "amount": {
+        "value": 4795000.0,
+        "display": "$5M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$959M face × 1.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-11",
+      "kind": "coupon",
+      "instrument": "2025 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 15937649.999999998,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$993M face × 6.42% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-12",
+      "kind": "coupon",
+      "instrument": "Enhanced Equipment Trust Certificates (EETC)",
+      "amount": {
+        "value": 97228312.50000001,
+        "display": "$97M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$7,755M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-12",
+      "kind": "coupon",
+      "instrument": "2014 Revolving Facility",
+      "amount": {
+        "value": 15828600.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,147M face × 5.52% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-12",
+      "kind": "coupon",
+      "instrument": "2023 Revolving Facility",
+      "amount": {
+        "value": 15927450.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,078M face × 5.91% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-12",
+      "kind": "coupon",
+      "instrument": "2013 Revolving Facility",
+      "amount": {
+        "value": 14550000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$970M face × 6.00% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-01",
+      "kind": "coupon",
+      "instrument": "2021 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 33418400.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$2,258M face × 5.92% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.7,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-01",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note Two, CARES Act",
+      "amount": {
+        "value": 28685500.0,
+        "display": "$29M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,030M face × 5.57% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.6,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-02",
+      "kind": "coupon",
+      "instrument": "2025 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 15937649.999999998,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$993M face × 6.42% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-02",
+      "kind": "coupon",
+      "instrument": "7.25% Senior Notes",
+      "amount": {
+        "value": 27187499.999999996,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$750M face × 7.25% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.6,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "Enhanced Equipment Trust Certificates (EETC)",
+      "amount": {
+        "value": 97228312.50000001,
+        "display": "$97M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$7,755M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "Equipment Loans and Other Notes Payable",
+      "amount": {
+        "value": 100046699.99999999,
+        "display": "$100M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$4,527M face × 4.42% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.2,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "2014 Revolving Facility",
+      "amount": {
+        "value": 15828600.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,147M face × 5.52% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "2023 Revolving Facility",
+      "amount": {
+        "value": 15927450.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,078M face × 5.91% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "2013 Revolving Facility",
+      "amount": {
+        "value": 14550000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$970M face × 6.00% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "Special Facility Revenue Bonds",
+      "amount": {
+        "value": 15050174.999999998,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$789M face × 3.81% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-04",
+      "kind": "coupon",
+      "instrument": "5.75% Senior Notes",
+      "amount": {
+        "value": 86250000.0,
+        "display": "$86M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$3,000M face × 5.75% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.9,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-04",
+      "kind": "coupon",
+      "instrument": "2021 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 33418400.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$2,258M face × 5.92% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.7,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-04",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note One, CARES Act",
+      "amount": {
+        "value": 48932450.0,
+        "display": "$49M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,757M face × 5.57% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-04",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note Three, CARES Act",
+      "amount": {
+        "value": 4795000.0,
+        "display": "$5M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$959M face × 1.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-05",
+      "kind": "coupon",
+      "instrument": "2025 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 15937649.999999998,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$993M face × 6.42% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-06",
+      "kind": "coupon",
+      "instrument": "Enhanced Equipment Trust Certificates (EETC)",
+      "amount": {
+        "value": 97228312.50000001,
+        "display": "$97M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$7,755M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-06",
+      "kind": "coupon",
+      "instrument": "2014 Revolving Facility",
+      "amount": {
+        "value": 15828600.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,147M face × 5.52% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-06",
+      "kind": "coupon",
+      "instrument": "2023 Revolving Facility",
+      "amount": {
+        "value": 15927450.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,078M face × 5.91% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-06",
+      "kind": "coupon",
+      "instrument": "2013 Revolving Facility",
+      "amount": {
+        "value": 14550000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$970M face × 6.00% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-07",
+      "kind": "coupon",
+      "instrument": "2021 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 33418400.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$2,258M face × 5.92% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.7,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-07",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note Two, CARES Act",
+      "amount": {
+        "value": 28685500.0,
+        "display": "$29M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,030M face × 5.57% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.6,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-08",
+      "kind": "coupon",
+      "instrument": "2025 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 15937649.999999998,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$993M face × 6.42% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-08",
+      "kind": "coupon",
+      "instrument": "7.25% Senior Notes",
+      "amount": {
+        "value": 27187499.999999996,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$750M face × 7.25% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.6,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "Enhanced Equipment Trust Certificates (EETC)",
+      "amount": {
+        "value": 97228312.50000001,
+        "display": "$97M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$7,755M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "Equipment Loans and Other Notes Payable",
+      "amount": {
+        "value": 100046699.99999999,
+        "display": "$100M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$4,527M face × 4.42% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.2,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "2014 Revolving Facility",
+      "amount": {
+        "value": 15828600.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,147M face × 5.52% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "2023 Revolving Facility",
+      "amount": {
+        "value": 15927450.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,078M face × 5.91% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "2013 Revolving Facility",
+      "amount": {
+        "value": 14550000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$970M face × 6.00% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "Special Facility Revenue Bonds",
+      "amount": {
+        "value": 15050174.999999998,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$789M face × 3.81% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-10",
+      "kind": "coupon",
+      "instrument": "5.75% Senior Notes",
+      "amount": {
+        "value": 86250000.0,
+        "display": "$86M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$3,000M face × 5.75% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.9,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-10",
+      "kind": "coupon",
+      "instrument": "2021 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 33418400.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$2,258M face × 5.92% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.7,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-10",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note One, CARES Act",
+      "amount": {
+        "value": 48932450.0,
+        "display": "$49M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,757M face × 5.57% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-10",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note Three, CARES Act",
+      "amount": {
+        "value": 4795000.0,
+        "display": "$5M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$959M face × 1.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2027-11",
+      "kind": "coupon",
+      "instrument": "2025 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 15937649.999999998,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$993M face × 6.42% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-12",
+      "kind": "coupon",
+      "instrument": "Enhanced Equipment Trust Certificates (EETC)",
+      "amount": {
+        "value": 97228312.50000001,
+        "display": "$97M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$7,755M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-12",
+      "kind": "coupon",
+      "instrument": "2014 Revolving Facility",
+      "amount": {
+        "value": 15828600.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,147M face × 5.52% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-12",
+      "kind": "coupon",
+      "instrument": "2023 Revolving Facility",
+      "amount": {
+        "value": 15927450.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,078M face × 5.91% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-12",
+      "kind": "coupon",
+      "instrument": "2013 Revolving Facility",
+      "amount": {
+        "value": 14550000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$970M face × 6.00% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2028-01",
+      "kind": "coupon",
+      "instrument": "2021 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 33418400.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$2,258M face × 5.92% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.7,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2028-01",
+      "kind": "coupon",
+      "instrument": "Payroll Support Program Promissory Note Two, CARES Act",
+      "amount": {
+        "value": 28685500.0,
+        "display": "$29M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,030M face × 5.57% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.6,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2028-02",
+      "kind": "coupon",
+      "instrument": "2025 AAdvantage Term Loan Facility",
+      "amount": {
+        "value": 15937649.999999998,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$993M face × 6.42% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2028-02",
+      "kind": "coupon",
+      "instrument": "7.25% Senior Notes",
+      "amount": {
+        "value": 27187499.999999996,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$750M face × 7.25% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.6,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2028-02",
+      "kind": "maturity",
+      "instrument": "7.25% Senior Notes",
+      "amount": {
+        "value": 750000000.0,
+        "display": "$750M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "face due at maturity (February 2028)",
+        "note": null
+      },
+      "pct_of_liquidity": 16.4,
+      "flags": [],
+      "assumption": null
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "Enhanced Equipment Trust Certificates (EETC)",
+      "amount": {
+        "value": 97228312.50000001,
+        "display": "$97M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$7,755M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "Equipment Loans and Other Notes Payable",
+      "amount": {
+        "value": 100046699.99999999,
+        "display": "$100M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$4,527M face × 4.42% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.2,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "2014 Revolving Facility",
+      "amount": {
+        "value": 15828600.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,147M face × 5.52% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "2023 Revolving Facility",
+      "amount": {
+        "value": 15927450.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,078M face × 5.91% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "2013 Revolving Facility",
+      "amount": {
+        "value": 14550000.0,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$970M face × 6.00% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "Special Facility Revenue Bonds",
+      "amount": {
+        "value": 15050174.999999998,
+        "display": "$15M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$789M face × 3.81% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 0.3,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    }
+  ],
+  "liquidity_events_note": "3 instrument(s) excluded (no tagged rate or maturity)",
+  "asset_snapshot": {
+    "as_of_fy": 2025,
+    "cash": {
+      "value": 1056000000.0,
+      "display": "$1,056M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
+        "quote": "Cash, Cash Equivalents, Restricted Cash and Restricted Cash Equivalents = $1,056M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "accounts_receivable": null,
+    "inventory": {
+      "value": 2792000000.0,
+      "display": "$2,792M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:AirlineRelatedInventoryNet",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
+        "quote": "Airline Related Inventory, Net = $2,792M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "ppe": null,
+    "intangibles": {
+      "value": 6157000000.0,
+      "display": "$6,157M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "goodwill ($4,091M) + other intangibles ($2,066M)",
+      "note": null
+    },
+    "other": {
+      "value": 51769000000.0,
+      "display": "$51,769M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "total assets ($61,774M) − categorized ($10,005M)",
+      "note": "uncategorized residual — lease ROU assets, deferred taxes, investments, etc."
+    },
+    "total_assets": {
+      "value": 61774000000.0,
+      "display": "$61,774M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0000006201-26-000014",
+        "form_type": "10-K",
+        "filing_date": "2026-02-18",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:Assets",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/6201/000000620126000014/0000006201-26-000014-index.htm",
+        "quote": "Assets = $61,774M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    }
+  },
+  "coverage_chips": {
+    "debt_ebitda": {
+      "value": 6.89,
+      "display": "6.9x",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "debt $28,280M ÷ EBITDA $4,106M",
+      "note": null
+    },
+    "debt_ebitda_capex": {
+      "value": 86.48,
+      "display": "86.5x",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "debt ÷ (EBITDA − capex $3,779M)",
+      "note": null
+    },
+    "ebitda_interest": {
+      "value": 2.39,
+      "display": "2.4x",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "EBITDA ÷ interest $1,716M",
+      "note": null
+    },
+    "ebitda_capex_interest": {
+      "value": 0.19,
+      "display": "0.2x",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "(EBITDA − capex) ÷ interest",
+      "note": null
+    },
+    "capex_pct_ebitda": 92.0
+  },
+  "mezzanine": null,
+  "rp_basket": {
+    "available": true,
+    "covenant_status": "stub",
+    "starter": {
+      "value": 0.0,
+      "display": "$0M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "builder-only (starter basket not extracted) — $0 assumed",
+      "note": "Section 6.01 | Restricted Payments | 146149"
+    },
+    "points": [
+      {
+        "label": "Q3 2023",
+        "period_end": "2023-09-30",
+        "net_income": -545.0,
+        "ni_credit": -545.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -545.0,
+        "cumulative": -545.0
+      },
+      {
+        "label": "Q4 2023",
+        "period_end": "2023-12-31",
+        "net_income": 19.0,
+        "ni_credit": 9.5,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 9.5,
+        "cumulative": -535.5
+      },
+      {
+        "label": "Q1 2024",
+        "period_end": "2024-03-31",
+        "net_income": -312.0,
+        "ni_credit": -312.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -312.0,
+        "cumulative": -847.5
+      },
+      {
+        "label": "Q2 2024",
+        "period_end": "2024-06-30",
+        "net_income": 717.0,
+        "ni_credit": 358.5,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 358.5,
+        "cumulative": -489.0
+      },
+      {
+        "label": "Q3 2024",
+        "period_end": "2024-09-30",
+        "net_income": -149.0,
+        "ni_credit": -149.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -149.0,
+        "cumulative": -638.0
+      },
+      {
+        "label": "Q4 2024",
+        "period_end": "2024-12-31",
+        "net_income": 590.0,
+        "ni_credit": 295.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 295.0,
+        "cumulative": -343.0
+      },
+      {
+        "label": "Q1 2025",
+        "period_end": "2025-03-31",
+        "net_income": -473.0,
+        "ni_credit": -473.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -473.0,
+        "cumulative": -816.0
+      },
+      {
+        "label": "Q2 2025",
+        "period_end": "2025-06-30",
+        "net_income": 599.0,
+        "ni_credit": 299.5,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 299.5,
+        "cumulative": -516.5
+      },
+      {
+        "label": "Q3 2025",
+        "period_end": "2025-09-30",
+        "net_income": -114.0,
+        "ni_credit": -114.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -114.0,
+        "cumulative": -630.5
+      },
+      {
+        "label": "Q4 2025",
+        "period_end": "2025-12-31",
+        "net_income": 99.0,
+        "ni_credit": 49.5,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 49.5,
+        "cumulative": -581.0
+      },
+      {
+        "label": "Q1 2026",
+        "period_end": "2026-03-31",
+        "net_income": -382.0,
+        "ni_credit": -382.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -382.0,
+        "cumulative": -963.0
+      }
+    ],
+    "capacity": {
+      "value": 0.0,
+      "display": "$0M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 ($-963M), floored at 0",
+      "note": "omits junior-debt-issuance proceeds and unrestricted-subsidiary investment returns (not deterministically extractable); cumulation anchors at the lookback-window start — a proxy for the issuance-date build convention; builder negative — cumulative deductions exceed credits, $0 capacity"
+    },
+    "formula_note": "equity_issuance_proceeds, dividends_paid, stock_repurchases not tagged in XBRL — treated as $0",
+    "covenant_family": "credit agreement dated March 24, 2021",
+    "covenant_value": "Governed by Section 6.01; specific basket sizes not included in provided excerpt",
+    "covenant_quote": "Section 6.01 | Restricted Payments | 146149",
+    "notes": [
+      "issuer RP basket extracted as a stub ('Governed by Section 6.01; specific basket sizes not included in provided excerpt') — builder-only starter $0"
+    ]
+  },
+  "liens_headroom": {
+    "available": true,
+    "archetype": "ratio_only",
+    "unbounded_instruments": [],
+    "unbounded_note": null,
+    "rows": [
+      {
+        "family": "credit agreement dated March 24, 2025",
+        "name": "Maintenance / incurrence LTV Ratio (loan-to-value) test",
+        "value": "no more than 55%",
+        "quote": "the pro forma LTV Ratio, immediately after giving effect to the making of the Incremental Term Loans, shall be no more than 55%",
+        "archetype": "ratio_only",
+        "detail": "headroom requires a collateral appraisal — not extracted",
+        "dollars_mm": null,
+        "pct": 0.55,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated March 24, 2025",
+        "name": "2025 Incremental Term Loans (this amendment)",
+        "value": "$1,000,000,000",
+        "quote": "the Designated 2025 Incremental Term Lender hereby agree to make the 2025 Incremental Term Loans to the Borrowers on the Third Amendment Effective Date in the aggregate principal amount of $1,000,000,000.",
+        "archetype": "stated_capacity",
+        "detail": "stated capacity (utilization unknown) — never read as headroom",
+        "dollars_mm": 1000.0,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated March 24, 2025",
+        "name": "Incremental Term Loans capacity (ratio-based, LTV governed)",
+        "value": "Unlimited subject to pro forma LTV Ratio no more than 55%",
+        "quote": "the pro forma LTV Ratio, immediately after giving effect to the making of the Incremental Term Loans, shall be no more than 55%",
+        "archetype": "ratio_only",
+        "detail": "headroom requires a collateral appraisal — not extracted",
+        "dollars_mm": null,
+        "pct": 0.55,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated March 24, 2025",
+        "name": "Permitted First Lien Notes / secured debt",
+        "value": "Subject to pro forma LTV Ratio not more than 55%",
+        "quote": "after giving effect to such indebtedness, the pro forma LTV Ratio shall not be more than 55%",
+        "archetype": "ratio_only",
+        "detail": "headroom requires a collateral appraisal — not extracted",
+        "dollars_mm": null,
+        "pct": 0.55,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated March 24, 2021",
+        "name": "Liens (Section 6.06)",
+        "value": "Governed by Section 6.06; specific capacity not included in provided excerpt",
+        "quote": "Section 6.06 | Liens | 157160",
+        "archetype": "present_unquantified",
+        "detail": "lien covenant present — capacity not quantified in the extraction window",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated March 24, 2021",
+        "name": "Incremental Term Loans (Section 2.27)",
+        "value": "Governed by Section 2.27; specific capacity not included in provided excerpt",
+        "quote": "Section 2.27 | Incremental Term Loans | 105109",
+        "archetype": "present_unquantified",
+        "detail": "lien covenant present — capacity not quantified in the extraction window",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated June 27, 2013",
+        "name": "Collateral Coverage Ratio / Liquidity condition (incremental facility condition, not a maintenance covenant)",
+        "value": "Not stated in excerpt — tested per Section 2.27(b)(iii) of the Credit Agreement",
+        "quote": "the Administrative Agent shall have received an Officers' Certificate certifying as to the Collateral Coverage Ratio and Liquidity in accordance with Section 2.27(b)(iii) of the Credit Agreement",
+        "archetype": "ratio_only",
+        "detail": "headroom requires a collateral appraisal — not extracted",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated June 27, 2013",
+        "name": "Incremental Revolving Commitments (New Revolving Commitments)",
+        "value": "$400,000,000",
+        "quote": "the Borrower hereby notifies the Administrative Agent of its request for $400,000,000 of Incremental Revolving Commitments (the \"New Revolving Commitments\") to be made available by the New Lenders",
+        "archetype": "stated_capacity",
+        "detail": "stated capacity (utilization unknown) — never read as headroom",
+        "dollars_mm": 400.0,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated December 19, 2024",
+        "name": "Collateral Coverage Ratio (maintenance / secured-asset coverage)",
+        "value": "At least 1.6 to 1.0 (a 'Collateral Coverage Ratio Failure' is failure to be at least 1.6 to 1.0)",
+        "quote": "“Collateral Coverage Ratio Failure” shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.",
+        "archetype": "ratio_only",
+        "detail": "headroom requires a collateral appraisal — not extracted",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": 1.6,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated December 19, 2024",
+        "name": "2026 Incremental Revolving Commitments (established by this Eleventh Amendment)",
+        "value": "$362,833,333.30",
+        "quote": "of the Borrower’s request for new Incremental Revolving Commitments to be established on the Eleventh Amendment Effective Date in an aggregate amount of $362,833,333.30 (the “2026 Incremental Revolving Commitments”)",
+        "archetype": "stated_capacity",
+        "detail": "stated capacity (utilization unknown) — never read as headroom",
+        "dollars_mm": 362.8,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated December 19, 2024",
+        "name": "Liens (Section 6.06)",
+        "value": "Governed by Section 6.06; specific permitted-lien capacities not in excerpt",
+        "quote": "SECTION 6.06. Liens 154",
+        "archetype": "present_unquantified",
+        "detail": "lien covenant present — capacity not quantified in the extraction window",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated December 23, 2024",
+        "name": "Collateral Coverage Ratio (maintenance)",
+        "value": "At least 1.6 to 1.0 (a 'Collateral Coverage Ratio Failure' occurs if the ratio is less than 1.6:1.0); ratio = Appraised Value of Collateral / Total Obligations",
+        "quote": "“Collateral Coverage Ratio Failure” shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.",
+        "archetype": "ratio_only",
+        "detail": "headroom requires a collateral appraisal — not extracted",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": 1.6,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated December 23, 2024",
+        "name": "2026 Incremental Revolving Commitments (established via Fourth Amendment)",
+        "value": "$1,451,333,333.35",
+        "quote": "the Borrower’s request for new Incremental Revolving Commitments to be established on the Fourth Amendment Effective Date in an aggregate amount of $1,451,333,333.35 (the “2026 Incremental Revolving Commitments”)",
+        "archetype": "stated_capacity",
+        "detail": "stated capacity (utilization unknown) — never read as headroom",
+        "dollars_mm": 1451.3,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated December 23, 2024",
+        "name": "Liens (Section 6.06)",
+        "value": "Not quantified in excerpted text",
+        "quote": "SECTION 6.06. Liens",
+        "archetype": "present_unquantified",
+        "detail": "lien covenant present — capacity not quantified in the extraction window",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated June 4, 2024",
+        "name": "Collateral Coverage Ratio (maintenance / collateral-value covenant)",
+        "value": "At least 1.6 to 1.0 (a ratio below this level is a 'Collateral Coverage Ratio Failure')",
+        "quote": "Collateral Coverage Ratio Failure shall mean, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.",
+        "archetype": "ratio_only",
+        "detail": "headroom requires a collateral appraisal — not extracted",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": 1.6,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated June 4, 2024",
+        "name": "Liens (Section 6.06)",
+        "value": "Capacity/threshold not set out in the provided text",
+        "quote": "SECTION 6.06. | |Liens | |133 |",
+        "archetype": "present_unquantified",
+        "detail": "lien covenant present — capacity not quantified in the extraction window",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated June 4, 2024",
+        "name": "Incremental Term Loans / 2024 Incremental Revolving Commitments",
+        "value": "2024 Incremental Revolving Commitments not to exceed the amount set opposite each Revolving Lender's name; aggregate cap not quoted in provided text",
+        "quote": "2024 Incremental Revolving Commitments shall mean the commitment of each applicable Revolving Lender to make Revolving Loans and participate in Letters of Credit hereunder in an aggregate principal and/or face amount not to exceed the amount set forth under the heading 2024 Incremental Revolving Commitments opposite its name",
+        "archetype": "present_unquantified",
+        "detail": "lien covenant present — capacity not quantified in the extraction window",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "indenture dated December 4, 2023",
+        "name": "Collateral Coverage Ratio (maintenance)",
+        "value": "at least 1.6 to 1.0",
+        "quote": "Collateral Coverage Deficiency means, as of any date of determination, the failure of the Collateral Coverage Ratio as of such date to be at least equal to 1.6 to 1.0.",
+        "archetype": "ratio_only",
+        "detail": "headroom requires a collateral appraisal — not extracted",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": 1.6,
+        "headroom": null
+      }
+    ],
+    "uptier_priming": {
+      "risk": "unclear",
+      "rationale": "The amendment relies on Required Lenders consent under Section 10.08 for the Specified Amendment and pre-wires consent of the Designated 2025 Incremental Term Lender, but the sacred-rights / voting provisions of Section 10.08 are not reproduced, so priming protection cannot be confirmed.",
+      "family": "credit agreement dated March 24, 2025"
+    },
+    "j_crew_blocker_present": true,
+    "suggested_priming": {
+      "value": 1451.3,
+      "basis": "largest $-token on a lien fact — 2026 Incremental Revolving Commitments (established via Fourth Amendment) (stated capacity, utilization unknown)",
+      "note": "$1,451,333,333.35"
+    },
+    "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom (Moyer ch. 9)"
+  },
   "leverage_timeline": [
     {
       "fiscal_year": 2023,
@@ -3505,11 +5819,12 @@
     },
     {
       "year": 2029,
-      "face": 5015515734.265735,
+      "face": 6162515734.265735,
       "instruments": [
         "Enhanced Equipment Trust Certificates (EETC)",
         "Equipment Loans and Other Notes Payable",
         "5.75% Senior Notes",
+        "2014 Revolving Facility",
         "2013 Revolving Facility",
         "Special Facility Revenue Bonds"
       ]
@@ -3672,6 +5987,16 @@
     }
   ],
   "sources": [
+    {
+      "accession_no": "0000006201-26-000046",
+      "form_type": "8-K",
+      "filing_date": "2026-07-15",
+      "period_of_report": "2026-07-15",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000046-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/6201/0000006201-26-000046-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
     {
       "accession_no": "0000006201-26-000044",
       "form_type": "8-K",
@@ -4223,6 +6548,8 @@
       "n_credit_docs": 0
     }
   ],
-  "warnings": [],
+  "warnings": [
+    "Maturity unknown for 1 instrument(s) (2023 Revolving Facility) — they are missing from the maturity wall."
+  ],
   "llm_fallback_note": null
 }
