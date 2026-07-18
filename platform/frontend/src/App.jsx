@@ -1,16 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
 import { fetchHealth, overviewJsonUrl, setLlmEnabled, streamOverview } from "./api.js";
 import { getCached, setCached } from "./cache.js";
-import { Button, ErrorCard, Input } from "./ui/index.jsx";
+import { Button, ErrorCard, Input, Loading } from "./ui/index.jsx";
 import ProgressLog from "./components/ProgressLog.jsx";
 import ScreenTable from "./components/ScreenTable.jsx";
-import OverviewPage from "./pages/OverviewPage.jsx";
-import CapitalPage from "./pages/CapitalPage.jsx";
-import RiskPage from "./pages/RiskPage.jsx";
-import RecoveryPage from "./pages/RecoveryPage.jsx";
+
+// Route-level code-splitting: the recharts-heavy company pages load on demand as separate
+// chunks (fetched when a tab is first opened) instead of bloating the initial bundle.
+const OverviewPage = lazy(() => import("./pages/OverviewPage.jsx"));
+const CapitalPage = lazy(() => import("./pages/CapitalPage.jsx"));
+const RiskPage = lazy(() => import("./pages/RiskPage.jsx"));
+const RecoveryPage = lazy(() => import("./pages/RecoveryPage.jsx"));
 
 const HEROES = [
   { t: "AAL", note: "airline · leases + pension" },
@@ -29,16 +32,18 @@ const TABS = [
 function CompanyLayout({ years, health, overview }) {
   const { ticker } = useParams();
   return (
-    <Routes>
-      <Route path="overview" element={<OverviewPage ticker={ticker} years={years} />} />
-      <Route
-        path="capital"
-        element={<CapitalPage ticker={ticker} health={health} overview={overview} />}
-      />
-      <Route path="risk" element={<RiskPage ticker={ticker} years={years} />} />
-      <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
-      <Route path="*" element={<Navigate to="overview" replace />} />
-    </Routes>
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        <Route path="overview" element={<OverviewPage ticker={ticker} years={years} />} />
+        <Route
+          path="capital"
+          element={<CapitalPage ticker={ticker} health={health} overview={overview} />}
+        />
+        <Route path="risk" element={<RiskPage ticker={ticker} years={years} />} />
+        <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
+        <Route path="*" element={<Navigate to="overview" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
 
