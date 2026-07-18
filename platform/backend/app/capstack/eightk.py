@@ -14,6 +14,7 @@ wraps it with a 1h per-CIK disk cache + retry. Tests monkeypatch either.
 from __future__ import annotations
 
 import json
+import re
 import time
 import urllib.request
 from typing import Optional
@@ -35,21 +36,22 @@ CRISIS_ITEMS = {
 }
 
 
-def _http_get_submissions(cik) -> dict:
+def _http_get_json(url: str) -> dict:
     """Raw network seam — the only outbound call; monkeypatched in tests."""
-    url = _SUBMISSIONS.format(cik10=str(cik).lstrip("0").zfill(10))
     req = urllib.request.Request(url, headers={"User-Agent": get_settings().sec_user_agent})
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.loads(r.read().decode("utf-8"))
 
 
-def _fetch_submissions(cik) -> dict:
-    """Submissions JSON with a per-CIK disk cache (1h TTL) + light retry. The cache keeps
-    repeated /recovery/case & /recovery/crisis calls from re-hitting EDGAR (SEC's 10 req/s
-    fair-access limit → IP ban); the 1h TTL still surfaces a same-day petition/restatement 8-K
-    within the hour. (Tests monkeypatch this whole function, so the cache/retry only run live.)"""
-    cik10 = str(cik).lstrip("0").zfill(10)
-    p = _SUBMISSIONS_CACHE_DIR / f"{cik10}.json"
+def _http_get_submissions(cik) -> dict:
+    return _http_get_json(_SUBMISSIONS.format(cik10=str(cik).lstrip("0").zfill(10)))
+
+
+def _cached(key: str, fetcher) -> dict:
+    """Disk cache (1h TTL) + light retry around a JSON fetch, keyed by `key`. Keeps repeated
+    /recovery/case & /recovery/crisis calls from re-hitting EDGAR (SEC's 10 req/s fair-access
+    limit → IP ban); the 1h TTL still surfaces a same-day petition/restatement 8-K within the hour."""
+    p = _SUBMISSIONS_CACHE_DIR / f"{key}.json"
     now = time.time()
     if p.exists():
         try:
@@ -61,7 +63,7 @@ def _fetch_submissions(cik) -> dict:
     last_exc: Optional[Exception] = None
     for attempt in range(3):
         try:
-            data = _http_get_submissions(cik)
+            data = fetcher()
             break
         except Exception as exc:   # transient 429/5xx/timeout — short backoff, then degrade
             last_exc = exc
@@ -77,6 +79,17 @@ def _fetch_submissions(cik) -> dict:
     return data
 
 
+def _fetch_submissions(cik) -> dict:
+    """The primary submissions doc for a CIK (cached). Tests monkeypatch this whole function."""
+    return _cached(str(cik).lstrip("0").zfill(10), lambda: _http_get_submissions(cik))
+
+
+def _fetch_submission_file(name: str) -> dict:
+    """An overflow submissions page (older filings beyond the recent window), cached."""
+    key = re.sub(r"[^A-Za-z0-9._-]", "_", name)   # EDGAR-supplied name; allowlist the cache key
+    return _cached(key, lambda: _http_get_json("https://data.sec.gov/submissions/" + name))
+
+
 def _index_url(cik, accession: str) -> Optional[str]:
     if not accession:
         return None
@@ -84,18 +97,13 @@ def _index_url(cik, accession: str) -> Optional[str]:
             f"{accession.replace('-', '')}/{accession}-index.htm")
 
 
-def list_8k_items(cik, since: Optional[str] = None) -> list[dict]:
-    """All 8-K filings for a CIK, newest first (submissions order):
-    {filing_date, accession, items: [str]|None, items_unknown: bool, source_url}.
-    `since` is an ISO date (YYYY-MM-DD) lower bound on filing_date.
-    ponytail: reads only submissions `filings.recent` (~most-recent 1000 filings / 1yr);
-    a petition paged out of that window on a prolific filer is missed — follow
-    `filings.files` overflow if that ever bites. A currently-distressed name's 1.03 is recent."""
-    recent = (_fetch_submissions(cik).get("filings") or {}).get("recent") or {}
-    forms = recent.get("form") or []
-    dates = recent.get("filingDate") or []
-    accns = recent.get("accessionNumber") or []
-    items = recent.get("items") or []
+def _rows_from_arrays(arrays: dict, cik, since: Optional[str]) -> list[dict]:
+    """Extract 8-K rows from a submissions arrays dict (either `filings.recent` or an
+    overflow page, which carries the same parallel arrays at its top level)."""
+    forms = arrays.get("form") or []
+    dates = arrays.get("filingDate") or []
+    accns = arrays.get("accessionNumber") or []
+    items = arrays.get("items") or []
     out: list[dict] = []
     for i, form in enumerate(forms):
         if form != "8-K":
@@ -109,6 +117,28 @@ def list_8k_items(cik, since: Optional[str] = None) -> list[dict]:
         out.append({"filing_date": d, "accession": accn,
                     "items": codes or None, "items_unknown": not codes,
                     "source_url": _index_url(cik, accn)})
+    return out
+
+
+def list_8k_items(cik, since: Optional[str] = None) -> list[dict]:
+    """All 8-K filings for a CIK: {filing_date, accession, items: [str]|None, items_unknown,
+    source_url}. Reads `filings.recent` AND follows the `filings.files` overflow pages (older
+    filings beyond the ~1000/1yr recent window), so an old petition/restatement on a prolific
+    filer is not missed. `since` (ISO date) bounds filing_date and skips overflow pages entirely
+    older than it. Every page is 1h-cached. A persistent overflow-page fetch failure PROPAGATES
+    (after _cached's retries) so the caller surfaces it as petition_error/trigger_error
+    ("unknown") rather than a silent false "no trigger"."""
+    data = _fetch_submissions(cik)
+    filings = data.get("filings") or {}
+    out = _rows_from_arrays(filings.get("recent") or {}, cik, since)
+    for f in (filings.get("files") or []):
+        name = f.get("name")
+        if not name:
+            continue
+        if since and f.get("filingTo") and f["filingTo"] < since:
+            continue   # this overflow page is entirely older than the window of interest
+        time.sleep(0.12)   # pace overflow fetches under SEC's 10 req/s fair-access limit
+        out.extend(_rows_from_arrays(_fetch_submission_file(name), cik, since))
     return out
 
 

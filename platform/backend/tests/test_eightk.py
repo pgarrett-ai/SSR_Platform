@@ -2,6 +2,8 @@
 The network seam (_fetch_submissions) is monkeypatched — no network. Verifies 8-K
 filtering, items parsing, the items_unknown flag (empty items -> "unknown", never
 "no trigger"), earliest-1.03 petition detection, and crisis-item triggers."""
+import pytest
+
 import app.capstack.eightk as eightk
 
 
@@ -67,6 +69,59 @@ def test_fetch_submissions_day_caches(monkeypatch, tmp_path):
     eightk._fetch_submissions("320193")
     eightk._fetch_submissions("320193")
     assert calls["n"] == 1   # second call served from the same-day cache
+
+
+def test_list_8k_follows_overflow_pages(monkeypatch):
+    # a petition older than the recent window lives in a `filings.files` overflow page —
+    # list_8k_items must follow it so petition_filing doesn't falsely report "no petition".
+    def subs(cik):
+        return {"filings": {
+            "recent": {"form": ["8-K"], "filingDate": ["2026-01-01"],
+                       "accessionNumber": ["a-26-1"], "items": ["2.02"]},
+            "files": [{"name": "CIK-submissions-001.json", "filingTo": "2024-12-31"}]}}
+
+    def overflow(name):
+        return {"form": ["8-K"], "filingDate": ["2021-05-05"],
+                "accessionNumber": ["a-21-9"], "items": ["1.03"]}   # old bankruptcy filing
+
+    monkeypatch.setattr(eightk, "_fetch_submissions", subs)
+    monkeypatch.setattr(eightk, "_fetch_submission_file", overflow)
+    dates = [r["filing_date"] for r in eightk.list_8k_items("320193")]
+    assert "2026-01-01" in dates and "2021-05-05" in dates       # recent + overflow both included
+    assert eightk.petition_filing("320193")["date"] == "2021-05-05"
+
+
+def test_list_8k_overflow_failure_propagates(monkeypatch):
+    # a persistent overflow-page failure must NOT be swallowed into a false "no trigger" —
+    # it propagates so recovery_case/crisis surface petition_error/trigger_error ("unknown").
+    def subs(cik):
+        return {"filings": {"recent": {"form": [], "filingDate": [], "accessionNumber": [], "items": []},
+                            "files": [{"name": "x.json"}]}}
+
+    def boom(name):
+        raise RuntimeError("edgar down")
+
+    monkeypatch.setattr(eightk, "_fetch_submissions", subs)
+    monkeypatch.setattr(eightk, "_fetch_submission_file", boom)
+    with pytest.raises(RuntimeError):
+        eightk.list_8k_items("1")
+
+
+def test_list_8k_skips_overflow_older_than_since(monkeypatch):
+    def subs(cik):
+        return {"filings": {"recent": {"form": [], "filingDate": [],
+                                       "accessionNumber": [], "items": []},
+                            "files": [{"name": "old.json", "filingTo": "2020-12-31"}]}}
+    fetched = {"n": 0}
+
+    def overflow(name):
+        fetched["n"] += 1
+        return {"form": [], "filingDate": [], "accessionNumber": [], "items": []}
+
+    monkeypatch.setattr(eightk, "_fetch_submissions", subs)
+    monkeypatch.setattr(eightk, "_fetch_submission_file", overflow)
+    eightk.list_8k_items("1", since="2025-01-01")
+    assert fetched["n"] == 0   # overflow page entirely older than `since` is skipped, not fetched
 
 
 def test_crisis_triggers_and_unknown(monkeypatch):

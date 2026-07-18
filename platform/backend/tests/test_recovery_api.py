@@ -198,7 +198,7 @@ def test_case_endpoint_smoke(monkeypatch):
     assert r.status_code == 200, r.text
     d = r.json()
     assert d["petition_date"] is None          # no cik -> no 8-K lookup, no network
-    assert d["revolver_drawdown"] is None
+    assert d["revolver_undrawn"] is None        # cited figure; the overclaiming boolean was removed
 
 
 def test_crisis_endpoint_smoke(monkeypatch):

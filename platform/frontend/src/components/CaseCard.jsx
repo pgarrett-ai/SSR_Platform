@@ -50,7 +50,6 @@ export default function CaseCard({ ticker, years, petitionDate, setPetitionDate 
   const solicitationEnd = valid ? addDays(petitionDate, SOLICITATION_DAYS) : null;
   const barPct = monthsElapsed != null ? Math.min((monthsElapsed / BENCHMARK_MONTHS) * 100, 130) : 0;
   const overBench = monthsElapsed != null && monthsElapsed > BENCHMARK_MONTHS;
-  const revolverDrawn = caseInfo?.revolver_drawdown === true;
 
   const clock = (label, endIso, elapsedDays, windowDays) => {
     const remaining = windowDays - (elapsedDays ?? 0);
@@ -108,11 +107,6 @@ export default function CaseCard({ ticker, years, petitionDate, setPetitionDate 
             <option value="prenegotiated">prenegotiated</option>
             <option value="freefall">free-fall</option>
           </select>
-          {revolverDrawn && (
-            <span className="text-[11px] text-amber-300" title="a pre-filing revolver drawdown marks a contentious free-fall (Moyer ch. 12)">
-              revolver drawn — free-fall likely
-            </span>
-          )}
         </div>
       </div>
 

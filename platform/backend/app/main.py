@@ -1091,19 +1091,15 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
 
     liq = ov.get("liquidity") or {}
     undrawn = liq.get("undrawn_committed")
-    revolver_drawdown = None
-    if undrawn and undrawn.get("value") is not None:
-        revolver_drawdown = float(undrawn["value"]) <= 0.0   # fully drawn (undrawn ≈ $0)
-    note = ("petition date = the 8-K Item 1.03 filing date (proxy for the docket petition "
-            "date); revolver-drawdown is a weak free-fall hint (undrawn committed ≈ $0), not a "
-            "case-type determination — the analyst sets case type.")
+    note = ("petition date = the 8-K Item 1.03 filing date (proxy for the docket petition date); "
+            "case type is the analyst's call. A pre-filing revolver drawdown weakly hints free-fall "
+            "but isn't reliably tagged, so it is surfaced (undrawn figure) rather than auto-inferred.")
     if not ov:
         note = "open this company's Overview tab first to populate its liquidity signals. " + note
     return JSONResponse(content=jsonable({
         "petition_date": petition,
         "petition_error": petition_error,   # True = EDGAR lookup failed (NOT "no bankruptcy")
-        "revolver_undrawn": undrawn,
-        "revolver_drawdown": revolver_drawdown,
+        "revolver_undrawn": undrawn,        # cited undrawn-committed figure; the analyst judges free-fall
         "note": note,
     }))
 
