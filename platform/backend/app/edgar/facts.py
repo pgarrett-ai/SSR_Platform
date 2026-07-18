@@ -127,6 +127,12 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     # tax-footnote ratio (decimal, e.g. 0.24); no statement filter
     MetricSpec("effective_tax_rate", "Effective tax rate", None, "duration",
                ("EffectiveIncomeTaxRateContinuingOperations",)),
+    # GROSS NOL carryforward (Moyer ch. 11 §382). Gross concept ONLY — do NOT add
+    # DeferredTaxAssetsOperatingLossCarryforwards (that is the tax-effected DTA ≈ NOL×rate,
+    # a different quantity); often tagged only dimensioned-by-jurisdiction (then skipped),
+    # so manual entry is the expected fallback. Footnote item, no statement filter.
+    MetricSpec("nol_carryforward", "NOL carryforward", None, "instant",
+               ("OperatingLossCarryforwards",)),
     # --- cash flow (duration) ---
     MetricSpec("d_and_a", "Depreciation & amortization", "CashFlowStatement", "duration",
                ("DepreciationDepletionAndAmortization", "DepreciationAndAmortization",

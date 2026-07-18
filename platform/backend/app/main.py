@@ -1121,6 +1121,76 @@ def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
     return JSONResponse(content=jsonable(screen))
 
 
+class Tax382Body(BaseModel):
+    nol: Optional[float] = None          # $mm override; else the extracted gross NOL is used
+    equity_fmv: float                    # $mm — bankruptcy §382(l)(6): post-reorg equity (plan EV − debt)
+    rate: float = 0.045                  # §382 long-term tax-exempt rate (IRS, monthly) — user input
+    tax_rate: float = 0.21               # marginal tax rate
+    horizon_years: int = 20              # NOL usage horizon (pre-2018 20y; post-2017 indefinite)
+    discount_rate: float = 0.12          # PV discount rate
+
+
+@app.post("/api/company/{ticker}/recovery/tax382")
+def recovery_tax382(ticker: str, body: Tax382Body, years: int = Query(3, ge=1, le=10)):
+    """NOL / §382 tax-asset read (Moyer ch. 11). Uses the extracted gross NOL (cited) unless
+    the analyst overrides it, and the user-supplied §382 rate / equity FMV / tax rate to
+    compute the annual limit, usable vs stranded NOL, and the PV of the tax shield."""
+    from .capstack.tax382 import analyze_tax_asset
+    from .edgar.facts import derived_value
+
+    try:
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+    except (TickerNotFoundError, NoFilingsError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+
+    extracted = ov.get("nol_carryforward")   # CitedValue dict (raw USD) or None
+    if body.nol is not None:
+        nol_mm = float(body.nol)
+    elif extracted and extracted.get("value") is not None:
+        nol_mm = float(extracted["value"]) / 1e6   # extracted is raw USD; card works in $mm
+    else:
+        return JSONResponse(content=jsonable({
+            "available": False, "nol_extracted": extracted,
+            "note": "no gross NOL carryforward tagged (OperatingLossCarryforwards is often "
+                    "tagged only dimensioned-by-jurisdiction in the tax footnote, and is then "
+                    "skipped) — enter the NOL manually to run the §382 read"}))
+
+    r = analyze_tax_asset(nol_mm, body.equity_fmv, body.rate, body.tax_rate,
+                          body.horizon_years, body.discount_rate)
+
+    def dv(v, formula, display):
+        return derived_value(v, formula, display).model_dump()
+
+    return JSONResponse(content=jsonable({
+        "available": True,
+        "nol_extracted": extracted,
+        "nol_used_mm": round(nol_mm, 1),
+        "annual_limit": dv(r["annual_limit"],
+                           f"§382 rate {body.rate:.3%} × equity FMV ${body.equity_fmv:,.0f}M",
+                           f"${r['annual_limit']:,.1f}M/yr"),
+        "usable_nol": dv(r["usable_nol"],
+                         f"min(NOL ${nol_mm:,.0f}M, annual limit ${r['annual_limit']:,.1f}M × "
+                         f"{body.horizon_years}y)", f"${r['usable_nol']:,.1f}M"),
+        "stranded_nol": dv(r["stranded_nol"],
+                           f"NOL ${nol_mm:,.0f}M − usable ${r['usable_nol']:,.1f}M",
+                           f"${r['stranded_nol']:,.1f}M"),
+        "undiscounted_shield": dv(r["undiscounted_shield"],
+                                  f"usable ${r['usable_nol']:,.1f}M × tax rate {body.tax_rate:.1%}",
+                                  f"${r['undiscounted_shield']:,.1f}M"),
+        "tax_asset_pv": dv(r["tax_asset_pv"],
+                           f"PV of usable NOL × tax rate {body.tax_rate:.1%} over "
+                           f"{body.horizon_years}y at {body.discount_rate:.1%}",
+                           f"${r['tax_asset_pv']:,.1f}M"),
+        "assumptions": {"rate": body.rate, "tax_rate": body.tax_rate,
+                        "horizon_years": body.horizon_years, "discount_rate": body.discount_rate,
+                        "equity_fmv": body.equity_fmv, "nol_override": body.nol is not None},
+        "note": "bankruptcy §382(l)(6): equity FMV = post-reorg (plan EV − post-reorg debt); the "
+                "§382 rate is the IRS long-term tax-exempt rate (a user input, ~monthly). "
+                "Post-2017 NOLs carry forward indefinitely — raise the horizon to model that. "
+                "The 50% 'old-and-cold' exception (§382(l)(5)) needs 13D/13G history not sourced here.",
+    }))
+
+
 class LiquidationBody(BaseModel):
     structure: Optional[dict] = None
     rates: Optional[dict] = None        # {category: advance rate 0..1}; default orderly preset

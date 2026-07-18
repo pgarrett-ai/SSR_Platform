@@ -275,6 +275,16 @@ export async function fetchCrisisScreen(ticker, years = 3) {
   );
 }
 
+export async function computeTax382(ticker, body, years = 3) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/tax382?years=${years}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+  );
+}
+
 export async function listScenarios(ticker) {
   return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/scenarios`));
 }

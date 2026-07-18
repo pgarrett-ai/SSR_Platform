@@ -244,6 +244,27 @@ def test_case_endpoint_detects_petition(monkeypatch):
     assert d["petition_date"]["value"] == "2026-03-01" and d["petition_error"] is False
 
 
+def test_tax382_endpoint_manual_nol(monkeypatch):
+    _patch_offline(monkeypatch)     # bare overview: no extracted NOL -> manual path
+    r = client.post("/api/company/APEX/recovery/tax382", json={
+        "nol": 500.0, "equity_fmv": 200.0, "rate": 0.05, "tax_rate": 0.20,
+        "horizon_years": 20, "discount_rate": 0.0})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["available"] is True
+    assert d["annual_limit"]["value"] == 10.0        # 200 × 5%
+    assert d["usable_nol"]["value"] == 200.0
+    assert d["stranded_nol"]["value"] == 300.0       # the P-Corp number
+    assert abs(d["tax_asset_pv"]["value"] - 40.0) < 1e-6   # r=0 -> equals shield (200 × 20%)
+
+
+def test_tax382_endpoint_no_nol_degrades(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/tax382", json={"equity_fmv": 200.0})
+    assert r.status_code == 200
+    assert r.json()["available"] is False            # no NOL extracted or supplied
+
+
 def test_scenarios_roundtrip():
     saved = client.post("/api/company/APEX/scenarios", json={
         "name": "Base", "sim": APEX_SIM, "structure": APEX_STRUCTURE,
