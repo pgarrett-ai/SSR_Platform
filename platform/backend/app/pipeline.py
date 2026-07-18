@@ -483,6 +483,15 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"Mezzanine (temporary equity) step failed: {exc}")
 
+    # --- Gross NOL carryforward — the §382 tax-asset input (Moyer ch. 11) ---
+    nol_carryforward = None
+    try:
+        from .edgar.facts import cited_metric
+        if series is not None and series.years:
+            nol_carryforward = cited_metric(series.latest(), "nol_carryforward", series.cik)
+    except Exception as exc:
+        warnings.append(f"NOL carryforward step failed: {exc}")
+
     # --- Covenant dollars (Moyer ch. 7/9): RP-basket build + permitted-liens headroom —
     # deterministic regex over the cached covenant extractions + XBRL quarterly flows ---
     rp_basket = None
@@ -540,6 +549,7 @@ def run_overview(
         asset_snapshot=asset_snapshot,
         coverage_chips=coverage,
         mezzanine=mezzanine,
+        nol_carryforward=nol_carryforward,
         rp_basket=rp_basket,
         liens_headroom=liens_headroom,
         leverage_timeline=lev_timeline,

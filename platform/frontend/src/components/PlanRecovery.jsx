@@ -25,11 +25,11 @@ function TermField({ label, title, children }) {
 const EMPTY = { cash: 0, new_debt_face: 0, new_debt_mkt_pct: 70, new_equity_pct: 0,
                 warrant_value: 0, rights_shares: 0, rights_strike: 0 };
 
-export default function PlanRecovery({ ticker, years, structure, baseEbitda, accrualYears, petitionDate }) {
+export default function PlanRecovery({ ticker, years, structure, baseEbitda, accrualYears,
+  petitionDate, reorgEv, setReorgEv, reorgDebt, setReorgDebt, reorgShares, setReorgShares }) {
+  // reorgEv/reorgDebt/reorgShares are lifted to RecoveryPage state (decision #4) so the
+  // post-reorg technicals (F5) and tax card (F6) read the identical reorg-equity figure.
   const tranches = structure?.tranches || [];
-  const [reorgEv, setReorgEv] = useState("");
-  const [reorgDebt, setReorgDebt] = useState("");
-  const [reorgShares, setReorgShares] = useState("");
   const [duration, setDuration] = useState("");
   const [plan, setPlan] = useState({});           // tranche name -> consideration fields
   const [data, setData] = useState(null);

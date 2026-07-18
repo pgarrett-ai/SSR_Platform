@@ -18,6 +18,8 @@ import ExchangeAnalyzer from "../components/ExchangeAnalyzer.jsx";
 import IrrMatrix from "../components/IrrMatrix.jsx";
 import LiquidationPanel from "../components/LiquidationPanel.jsx";
 import PlanRecovery from "../components/PlanRecovery.jsx";
+import PostReorgTechnicals from "../components/PostReorgTechnicals.jsx";
+import TaxAssetCard from "../components/TaxAssetCard.jsx";
 
 // Provenance marker: § next to a tranche pops the filing citation behind its face amount.
 function CiteMark({ citation }) {
@@ -102,6 +104,11 @@ export default function RecoveryPage({ ticker, years }) {
   const [suggestedMezz, setSuggestedMezz] = useState(null);  // temporary equity ($mm)
   const [suggestedPriming, setSuggestedPriming] = useState(null); // liens-headroom pre-seed
   const [primingFace, setPrimingFace] = useState(null);      // priming layer face ($mm)
+  // shared reorg-plan assumptions (decision #4): the Plan Recovery card sets these; the
+  // post-reorg technicals (F5) and tax card (F6) read the same reorg-equity figure.
+  const [reorgEv, setReorgEv] = useState("");
+  const [reorgDebt, setReorgDebt] = useState("");
+  const [reorgShares, setReorgShares] = useState("");
 
   useEffect(() => {
     if (!ticker) return;
@@ -114,6 +121,7 @@ export default function RecoveryPage({ ticker, years }) {
   // wrong company; CaseCard reseeds it from the new issuer's 8-K Item 1.03 if one exists.
   useEffect(() => {
     setPetitionDate(new Date().toISOString().slice(0, 10));
+    setReorgEv(""); setReorgDebt(""); setReorgShares("");   // don't leak plan assumptions across issuers
   }, [ticker]);
 
   useEffect(() => {
@@ -483,7 +491,13 @@ export default function RecoveryPage({ ticker, years }) {
 
           <PlanRecovery ticker={ticker} years={years} structure={structure}
             baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0}
-            petitionDate={petitionDate} />
+            petitionDate={petitionDate}
+            reorgEv={reorgEv} setReorgEv={setReorgEv} reorgDebt={reorgDebt}
+            setReorgDebt={setReorgDebt} reorgShares={reorgShares} setReorgShares={setReorgShares} />
+
+          <PostReorgTechnicals reorgEv={reorgEv} reorgDebt={reorgDebt} />
+
+          <TaxAssetCard ticker={ticker} years={years} reorgEv={reorgEv} reorgDebt={reorgDebt} />
         </>
       )}
 

@@ -373,6 +373,7 @@ class Overview(BaseModel):
     asset_snapshot: Optional[AssetSnapshot] = None  # liquidation-waterfall inputs
     coverage_chips: Optional["CoverageChips"] = None  # dual-leverage + interest-coverage pairs
     mezzanine: Optional[CitedValue] = None   # temporary equity — the recast-as-debt input
+    nol_carryforward: Optional[CitedValue] = None  # gross NOL — the §382 tax-asset input (ch. 11)
     rp_basket: Optional[RpBasket] = None     # F1 RP-basket capacity build (Moyer ch. 7)
     liens_headroom: Optional[dict] = None    # F2 permitted-liens headroom archetypes (ch. 9)
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
