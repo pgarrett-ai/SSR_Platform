@@ -21,13 +21,13 @@ import numpy as np
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from sse_starlette.sse import EventSourceResponse
 
 import datetime as dt
 
 from . import models
-from .core.cache import cached_tickers
+from .core.cache import cached_tickers, safe_ticker
 from .core.config import CACHE_DIR, get_settings, set_llm_runtime_enabled
 from .core.db import init_db, session_scope
 from .edgar.client import NoFilingsError, TickerNotFoundError
@@ -59,6 +59,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+_MAX_BODY_BYTES = 5_000_000   # reject oversized POST bodies before Starlette buffers/parses them
+
+
+@app.middleware("http")
+async def _limit_request_body(request, call_next):
+    cl = request.headers.get("content-length")
+    if cl is not None and cl.isdigit() and int(cl) > _MAX_BODY_BYTES:
+        return JSONResponse(status_code=413, content={"error": "request body too large (max 5 MB)"})
+    return await call_next(request)
 
 
 @app.get("/", include_in_schema=False)
@@ -106,7 +116,7 @@ def _handle_pipeline_errors(fn):
 
 @app.get("/api/overview")
 def overview(
-    ticker: str = Query(..., min_length=1, max_length=12),
+    ticker: str = Query(..., min_length=1, max_length=12, pattern=r"^[A-Za-z0-9.\-]+$"),
     years: int = Query(3, ge=1, le=10),
     live: bool = Query(False),
 ):
@@ -119,7 +129,7 @@ def overview(
 
 @app.get("/api/filings")
 def filings(
-    ticker: str = Query(..., min_length=1, max_length=12),
+    ticker: str = Query(..., min_length=1, max_length=12, pattern=r"^[A-Za-z0-9.\-]+$"),
     years: int = Query(3, ge=1, le=10),
 ):
     def _run():
@@ -155,7 +165,12 @@ def _hazard_section(ticker: str, years: int, live: bool, progress: ProgressLog |
     filings, so a day-fresh payload serves page reloads instantly instead of re-running the
     ~30s pipeline; live=True bypasses. Kept in its own subdir so the overview-cache globs
     (TICKER_*y.json) never pick these up."""
-    p = CACHE_DIR / "hazard" / f"{ticker.strip().upper()}_{int(years)}y.json"
+    try:
+        safe_t = safe_ticker(ticker)   # trust boundary: keep request-derived ticker out of the path
+    except ValueError:
+        # invalid ticker -> skip the cache path entirely; hazard_analyze resolves it and raises cleanly
+        return jsonable(_native(hazard_analyze(ticker, years, progress=progress)))
+    p = CACHE_DIR / "hazard" / f"{safe_t}_{int(years)}y.json"
     today = dt.date.today().isoformat()
     if not live and p.exists():
         try:
@@ -462,7 +477,7 @@ def mdna_text(ticker: str, accession_no: str) -> JSONResponse:
 
 @app.get("/api/search")
 def search(q: str = Query(..., min_length=1, max_length=200),
-           ticker: Optional[str] = Query(None, max_length=12),
+           ticker: Optional[str] = Query(None, max_length=12, pattern=r"^[A-Za-z0-9.\-]+$"),
            limit: int = Query(20, ge=1, le=100)) -> JSONResponse:
     """BM25 full-text search over covenant clauses, MD&A, and OBS narratives (FTS5),
     optionally scoped to one issuer."""
@@ -495,6 +510,7 @@ def jsonable(obj):
 
 
 class SimulateBody(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)   # reject Infinity/NaN floats at the boundary
     sim: dict = {}                      # SimConfig overrides (base_ebitda, corr, n_draws, ...)
     structure: Optional[dict] = None    # explicit {entities, tranches, admin_fees}; else derived
     petition_date: Optional[str] = None  # derives accrual_years vs debt_schedule_asof (Moyer:
@@ -671,7 +687,13 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
             return _liquidation_response(ticker, structure, ov,
                                          float(sim_kwargs.get("accrual_years") or 0.0), note)
 
-        result = fulcrum_analyze(structure, SimConfig(**sim_kwargs))
+        cfg = SimConfig(**sim_kwargs)
+        # bound the PRODUCT, not just each factor: run_waterfall allocates one (n_draws,) array
+        # per tranche (×3 for the base+attack+priming legs), so n_draws×tranches is the real
+        # memory driver. 20M cells ≈ 160 MB/array — dwarfs any real (small tranche count) request.
+        if cfg.n_draws * len(structure.tranches) > 20_000_000:
+            raise ValueError("simulation too large: n_draws × tranches exceeds the cell budget")
+        result = fulcrum_analyze(structure, cfg)
         attack_rows = None
         if body.attack:
             from .fulcrum.attacks import apply_attack
@@ -790,6 +812,7 @@ def recovery_explore(ticker: str, body: SimulateBody, years: int = Query(3, ge=1
 
 
 class ExchangeBody(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
     sim: dict = {}                       # base_ebitda, accrual_years
     structure: Optional[dict] = None     # explicit (edited) cap table; else derived
     petition_date: Optional[str] = None
@@ -958,6 +981,7 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
 
 
 class PlanBody(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
     sim: dict = {}                       # base_ebitda, accrual_years
     structure: Optional[dict] = None     # explicit (edited) cap table; else derived
     petition_date: Optional[str] = None
@@ -1007,6 +1031,8 @@ def recovery_plan(ticker: str, body: PlanBody, years: int = Query(3, ge=1, le=10
                     entry[tn] = price
                     break
 
+        if len(body.plan) > 500:   # request-derived list length; a plan can't exceed the tranches
+            raise ValueError("plan too large (max 500 classes)")
         cons = [PlanConsideration(
                     tranche=c.get("tranche"), cash=float(c.get("cash") or 0.0),
                     new_debt_face=float(c.get("new_debt_face") or 0.0),
@@ -1122,11 +1148,12 @@ def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
 
 
 class Tax382Body(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
     nol: Optional[float] = None          # $mm override; else the extracted gross NOL is used
     equity_fmv: float                    # $mm — bankruptcy §382(l)(6): post-reorg equity (plan EV − debt)
     rate: float = 0.045                  # §382 long-term tax-exempt rate (IRS, monthly) — user input
     tax_rate: float = 0.21               # marginal tax rate
-    horizon_years: int = 20              # NOL usage horizon (pre-2018 20y; post-2017 indefinite)
+    horizon_years: int = Field(20, ge=0, le=100)   # NOL usage horizon; bounded (loop bound in tax_asset_pv)
     discount_rate: float = 0.12          # PV discount rate
 
 
@@ -1192,6 +1219,7 @@ def recovery_tax382(ticker: str, body: Tax382Body, years: int = Query(3, ge=1, l
 
 
 class LiquidationBody(BaseModel):
+    model_config = ConfigDict(allow_inf_nan=False)
     structure: Optional[dict] = None
     rates: Optional[dict] = None        # {category: advance rate 0..1}; default orderly preset
     admin_pct: Optional[float] = None   # default 7% (ch11 orderly)
@@ -1262,7 +1290,7 @@ def delete_scenario(scenario_id: int):
 
 @app.get("/api/overview/stream")
 async def overview_stream(
-    ticker: str = Query(..., min_length=1, max_length=12),
+    ticker: str = Query(..., min_length=1, max_length=12, pattern=r"^[A-Za-z0-9.\-]+$"),
     years: int = Query(3, ge=1, le=10),
     live: bool = Query(False),
 ):
@@ -1301,7 +1329,7 @@ async def overview_stream(
 
 @app.get("/api/hazard/stream")
 async def hazard_stream(
-    ticker: str = Query(..., min_length=1, max_length=12),
+    ticker: str = Query(..., min_length=1, max_length=12, pattern=r"^[A-Za-z0-9.\-]+$"),
     years: int = Query(10, ge=1, le=10),
     live: bool = Query(False),
 ):

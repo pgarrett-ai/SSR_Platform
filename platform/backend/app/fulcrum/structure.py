@@ -179,6 +179,13 @@ class CapitalStructure:
 
     # -- validation --------------------------------------------------------
     def validate(self) -> None:
+        # request-derived counts: cap them so a huge cap table can't amplify the O(entities×
+        # tranches×n_draws) waterfall arrays, and so a deep entity chain can't blow post_order's
+        # recursion (200 levels is well under Python's limit). Dwarfs any real capital structure.
+        if len(self.entities) > 200:
+            raise ValueError("too many entities (max 200)")
+        if len(self.tranches) > 500:
+            raise ValueError("too many tranches (max 500)")
         names = [e.name for e in self.entities]
         if len(names) != len(set(names)):
             raise ValueError("Duplicate entity names")

@@ -227,8 +227,11 @@ def _extract_cache_path(doc: CreditDoc):
     from ..core.cache import CACHE_DIR
     d = CACHE_DIR / "covenant_extracts"
     d.mkdir(parents=True, exist_ok=True)
-    ex = (doc.exhibit_type or "EX").replace("/", "-").replace(".", "_")
-    return d / f"{doc.accession}_{ex}_{_PROMPT_VERSION}.json"
+    # EDGAR-derived (not request input), but scrub separators anyway so a malformed value
+    # can never escape covenant_extracts/ (defense-in-depth; '\' is a separator on Windows).
+    ex = (doc.exhibit_type or "EX").replace("/", "-").replace("\\", "-").replace(".", "_")
+    accession = str(doc.accession or "").replace("/", "-").replace("\\", "-")
+    return d / f"{accession}_{ex}_{_PROMPT_VERSION}.json"
 
 
 def _extract_raw(doc: CreditDoc) -> tuple[Optional[dict], Optional[str], Optional[str]]:

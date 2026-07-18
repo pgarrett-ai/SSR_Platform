@@ -33,7 +33,9 @@ def tax_asset_pv(nol: float, annual_limit: float, tax_rate: float,
     limit = max(annual_limit, 0.0)
     disc = max(discount_rate, 0.0)   # a negative discount is nonsensical here (and −100% divides by 0)
     pv = 0.0
-    for t in range(1, max(horizon_years, 0) + 1):
+    # cap the loop defensively (the endpoint also bounds horizon_years to 100) — a huge horizon
+    # with a tiny-but-positive limit would otherwise run for billions of iterations
+    for t in range(1, min(max(horizon_years, 0), 1000) + 1):
         if remaining <= 0 or limit <= 0:
             break
         used = min(limit, remaining)
