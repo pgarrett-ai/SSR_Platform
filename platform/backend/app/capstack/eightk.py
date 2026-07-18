@@ -8,18 +8,21 @@ reported as `items_unknown`, never silently treated as "no trigger" (Phase-3
 decision #8).
 
 Reused by F1 (petition date, `petition_filing`) and F3 (crisis triggers,
-`crisis_triggers`). `_fetch_submissions` is the single network seam — monkeypatch
-it in tests.
+`crisis_triggers`). `_http_get_submissions` is the raw network seam; `_fetch_submissions`
+wraps it with a 1h per-CIK disk cache + retry. Tests monkeypatch either.
 """
 from __future__ import annotations
 
 import json
+import time
 import urllib.request
 from typing import Optional
 
-from ..core.config import get_settings
+from ..core.config import CACHE_DIR, get_settings
 
 _SUBMISSIONS = "https://data.sec.gov/submissions/CIK{cik10}.json"
+_SUBMISSIONS_CACHE_DIR = CACHE_DIR / "eightk"   # per-CIK cache; module global so tests can redirect it
+_SUBMISSIONS_TTL_S = 3600   # 1h — collapses page-mount refetch storms, caps petition-detection lag at ~1h
 
 # crisis-of-confidence 8-K items (Moyer ch. 8): restatement / auditor / management.
 # 4.01/4.02 are the accounting-confidence signals; 5.02 also covers routine appointments
@@ -32,12 +35,46 @@ CRISIS_ITEMS = {
 }
 
 
-def _fetch_submissions(cik) -> dict:
-    """Network seam — the only outbound call; monkeypatched in tests."""
+def _http_get_submissions(cik) -> dict:
+    """Raw network seam — the only outbound call; monkeypatched in tests."""
     url = _SUBMISSIONS.format(cik10=str(cik).lstrip("0").zfill(10))
     req = urllib.request.Request(url, headers={"User-Agent": get_settings().sec_user_agent})
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.loads(r.read().decode("utf-8"))
+
+
+def _fetch_submissions(cik) -> dict:
+    """Submissions JSON with a per-CIK disk cache (1h TTL) + light retry. The cache keeps
+    repeated /recovery/case & /recovery/crisis calls from re-hitting EDGAR (SEC's 10 req/s
+    fair-access limit → IP ban); the 1h TTL still surfaces a same-day petition/restatement 8-K
+    within the hour. (Tests monkeypatch this whole function, so the cache/retry only run live.)"""
+    cik10 = str(cik).lstrip("0").zfill(10)
+    p = _SUBMISSIONS_CACHE_DIR / f"{cik10}.json"
+    now = time.time()
+    if p.exists():
+        try:
+            blob = json.loads(p.read_text(encoding="utf-8"))
+            if now - float(blob.get("fetched_at") or 0) < _SUBMISSIONS_TTL_S:
+                return blob["data"]
+        except Exception:
+            pass   # corrupt/stale cache -> refetch
+    last_exc: Optional[Exception] = None
+    for attempt in range(3):
+        try:
+            data = _http_get_submissions(cik)
+            break
+        except Exception as exc:   # transient 429/5xx/timeout — short backoff, then degrade
+            last_exc = exc
+            if attempt < 2:        # don't sleep after the final attempt
+                time.sleep(0.5 * (attempt + 1))
+    else:
+        raise last_exc if last_exc is not None else RuntimeError("submissions fetch failed")
+    try:
+        _SUBMISSIONS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps({"fetched_at": now, "data": data}), encoding="utf-8")
+    except Exception:
+        pass   # cache write is best-effort
+    return data
 
 
 def _index_url(cik, accession: str) -> Optional[str]:

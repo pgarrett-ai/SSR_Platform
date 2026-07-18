@@ -52,6 +52,23 @@ def test_petition_filing_none_when_no_103(monkeypatch):
     assert eightk.petition_filing("1") is None
 
 
+def test_fetch_submissions_day_caches(monkeypatch, tmp_path):
+    # PR-B: the per-CIK day-cache collapses repeated fetches to one EDGAR hit per CIK per day
+    # (SEC 10 req/s fair-access). The raw seam _http_get_submissions is the only network call.
+    calls = {"n": 0}
+
+    def fake_http(cik):
+        calls["n"] += 1
+        return {"filings": {"recent": {"form": [], "filingDate": [],
+                                       "accessionNumber": [], "items": []}}}
+
+    monkeypatch.setattr(eightk, "_http_get_submissions", fake_http)
+    monkeypatch.setattr(eightk, "_SUBMISSIONS_CACHE_DIR", tmp_path)
+    eightk._fetch_submissions("320193")
+    eightk._fetch_submissions("320193")
+    assert calls["n"] == 1   # second call served from the same-day cache
+
+
 def test_crisis_triggers_and_unknown(monkeypatch):
     _patch(monkeypatch)
     trig = eightk.crisis_triggers("320193")
