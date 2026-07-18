@@ -198,6 +198,52 @@ def test_case_endpoint_smoke(monkeypatch):
     assert d["revolver_drawdown"] is None
 
 
+def test_crisis_endpoint_smoke(monkeypatch):
+    _patch_offline(monkeypatch)     # bare overview: no cik, no liquidity, no events
+    r = client.get("/api/company/APEX/recovery/crisis")
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["triggered"] is False and d["crisis"] is False
+    assert set(d["factors"]) == {"cash", "revolver", "acceleration", "immediate_need"}
+    assert d["trigger_error"] is False
+
+
+def test_crisis_endpoint_detects_trigger(monkeypatch):
+    # B1 regression: cik lives at header.cik, not top-level — the trigger path must actually run.
+    import app.capstack.eightk as eightk
+    import app.main as main
+    from app.schemas import CitedValue, IssuerHeader, LiquidityEvent, LiquidityRunway, Overview
+
+    ov = Overview(
+        header=IssuerHeader(issuer="Restate Co", ticker="RSTT", years=3, cik="0000012345"),
+        liquidity=LiquidityRunway(cash=CitedValue(value=100e6)),   # thin cash
+        liquidity_events=[LiquidityEvent(
+            date="2026-05", kind="maturity", instrument="Notes",
+            amount=CitedValue(value=2e9, formula="face"), flags=["maturity_unfundable"])])
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: ov)
+    monkeypatch.setattr(eightk, "crisis_triggers", lambda cik: [
+        {"filing_date": "2026-02-01", "accession": "x-26-1", "source_url": "u",
+         "items": ["4.02"], "items_unknown": False,
+         "triggers": {"4.02": "non-reliance / restatement"}}])
+    d = client.get("/api/company/RSTT/recovery/crisis").json()
+    assert d["triggered"] is True and d["crisis"] is True     # trigger + unfundable maturity, cash < need
+    assert d["trigger_items"] == ["4.02"] and d["trigger_error"] is False
+
+
+def test_case_endpoint_detects_petition(monkeypatch):
+    # B1 regression (PR1 twin): recovery_case must read header.cik and cite the petition 8-K.
+    import app.capstack.eightk as eightk
+    import app.main as main
+    from app.schemas import IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Bankrupt Co", ticker="BKRT", years=3, cik="0000012345")))
+    monkeypatch.setattr(eightk, "petition_filing", lambda cik: {
+        "date": "2026-03-01", "accession": "x-26-9", "source_url": "u"})
+    d = client.get("/api/company/BKRT/recovery/case").json()
+    assert d["petition_date"]["value"] == "2026-03-01" and d["petition_error"] is False
+
+
 def test_scenarios_roundtrip():
     saved = client.post("/api/company/APEX/scenarios", json={
         "name": "Base", "sim": APEX_SIM, "structure": APEX_STRUCTURE,

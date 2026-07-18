@@ -553,6 +553,11 @@ def _structure_from_body(ticker: str, s: dict) -> CapitalStructure:
     )
 
 
+def _ov_cik(ov: dict) -> Optional[str]:
+    """CIK from a serialized Overview — it lives under header.cik, not at the top level."""
+    return (ov.get("header") or {}).get("cik")
+
+
 def _accrual_from_petition(petition_date: str, ov: dict) -> float:
     """accrual_years = (petition − debt_schedule_asof)/365.25, floored at 0. The schedule
     as-of is when accrued interest was last settled on the balance sheet."""
@@ -1039,7 +1044,7 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
 
     petition = None
     petition_error = False   # distinguish an EDGAR fetch failure from a genuine "no 1.03"
-    cik = ov.get("cik")
+    cik = _ov_cik(ov)
     if cik:
         try:
             pf = petition_filing(cik)
@@ -1067,6 +1072,53 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
                 "date); revolver-drawdown is a weak free-fall hint (undrawn committed ≈ $0), not a "
                 "case-type determination — the analyst sets case type.",
     }))
+
+
+@app.get("/api/company/{ticker}/recovery/crisis")
+def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Crisis-of-confidence four-factor screen (Moyer ch. 8): a restatement/fraud 8-K
+    trigger (Items 4.01/4.02/5.02) assessed against the four liquidity factors — cash,
+    revolver reliance, acceleration/MAC language, and the immediate cash need. On-demand:
+    an 8-K fetch must not gate every overview build or screener row."""
+    from sqlalchemy import text as sql
+
+    from .capstack.eightk import crisis_screen, crisis_triggers
+    from .core.db import FTS_AVAILABLE
+
+    try:
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+    except (TickerNotFoundError, NoFilingsError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+
+    triggers, trigger_error = [], False
+    cik = _ov_cik(ov)
+    if cik:
+        try:
+            triggers = crisis_triggers(cik)
+        except Exception:
+            trigger_error = True   # EDGAR lookup failed — NOT "no trigger"
+
+    # factor 3: best-effort cross-default / MAC scan over the indexed covenant/notes corpus
+    accel = {"clauses_found": 0, "sample": None, "available": FTS_AVAILABLE}
+    if FTS_AVAILABLE:
+        match = ('"cross default" OR "cross-default" OR "cross acceleration" OR '
+                 '"material adverse change" OR "material adverse effect"')
+        try:
+            with session_scope() as session:
+                rows = session.execute(sql(
+                    "SELECT snippet(search, 0, '', '', ' … ', 20) FROM search "
+                    "WHERE search MATCH :q AND ticker = :t "
+                    "AND source_kind IN ('covenant', 'notes') "  # exclude MD&A/OBS boilerplate
+                    "ORDER BY bm25(search) LIMIT 5"),
+                    {"q": match, "t": ticker.strip().upper()}).all()
+            accel = {"clauses_found": len(rows), "sample": rows[0][0] if rows else None,
+                     "available": True}
+        except Exception:
+            accel = {"clauses_found": 0, "sample": None, "available": False}
+
+    screen = crisis_screen(triggers, ov.get("liquidity"), ov.get("liquidity_events"), accel)
+    screen["trigger_error"] = trigger_error
+    return JSONResponse(content=jsonable(screen))
 
 
 class LiquidationBody(BaseModel):

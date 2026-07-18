@@ -35,7 +35,7 @@ function CompanyLayout({ years, health, overview }) {
         path="capital"
         element={<CapitalPage ticker={ticker} health={health} overview={overview} />}
       />
-      <Route path="risk" element={<RiskPage ticker={ticker} />} />
+      <Route path="risk" element={<RiskPage ticker={ticker} years={years} />} />
       <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
       <Route path="*" element={<Navigate to="overview" replace />} />
     </Routes>

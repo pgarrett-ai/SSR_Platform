@@ -10,6 +10,7 @@ import HealthRadar from "../components/risk/HealthRadar.jsx";
 import Financials from "../components/risk/Financials.jsx";
 import MarketPanel from "../components/risk/MarketPanel.jsx";
 import EventTimeline from "../components/risk/EventTimeline.jsx";
+import RestatementScreen from "../components/RestatementScreen.jsx";
 
 // The hazard dashboard, ported from hazard/frontend (its header/search now lives in the shell).
 // Uses a 10y lookback regardless of the topbar setting — the risk timeline wants history.
@@ -41,7 +42,7 @@ function ScoreChip({ name, sc }) {
   );
 }
 
-export default function RiskPage({ ticker }) {
+export default function RiskPage({ ticker, years }) {
   // Streamed load with a live progress log (same SSE pattern as the Capital pipeline).
   // The session-cache key stays shared with the Overview hazard card, so whichever
   // page loads first makes the other instant.
@@ -97,6 +98,7 @@ export default function RiskPage({ ticker }) {
       <Financials data={data} />
       <MarketPanel data={data} />
       <EventTimeline data={data} />
+      <RestatementScreen ticker={ticker} years={years} />
       <p className="mt-6 text-xs text-slate-600">
         Altman Z″, Merton, CHS — published coefficients. * CHS is a point-in-time approximation.
         {data.scores?.["Trained hazard"]?.real_labels && (
