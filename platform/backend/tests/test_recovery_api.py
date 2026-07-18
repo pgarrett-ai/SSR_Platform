@@ -117,6 +117,9 @@ def _patch_offline(monkeypatch):
 
     monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
         header=IssuerHeader(issuer="Apex", ticker="APEX", years=3)))
+    # case/crisis are cache-only (never call run_overview) — patch the cache reads to "no cache"
+    monkeypatch.setattr(main, "load_overview", lambda *a, **k: None)
+    monkeypatch.setattr(main, "load_latest_overview", lambda *a, **k: None)
     monkeypatch.setattr(trace, "get_issuer_bonds", lambda t: {"bonds": []})
 
 
@@ -220,7 +223,7 @@ def test_crisis_endpoint_detects_trigger(monkeypatch):
         liquidity_events=[LiquidityEvent(
             date="2026-05", kind="maturity", instrument="Notes",
             amount=CitedValue(value=2e9, formula="face"), flags=["maturity_unfundable"])])
-    monkeypatch.setattr(main, "run_overview", lambda *a, **k: ov)
+    monkeypatch.setattr(main, "load_overview", lambda *a, **k: ov)   # cache-only endpoint
     monkeypatch.setattr(eightk, "crisis_triggers", lambda cik: [
         {"filing_date": "2026-02-01", "accession": "x-26-1", "source_url": "u",
          "items": ["4.02"], "items_unknown": False,
@@ -236,7 +239,7 @@ def test_case_endpoint_detects_petition(monkeypatch):
     import app.main as main
     from app.schemas import IssuerHeader, Overview
 
-    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+    monkeypatch.setattr(main, "load_overview", lambda *a, **k: Overview(   # cache-only endpoint
         header=IssuerHeader(issuer="Bankrupt Co", ticker="BKRT", years=3, cik="0000012345")))
     monkeypatch.setattr(eightk, "petition_filing", lambda cik: {
         "date": "2026-03-01", "accession": "x-26-9", "source_url": "u"})
@@ -310,6 +313,21 @@ def test_ticker_charset_rejected_422():
     # query-param ticker pattern rejects path-separator chars before any pipeline work
     assert client.get("/api/overview?ticker=../etc&years=3").status_code == 422
     assert client.get("/api/filings?ticker=..%2f..%2fx&years=3").status_code == 422
+
+
+def test_case_crisis_are_cache_only(monkeypatch):
+    # PR-B: the read-only case/crisis screens must NEVER trigger a live pipeline run — they
+    # self-fetch on page mount, so run_overview here would launch a ~3-min LLM+EDGAR run.
+    import app.main as main
+
+    def _boom(*a, **k):
+        raise AssertionError("run_overview must not be called by the cache-only case/crisis screens")
+
+    monkeypatch.setattr(main, "run_overview", _boom)
+    monkeypatch.setattr(main, "load_overview", lambda *a, **k: None)
+    monkeypatch.setattr(main, "load_latest_overview", lambda *a, **k: None)
+    assert client.get("/api/company/APEX/recovery/case").status_code == 200
+    assert client.get("/api/company/APEX/recovery/crisis").status_code == 200
 
 
 def test_scenarios_roundtrip():

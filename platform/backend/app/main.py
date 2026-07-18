@@ -27,7 +27,7 @@ from sse_starlette.sse import EventSourceResponse
 import datetime as dt
 
 from . import models
-from .core.cache import cached_tickers, safe_ticker
+from .core.cache import cached_tickers, load_latest_overview, load_overview, safe_ticker
 from .core.config import CACHE_DIR, get_settings, set_llm_runtime_enabled
 from .core.db import init_db, session_scope
 from .edgar.client import NoFilingsError, TickerNotFoundError
@@ -574,6 +574,14 @@ def _ov_cik(ov: dict) -> Optional[str]:
     return (ov.get("header") or {}).get("cik")
 
 
+def _cached_overview(ticker: str, years: int) -> dict:
+    """Overview from cache ONLY — never triggers a live pipeline run. Returns {} when the
+    company hasn't been built yet. Used by the read-only case/crisis screens, which self-fetch
+    on page mount and must not launch a ~3-min LLM+EDGAR run just from a page view."""
+    ov = load_overview(ticker, years) or load_latest_overview(ticker)
+    return ov.model_dump(mode="json") if ov is not None else {}
+
+
 def _accrual_from_petition(petition_date: str, ov: dict) -> float:
     """accrual_years = (petition − debt_schedule_asof)/365.25, floored at 0. The schedule
     as-of is when accrued interest was last settled on the balance sheet."""
@@ -1063,10 +1071,7 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
     (revolver drawn ≈ $0 undrawn). The statutory clocks/benchmark are computed frontend."""
     from .capstack.eightk import petition_filing
 
-    try:
-        ov = json.loads(run_overview(ticker, years).model_dump_json())
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
+    ov = _cached_overview(ticker, years)   # cache-only: a page-mount fetch must not launch a live run
 
     petition = None
     petition_error = False   # distinguish an EDGAR fetch failure from a genuine "no 1.03"
@@ -1089,14 +1094,17 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
     revolver_drawdown = None
     if undrawn and undrawn.get("value") is not None:
         revolver_drawdown = float(undrawn["value"]) <= 0.0   # fully drawn (undrawn ≈ $0)
+    note = ("petition date = the 8-K Item 1.03 filing date (proxy for the docket petition "
+            "date); revolver-drawdown is a weak free-fall hint (undrawn committed ≈ $0), not a "
+            "case-type determination — the analyst sets case type.")
+    if not ov:
+        note = "open this company's Overview tab first to populate its liquidity signals. " + note
     return JSONResponse(content=jsonable({
         "petition_date": petition,
         "petition_error": petition_error,   # True = EDGAR lookup failed (NOT "no bankruptcy")
         "revolver_undrawn": undrawn,
         "revolver_drawdown": revolver_drawdown,
-        "note": "petition date = the 8-K Item 1.03 filing date (proxy for the docket petition "
-                "date); revolver-drawdown is a weak free-fall hint (undrawn committed ≈ $0), not a "
-                "case-type determination — the analyst sets case type.",
+        "note": note,
     }))
 
 
@@ -1111,10 +1119,7 @@ def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
     from .capstack.eightk import crisis_screen, crisis_triggers
     from .core.db import FTS_AVAILABLE
 
-    try:
-        ov = json.loads(run_overview(ticker, years).model_dump_json())
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
+    ov = _cached_overview(ticker, years)   # cache-only: a page-mount fetch must not launch a live run
 
     triggers, trigger_error = [], False
     cik = _ov_cik(ov)
