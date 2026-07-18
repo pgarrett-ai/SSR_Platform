@@ -952,6 +952,123 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
     }))
 
 
+class PlanBody(BaseModel):
+    sim: dict = {}                       # base_ebitda, accrual_years
+    structure: Optional[dict] = None     # explicit (edited) cap table; else derived
+    petition_date: Optional[str] = None
+    reorg_ev: float                      # plan enterprise value ($mm)
+    reorg_debt: float = 0.0              # post-reorg debt ($mm) — reorg equity = EV − debt
+    reorg_shares: Optional[float] = None  # post-reorg share count (millions) — for rights math
+    duration_years: Optional[float] = None
+    plan: list[dict] = []                # per-class PlanConsideration dicts
+
+
+@app.post("/api/company/{ticker}/recovery/plan")
+def recovery_plan(ticker: str, body: PlanBody, years: int = Query(3, ge=1, le=10)):
+    """Plan-of-reorganization recovery & ROI (Moyer ch. 12-13): value the typed package
+    per class → recovery % of allowed claim → annualized ROI vs the market entry price,
+    with a per-class delta vs the absolute-priority recovery at the same reorg EV. The
+    plan is exogenous (never re-run through the waterfall). Clones recovery_exchange's shell."""
+    from .capstack.quotes import match_quotes
+    from .fulcrum.plan import PlanConsideration, evaluate_plan
+    from .hazard.trace import get_issuer_bonds
+
+    try:
+        ov: dict = {}
+        if body.structure is not None:
+            structure = _structure_from_body(ticker, body.structure)
+            try:
+                ov = json.loads(run_overview(ticker, years).model_dump_json())
+            except Exception:
+                ov = {}
+        else:
+            structure, _, _, _, _, ov = _derive_structure(ticker, years)
+        accrual = float(body.sim.get("accrual_years") or 0.0)
+        if body.petition_date and "accrual_years" not in body.sim:
+            accrual = _accrual_from_petition(body.petition_date, ov)
+
+        # entry price per tranche (per 100 of face), unquoted-degrading — prefix-match
+        # the drop-file quotes to tranche names (same n[:80] convention as the exchange shell)
+        matches, _ = match_quotes(ov.get("debt_schedule") or [],
+                                  get_issuer_bonds(ticker).get("bonds") or [])
+        tnames = [t.name for t in structure.tranches]
+        entry: dict = {}
+        for n, q in matches.items():
+            price = q.get("last_price")
+            if price is None:
+                continue
+            for tn in tnames:
+                if tn.rstrip(" *")[:80] == n[:80]:
+                    entry[tn] = price
+                    break
+
+        cons = [PlanConsideration(
+                    tranche=c.get("tranche"), cash=float(c.get("cash") or 0.0),
+                    new_debt_face=float(c.get("new_debt_face") or 0.0),
+                    new_debt_haircut=(None if c.get("new_debt_haircut") in (None, "")
+                                      else float(c["new_debt_haircut"])),
+                    new_equity_pct=float(c.get("new_equity_pct") or 0.0),
+                    warrant_value=float(c.get("warrant_value") or 0.0),
+                    rights_shares=float(c.get("rights_shares") or 0.0),
+                    rights_strike=float(c.get("rights_strike") or 0.0))
+                for c in body.plan]
+        out = evaluate_plan(structure, cons, reorg_ev=body.reorg_ev, reorg_debt=body.reorg_debt,
+                            reorg_shares=body.reorg_shares, accrual_years=accrual,
+                            entry_prices=entry, duration_years=body.duration_years)
+    except (TickerNotFoundError, NoFilingsError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except (ValueError, TypeError) as exc:   # engine validators = the 400 boundary
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+
+    out["structure"] = _structure_dict(structure)
+    out["accrual_years"] = accrual
+    return JSONResponse(content=jsonable(out))
+
+
+@app.get("/api/company/{ticker}/recovery/case")
+def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
+    """Chapter-11 case card inputs (Moyer ch. 12): the cited petition date (the 8-K Item
+    1.03 filing date, a proxy for the docket petition date) and a weak free-fall hint
+    (revolver drawn ≈ $0 undrawn). The statutory clocks/benchmark are computed frontend."""
+    from .capstack.eightk import petition_filing
+
+    try:
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+    except (TickerNotFoundError, NoFilingsError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+
+    petition = None
+    petition_error = False   # distinguish an EDGAR fetch failure from a genuine "no 1.03"
+    cik = ov.get("cik")
+    if cik:
+        try:
+            pf = petition_filing(cik)
+        except Exception:
+            pf, petition_error = None, True
+        if pf and pf.get("date"):
+            petition = {"value": pf["date"], "display": pf["date"], "derived": False,
+                        "citation": {"form_type": "8-K",
+                                     "section": "Item 1.03 — Bankruptcy or Receivership",
+                                     "filing_date": pf["date"], "accession_no": pf.get("accession"),
+                                     "source_url": pf.get("source_url"),
+                                     "quote": "petition date proxied by the 8-K Item 1.03 filing date"}}
+
+    liq = ov.get("liquidity") or {}
+    undrawn = liq.get("undrawn_committed")
+    revolver_drawdown = None
+    if undrawn and undrawn.get("value") is not None:
+        revolver_drawdown = float(undrawn["value"]) <= 0.0   # fully drawn (undrawn ≈ $0)
+    return JSONResponse(content=jsonable({
+        "petition_date": petition,
+        "petition_error": petition_error,   # True = EDGAR lookup failed (NOT "no bankruptcy")
+        "revolver_undrawn": undrawn,
+        "revolver_drawdown": revolver_drawdown,
+        "note": "petition date = the 8-K Item 1.03 filing date (proxy for the docket petition "
+                "date); revolver-drawdown is a weak free-fall hint (undrawn committed ≈ $0), not a "
+                "case-type determination — the analyst sets case type.",
+    }))
+
+
 class LiquidationBody(BaseModel):
     structure: Optional[dict] = None
     rates: Optional[dict] = None        # {category: advance rate 0..1}; default orderly preset

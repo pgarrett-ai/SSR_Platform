@@ -12,10 +12,12 @@ import {
   deleteScenario, fetchLadder, fetchRecoveryStructure, listScenarios, saveScenario,
   simulateRecovery,
 } from "../api.js";
+import CaseCard from "../components/CaseCard.jsx";
 import EvExplorer from "../components/EvExplorer.jsx";
 import ExchangeAnalyzer from "../components/ExchangeAnalyzer.jsx";
 import IrrMatrix from "../components/IrrMatrix.jsx";
 import LiquidationPanel from "../components/LiquidationPanel.jsx";
+import PlanRecovery from "../components/PlanRecovery.jsx";
 
 // Provenance marker: § next to a tranche pops the filing citation behind its face amount.
 function CiteMark({ citation }) {
@@ -107,6 +109,12 @@ export default function RecoveryPage({ ticker, years }) {
       .then((d) => setQuotedByName(d.quote_by_instrument || {}))
       .catch(() => setQuotedByName({}));
   }, [ticker, years]);
+
+  // Reset the petition date on issuer change so a stale date can't toll accrual for the
+  // wrong company; CaseCard reseeds it from the new issuer's 8-K Item 1.03 if one exists.
+  useEffect(() => {
+    setPetitionDate(new Date().toISOString().slice(0, 10));
+  }, [ticker]);
 
   useEffect(() => {
     if (!ticker) return;
@@ -264,6 +272,9 @@ export default function RecoveryPage({ ticker, years }) {
             <span>cap-table source: <span className="text-slate-200">{source}</span></span>
             <span>{structure.tranches.length} tranches</span>
           </div>
+
+          <CaseCard ticker={ticker} years={years} petitionDate={petitionDate}
+            setPetitionDate={setPetitionDate} />
 
           <Section title="Debt tranches" subtitle="faces in $mm · ranked by lien">
             <div className="overflow-x-auto">
@@ -469,6 +480,10 @@ export default function RecoveryPage({ ticker, years }) {
 
           <ExchangeAnalyzer ticker={ticker} years={years} structure={structure}
             baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0} />
+
+          <PlanRecovery ticker={ticker} years={years} structure={structure}
+            baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0}
+            petitionDate={petitionDate} />
         </>
       )}
 

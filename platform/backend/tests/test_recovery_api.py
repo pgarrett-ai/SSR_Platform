@@ -156,6 +156,48 @@ def test_exchange_unknown_target_400(monkeypatch):
     assert r.status_code == 400
 
 
+def test_plan_endpoint_smoke(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/plan", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": 120.0},
+        "reorg_ev": 1000.0, "reorg_debt": 800.0,
+        "plan": [{"tranche": "OpCo Unsecured", "cash": 50.0,
+                  "new_debt_face": 40.0, "new_debt_haircut": 0.6, "new_equity_pct": 10.0}]})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["available"] is True
+    assert abs(d["reorg_equity_value"]["value"] - 200.0) < 1e-9   # 1000 − 800
+    row = d["rows"][0]
+    # plan value = 50 + 40×0.6 + 10%×200 = 50 + 24 + 20 = 94
+    assert abs(row["plan_value"]["value"] - 94.0) < 1e-9
+    assert row["roi"] is None                                      # unquoted (bonds [])
+
+
+def test_plan_endpoint_haircut_required_400(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/plan", json={
+        "structure": APEX_STRUCTURE, "reorg_ev": 500.0,
+        "plan": [{"tranche": "OpCo Unsecured", "new_debt_face": 100.0}]})  # no haircut
+    assert r.status_code == 400
+
+
+def test_plan_endpoint_missing_tranche_400(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/plan", json={
+        "structure": APEX_STRUCTURE, "reorg_ev": 500.0,
+        "plan": [{"cash": 10.0}]})           # no "tranche" key -> ValueError, not 500
+    assert r.status_code == 400
+
+
+def test_case_endpoint_smoke(monkeypatch):
+    _patch_offline(monkeypatch)     # bare overview: no cik, no liquidity
+    r = client.get("/api/company/APEX/recovery/case")
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["petition_date"] is None          # no cik -> no 8-K lookup, no network
+    assert d["revolver_drawdown"] is None
+
+
 def test_scenarios_roundtrip():
     saved = client.post("/api/company/APEX/scenarios", json={
         "name": "Base", "sim": APEX_SIM, "structure": APEX_STRUCTURE,
