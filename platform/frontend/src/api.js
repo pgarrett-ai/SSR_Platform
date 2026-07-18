@@ -269,6 +269,12 @@ export async function fetchCh11Case(ticker, years = 3) {
   );
 }
 
+export async function fetchCrisisScreen(ticker, years = 3) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/crisis?years=${years}`)
+  );
+}
+
 export async function listScenarios(ticker) {
   return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/scenarios`));
 }

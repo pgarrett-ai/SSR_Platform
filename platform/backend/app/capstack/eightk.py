@@ -21,11 +21,14 @@ from ..core.config import get_settings
 
 _SUBMISSIONS = "https://data.sec.gov/submissions/CIK{cik10}.json"
 
-# crisis-of-confidence 8-K items (Moyer ch. 8): restatement / auditor / management
+# crisis-of-confidence 8-K items (Moyer ch. 8): restatement / auditor / management.
+# 4.01/4.02 are the accounting-confidence signals; 5.02 also covers routine appointments
+# (Item 5.02 = Departure/Election/Appointment), so it is noisier — labeled accurately and
+# treated as secondary. A body-keyword read to isolate genuine departures is the upgrade path.
 CRISIS_ITEMS = {
     "4.01": "auditor change",
     "4.02": "non-reliance / restatement",
-    "5.02": "officer/director departure",
+    "5.02": "officer/director change",
 }
 
 
@@ -96,3 +99,77 @@ def crisis_triggers(cik, since: Optional[str] = None) -> list[dict]:
         if hits:
             out.append({**r, "triggers": hits})
     return out
+
+
+def crisis_screen(triggers, liquidity, liquidity_events, accel=None) -> dict:
+    """Crisis-of-confidence four-factor liquidity screen (Moyer ch. 8). PURE — takes
+    already-fetched inputs so it is unit-testable without network/DB.
+
+    A restatement/fraud disclosure only becomes a *liquidity event* when it coincides
+    with an immediate cash need the company cannot cover from cash on hand — Global
+    Crossing survived on $2B of cash; WorldCom's refi wall did not. So the overall
+    `crisis` flag = a trigger 8-K AND an at-risk near-term obligation not covered by cash.
+    Revolver reliance (factor 2) and acceleration/MAC language (factor 3) amplify the
+    need but are qualitative/best-effort, so they inform rather than gate the flag.
+    """
+    triggers = triggers or []
+    liquidity = liquidity or {}
+    liquidity_events = liquidity_events or []
+    accel = accel or {}
+
+    trig_map: dict = {}
+    trigger_filings = []
+    for t in triggers:
+        if t.get("triggers"):
+            trigger_filings.append(t)
+            trig_map.update(t["triggers"])
+    triggered = bool(trigger_filings)
+
+    cash = liquidity.get("cash")
+    undrawn = liquidity.get("undrawn_committed")
+    cash_val = (cash or {}).get("value")
+    undrawn_val = (undrawn or {}).get("value")
+    reliance_pct = None
+    if cash_val is not None and undrawn_val:
+        denom = cash_val + undrawn_val
+        reliance_pct = round(100.0 * undrawn_val / denom, 1) if denom > 0 else None
+
+    # factor 4: immediate cash need — near events flagged at-risk / unfundable
+    at_risk = [e for e in liquidity_events
+               if any(f in (e.get("flags") or [])
+                      for f in ("coupon_at_risk", "maturity_unfundable"))]
+    need_total = sum(((e.get("amount") or {}).get("value") or 0.0) for e in at_risk)
+    # tri-state: True (cash covers), False (cash < need), None (no at-risk event OR cash
+    # not tagged). Don't assert "not covered" — or gate crisis — on an unknown cash figure.
+    if not at_risk or cash_val is None:
+        covered = None
+    else:
+        covered = cash_val >= need_total
+    immediate_need = bool(at_risk) and covered is False
+
+    accel_found = int(accel.get("clauses_found") or 0)
+    crisis = triggered and immediate_need
+
+    factors = {
+        "cash": cash,
+        "revolver": {
+            "undrawn": undrawn, "reliance_pct": reliance_pct,
+            "note": "a restatement/fraud disclosure typically trips a covenant and freezes "
+                    "the revolver — reliance on undrawn capacity is fragile (Moyer ch. 8 factor 2)"},
+        "acceleration": {
+            "clauses_found": accel_found, "sample": accel.get("sample"),
+            "available": bool(accel.get("available", True)),
+            "note": "best-effort scan of the indexed covenant/notes corpus for cross-default / "
+                    "material-adverse-change language — NOT full indenture text, and depends on "
+                    "the LLM covenant extraction having run (Moyer ch. 8 factor 3)"},
+        "immediate_need": {
+            "events": at_risk[:3], "need_total": need_total, "covered_by_cash": covered,
+            "note": "nearest coupon/maturity flagged at-risk or unfundable (Moyer ch. 8 factor 4)"},
+    }
+    return {
+        "triggered": triggered, "trigger_items": sorted(trig_map),
+        "trigger_filings": trigger_filings, "factors": factors, "crisis": crisis,
+        "note": "crisis = a restatement/fraud 8-K trigger AND an immediate cash need not covered "
+                "by cash on hand; revolver reliance and acceleration language amplify but are "
+                "best-effort/qualitative (Moyer ch. 8).",
+    }
