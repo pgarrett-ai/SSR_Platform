@@ -265,6 +265,53 @@ def test_tax382_endpoint_no_nol_degrades(monkeypatch):
     assert r.json()["available"] is False            # no NOL extracted or supplied
 
 
+def test_simulate_n_draws_bounded_400(monkeypatch):
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/simulate",
+                    json={"structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 10**9}})
+    assert r.status_code == 400          # SimConfig ValueError -> 400 (memory-DoS guard)
+
+
+def test_simulate_too_many_tranches_400(monkeypatch):
+    _patch_offline(monkeypatch)
+    huge = {**APEX_STRUCTURE, "tranches": [
+        {"name": f"T{i}", "entity": "OpCo", "face": 1.0} for i in range(501)]}
+    r = client.post("/api/company/APEX/recovery/simulate",
+                    json={"structure": huge, "sim": {**APEX_SIM, "n_draws": 5_000}})
+    assert r.status_code == 400          # CapitalStructure.validate() count cap
+
+
+def test_simulate_product_bound_400(monkeypatch):
+    # each factor is individually valid, but n_draws × tranches exceeds the cell budget
+    _patch_offline(monkeypatch)
+    many = {**APEX_STRUCTURE, "tranches": [
+        {"name": f"T{i}", "entity": "OpCo", "face": 10.0} for i in range(100)]}
+    r = client.post("/api/company/APEX/recovery/simulate",
+                    json={"structure": many, "sim": {**APEX_SIM, "n_draws": 1_000_000}})
+    assert r.status_code == 400          # 100 × 1e6 = 1e8 cells > 20M budget
+
+
+def test_plan_length_bounded_400(monkeypatch):
+    _patch_offline(monkeypatch)
+    big = [{"tranche": "OpCo Unsecured", "cash": 1.0} for _ in range(501)]
+    r = client.post("/api/company/APEX/recovery/plan",
+                    json={"structure": APEX_STRUCTURE, "reorg_ev": 100.0, "plan": big})
+    assert r.status_code == 400
+
+
+def test_tax382_horizon_bounded_422():
+    # Field(le=100) rejects at the Pydantic boundary before the handler runs (no network needed)
+    r = client.post("/api/company/APEX/recovery/tax382",
+                    json={"equity_fmv": 200.0, "horizon_years": 10**9})
+    assert r.status_code == 422
+
+
+def test_ticker_charset_rejected_422():
+    # query-param ticker pattern rejects path-separator chars before any pipeline work
+    assert client.get("/api/overview?ticker=../etc&years=3").status_code == 422
+    assert client.get("/api/filings?ticker=..%2f..%2fx&years=3").status_code == 422
+
+
 def test_scenarios_roundtrip():
     saved = client.post("/api/company/APEX/scenarios", json={
         "name": "Base", "sim": APEX_SIM, "structure": APEX_STRUCTURE,

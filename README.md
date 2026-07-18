@@ -74,6 +74,16 @@ SEC EDGAR (XBRL company facts, full-text search, filing documents, historical CI
 lookup) · Fitch Rule 17g-7 rating histories (via ratingshistory.info CSV conversion) ·
 yfinance market data · FINRA fixed-income data (optional).
 
+## Security posture
+
+This is a **single-user, localhost research tool** — the backend has **no authentication**
+and several endpoints intentionally do expensive work (LLM extraction, live EDGAR fetches,
+Monte Carlo). Run it bound to `127.0.0.1` only; do **not** expose it to an untrusted network
+or reverse-proxy it to the public internet without adding authentication and rate limiting
+in front. Inputs at the API boundary are validated (ticker charset/length, request-body
+size and iteration/allocation bounds) to prevent path traversal and resource-exhaustion
+against a *local* caller, but that is defense-in-depth, not a substitute for network isolation.
+
 ## Disclaimer
 
 Research tooling only. Nothing here is investment advice.

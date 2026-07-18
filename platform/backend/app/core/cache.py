@@ -6,19 +6,40 @@ cache for a real re-run. Successful live runs are also written back so repeat re
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Optional
 
 from .config import CACHE_DIR, get_settings
 from ..schemas import Overview
 
+# Trust boundary: `ticker` is request-derived and is interpolated into cache FILENAMES
+# (cache_path, _hazard_section, load_latest_overview, refi.hazard_inputs). The allowlist
+# excludes path separators ('/' and '\') so a value can never form '../' or '..\' and
+# escape CACHE_DIR; '..' alone is also rejected for clarity. Output stays strip().upper()
+# so cache/DB keys are unchanged, and the charset is no stricter than EdgarClient.resolve_company
+# (letters/digits for symbols + aliases, dot for BRK.A, hyphen; up to 16 to fit 'CIK'+10-digit).
+_TICKER_RE = re.compile(r"^[A-Z0-9.\-]{1,16}$")
+
+
+def safe_ticker(ticker: str) -> str:
+    """Normalize (strip/upper) and validate a request-derived ticker before it reaches any
+    filesystem path. Raises ValueError on anything that could traverse or is malformed."""
+    t = (ticker or "").strip().upper()
+    if ".." in t or not _TICKER_RE.match(t):
+        raise ValueError(f"invalid ticker: {ticker!r}")
+    return t
+
 
 def cache_path(ticker: str, years: int) -> Path:
-    return CACHE_DIR / f"{ticker.strip().upper()}_{int(years)}y.json"
+    return CACHE_DIR / f"{safe_ticker(ticker)}_{int(years)}y.json"
 
 
 def load_overview(ticker: str, years: int) -> Optional[Overview]:
-    p = cache_path(ticker, years)
+    try:
+        p = cache_path(ticker, years)
+    except ValueError:
+        return None   # invalid ticker -> treat as no cache; the live path resolves it and 404s
     if not p.exists():
         return None
     try:
@@ -32,7 +53,10 @@ def load_overview(ticker: str, years: int) -> Optional[Overview]:
 def load_latest_overview(ticker: str) -> Optional[Overview]:
     """Any cached snapshot for the ticker regardless of years window (newest file wins).
     Cache-only by design: callers use this for cheap cross-module reads, never a live run."""
-    t = ticker.strip().upper()
+    try:
+        t = safe_ticker(ticker)
+    except ValueError:
+        return None
     for p in sorted(CACHE_DIR.glob(f"{t}_*y.json"),
                     key=lambda p: p.stat().st_mtime, reverse=True):
         try:

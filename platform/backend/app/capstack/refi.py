@@ -12,6 +12,7 @@ import datetime as dt
 import json
 from typing import Optional
 
+from ..core.cache import safe_ticker
 from ..core.config import CACHE_DIR, get_settings
 from ..edgar.facts import derived_value
 from ..hazard.merton import merton
@@ -36,7 +37,11 @@ def hazard_inputs(ticker: str) -> Optional[dict]:
     {TICKER}_*y.json and take the newest (NOT years-keyed: only *_10y.json typically
     exists). Any age (calculator, not monitor); file + as_of surfaced in the payload.
     None when no usable cache."""
-    files = sorted(CACHE_DIR.glob(f"hazard/{ticker.strip().upper()}_*y.json"),
+    try:
+        t = safe_ticker(ticker)   # trust boundary: keep request-derived ticker out of the glob
+    except ValueError:
+        return None
+    files = sorted(CACHE_DIR.glob(f"hazard/{t}_*y.json"),
                    key=lambda p: p.stat().st_mtime)
     for p in reversed(files):
         try:

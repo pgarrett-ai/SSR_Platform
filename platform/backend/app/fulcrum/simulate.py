@@ -24,6 +24,7 @@ correlation
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 import numpy as np
@@ -53,8 +54,10 @@ class SimConfig:
     seed: int = 42
 
     def __post_init__(self) -> None:
-        if self.base_ebitda <= 0:
-            raise ValueError("base_ebitda must be positive")
+        # isfinite first: NaN evades a bare `<= 0` (all NaN comparisons are False) and would
+        # otherwise poison the whole simulation with NaN
+        if not math.isfinite(self.base_ebitda) or self.base_ebitda <= 0:
+            raise ValueError("base_ebitda must be a positive finite number")
         if self.accrual_years < 0:
             raise ValueError("accrual_years must be non-negative")
         if not -1.0 <= self.corr <= 1.0:
@@ -63,6 +66,8 @@ class SimConfig:
             raise ValueError("stress_prob must be in [0, 1]")
         if self.mean_reversion <= 0:
             raise ValueError("mean_reversion (kappa) must be positive")
+        if not 1 <= self.n_draws <= 1_000_000:   # request-derived: cap the RNG/array allocation
+            raise ValueError("n_draws must be in [1, 1_000_000]")
 
 
 @dataclass
