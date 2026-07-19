@@ -88,3 +88,21 @@ def test_structural_form_detector(form, event_type, severity):
 def test_untracked_forms_route_nowhere(form):
     meta = _fmeta(form)
     assert [e for det in detectors_for(form) for e in det(meta, {}, None)] == []
+
+
+# --- Task 20: 17g-7 ratings default detector ---------------------------------
+from app.events.detectors_ratings import events_from_sd_rows
+
+
+def test_ratings_events_pure_and_idempotent():
+    rows = [{"cik": "1234", "name": "Alpha Airways, Inc.", "filed": "2020-05-01",
+             "source": "fitch_rd"}]
+    evs = events_from_sd_rows(rows)
+    assert len(evs) == 1
+    e = evs[0]
+    assert (e.event_type, e.severity, e.source, e.source_form) == \
+        ("rating_default", 5, "ratings", "17g-7")
+    assert e.accession_no == "ratings:fitch_rd:0000001234:2020-05-01"
+    assert e.cik == "0000001234"                        # padded via feed.pad_cik
+    # pure + stable: same rows -> same dedupe key across calls (keys the idempotent insert)
+    assert events_from_sd_rows(rows)[0].dedupe_key == e.dedupe_key

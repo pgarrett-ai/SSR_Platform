@@ -42,11 +42,12 @@ class Job:
 
 def build_jobs() -> list[Job]:
     from .events import poller, universe
+    from .events.detectors_ratings import refresh_ratings
     return [
         Job("poll_filings", 300, poller.poll_once),
         Job("catchup_form_idx", 86_400, poller.catchup_form_idx),
         Job("universe_refresh", 86_400, universe.refresh_universe),
-        # PR-3 appends: Job("ratings_refresh", 30 * 86_400, refresh_ratings)
+        Job("ratings_refresh", 30 * 86_400, refresh_ratings),
     ]
 
 
