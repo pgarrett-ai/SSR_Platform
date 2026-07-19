@@ -26,6 +26,11 @@ def refresh_universe() -> int:
             if not raw.lstrip("0"):
                 continue
             cik = feed.pad_cik(raw)
+            if cik in seen:
+                continue   # company_tickers.json is one row per TICKER: a CIK with units/
+                           # warrants/multiple share classes repeats (VACI-UN + VACI-WT share
+                           # one CIK). Autoflush is off, so session.get can't see the pending
+                           # same-batch insert — dedupe here or the PK collides. First ticker wins.
             seen.add(cik)
             row = session.get(models_events.UniverseCompany, cik)
             if row is None:

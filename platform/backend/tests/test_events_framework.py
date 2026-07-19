@@ -200,3 +200,77 @@ def test_catchup_resolves_missing_accessions(monkeypatch):
         "accessionNumber": ["0000000555-26-000001"], "items": ["1.03"]}}})
     assert poller.catchup_form_idx() == 1
     assert poller.catchup_form_idx() == 0             # reconciled -> nothing to do
+
+
+# --- Task 17: universe refresh + heartbeat + worker + health block -----------
+import app.events.heartbeat as hb
+import app.events.universe as uni
+import app.worker as worker
+
+
+def test_universe_refresh_upserts_and_deactivates(monkeypatch):
+    init_db()
+    payload = {"0": {"cik_str": 320193, "ticker": "AAPL", "title": "Apple Inc."},
+               "1": {"cik_str": 777, "ticker": "OLDCO", "title": "Oldco"}}
+    monkeypatch.setattr(feed, "get_json", lambda url, timeout=30.0: payload)
+    assert uni.refresh_universe() == 2
+    monkeypatch.setattr(feed, "get_json", lambda url, timeout=30.0: {
+        "0": {"cik_str": 320193, "ticker": "AAPL", "title": "Apple Inc."}})
+    uni.refresh_universe()
+    with session_scope() as s:
+        assert s.get(models_events.UniverseCompany, "0000000777").is_active is False
+        assert s.get(models_events.UniverseCompany, "0000320193").is_active is True
+
+
+def test_heartbeat_counter_and_status(monkeypatch, tmp_path):
+    init_db()
+    monkeypatch.setattr(hb, "HEARTBEAT_PATH", tmp_path / "hb.json")
+    hb.beat(3, {"poll_filings": None})
+    hb.beat(2, {"poll_filings": None})
+    st = hb.worker_status()
+    assert st["alive"] is True and st["events_ingested_today"] == 5
+    assert "last_event_hours" in st                    # raw gauge; PR-6 computes the alarm
+    stale = json.loads(hb.HEARTBEAT_PATH.read_text(encoding="utf-8"))
+    stale["ts"] -= 9999
+    hb.HEARTBEAT_PATH.write_text(json.dumps(stale), encoding="utf-8")
+    assert hb.worker_status()["alive"] is False
+
+
+def test_run_due_schedules_and_survives_failures():
+    calls = {"a": 0, "b": 0}
+
+    def a():
+        calls["a"] += 1
+        return 2
+
+    def b():
+        calls["b"] += 1
+        raise RuntimeError("boom")
+
+    jobs = [worker.Job("a", 100, a), worker.Job("b", 100, b)]
+    assert worker.run_due(jobs, now=1000.0) == 2          # both due; b's failure swallowed
+    assert worker.run_due(jobs, now=1050.0) == 0
+    assert worker.run_due(jobs, now=1101.0) == 2
+    assert calls == {"a": 2, "b": 2}
+    assert jobs[0].last_ok and jobs[1].last_ok is None    # only success stamps last_ok
+
+
+def test_lock_stale_takeover(monkeypatch, tmp_path):
+    import time
+    monkeypatch.setattr(worker, "LOCK_PATH", tmp_path / "worker.lock")
+    assert worker.acquire_lock() is True
+    assert worker.acquire_lock() is False                 # fresh lock held
+    blob = json.loads(worker.LOCK_PATH.read_text(encoding="utf-8"))
+    blob["ts"] = time.time() - 9999
+    worker.LOCK_PATH.write_text(json.dumps(blob), encoding="utf-8")
+    assert worker.acquire_lock() is True                  # stale -> takeover
+
+
+def test_health_exposes_worker_block(monkeypatch, tmp_path):
+    from fastapi.testclient import TestClient
+    from app.main import app
+    monkeypatch.setattr(hb, "HEARTBEAT_PATH", tmp_path / "hb.json")
+    hb.beat(1, {"poll_filings": "2026-07-18T12:00:00"})
+    with TestClient(app) as client:
+        w = client.get("/api/health").json()["worker"]
+    assert w["alive"] is True and w["events_ingested_today"] == 1

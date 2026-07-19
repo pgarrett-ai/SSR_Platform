@@ -20,6 +20,8 @@ dist/
 *.pkl
 .logs/
 platform/backend/app/data/runtime_settings.json
+platform/backend/app/data/worker_heartbeat.json
+platform/backend/app/data/worker.lock
 
 # editor/os noise
 .DS_Store
