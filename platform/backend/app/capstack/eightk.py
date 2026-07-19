@@ -9,17 +9,19 @@ decision #8).
 
 Reused by F1 (petition date, `petition_filing`) and F3 (crisis triggers,
 `crisis_triggers`). `_http_get_submissions` is the raw network seam; `_fetch_submissions`
-wraps it with a 1h per-CIK disk cache + retry. Tests monkeypatch either.
+wraps it with a 1h per-CIK disk cache + retry. Tests monkeypatch either. All bytes leave
+through the one paced EDGAR transport (`edgar.http.paced_get`).
 """
 from __future__ import annotations
 
 import json
 import re
 import time
-import urllib.request
+import urllib.error
 from typing import Optional
 
-from ..core.config import CACHE_DIR, get_settings
+from ..core.config import CACHE_DIR
+from ..edgar.http import paced_get
 
 _SUBMISSIONS = "https://data.sec.gov/submissions/CIK{cik10}.json"
 _SUBMISSIONS_CACHE_DIR = CACHE_DIR / "eightk"   # per-CIK cache; module global so tests can redirect it
@@ -37,10 +39,8 @@ CRISIS_ITEMS = {
 
 
 def _http_get_json(url: str) -> dict:
-    """Raw network seam — the only outbound call; monkeypatched in tests."""
-    req = urllib.request.Request(url, headers={"User-Agent": get_settings().sec_user_agent})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode("utf-8"))
+    """Raw network seam — monkeypatched in tests; bytes leave via the paced transport."""
+    return json.loads(paced_get(url).decode("utf-8"))
 
 
 def _http_get_submissions(cik) -> dict:
@@ -65,7 +65,9 @@ def _cached(key: str, fetcher) -> dict:
         try:
             data = fetcher()
             break
-        except Exception as exc:   # transient 429/5xx/timeout — short backoff, then degrade
+        except Exception as exc:   # transient 5xx/timeout — short backoff, then degrade
+            if isinstance(exc, urllib.error.HTTPError) and exc.code in (429, 403):
+                raise   # paced_get already spent the sanctioned 429/403 backoff; don't re-amplify it
             last_exc = exc
             if attempt < 2:        # don't sleep after the final attempt
                 time.sleep(0.5 * (attempt + 1))
@@ -137,7 +139,6 @@ def list_8k_items(cik, since: Optional[str] = None) -> list[dict]:
             continue
         if since and f.get("filingTo") and f["filingTo"] < since:
             continue   # this overflow page is entirely older than the window of interest
-        time.sleep(0.12)   # pace overflow fetches under SEC's 10 req/s fair-access limit
         out.extend(_rows_from_arrays(_fetch_submission_file(name), cik, since))
     return out
 
