@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 import queue
+import re
 import threading
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -27,6 +28,7 @@ from sse_starlette.sse import EventSourceResponse
 import datetime as dt
 
 from . import models
+from . import models_events
 from .core.cache import cached_tickers, load_latest_overview, load_overview, safe_ticker
 from .core.config import CACHE_DIR, get_settings, set_llm_runtime_enabled
 from .core.db import init_db, session_scope
@@ -504,6 +506,108 @@ def search(q: str = Query(..., min_length=1, max_length=200),
         return JSONResponse(content={"hits": [
             {"source_kind": r[0], "ticker": r[1], "ref_id": r[2], "snippet": r[3]}
             for r in rows]})
+
+
+# ---- events feed + company timeline (Phase 6 event store; PR-5) --------------------
+
+_EVENT_TYPE_RE = re.compile(r"^[a-z0-9_.\-]{1,48}$")   # detector slugs; trust boundary
+
+
+def _pad_cik(cik) -> Optional[str]:
+    """Any CIK form ('6201', 'CIK0000006201') -> the event store's canonical 10-digit
+    zero-padded key (eightk.py convention); None for junk/empty."""
+    if not cik:
+        return None
+    digits = str(cik).strip().upper().lstrip("CIK").lstrip("0")
+    return digits.zfill(10) if digits.isdigit() and digits else None
+
+
+def _resolve_cik(session, ticker: str) -> Optional[str]:
+    """ticker -> event-store CIK: raw CIK forms pass through; universe first
+    (daily-refreshed); snapshots fallback (names analyzed before the universe job ran)."""
+    t = ticker.strip().upper()
+    if t.lstrip("CIK").isdigit():          # raw CIK typed/linked directly
+        return _pad_cik(t)
+    row = (session.query(models_events.UniverseCompany)
+           .filter(models_events.UniverseCompany.ticker == t).first())
+    if row is not None:
+        return _pad_cik(row.cik)
+    snap = session.get(models.Snapshot, t)
+    return _pad_cik(snap.cik) if snap is not None else None
+
+
+def _event_dict(e, ticker: Optional[str] = None) -> dict:
+    return {
+        "id": e.id, "cik": e.cik, "ticker": ticker,
+        "event_type": e.event_type, "subtype": e.subtype,
+        "severity": e.severity, "confidence": e.confidence,
+        "occurred_at": e.occurred_at.isoformat() if e.occurred_at else None,
+        "detected_at": e.detected_at.isoformat() if e.detected_at else None,
+        "source": e.source, "source_form": e.source_form,
+        "accession_no": e.accession_no, "source_url": e.source_url,
+        "title": e.title, "payload": e.payload,
+    }
+
+
+@app.get("/api/events")
+def list_events(
+    cik: Optional[str] = Query(None, min_length=1, max_length=10, pattern=r"^\d+$"),
+    ticker: Optional[str] = Query(None, min_length=1, max_length=12,
+                                  pattern=r"^[A-Za-z0-9.\-]+$"),
+    event_type: Optional[list[str]] = Query(None),
+    min_severity: Optional[int] = Query(None, ge=1, le=5),
+    since: Optional[str] = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    until: Optional[str] = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0, le=100_000),
+):
+    """Event-store firehose (plan §9). Ordered detected_at DESC NULLS LAST — live
+    detections first, honest backfill (detected_at NULL) last. since/until filter
+    occurred_at (the world-time axis; backfill rows have no detected_at).
+    No total count: the client pages by 'came back full'."""
+    from sqlalchemy import desc, nulls_last
+
+    for t in event_type or []:
+        if not _EVENT_TYPE_RE.fullmatch(t):
+            return JSONResponse(status_code=400,
+                                content={"error": f"bad event_type {t!r}"})
+    try:
+        since_d = dt.date.fromisoformat(since) if since else None
+        until_d = dt.date.fromisoformat(until) if until else None
+    except ValueError as exc:              # pattern passed but not a real date
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+
+    with session_scope() as session:
+        the_cik = _pad_cik(cik) if cik else None
+        if the_cik is None and ticker:
+            the_cik = _resolve_cik(session, ticker)
+            if the_cik is None:
+                return JSONResponse(status_code=404, content={
+                    "error": "ticker_not_found",
+                    "detail": f"{ticker.strip().upper()!r} is in neither the universe "
+                              f"nor the snapshot index"})
+        q = (session.query(models_events.Event, models_events.UniverseCompany.ticker)
+             .outerjoin(models_events.UniverseCompany,
+                        models_events.UniverseCompany.cik == models_events.Event.cik))
+        if the_cik:
+            q = q.filter(models_events.Event.cik == the_cik)
+        if event_type:
+            q = q.filter(models_events.Event.event_type.in_(event_type))
+        if min_severity:
+            q = q.filter(models_events.Event.severity >= min_severity)
+        if since_d:
+            q = q.filter(models_events.Event.occurred_at
+                         >= dt.datetime.combine(since_d, dt.time.min))
+        if until_d:                        # inclusive end date
+            q = q.filter(models_events.Event.occurred_at
+                         < dt.datetime.combine(until_d + dt.timedelta(days=1), dt.time.min))
+        rows = (q.order_by(nulls_last(desc(models_events.Event.detected_at)),
+                           desc(models_events.Event.occurred_at),
+                           desc(models_events.Event.id))
+                .offset(offset).limit(limit).all())
+        return JSONResponse(content=jsonable({
+            "events": [_event_dict(e, tk) for e, tk in rows],
+            "limit": limit, "offset": offset}))
 
 
 def jsonable(obj):
