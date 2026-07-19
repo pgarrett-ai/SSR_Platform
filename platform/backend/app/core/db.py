@@ -14,7 +14,8 @@ _settings = get_settings()
 # check_same_thread=False so FastAPI's threadpool can share the engine; SQLite is fine for MVP.
 engine = create_engine(
     _settings.database_url,
-    connect_args={"check_same_thread": False},
+    connect_args=({"check_same_thread": False}
+                  if _settings.database_url.startswith("sqlite") else {}),
     future=True,
 )
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False, future=True)
@@ -33,7 +34,7 @@ def init_db() -> None:
     """Create all tables + the FTS index, and seed both from existing data when empty.
     Safe to call repeatedly."""
     global FTS_AVAILABLE
-    from .. import models  # noqa: F401  (register mappers)
+    from .. import models, models_events  # noqa: F401  (register mappers)
 
     models.Base.metadata.create_all(bind=engine)
     _ensure_columns()
@@ -47,11 +48,19 @@ def init_db() -> None:
 
 def _ensure_columns() -> None:
     """Idempotent micro-migration: create_all never ALTERs an existing table, so add any
-    mapped columns missing from the live SQLite file. Nullable ADD COLUMN only."""
-    from .. import models
+    mapped columns missing from the live SQLite file. Nullable ADD COLUMN only.
+
+    FROZEN as of PR-2a: legacy (models.py) tables on SQLite only — event-store tables and
+    any Postgres deployment migrate via Alembic exclusively."""
+    from .. import models, models_events
+
+    if engine.dialect.name != "sqlite":
+        return
 
     with engine.begin() as con:
         for table in models.Base.metadata.tables.values():
+            if table.name in models_events.EVENT_STORE_TABLES:
+                continue
             have = {row[1] for row in
                     con.exec_driver_sql(f"PRAGMA table_info({table.name})").fetchall()}
             if not have:   # table doesn't exist yet; create_all handled it
