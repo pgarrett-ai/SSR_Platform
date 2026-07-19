@@ -109,11 +109,13 @@ def catchup_form_idx(window_days: int = 7) -> int:
 
     Convergence note: the accession-diff reconciles against stored events, so a resolved
     filing that yields NO tracked event is re-resolved on later runs. With only 1.03
-    seeded (this PR) that means a bounded daily re-fetch burst; once the full detector
-    table lands (next PR: all 16 8-K items + items_unknown + structural forms) every
-    resolved filing stores at least one event and the diff converges. Revisit with a
-    processed-accessions ledger only if post-detector-table telemetry still shows
-    re-resolution churn."""
+    seeded (this PR) that means a bounded daily re-fetch burst. Once the full detector
+    table lands (next PR: all 16 8-K items + items_unknown + structural forms) the diff
+    converges for all signal-bearing 8-Ks; a bounded residual of all-untracked-item
+    8-Ks (notably 9.01-only /A amendments and 6.0x ABS-only filings) still re-resolves
+    within the window — paced, idempotent, no data loss. Revisit with a
+    processed-accessions ledger only if telemetry shows churn beyond that class
+    (count 9.01-only filings specifically)."""
     today = dt.date.today()
     since = (today - dt.timedelta(days=window_days)).isoformat()
     prefixes = tuple(p for p in tracked_prefixes() if p not in CATCHUP_EXCLUDE)
