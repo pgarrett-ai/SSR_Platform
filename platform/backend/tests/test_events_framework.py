@@ -149,3 +149,54 @@ def test_unknown_items_never_silent():
     evs = detect_8k_items(_meta(None), {"items": ""}, None)
     assert [e.event_type for e in evs] == ["8k_items_unknown"]
     assert evs[0].severity == 1 and evs[0].confidence == 0.5
+
+
+# --- Task 16: poller ---------------------------------------------------------
+import app.events.poller as poller
+from app import models_events
+
+
+def test_poll_once_end_to_end_and_repoll_free(monkeypatch):
+    init_db()
+    # poll_once's window is always [today-1, today]; use today so the fixture never goes
+    # stale (the design intentionally ignores filings older than the 2-day window).
+    today = dt.date.today().isoformat()
+    subs = {"filings": {"recent": {
+        "form": ["8-K"], "filingDate": [today],
+        "accessionNumber": ["0000000000-26-000042"], "items": ["1.03"]}}}
+    hit = {"_source": {"ciks": ["0000000777"], "file_date": today,
+                       "items": ["1.03"], "display_names": ["Doomed Corp"]}}
+    calls = {"subs": 0}
+
+    def fake_hits(params, max_pages=40):
+        return [hit] if params.get("q") == '"Item 1.03"' else []
+
+    def fake_subs(cik):
+        calls["subs"] += 1
+        assert cik == "0000000777"
+        return subs
+
+    monkeypatch.setattr(feed, "efts_hits", fake_hits)
+    monkeypatch.setattr(feed, "fresh_submissions", fake_subs)
+
+    assert poller.poll_once() == 1
+    with session_scope() as s:
+        row = s.query(models_events.Event).filter_by(
+            accession_no="0000000000-26-000042").one()
+        assert row.event_type == "bankruptcy" and row.cik == "0000000777"
+        assert row.detected_at is not None            # LIVE detection is stamped
+    assert poller.poll_once() == 0                    # dedupe + has_event: re-poll free
+    assert calls["subs"] == 1                         # ...and doesn't even re-fetch
+
+
+def test_catchup_resolves_missing_accessions(monkeypatch):
+    init_db()
+    today = dt.date.today().isoformat()
+    idx = (f"8-K         MISSED CO       555 {today}  edgar/data/555/0000000555-26-000001.txt\n"
+           f"10-K        IGNORED INC     666 {today}  edgar/data/666/x.txt")
+    monkeypatch.setattr(feed, "get_text", lambda url, timeout=120.0: idx)
+    monkeypatch.setattr(feed, "fresh_submissions", lambda cik: {"filings": {"recent": {
+        "form": ["8-K"], "filingDate": [today],
+        "accessionNumber": ["0000000555-26-000001"], "items": ["1.03"]}}})
+    assert poller.catchup_form_idx() == 1
+    assert poller.catchup_form_idx() == 0             # reconciled -> nothing to do
