@@ -31,3 +31,34 @@ def test_idx_lines_tracked_forms_and_accession():
     assert "0000000333" not in ciks           # 10-K untracked
     assert "0000000444" not in ciks           # 425 is NOT '4' (prefix guard)
     assert "0000000666" not in ciks           # before `since`
+
+
+def test_backfill_checkpoints_resumes_and_never_stamps_detected_at(tmp_path, monkeypatch):
+    init_db()
+    monkeypatch.setattr(backfill, "BACKFILL_DB", tmp_path / "backfill.db")
+    idx = ("8-K  A CO  111 2024-02-26  edgar/data/111/0000000111-24-000001.txt\n"
+           "8-K  B CO  222 2024-03-01  edgar/data/222/0000000222-24-000001.txt")
+    monkeypatch.setattr(backfill, "_quarter_texts", lambda start: [idx])
+    calls = []
+
+    def fake_subs(cik):
+        calls.append(cik)
+        if cik == "0000000222":
+            raise ConnectionError("edgar hiccup")
+        return {"filings": {"recent": {
+            "form": ["8-K"], "filingDate": ["2024-02-26"],
+            "accessionNumber": ["0000000111-24-000001"], "items": ["2.04"]}}}
+
+    monkeypatch.setattr(feed, "fresh_submissions", fake_subs)
+
+    out1 = backfill.backfill(start="2024-01-01")
+    assert calls == ["0000000111", "0000000222"] and out1["events"] == 1
+
+    out2 = backfill.backfill(start="2024-01-01")
+    assert calls == ["0000000111", "0000000222", "0000000222"]  # only the failure retried
+    assert out2["events"] == 0
+
+    with session_scope() as s:
+        row = s.query(models_events.Event).filter_by(cik="0000000111").one()
+        assert row.event_type == "acceleration"
+        assert row.detected_at is None        # backfill NEVER fakes detection (plan §10)
