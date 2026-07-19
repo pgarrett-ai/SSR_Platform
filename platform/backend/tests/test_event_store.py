@@ -25,6 +25,16 @@ def test_event_indexes_exist():
     assert {"ix_events_cik_occurred", "ix_events_type_detected"} <= names
 
 
+def test_event_tables_match_models():
+    # create_all never ALTERs and _ensure_columns skips event tables — a model column
+    # added without an Alembic revision would surface only as a runtime OperationalError.
+    insp = sa.inspect(engine)
+    for name in me.EVENT_STORE_TABLES:
+        db_cols = {c["name"] for c in insp.get_columns(name)}
+        model_cols = {c.name for c in me.Event.metadata.tables[name].columns}
+        assert db_cols == model_cols, name
+
+
 def _row(subtype="4.01", detected_at=None):
     return dict(
         cik=CIK, event_type="8-K", subtype=subtype, severity=1, confidence=1.0,
@@ -119,5 +129,37 @@ def test_alembic_baseline_creates_event_store(tmp_path):
         assert me.EVENT_STORE_TABLES | {"alembic_version"} <= set(insp.get_table_names())
         names = {ix["name"] for ix in insp.get_indexes("events")}
         assert {"ix_events_cik_occurred", "ix_events_type_detected"} <= names
+    finally:
+        eng.dispose()
+
+
+def test_upgrade_head_safe_on_create_all_db(tmp_path):
+    # The zero-alembic dev path: app start runs create_all, never `stamp`. `upgrade head`
+    # (once a 0002 exists) must skip the tables create_all already owns, not re-create them.
+    from pathlib import Path
+
+    from alembic import command
+    from alembic.config import Config
+
+    backend = Path(__file__).resolve().parents[1]
+    url = "sqlite:///" + (tmp_path / "createall.db").as_posix()
+    eng = sa.create_engine(url)
+    try:
+        me.Event.metadata.create_all(eng)   # init_db-equivalent: all tables exist
+    finally:
+        eng.dispose()
+
+    cfg = Config(str(backend / "alembic.ini"))
+    cfg.set_main_option("script_location", str(backend / "migrations"))
+    cfg.set_main_option("sqlalchemy.url", url)      # env.py honors a preset URL
+    command.upgrade(cfg, "head")                    # must NOT crash on existing tables
+
+    eng = sa.create_engine(url)
+    try:
+        assert "alembic_version" in sa.inspect(eng).get_table_names()
+        with eng.connect() as conn:
+            version = conn.execute(
+                sa.text("SELECT version_num FROM alembic_version")).scalar()
+        assert version == "0001"
     finally:
         eng.dispose()

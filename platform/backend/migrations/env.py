@@ -37,7 +37,9 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        render_as_batch=True,   # future SQLite ALTERs need batch mode
+        # batch mode is a SQLite ALTER workaround — wrong for a Postgres --sql run
+        render_as_batch=(config.get_main_option("sqlalchemy.url") or "").startswith(
+            "sqlite"),
     )
     with context.begin_transaction():
         context.run_migrations()

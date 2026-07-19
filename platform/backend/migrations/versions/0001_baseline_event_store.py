@@ -7,6 +7,9 @@ names matching SQLAlchemy's ix_<table>_<column> autonaming so the create_all-SQL
 schema and this Alembic-Postgres schema are identical. Event-store tables ONLY;
 legacy models.py tables stay on create_all (plan D3).
 
+Idempotent by design: create_all may already own these tables on dev SQLite; upgrade
+then only records the version.
+
 Revision ID: 0001
 Revises:
 Create Date: 2026-07-19
@@ -27,91 +30,105 @@ _JSON = sa.JSON().with_variant(postgresql.JSONB(), "postgresql")
 
 
 def upgrade() -> None:
-    op.create_table(
-        "universe",
-        sa.Column("cik", sa.String(16), primary_key=True, nullable=False),
-        sa.Column("ticker", sa.String(16), nullable=True),
-        sa.Column("name", sa.Text(), nullable=True),
-        sa.Column("exchange", sa.String(16), nullable=True),
-        sa.Column("sic", sa.String(8), nullable=True),
-        sa.Column("market_cap", sa.Float(), nullable=True),
-        sa.Column("is_active", sa.Boolean(), nullable=False),
-        sa.Column("updated_at", sa.DateTime(), nullable=True),
-    )
-    op.create_index("ix_universe_ticker", "universe", ["ticker"])
+    # create_all (the default zero-alembic dev path) may already own these tables;
+    # skip any that exist so `upgrade head` only records the version. An existing table
+    # already carries its indexes from create_all (schema parity is verified), so the
+    # create_index calls nest under the same guard.
+    insp = sa.inspect(op.get_bind())
+    existing = set(insp.get_table_names())
 
-    op.create_table(
-        "events",
-        sa.Column("id", sa.Integer(), primary_key=True, nullable=False),
-        sa.Column("cik", sa.String(16), nullable=False),
-        sa.Column("event_type", sa.String(48), nullable=False),
-        sa.Column("subtype", sa.String(48), nullable=True),
-        sa.Column("severity", sa.Integer(), nullable=False),
-        sa.Column("confidence", sa.Float(), nullable=False),
-        sa.Column("occurred_at", sa.DateTime(), nullable=False),
-        sa.Column("detected_at", sa.DateTime(), nullable=True),
-        sa.Column("source", sa.String(16), nullable=False),
-        sa.Column("source_form", sa.String(16), nullable=True),
-        sa.Column("accession_no", sa.String(64), nullable=True),
-        sa.Column("source_url", sa.Text(), nullable=True),
-        sa.Column("title", sa.Text(), nullable=True),
-        sa.Column("payload", _JSON, nullable=True),
-        sa.Column("dedupe_key", sa.String(64), nullable=False),
-        sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
-        sa.UniqueConstraint("dedupe_key", name="uq_event_dedupe"),
-        sa.CheckConstraint("severity BETWEEN 1 AND 5", name="ck_event_severity"),
-        sa.CheckConstraint("confidence BETWEEN 0 AND 1", name="ck_event_confidence"),
-    )
-    op.create_index("ix_events_cik_occurred", "events", ["cik", "occurred_at"])
-    op.create_index("ix_events_type_detected", "events", ["event_type", "detected_at"])
+    if "universe" not in existing:
+        op.create_table(
+            "universe",
+            sa.Column("cik", sa.String(16), primary_key=True, nullable=False),
+            sa.Column("ticker", sa.String(16), nullable=True),
+            sa.Column("name", sa.Text(), nullable=True),
+            sa.Column("exchange", sa.String(16), nullable=True),
+            sa.Column("sic", sa.String(8), nullable=True),
+            sa.Column("market_cap", sa.Float(), nullable=True),
+            sa.Column("is_active", sa.Boolean(), nullable=False),
+            sa.Column("updated_at", sa.DateTime(), nullable=True),
+        )
+        op.create_index("ix_universe_ticker", "universe", ["ticker"])
 
-    op.create_table(
-        "scores",
-        sa.Column("cik", sa.String(16), primary_key=True, nullable=False),
-        sa.Column("score_name", sa.String(48), primary_key=True, nullable=False),
-        sa.Column("asof", sa.Date(), primary_key=True, nullable=False),
-        sa.Column("value", sa.Float(), nullable=True),
-        sa.Column("components", _JSON, nullable=True),
-        sa.Column("model_version", sa.String(32), nullable=True),
-        sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
-    )
+    if "events" not in existing:
+        op.create_table(
+            "events",
+            sa.Column("id", sa.Integer(), primary_key=True, nullable=False),
+            sa.Column("cik", sa.String(16), nullable=False),
+            sa.Column("event_type", sa.String(48), nullable=False),
+            sa.Column("subtype", sa.String(48), nullable=True),
+            sa.Column("severity", sa.Integer(), nullable=False),
+            sa.Column("confidence", sa.Float(), nullable=False),
+            sa.Column("occurred_at", sa.DateTime(), nullable=False),
+            sa.Column("detected_at", sa.DateTime(), nullable=True),
+            sa.Column("source", sa.String(16), nullable=False),
+            sa.Column("source_form", sa.String(16), nullable=True),
+            sa.Column("accession_no", sa.String(64), nullable=True),
+            sa.Column("source_url", sa.Text(), nullable=True),
+            sa.Column("title", sa.Text(), nullable=True),
+            sa.Column("payload", _JSON, nullable=True),
+            sa.Column("dedupe_key", sa.String(64), nullable=False),
+            sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
+            sa.UniqueConstraint("dedupe_key", name="uq_event_dedupe"),
+            sa.CheckConstraint("severity BETWEEN 1 AND 5", name="ck_event_severity"),
+            sa.CheckConstraint("confidence BETWEEN 0 AND 1", name="ck_event_confidence"),
+        )
+        op.create_index("ix_events_cik_occurred", "events", ["cik", "occurred_at"])
+        op.create_index("ix_events_type_detected", "events", ["event_type", "detected_at"])
 
-    op.create_table(
-        "watchlists",
-        sa.Column("id", sa.Integer(), primary_key=True, nullable=False),
-        sa.Column("owner", sa.String(64), nullable=True),
-        sa.Column("name", sa.String(64), nullable=False),
-    )
+    if "scores" not in existing:
+        op.create_table(
+            "scores",
+            sa.Column("cik", sa.String(16), primary_key=True, nullable=False),
+            sa.Column("score_name", sa.String(48), primary_key=True, nullable=False),
+            sa.Column("asof", sa.Date(), primary_key=True, nullable=False),
+            sa.Column("value", sa.Float(), nullable=True),
+            sa.Column("components", _JSON, nullable=True),
+            sa.Column("model_version", sa.String(32), nullable=True),
+            sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
+        )
 
-    op.create_table(
-        "watchlist_members",
-        sa.Column("watchlist_id", sa.Integer(), primary_key=True, nullable=False),
-        sa.Column("cik", sa.String(16), primary_key=True, nullable=False),
-        sa.Column("note", sa.Text(), nullable=True),
-        sa.ForeignKeyConstraint(["watchlist_id"], ["watchlists.id"]),
-        sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
-    )
+    if "watchlists" not in existing:
+        op.create_table(
+            "watchlists",
+            sa.Column("id", sa.Integer(), primary_key=True, nullable=False),
+            sa.Column("owner", sa.String(64), nullable=True),
+            sa.Column("name", sa.String(64), nullable=False),
+        )
 
-    op.create_table(
-        "alerts",
-        sa.Column("id", sa.Integer(), primary_key=True, nullable=False),
-        sa.Column("rule", _JSON, nullable=False),
-        sa.Column("channel", sa.String(16), nullable=False),
-        sa.Column("created_by", sa.String(64), nullable=True),
-    )
+    if "watchlist_members" not in existing:
+        op.create_table(
+            "watchlist_members",
+            sa.Column("watchlist_id", sa.Integer(), primary_key=True, nullable=False),
+            sa.Column("cik", sa.String(16), primary_key=True, nullable=False),
+            sa.Column("note", sa.Text(), nullable=True),
+            sa.ForeignKeyConstraint(["watchlist_id"], ["watchlists.id"]),
+            sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
+        )
 
-    op.create_table(
-        "alert_log",
-        sa.Column("id", sa.Integer(), primary_key=True, nullable=False),
-        sa.Column("alert_id", sa.Integer(), nullable=False),
-        sa.Column("event_id", sa.Integer(), nullable=True),
-        sa.Column("fired_at", sa.DateTime(), server_default=sa.func.now(),
-                  nullable=False),
-        sa.Column("delivered_at", sa.DateTime(), nullable=True),
-        sa.ForeignKeyConstraint(["alert_id"], ["alerts.id"]),
-        sa.ForeignKeyConstraint(["event_id"], ["events.id"]),
-    )
-    op.create_index("ix_alert_log_alert_id", "alert_log", ["alert_id"])
+    if "alerts" not in existing:
+        op.create_table(
+            "alerts",
+            sa.Column("id", sa.Integer(), primary_key=True, nullable=False),
+            sa.Column("rule", _JSON, nullable=False),
+            sa.Column("channel", sa.String(16), nullable=False),
+            sa.Column("created_by", sa.String(64), nullable=True),
+        )
+
+    if "alert_log" not in existing:
+        op.create_table(
+            "alert_log",
+            sa.Column("id", sa.Integer(), primary_key=True, nullable=False),
+            sa.Column("alert_id", sa.Integer(), nullable=False),
+            sa.Column("event_id", sa.Integer(), nullable=True),
+            sa.Column("fired_at", sa.DateTime(), server_default=sa.func.now(),
+                      nullable=False),
+            sa.Column("delivered_at", sa.DateTime(), nullable=True),
+            sa.ForeignKeyConstraint(["alert_id"], ["alerts.id"]),
+            sa.ForeignKeyConstraint(["event_id"], ["events.id"]),
+        )
+        op.create_index("ix_alert_log_alert_id", "alert_log", ["alert_id"])
 
 
 def downgrade() -> None:

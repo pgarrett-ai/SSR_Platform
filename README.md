@@ -62,7 +62,7 @@ by the app itself on startup.
 
     cd platform\backend
     .venv\Scripts\python -m alembic upgrade head   # fresh DB: create the event store (run BEFORE first app start on Postgres)
-    .venv\Scripts\python -m alembic stamp 0001     # existing SQLite the app has already started against
+    .venv\Scripts\python -m alembic stamp 0001     # optional: `upgrade head` is safe on an existing DB — it skips tables create_all already made; `stamp 0001` remains equivalent
 
 Rule going forward: any schema change ships with an Alembic revision; the
 `_ensure_columns` micro-migration is frozen.
