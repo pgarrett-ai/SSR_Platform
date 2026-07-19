@@ -102,3 +102,50 @@ def test_efts_hits_pages_like_labels(monkeypatch):
                            "startdt": "2026-07-17", "enddt": "2026-07-18"})
     assert len(hits) == 12 and len(urls) == 2
     assert urls[0].startswith("https://efts.sec.gov/LATEST/search-index?")
+
+
+# --- Task 15: store adapter + seeded 8-K detector ----------------------------
+from app import models_events as me
+from app.core.db import init_db, session_scope
+from app.events import store
+
+
+def test_store_adapter_idempotent_and_detected_at_discipline():
+    init_db()
+    with session_scope() as s:
+        assert store.insert_events(s, [_ev()], detected_at=dt.datetime(2026, 1, 2, 12)) == 1
+        assert store.insert_events(s, [_ev(), _ev()], detected_at=dt.datetime(2026, 1, 2, 13)) == 0
+        assert store.has_event(s, CIK, "2026-01-02", ("bankruptcy",))
+        assert not store.has_event(s, CIK, "2026-01-02", ("acceleration",))
+        # backfill rows: detected_at stays NULL, never faked (plan §10)
+        assert store.insert_events(s, [_ev(accession_no="x-2")], detected_at=None) == 1
+    with session_scope() as s:
+        row = s.query(me.Event).filter_by(accession_no="x-2").one()
+        assert row.detected_at is None
+        assert row.dedupe_key == _ev(accession_no="x-2").dedupe_key
+        assert row.occurred_at == dt.datetime(2026, 1, 2)   # ISO date -> naive midnight
+
+
+from app.events.detectors_8k import ITEM_SPECS, detect_8k_items
+
+
+def _meta(items, form="8-K"):
+    return FilingMeta(cik=CIK, form=form, filing_date="2026-05-01",
+                      accession_no="0000000000-26-000007",
+                      source_url="https://www.sec.gov/x-index.htm",
+                      items=items, items_unknown=(form.startswith("8-K") and items is None))
+
+
+def test_103_bankruptcy_detector():
+    evs = detect_8k_items(_meta(["1.03", "9.01"]), {"items": "1.03,9.01"}, None)
+    assert len(evs) == 1                                   # 9.01 (exhibits) deliberate skip
+    e = evs[0]
+    assert (e.event_type, e.subtype, e.severity, e.confidence) == ("bankruptcy", "1.03", 5, 1.0)
+    assert e.occurred_at == "2026-05-01" and e.source_form == "8-K"
+    assert e.accession_no == "0000000000-26-000007" and "1.03" in e.title
+
+
+def test_unknown_items_never_silent():
+    evs = detect_8k_items(_meta(None), {"items": ""}, None)
+    assert [e.event_type for e in evs] == ["8k_items_unknown"]
+    assert evs[0].severity == 1 and evs[0].confidence == 0.5
