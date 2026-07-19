@@ -89,7 +89,9 @@ async def _bearer_auth(request, call_next):
         auth = request.headers.get("authorization", "")
         supplied = auth[7:].strip() if auth.lower().startswith("bearer ") else ""
         supplied = supplied or request.cookies.get("platform_token", "")
-        if not secrets.compare_digest(supplied, token):
+        # byte comparison: str compare_digest raises TypeError on non-ASCII (an
+        # attacker-triggerable 500 in the auth path); bytes never raise, still timing-safe
+        if not secrets.compare_digest(supplied.encode("utf-8"), token.encode("utf-8")):
             return JSONResponse(status_code=401, content={"error": "unauthorized"},
                                 headers={"WWW-Authenticate": "Bearer"})
     return await call_next(request)
