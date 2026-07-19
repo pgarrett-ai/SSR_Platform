@@ -12,6 +12,8 @@ sse-starlette>=2.1            # streaming progress log to the UI
 
 # --- Data store ---
 SQLAlchemy>=2.0
+alembic>=1.13                 # event-store migrations (PR-2a); legacy tables stay on create_all
+# Postgres flip (optional until deployed): psycopg[binary]>=3.2
 
 # --- EDGAR retrieval + XBRL facts (the ONE copy) ---
 edgartools>=3.0
