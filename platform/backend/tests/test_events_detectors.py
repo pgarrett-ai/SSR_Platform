@@ -56,3 +56,35 @@ def test_multi_item_one_event_per_tracked_item():
     evs = detect_8k_items(_meta(["2.04", "2.05", "9.01"]), {"items": "2.04,2.05,9.01"}, None)
     assert [e.subtype for e in evs] == ["2.04", "2.05"]      # 9.01 (exhibits): deliberate skip
     assert [e.event_type for e in evs] == ["acceleration", "exit_costs"]
+
+
+# --- Task 19: structural (non-8-K) form detectors ----------------------------
+from app.events import detectors_forms  # noqa: E402,F401 — import registers the detectors
+from app.events.registry import detectors_for
+
+
+def _fmeta(form):
+    return FilingMeta(cik=CIK, form=form, filing_date="2026-05-26",
+                      accession_no=ACCN, source_url="https://www.sec.gov/x-index.htm")
+
+
+@pytest.mark.parametrize("form,event_type,severity", [
+    ("NT 10-K", "late_filing", 4), ("NT 10-K/A", "late_filing", 4),
+    ("NT 10-Q", "late_filing", 3),
+    ("25", "delisting", 4), ("25-NSE", "delisting", 4),
+    ("15-12B", "deregistration", 4),
+    ("4", "insider_filing", 1), ("4/A", "insider_filing", 1),
+    ("SC 13D", "stake_13d", 3), ("SC 13D/A", "stake_13d", 3),
+    ("SC 13G", "stake_13g", 2), ("SC 13G/A", "stake_13g", 2),
+])
+def test_structural_form_detector(form, event_type, severity):
+    meta = _fmeta(form)
+    evs = [e for det in detectors_for(form) for e in det(meta, {}, None)]
+    assert [(e.event_type, e.severity, e.subtype) for e in evs] == [(event_type, severity, form)]
+    assert all(e.confidence == 1.0 for e in evs)
+
+
+@pytest.mark.parametrize("form", ["424B5", "10-K", "DEF 14A", "S-1"])
+def test_untracked_forms_route_nowhere(form):
+    meta = _fmeta(form)
+    assert [e for det in detectors_for(form) for e in det(meta, {}, None)] == []

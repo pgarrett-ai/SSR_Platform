@@ -17,6 +17,7 @@ from .. import models_events
 from ..core.db import session_scope
 from ..hazard.labels import _FORM_IDX                  # labels.py:58
 from . import detectors_8k                             # noqa: F401 — registration side effect
+from . import detectors_forms                          # noqa: F401 — registration side effect
 from . import edgar_feed as feed
 from . import universe
 from .registry import detectors_for, tracked_prefixes
