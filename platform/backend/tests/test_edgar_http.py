@@ -129,3 +129,10 @@ def test_eightk_fetches_via_paced_get(monkeypatch):
     monkeypatch.setattr(eightk, "paced_get", lambda url, **kw: b'{"a": 1}')
     assert eightk._http_get_json(
         "https://data.sec.gov/submissions/CIK0000320193.json") == {"a": 1}
+
+
+def test_labels_fetches_via_paced_get(monkeypatch):
+    import app.hazard.labels as labels
+
+    monkeypatch.setattr(labels, "paced_get", lambda url, **kw: b'{"a": 1}')
+    assert labels._get_json("https://efts.sec.gov/LATEST/search-index?q=x") == {"a": 1}
