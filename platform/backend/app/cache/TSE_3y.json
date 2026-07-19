@@ -5,10 +5,10 @@
     "resolved_ticker": "TSEOQ",
     "cik": "1519061",
     "years": 3,
-    "n_filings": 70,
-    "last_updated": "2026-07-14T10:27:56.998631+00:00",
+    "n_filings": 71,
+    "last_updated": "2026-07-19T20:26:39.610827+00:00",
     "from_cache": false,
-    "llm_enabled": false
+    "llm_enabled": true
   },
   "economic_debt_bridge": {
     "lines": [
@@ -73,25 +73,25 @@
         "is_total": false
       },
       {
-        "key": "other",
-        "label": "Other off-balance-sheet obligations",
+        "key": "pension_opeb",
+        "label": "Pension / OPEB deficit (underfunded)",
         "amount": {
-          "value": 1304739.0,
-          "display": "$1M",
+          "value": 4617866.0,
+          "display": "$5M",
           "unit": "USD",
           "citation": {
             "accession_no": "0001104659-26-049440",
             "form_type": "10-K/A",
             "filing_date": "2026-04-27",
             "exhibit": null,
-            "section": "U.S. Non-Qualified Deferred Compensation Table",
+            "section": "Pension and Other Postretirement Benefits — Supplemental Employee Retirement Benefit",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-049440-index.html",
-            "quote": "While the plan is unfunded, amounts deferred under the plan are credited with earnings based on the performance of selected investment vehicles that are available in the open market. ... Aggregate Balance as of December 31, 2025: Frank Bozich $581,659; David Stasse $307,842; Angelo N. Chaclas $415,238."
+            "quote": "Bee van Kessel Switzerland Retirement Plan 10.5 1,232,148 — Francesca Reverberi Switzerland Retirement Plan 18.5 3,385,718 —"
           },
           "derived": false,
           "formula": null,
-          "note": "Debt-like obligation added to reach economic debt."
+          "note": "Underfunded pension/OPEB deficit — a debt-like claim on the enterprise not included in the reported long-term-debt line."
         },
         "is_total": false
       },
@@ -99,12 +99,12 @@
         "key": "economic_debt",
         "label": "Economic (adjusted) debt",
         "amount": {
-          "value": 2610404739.0,
-          "display": "$2,610M",
+          "value": 2613717866.0,
+          "display": "$2,614M",
           "unit": "USD",
           "citation": null,
           "derived": true,
-          "formula": "reported debt $2,545M + $60M + $4M + $1M",
+          "formula": "reported debt $2,545M + $60M + $4M + $5M",
           "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
         },
         "is_total": true
@@ -120,12 +120,12 @@
       "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases."
     },
     "economic_debt": {
-      "value": 2610404739.0,
-      "display": "$2,610M",
+      "value": 2613717866.0,
+      "display": "$2,614M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "reported debt $2,545M + $60M + $4M + $1M",
+      "formula": "reported debt $2,545M + $60M + $4M + $5M",
       "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
     },
     "ebitda": {
@@ -138,22 +138,22 @@
       "note": null
     },
     "reported_leverage": {
-      "value": -12.040681173131505,
-      "display": "-12.0x",
+      "value": null,
+      "display": "n.m.",
       "unit": "USD",
       "citation": null,
       "derived": true,
       "formula": "reported debt $2,545M / EBITDA -$211M",
-      "note": null
+      "note": "not meaningful — negative EBITDA (-$211M)"
     },
     "economic_leverage": {
-      "value": -12.348177573320719,
-      "display": "-12.3x",
+      "value": null,
+      "display": "n.m.",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "economic debt $2,610M / EBITDA -$211M",
-      "note": "Economic debt (incl. lease liabilities) over plain EBITDA — no rent add-back to the denominator."
+      "formula": "economic debt $2,614M / EBITDA -$211M",
+      "note": "not meaningful — negative EBITDA (-$211M)"
     }
   },
   "ebitda_build": {
@@ -251,13 +251,629 @@
       "formula": "net income -$546M + taxes $43M + D&A $292M (FY2025)",
       "note": null
     },
-    "addbacks": []
+    "addbacks": [
+      {
+        "category": "Consolidated EBITDA add-backs as defined in the Trinseo Credit Agreement, with clause (x) add-backs capped at 10% of pro forma Consolidated EBITDA (after giving effect to such add-back and all other permitted add-backs) for any period; Aristech and Altuglas treated as 'Restricted Subsidiaries' for purposes of calculating Consolidated EBITDA",
+        "label": "Consolidated EBITDA add-backs as defined in the Trinseo Credit Agreement, with clause (x) add-backs capped at 10% of pro forma Consolidated EBITDA (after giving effect to such add-back and all other permitted add-backs) for any period; Aristech and Altuglas treated as 'Restricted Subsidiaries' for purposes of calculating Consolidated EBITDA",
+        "amount": null
+      }
+    ]
   },
-  "debt_schedule": [],
-  "debt_schedule_asof": null,
+  "debt_schedule": [
+    {
+      "instrument": "2028 Refinance Term Loans",
+      "principal": null,
+      "outstanding": {
+        "value": 1233400000.0,
+        "display": "$1,233M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [tse:RefinancingTwoThousandTwentyEightTermLoansMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2028 Refinance Term Loans: $1,233M as of 2026-03-31 [us-gaap:LongTermDebt, tse:RefinancingTwoThousandTwentyEightTermLoansMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": "8.50%",
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": 8.5,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": "fixed",
+      "rate_base": null,
+      "xbrl_member": "tse:RefinancingTwoThousandTwentyEightTermLoansMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "term loan",
+      "commitment": {
+        "value": 1077300000.0,
+        "display": "$1,077M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [tse:RefinancingTwoThousandTwentyEightTermLoansMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2028 Refinance Term Loans: $1,077M as of 2023-09-08 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, tse:RefinancingTwoThousandTwentyEightTermLoansMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 7400000.0,
+        "display": "$7M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentUnusedBorrowingCapacityAmount [tse:RefinancingTwoThousandTwentyEightTermLoansMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2028 Refinance Term Loans: $7M as of 2026-03-31 [us-gaap:DebtInstrumentUnusedBorrowingCapacityAmount, tse:RefinancingTwoThousandTwentyEightTermLoansMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": {
+        "value": 1266200000.0,
+        "display": "$1,266M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [tse:RefinancingTwoThousandTwentyEightTermLoansMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2028 Refinance Term Loans: $1,266M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, tse:RefinancingTwoThousandTwentyEightTermLoansMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "2028 Term Loan B",
+      "principal": null,
+      "outstanding": {
+        "value": 709300000.0,
+        "display": "$709M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [tse:SeniorCreditFacility2028TermLoanBMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2028 Term Loan B: $709M as of 2026-03-31 [us-gaap:LongTermDebt, tse:SeniorCreditFacility2028TermLoanBMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "tse:SeniorCreditFacility2028TermLoanBMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "term loan",
+      "commitment": {
+        "value": 750000000.0,
+        "display": "$750M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [tse:SeniorCreditFacility2028TermLoanBMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2028 Term Loan B: $750M as of 2021-05-03 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, tse:SeniorCreditFacility2028TermLoanBMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null,
+      "face_amount": {
+        "value": 716300000.0,
+        "display": "$716M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [tse:SeniorCreditFacility2028TermLoanBMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2028 Term Loan B: $716M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, tse:SeniorCreditFacility2028TermLoanBMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "2029 Refinance Senior Notes",
+      "principal": null,
+      "outstanding": {
+        "value": 419900000.0,
+        "display": "$420M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [tse:SeniorNotesDue20297.625Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2029 Refinance Senior Notes: $420M as of 2026-03-31 [us-gaap:LongTermDebt, tse:SeniorNotesDue20297.625Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": "7.62%",
+      "maturity": "2029",
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": 7.625,
+      "coupon_pct_max": 7.625,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": "fixed",
+      "rate_base": null,
+      "xbrl_member": "tse:SeniorNotesDue20297.625Member",
+      "obligor": null,
+      "governed_by": "7.625% notes due 2029",
+      "facility_type": "notes",
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": {
+        "value": 391000000.0,
+        "display": "$391M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [tse:SeniorNotesDue20297.625Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "2029 Refinance Senior Notes: $391M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, tse:SeniorNotesDue20297.625Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": true
+    },
+    {
+      "instrument": "Super-Priority Revolver",
+      "principal": null,
+      "outstanding": {
+        "value": 265000000.0,
+        "display": "$265M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Super-Priority Revolver: $265M as of 2026-03-31 [us-gaap:LongTermDebt, tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": "SOFR + 9.00% → 12.62%",
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": 9.0,
+      "effective_rate_pct": null,
+      "rate_type": "floating",
+      "rate_base": "SOFR",
+      "xbrl_member": "tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 300000000.0,
+        "display": "$300M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Super-Priority Revolver: $300M as of 2026-03-31 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 33100000.0,
+        "display": "$33M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Super-Priority Revolver: $33M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": {
+        "value": 50000000.0,
+        "display": "$50M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Super-Priority Revolver: $50M as of 2026-04-10 [us-gaap:DebtInstrumentFaceAmount, tse:SuperPriorityRevolvingCreditFacilityMaturingInFebruary2028Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "Accounts Receivable Securitization Facility",
+      "principal": null,
+      "outstanding": {
+        "value": 140000000.0,
+        "display": "$140M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [tse:AccountsReceivableSecuritizationFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Accounts Receivable Securitization Facility: $140M as of 2026-03-31 [us-gaap:LongTermDebt, tse:AccountsReceivableSecuritizationFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "tse:AccountsReceivableSecuritizationFacilityMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": null,
+      "commitment": {
+        "value": 150000000.0,
+        "display": "$150M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [tse:AccountsReceivableSecuritizationFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Accounts Receivable Securitization Facility: $150M as of 2026-03-31 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, tse:AccountsReceivableSecuritizationFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 5500000.0,
+        "display": "$6M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [tse:AccountsReceivableSecuritizationFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Accounts Receivable Securitization Facility: $6M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, tse:AccountsReceivableSecuritizationFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": {
+        "value": 140000000.0,
+        "display": "$140M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [tse:AccountsReceivableSecuritizationFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Accounts Receivable Securitization Facility: $140M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, tse:AccountsReceivableSecuritizationFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "Other Indebtedness",
+      "principal": null,
+      "outstanding": {
+        "value": 3900000.0,
+        "display": "$4M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [tse:OtherIndebtednessMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Other Indebtedness: $4M as of 2026-03-31 [us-gaap:LongTermDebt, tse:OtherIndebtednessMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "tse:OtherIndebtednessMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": null,
+      "commitment": null,
+      "undrawn": null,
+      "face_amount": {
+        "value": 3900000.0,
+        "display": "$4M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:DebtInstrumentFaceAmount [tse:OtherIndebtednessMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Other Indebtedness: $4M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, tse:OtherIndebtednessMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "Letter of credit subfacility, maturing in February 2028",
+      "principal": null,
+      "outstanding": null,
+      "coupon": null,
+      "maturity": "2028",
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "tse:LetterOfCreditSubfacilityMaturingInFebruary2028Member",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": null,
+      "commitment": {
+        "value": 60000000.0,
+        "display": "$60M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [tse:LetterOfCreditSubfacilityMaturingInFebruary2028Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Letter of credit subfacility, maturing in February 2028: $60M as of 2025-01-17 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, tse:LetterOfCreditSubfacilityMaturingInFebruary2028Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "Second Tranche of 2028 Refinance Credit Term Loan",
+      "principal": null,
+      "outstanding": null,
+      "coupon": null,
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "tse:SecondTrancheRefinancingTwoThousandTwentyEightCreditTermLoansMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": "term loan",
+      "commitment": {
+        "value": 115000000.0,
+        "display": "$115M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [tse:SecondTrancheRefinancingTwoThousandTwentyEightCreditTermLoansMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Second Tranche of 2028 Refinance Credit Term Loan: $115M as of 2025-01-17 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, tse:SecondTrancheRefinancingTwoThousandTwentyEightCreditTermLoansMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "Accounts Receivable Securitization Facility 2024",
+      "principal": null,
+      "outstanding": null,
+      "coupon": "SOFR + 4.75% → 8.37%",
+      "maturity": null,
+      "secured": null,
+      "seniority": null,
+      "citation": null,
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": 4.75,
+      "effective_rate_pct": null,
+      "rate_type": "floating",
+      "rate_base": "SOFR",
+      "xbrl_member": "tse:AccountsReceivableSecuritizationFacility2024Member",
+      "obligor": null,
+      "governed_by": "credit agreement dated July 18, 2024",
+      "facility_type": null,
+      "commitment": null,
+      "undrawn": {
+        "value": 75000000.0,
+        "display": "$75M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [tse:AccountsReceivableSecuritizationFacility2024Member]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Accounts Receivable Securitization Facility 2024: $75M as of 2024-07-18 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, tse:AccountsReceivableSecuritizationFacility2024Member]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    }
+  ],
+  "debt_schedule_asof": "2026-03-31",
   "forensic_table": [
     {
       "fiscal_year": 2022,
+      "label": null,
       "period_end": "2022-12-31",
       "total_debt": {
         "value": 2317600000.0,
@@ -424,6 +1040,7 @@
     },
     {
       "fiscal_year": 2023,
+      "label": null,
       "period_end": "2023-12-31",
       "total_debt": {
         "value": 2298500000.0,
@@ -590,6 +1207,7 @@
     },
     {
       "fiscal_year": 2024,
+      "label": null,
       "period_end": "2024-12-31",
       "total_debt": {
         "value": 2411600000.0,
@@ -756,6 +1374,7 @@
     },
     {
       "fiscal_year": 2025,
+      "label": null,
       "period_end": "2025-12-31",
       "total_debt": {
         "value": 2545400000.0,
@@ -919,6 +1538,137 @@
         "formula": "accounts_payable / COGS x 365",
         "note": "Days payable outstanding (denominator: COGS)."
       }
+    },
+    {
+      "fiscal_year": 2026,
+      "label": "Q1 2026",
+      "period_end": "2026-03-31",
+      "total_debt": {
+        "value": 2771500000.0,
+        "display": "$2,772M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$2M + lt_debt_current=$2,769M",
+        "note": "Sum of reported debt components as of the 10-Q date."
+      },
+      "cash": {
+        "value": 110600000.0,
+        "display": "$111M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $111M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "free_cash_flow": {
+        "value": -278700000.0,
+        "display": "-$279M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF − capex, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "capex": {
+        "value": 53600000.0,
+        "display": "$54M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "accounts_payable": {
+        "value": 219800000.0,
+        "display": "$220M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Accounts Payable, Current = $220M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "inventory": {
+        "value": 323400000.0,
+        "display": "$323M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-052646",
+          "form_type": "10-Q",
+          "filing_date": "2026-04-30",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:InventoryNet",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+          "quote": "Inventory, Net = $323M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "revenue": {
+        "value": 2914800000.0,
+        "display": "$2,915M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "cogs": {
+        "value": 2751000000.0,
+        "display": "$2,751M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "ebitda": {
+        "value": 56600000.0,
+        "display": "$57M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income + D&A, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": "Proxy EBITDA = operating income + D&A (TTM)."
+      },
+      "operating_cash_flow": {
+        "value": -225100000.0,
+        "display": "-$225M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "dpo": {
+        "value": 29.16284987277354,
+        "display": "29 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable (as of Q1 2026) / COGS (TTM) x 365",
+        "note": "Days payable outstanding (denominator: COGS, TTM)."
+      }
     }
   ],
   "forensic_flags": [
@@ -937,17 +1687,34 @@
   "obs_items": [
     {
       "category": "pension_opeb",
-      "label": "Switzerland defined contribution retirement plan (NEO accumulated benefits)",
-      "amount": null,
+      "label": "Switzerland DC pension plan — accumulated benefit (van Kessel & Reverberi)",
+      "amount": {
+        "value": 4617866.0,
+        "display": "$5M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001104659-26-049440",
+          "form_type": "10-K/A",
+          "filing_date": "2026-04-27",
+          "exhibit": null,
+          "section": "Pension and Other Postretirement Benefits — Supplemental Employee Retirement Benefit",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-049440-index.html",
+          "quote": "Bee van Kessel Switzerland Retirement Plan 10.5 1,232,148 — Francesca Reverberi Switzerland Retirement Plan 18.5 3,385,718 —"
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Underfunded pension/OPEB deficit — a debt-like claim on the enterprise not included in the reported long-term-debt line."
+      },
       "tax_effect": null,
       "net": null,
       "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "This is a fully insured defined contribution plan; the figures shown ($1,232,148 and $3,385,718) are the actuarial present value of the individual NEOs' accumulated benefits, not a company-level underfunded (deficit) obligation. No plan-level benefit obligation minus plan assets figure is provided in this text, so no incremental economic-debt amount can be computed. Informational only. The consolidated plan disclosures are in Note 21, which is not included here."
+      "include_in_bridge": true,
+      "notes": "Underfunded pension/OPEB deficit — a debt-like claim on the enterprise not included in the reported long-term-debt line."
     },
     {
-      "category": "other",
-      "label": "Non-qualified deferred compensation plan (unfunded)",
+      "category": "related_party",
+      "label": "Non-qualified deferred compensation plan aggregate balances (unfunded)",
       "amount": {
         "value": 1304739.0,
         "display": "$1M",
@@ -960,67 +1727,252 @@
           "section": "U.S. Non-Qualified Deferred Compensation Table",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-049440-index.html",
-          "quote": "While the plan is unfunded, amounts deferred under the plan are credited with earnings based on the performance of selected investment vehicles that are available in the open market. ... Aggregate Balance as of December 31, 2025: Frank Bozich $581,659; David Stasse $307,842; Angelo N. Chaclas $415,238."
+          "quote": "While the plan is unfunded, amounts deferred under the plan are credited with earnings based on the performance of selected investment vehicles that are available in the open market."
         },
         "derived": false,
         "formula": null,
-        "note": "Debt-like obligation added to reach economic debt."
-      },
-      "tax_effect": null,
-      "net": null,
-      "recourse": "unknown",
-      "include_in_bridge": true,
-      "notes": "Debt-like obligation added to reach economic debt."
-    },
-    {
-      "category": "other",
-      "label": "NEO conditional retention bonus awards (paid Jan 2026, repayable if service condition not met)",
-      "amount": {
-        "value": 9400000.0,
-        "display": "$9M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001104659-26-049440",
-          "form_type": "10-K/A",
-          "filing_date": "2026-04-27",
-          "exhibit": null,
-          "section": "Retention Awards and Waiver of ACI and RCU Vesting",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-049440-index.html",
-          "quote": "the Compensation Committee approved one-time conditional retention bonus awards (the “Retention Awards”) for each of the NEOs... Frank Bozich $3,200,000; David Stasse $2,500,000; Francesca Reverberi $1,700,000; Angelo Chaclas $1,350,000; Bee van Kessel $650,000. ... each Retention Award is conditioned upon the NEO’s continued employment until March 31, 2027... otherwise such Retention Award shall be fully repaid to the Company... The Company paid the Retention Awards... on or about January 8, 2026."
-        },
-        "derived": false,
-        "formula": null,
-        "note": "These retention awards ($3,200,000 + $2,500,000 + $1,700,000 + $1,350,000 + $650,000 = $9,400,000) were cash outflows paid after the balance sheet date (Jan 2026). They are compensation expense, not a debt-like financing claim on the enterprise; if anything the repayment feature is a receivable to the Company rather than an obligation. Excluded from the economic-debt bridge; informational only."
+        "note": "The non-qualified deferred compensation plan is described as unfunded and represents a general unsecured deferred obligation to executives. However, the amounts disclosed cover only the three U.S. NEOs (an executive-compensation table), not the full company plan liability, and no plan-wide obligation figure is provided. Because this is a partial NEO-only disclosure and not a complete off-balance-sheet obligation figure, it is not usable in a company-level economic-debt bridge; informational only."
       },
       "tax_effect": null,
       "net": null,
       "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "These retention awards ($3,200,000 + $2,500,000 + $1,700,000 + $1,350,000 + $650,000 = $9,400,000) were cash outflows paid after the balance sheet date (Jan 2026). They are compensation expense, not a debt-like financing claim on the enterprise; if anything the repayment feature is a receivable to the Company rather than an obligation. Excluded from the economic-debt bridge; informational only."
+      "notes": "The non-qualified deferred compensation plan is described as unfunded and represents a general unsecured deferred obligation to executives. However, the amounts disclosed cover only the three U.S. NEOs (an executive-compensation table), not the full company plan liability, and no plan-wide obligation figure is provided. Because this is a partial NEO-only disclosure and not a complete off-balance-sheet obligation figure, it is not usable in a company-level economic-debt bridge; informational only."
     }
   ],
   "covenants": [
     {
-      "family_label": null,
-      "doc_class": null,
-      "operative_date": null,
-      "amendment_count": 0,
-      "base_missing": false,
-      "governs_instruments": [],
-      "admin_agent": null,
+      "family_label": "credit agreement dated July 18, 2024",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-04-13",
+      "amendment_count": 3,
+      "base_missing": true,
+      "governs_instruments": [
+        "Accounts Receivable Securitization Facility 2024"
+      ],
+      "admin_agent": "GLAS USA LLC",
       "trustee": null,
-      "collateral_agent": null,
-      "creditor_note": null,
-      "guarantors": null,
+      "collateral_agent": "GLAS Americas LLC, in its capacity",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Trinseo Holding S.à r.l., as Parent Guarantor",
       "financial_covenants": [],
       "baskets": [],
       "ebitda_addback_categories": [],
-      "mfn_sunset_period": "Not present / not applicable in the excerpted text. No MFN pricing protection clause (or sunset) appears; pricing is Term SOFR / Base Rate with a Floor, and roll-up/new-money mechanics govern instead.",
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"As of the date hereof, each of the Amortization Events identified as 'Potential Defaults' on Exhibit A hereto (collectively, the 'Specified Defaults') has occurred or is expected to occur prior to the expiration of the Waiver Period (as hereinafter defined).\"",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "This document is a limited waiver and amendment to an existing receivables Credit and Security Agreement and does not contain any lien-subordination, priming, or voting/sacred-rights provisions in the excerpted text.",
+          "basis": "The text provided is a Limited Waiver and Third Amendment addressing waiver of Specified Defaults during a Waiver Period, not the underlying priming or voting mechanics.",
+          "quote": "This LIMITED WAIVER AND THIRD AMENDMENT (this “Agreement”) is entered into as of April 10, 2026"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "The excerpt contains no unrestricted-subsidiary designation mechanics or IP/asset-transfer restrictions; it is a securitization/receivables facility waiver.",
+          "basis": "No investment, unrestricted subsidiary, or asset-transfer covenant appears in the provided text.",
+          "quote": "the Lenders agreed, subject to the terms and conditions set forth in the Credit Agreement, to make certain loans and other financial accommodations to the Borrower."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "The provided text does not address incremental facilities, ratio debt capacity, or MFN provisions.",
+          "basis": "The excerpt covers only waiver of Amortization Events and amendment authority under Section 12.1 of the Credit Agreement.",
+          "quote": "desire to amend the Credit Agreement in accordance with Section 12.1 of the Credit Agreement on the terms and subject to the conditions set forth herein."
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "No restricted-payment covenant or basket appears in the excerpted amendment/waiver text.",
+          "basis": "The text is silent on distributions, dividends, or restricted payment capacity.",
+          "quote": "no term of the Borrower/Lender Documents may be modified or amended, nor may any rights thereunder be waived, except in a writing signed by the party against whom enforcement... is sought."
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-26-042351",
+        "form_type": "8-K",
+        "filing_date": "2026-04-13",
+        "exhibit": "EX-10.1",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926042351/tm2611573d1_ex10-1.htm",
+        "quote": "\"As of the date hereof, each of the Amortization Events identified as 'Potential Defaults' on Exhibit A hereto (collectively, the 'Specified Defaults') has occurred or is expected to occur prior to the expiration of the Waiver Period (as hereinafter defined).\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "7.625% notes due 2029",
+      "doc_class": "indenture",
+      "operative_date": "2025-01-21",
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [
+        "2029 Refinance Senior Notes"
+      ],
+      "admin_agent": null,
+      "trustee": "THE GUARANTORS PARTY HERETO, as Guarantors, THE BANK OF NEW YORK MELLON",
+      "collateral_agent": "LLC",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "The Guarantors party hereto; the \"Guarantors\" definition names Trinseo PLC, Holdings, Aristech and Altuglas",
+      "financial_covenants": [],
+      "baskets": [
+        {
+          "name": "Loans to officers/employees basket (Investment)",
+          "value": "$10.0 million aggregate outstanding at any time",
+          "quote": "(3) not exceeding $10.0 million in the aggregate outstanding at any time."
+        }
+      ],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "Limited/atypical for a HoldCo DIP: the structure is inverted. Per Section 5.14, the Co-Borrower, Holdings, Altuglas and Aristech are and must remain designated \"Unrestricted Subsidiaries\" of the OpCo (Trinseo Lead Borrower) group under the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement, and any refinancing indebtedness — i.e., they are structurally ring-fenced OUT of the OpCo restricted group and INTO this HoldCo DIP collateral perimeter. Covenants here run against \"Covenant Parties.\" The excerpted text does not grant discretionary borrower flexibility to newly designate/re-designate unrestricted subsidiaries.",
-      "anchor_clause": null,
-      "lme_vectors": [],
+      "unrestricted_subsidiary_designation_flexibility": "The indenture contemplates designation of Unrestricted Subsidiaries: the Investment definition addresses the mechanics of designating a Restricted Subsidiary as an Unrestricted Subsidiary (capturing the proportionate fair market value of net assets as an \"Investment\") and re-designation back to Restricted. A dedicated Section 4.15 \"Specified IP Covenant\" and the \"Specified IP License Agreements\" defined term operate as a J. Crew-style constraint on movement of material IP. Full designation conditions are not reproduced in the provided text.",
+      "anchor_clause": "\"solely with respect to Aristech or Altuglas: (a) Investments in the form of deposits made to Trinseo Ireland Global IHB Limited using cash generated by Aristech and Altuglas, as applicable, in the ordinary course of business, which loans shall be made in the ordinary course and consistent with past practice; provided, that neither Aristech nor Altuglas shall make any additional investments pursuant to this clause (a) following the occurrence and during the continuance of (i) an Event of Default pursuant to clause (8) or (9)…\"",
+      "lme_vectors": [
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "A dedicated Specified IP Covenant (Section 4.15) plus the Specified IP License Agreements construct restrict movement of material IP, and the Investment definition disciplines the fair-market-value leakage on unrestricted-subsidiary designation.",
+          "basis": "Section 4.15 'Specified IP Covenant'; the 'Specified IP License Agreements' defined term (Altuglas and Aristech amended and restated IP license agreements dated January 17, 2025); Investment definition treating designation of an Unrestricted Subsidiary as a permanent Investment measured at fair market value.",
+          "quote": "Section 4.15. Specified IP Covenant."
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "Section 4.6 governs Restricted Payments and the RP definition is broad (capturing dividends, redemptions, returns of capital and Restricted Investments), but the operative RP builder/basket thresholds are not reproduced in the provided text so capacity cannot be sized.",
+          "basis": "Section 4.6 Restricted Payments; definition of 'Restricted Payment' including any dividend/distribution on Equity Interests and any Restricted Investment; 'Restricted Investment' means any Investment other than a Permitted Investment.",
+          "quote": "means (i) any dividend or other distribution (whether in cash, securities or other property) with respect to any Equity Interest of any Note Party… and (ii) any Restricted Investment."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "Section 4.2 governs Indebtedness and defined terms (Credit Facility, Refinancing Indebtedness, Incur) permit refinancing and increases, but the specific incremental/ratio debt permissions and caps are not contained in the provided text, so capacity cannot be assessed.",
+          "basis": "Section 4.2 Indebtedness; 'Credit Facility' definition expressly including agreements '(3) increasing the amount of Indebtedness Incurred thereunder'; Refinancing Indebtedness definition permitting refunding plus premiums, fees and defeasance costs.",
+          "quote": "the term \"Credit Facility\" shall include any agreement or instrument… (3) increasing the amount of Indebtedness Incurred thereunder or available to be borrowed thereunder or (4) otherwise altering the terms and conditions thereof."
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "protected",
+          "rationale": "The indenture contains an anti-serial-vote protection: Additional Notes incurred substantially concurrently with a Liability Management Transaction to influence a consent are excluded from the Required Holders count for that consent, limiting sponsor stacking of votes for an uptier.",
+          "basis": "Definitional provision requiring an Officer's Certificate at incurrence of Additional Notes tied to a Liability Management Transaction and excluding such holders from Required Holders determinations for the concurrent consent.",
+          "quote": "the holders of such Additional Notes shall not be included in the determination of Required Holders for any consent or approval that is being sought substantially concurrently with the incurrence of such Additional Notes."
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-25-004689",
+        "form_type": "8-K",
+        "filing_date": "2025-01-21",
+        "exhibit": "EX-4.2",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465925004689/tm253651d1_ex4-2.htm",
+        "quote": "\"solely with respect to Aristech or Altuglas: (a) Investments in the form of deposits made to Trinseo Ireland Global IHB Limited using cash generated by Aristech and Altuglas, as applicable, in the ordinary course of business, which loans shall be made in the ordinary course and consistent with past practice; provided, that neither Aristech nor Altuglas shall make any additional investments pursuant to this clause (a) following the occurrence and during the continuance of (i) an Event of Default pursuant to clause (8) or (9)…\""
+      },
+      "agreement_type": "indenture",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "dip credit agreement dated May 28, 2026",
+      "doc_class": "dip_credit_agreement",
+      "operative_date": "2026-06-12",
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "LLC",
+      "trustee": null,
+      "collateral_agent": "Alter Domus (US) LLC, as Collateral Agent",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "The Guarantors party hereto from time to time (a class); if a Debtor, as Debtor and Debtor-in-Possession. Borrowers/Loan Parties include Trinseo PLC (Parent), Trinseo NA Finance LLC (Holdings), Trinseo Luxco Finance SPV S.à r.l. (Lead Borrower) and Trinseo NA Finance SPV LLC (Co-Borrower).",
+      "financial_covenants": [
+        {
+          "kind": "Liquidity / minimum liquidity (DIP covenant)",
+          "threshold": "Not stated in the provided text (Section 6.20 Liquidity and Section 7.17 Permitted Variance; Liquidity are referenced in the table of contents but the operative thresholds are not included in the excerpt)",
+          "test_frequency": "Not stated in provided text",
+          "springing_trigger": null,
+          "quote": "Section 6.20 Liquidity 91"
+        },
+        {
+          "kind": "Budget / permitted variance covenant (DIP budget and variance testing)",
+          "threshold": "Not stated in the provided text (Section 6.22 Budget and Variance Reporting and Section 7.17 Permitted Variance referenced in TOC; thresholds not in excerpt)",
+          "test_frequency": "Not stated in provided text (variance reporting)",
+          "springing_trigger": null,
+          "quote": "Section 6.22 Budget and Variance Reporting 91"
+        },
+        {
+          "kind": "Milestones (DIP case milestones)",
+          "threshold": "Not stated in the provided text (Section 6.23 Milestones referenced in TOC only)",
+          "test_frequency": "Not stated in provided text",
+          "springing_trigger": null,
+          "quote": "Section 6.23 Milestones 92"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Initial New Money Term Loans (Closing Date draw)",
+          "value": "Not to exceed $35,000,000",
+          "quote": "on the Closing Date, in a single borrowing in an aggregate principal amount requested by the Lead Borrower not to exceed $35,000,000"
+        },
+        {
+          "name": "Delayed Draw New Money Term Loans (upon Final DIP Order)",
+          "value": "Up to the unfunded New Money Commitments as of such date",
+          "quote": "upon entry of the Final DIP Order, in a single borrowing in an aggregate principal amount requested by the Lead Borrower not to exceed the unfunded New Money Commitments as of such date immediately prior to giving effect to such Borrowing"
+        },
+        {
+          "name": "Roll-Up Term Loans (roll up of Prepetition Super HoldCo Secured Obligations)",
+          "value": "Roll-up of prepetition Super HoldCo Secured Obligations per DIP Orders; roll only with Required Lenders' consent",
+          "quote": "shall mean the 'roll up' of Prepetition Super HoldCo Secured Obligations into Roll-Up Term Loans pursuant to the terms of this Agreement and the DIP Orders"
+        },
+        {
+          "name": "Permitted Investments (enumerated categories (a)-(hh))",
+          "value": "Enumerated categories only (no general dollar-cap builder disclosed in excerpt); includes existing Investments, intercompany subordinated Investments, JV Interests ownership, cash/Cash Equivalents/Investment Grade Securities, deposits by Aristech/Altuglas to Trinseo Ireland Global IHB Limited, securitization Investments, etc.",
+          "quote": "the Lead Borrower, in its sole discretion, will classify and may subsequently reclassify such Investment (or any portion thereof) in any one or more of the types of Investments described in clauses (a) through (hh) above"
+        }
+      ],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": true,
+      "unrestricted_subsidiary_designation_flexibility": "Highly constrained. Under Section 5.14, the Co-Borrower, Holdings, Altuglas and Aristech \"are and shall remain an 'Unrestricted Subsidiary' of the Trinseo Lead Borrower and its Restricted Subsidiaries for purposes of... the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement and any other Indebtedness... at all times thereafter.\" This is a fixed designation within a DIP structure rather than a flexible re-designation mechanic; the excerpt does not disclose a general basket permitting new unrestricted-subsidiary designations by the Loan Parties.",
+      "anchor_clause": "Section 7.14 Specified IP Covenant, read together with Section 5.14 Designation and Section 5.15 Intellectual Property. Section 5.14 provides: \"As of the Closing Date and at all times thereafter, each of the Co-Borrower, Holdings, Altuglas and Aristech are and shall remain an 'Unrestricted Subsidiary' of the Trinseo Lead Borrower and its Restricted Subsidiaries for purposes of, in accordance with and pursuant to the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement and any other Indebtedness of the Trinseo Lead Borrower and its Restricted Subsidiaries at any time outstanding, including without limitation, any refinancing Indebtedness of any of the foregoing.\" Section 5.15: \"Trinseo Europe owns or otherwise has the right to license to Aristech and Altuglas, as applicable, the Specified IP Rights licensed under the applicable Specified IP License Agreement... Other than Trinseo Europe, Aristech and Altuglas, no other Loan Party owns, licenses or possesses the right to use any Specified IP Rights in North America.\"",
+      "lme_vectors": [
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "The agreement contains a dedicated Specified IP Covenant (Section 7.14) and represents that IP ownership/licensing is confined to identified entities (Trinseo Europe, Aristech, Altuglas), constraining transfer of material IP away from the credit group.",
+          "basis": "Section 7.14 Specified IP Covenant (TOC) plus Section 5.15 representation that only Trinseo Europe, Aristech and Altuglas own/license Specified IP Rights in North America, with a defined Specified IP License Agreement.",
+          "quote": "Other than Trinseo Europe, Aristech and Altuglas, no other Loan Party owns, licenses or possesses the right to use any Specified IP Rights in North America."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "New money is sized as fixed New Money Commitments (Initial $35,000,000 plus Delayed Draw up to unfunded commitments) with no reborrowing, but the operative Section 7.03 Indebtedness permitted-debt capacities are not contained in the provided excerpt.",
+          "basis": "Section 2.01 caps the Initial New Money Term Loans at $35,000,000 and Delayed Draw loans at unfunded New Money Commitments; Section 7.03 Indebtedness exists but its baskets are not in the excerpt.",
+          "quote": "In no event shall any Lender be required to make Term Loans in excess of its New Money Commitments. Once repaid or prepaid, the New Money Term Loans may not be reborrowed."
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "This is a super-priority DIP facility with a Required Lenders construct that specially protects Designated Lenders holding >=75% of New Money, but the sacred-rights/voting amendment provisions governing priming are not in the provided text.",
+          "basis": "Required Lenders definition includes a Designated Lender protection and disregards certain Roll-Up Term Loans; Roll-Up occurs only with Required Lenders' consent.",
+          "quote": "Required Lenders shall include each Designated Lender for so long as such Designated Lender (together with its managed funds and accounts) holds at least 75% of the New Money Commitments and New Money Term Loans"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "Section 7.06 Restricted Payments exists and Restricted Payments are broadly defined to include Restricted Investments, but the specific RP baskets and thresholds are not contained in the provided excerpt.",
+          "basis": "Section 7.06 Restricted Payments (TOC); Restricted Payment definition captures dividends, redemptions, returns of capital and any Restricted Investment; Permitted Investments are enumerated in clauses (a)-(hh).",
+          "quote": "any dividend or other distribution (whether in cash, securities or other property) with respect to any Equity Interest of any Loan Party... and (ii) any Restricted Investment."
+        }
+      ],
       "citation": {
         "accession_no": "0001104659-26-073451",
         "form_type": "8-K/A",
@@ -1029,49 +1981,531 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926073451/tm2617803d1_ex10-2.htm",
-        "quote": "\"As of the Closing Date and at all times thereafter, each of the Co-Borrower, Holdings, Altuglas and Aristech are and shall remain an \"Unrestricted Subsidiary\" of the Trinseo Lead Borrower and its Restricted Subsidiaries for purposes of, in accordance with and pursuant to the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement and any other Indebtedness of the Trinseo Lead Borrower and its Restricted Subsidiaries at any time outstanding, including without limitation, any refinancing Indebtedness of any of the foregoing.\""
+        "quote": "Section 7.14 Specified IP Covenant, read together with Section 5.14 Designation and Section 5.15 Intellectual Property. Section 5.14 provides: \"As of the Closing Date and at all times thereafter, each of the Co-Borrower, Holdings, Altuglas and Aristech are and shall remain an 'Unrestricted Subsidiary' of the Trinseo Lead Borrower and its Restricted Subsidiaries for purposes of, in accordance with and pursuant to the Prepetition OpCo Credit Agreement, the Prepetition Super-Priority Revolving Credit Agreement and any other Indebtedness of the Trinseo Lead Borrower and its Restricted Subsidiaries at any time outstanding, including without limitation, any refinancing Indebtedness of any of the foregoing.\" Section 5.15: \"Trinseo Europe owns or otherwise has the right to license to Aristech and Altuglas, as applicable, the Specified IP Rights licensed under the applicable Specified IP License Agreement... Other than Trinseo Europe, Aristech and Altuglas, no other Loan Party owns, licenses or possesses the right to use any Specified IP Rights in North America.\""
       },
-      "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession HoldCo Credit Agreement (DIP)",
-      "leverage_covenant_type": "None (no maintenance leverage/net-leverage financial covenant). As a DIP facility, financial discipline is imposed instead through a DIP Budget/Permitted Variance and a minimum Liquidity covenant, plus Milestones and budget/variance reporting (Sections 6.20 Liquidity, 6.22 Budget and Variance Reporting, 6.23 Milestones, 7.17 Permitted Variance; Liquidity). No traditional maintenance leverage ratio is present in the covenant clauses provided.",
-      "leverage_ratio_threshold": "Not present. The provided text does not state a numeric leverage ratio or springing trigger; DIP controls run through the Approved Budget, Permitted Variance, and a Liquidity minimum (dollar threshold not specified in the excerpted text).",
-      "restricted_payments_basket_size": "Not specified in the excerpted text. Section 7.06 (Restricted Payments) governs; \"Restricted Payment\" is defined to include any dividend/distribution on Equity Interests, redemptions/returns of capital, and any Restricted Investment. No dollar or grower basket figure is quoted in the provided pages.",
-      "lme_risk_notes": "Low residual LME vulnerability within this instrument, but the whole facility is itself the product of an LME/restructuring. (1) Uptier/priming: This is a court-approved super-priority DIP with a Roll-Up of Prepetition Super HoldCo Secured Obligations into Roll-Up Term Loans; amendments and any further Roll require Required Lender consent, and Required Lenders are skewed toward New Money holders — a Designated Lender counts as a Required Lender only while holding >=75% of its Closing-Date New Money — entrenching the ad hoc/new-money group and limiting minority-lender uptier/cram exposure. (2) Drop-down/asset transfer: constrained by the Specified IP Covenant (Section 7.14), No Flowback (Section 7.16), separateness undertakings (Section 7.07), and negative covenants on Dispositions (7.05), Restricted Payments (7.06) and Indebtedness (7.03); Specified IP (Trinseo Europe -> Aristech/Altuglas license) is expressly protected. (3) The Chevron Phillips consent gate on the JV Interests limits direct pledge but proceeds/products remain Collateral. (4) Chief LME risk is external: the OpCo-side unrestricted-subsidiary designation of Aristech/Altuglas/Holdings/Co-Borrower (5.14) was the structural maneuver enabling this HoldCo priming/drop-down facility."
+      "agreement_type": "dip_credit_agreement",
+      "leverage_covenant_type": "Liquidity / minimum liquidity (DIP covenant)",
+      "leverage_ratio_threshold": "Not stated in the provided text (Section 6.20 Liquidity and Section 7.17 Permitted Variance; Liquidity are referenced in the table of contents but the operative thresholds are not included in the excerpt)",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
     },
     {
-      "family_label": null,
-      "doc_class": null,
-      "operative_date": null,
+      "family_label": "credit agreement dated May 29, 2026",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-06-01",
       "amendment_count": 0,
       "base_missing": false,
       "governs_instruments": [],
-      "admin_agent": null,
+      "admin_agent": "GLAS USA LLC",
       "trustee": null,
-      "collateral_agent": null,
-      "creditor_note": null,
-      "guarantors": null,
+      "collateral_agent": "GLAS AMERICAS LLC",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Parent Guarantor referenced (Trinseo-related); the facility is a receivables securitization with Styron Receivables Funding DAC as Borrower and Trinseo Ireland Global IHB Limited as Investment Manager. No traditional subsidiary guarantor class defined in the provided text.",
       "financial_covenants": [],
       "baskets": [],
       "ebitda_addback_categories": [],
-      "mfn_sunset_period": "Not present in the excerpted text — no MFN (most-favored-nation pricing) provision or sunset is set forth in the definitions/clauses provided.",
+      "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "The facility operates on a Restricted Subsidiary / Guarantor basis and, as a DIP financing, contains no visible \"Unrestricted Subsidiary\" designation mechanic in the provided text. Section 7.14 (Permitted Activities) and 7.15 (New Subsidiaries) constrain subsidiary activity; collateral definition sweeps in \"OpCo DIP Collateral\" and expressly excludes only enumerated Excluded Assets. This structure sharply limits the ability to move value into a non-guarantor/unrestricted vehicle.",
-      "anchor_clause": null,
-      "lme_vectors": [],
+      "unrestricted_subsidiary_designation_flexibility": "Not addressed in the provided text. This is a bankruptcy-remote receivables securitization SPV structure (DIP-context amendment and restatement) rather than a corporate credit facility with restricted/unrestricted subsidiary architecture; no unrestricted subsidiary designation mechanic appears.",
+      "anchor_clause": "\"Carve Out\" has the meaning given to such term in the Eligible DIP Order; provided that any amendment, modification or supplement to the Carve Out after the date of entry of the Eligible DIP Order that would be materially adverse to the interests of the Administrative Agent, the Collateral Agent or any Lender (each in such capacity) shall not be effective for purposes of this Agreement without the prior written consent (not to be unreasonably withheld) of the affected Administrative Agent or Lender, as applicable.",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "This is a receivables securitization operating in a Chapter 11 / DIP context where superpriority claim ranking is governed by DIP orders, and the text conditions Eligible DIP Facility on DIP Superpriority Claims not ranking senior to or pari passu with the AR Superpriority Claims, but no lender-vote/sacred-rights priming mechanic is shown.",
+          "basis": "Eligible DIP Facility definition requires that no DIP Superpriority Claims rank senior to or pari passu with the AR Superpriority Claims; Carve Out defined by reference to the Eligible DIP Order.",
+          "quote": "no DIP Superpriority Claims shall rank senior to or pari passu with the AR Superpriority Claims"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "The Eligible DIP Facility criteria prohibit any Adverse Claim on the Purchased Receivables, Collections, Collection Accounts or other AR Facility Collateral, protecting the collateral pool from being transferred or subordinated outside the facility.",
+          "basis": "Eligible DIP Facility definition: not secured by any Adverse Claim on equity of Borrower/U.S. Intermediate Transferor, any Purchased Receivables, Related Security or Collections, the Collection Accounts or any other AR Facility Collateral.",
+          "quote": "such DIP Facility is not secured by any Adverse Claim on (i) the equity interests of the Borrower or the U.S. Intermediate Transferor, (ii) any Purchased Receivables, Related Security or Collections, (iii) the Collection Accounts or any other Transaction Account or any funds on deposit therein, or (iv) any other AR Facility Collateral"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "The text contemplates competing receivables facilities and DIP facilities but constrains them (Competing Transaction restrictions and Eligible DIP Facility criteria) rather than granting a defined incremental debt capacity; the actual incremental/negative-covenant debt provisions are not in the excerpt.",
+          "basis": "Competing Transaction definition captures any asset-based/borrowing base/factoring facility involving sale or pledge of receivables, with only a limited ordinary-course factoring carve-out capped at EUR4,500,000 per Calculation Period.",
+          "quote": "factoring facilities entered into in the ordinary course of business involving the sale of Receivables for which the Obligor is Coexpan S.A., Torraspapel, S.A. or their respective Subsidiaries, in an amount not to exceed €4,500,000 in the aggregate in any Calculation Period shall not be considered a Competing Transaction"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "The provided text contains no restricted payments covenant or capacity; distributions are governed instead by the waterfall/collections mechanics of a securitization, which are not included in this excerpt.",
+          "basis": "No restricted payment basket or covenant appears in the negative covenants text provided.",
+          "quote": ""
+        }
+      ],
       "citation": {
         "accession_no": "0001104659-26-068944",
         "form_type": "8-K",
         "filing_date": "2026-06-01",
+        "exhibit": "EX-10.3",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926068944/tm2615985d1_ex10-3.htm",
+        "quote": "\"Carve Out\" has the meaning given to such term in the Eligible DIP Order; provided that any amendment, modification or supplement to the Carve Out after the date of entry of the Eligible DIP Order that would be materially adverse to the interests of the Administrative Agent, the Collateral Agent or any Lender (each in such capacity) shall not be effective for purposes of this Agreement without the prior written consent (not to be unreasonably withheld) of the affected Administrative Agent or Lender, as applicable."
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated January 17, 2025",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-03-20",
+      "amendment_count": 3,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "DEUTSCHE BANK AG NEW YORK BRANCH",
+      "trustee": null,
+      "collateral_agent": "Deutsche Bank AG New York Branch",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Not specified in the provided text (Holdings and Loan Parties referenced but guarantor class not defined here)",
+      "financial_covenants": [],
+      "baskets": [],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": true,
+      "unrestricted_subsidiary_designation_flexibility": "As amended, \"Unrestricted Subsidiary\" is limited to (i) each Subsidiary of the Lead Borrower listed on Schedule 1.01D as of the Closing Date and (ii) any Subsidiary of an Unrestricted Subsidiary — i.e., the amendment removes forward-looking designation flexibility by fixing the set of Unrestricted Subsidiaries to a closed, Closing Date schedule (plus their own subsidiaries).",
+      "anchor_clause": "The definition of \"Unrestricted Subsidiary\" is hereby amended and restated, in its entirety, as follows: \"\"[Unrestricted Subsidiary]\" means (i) each Subsidiary of the Lead Borrower listed on Schedule 1.01D as of the Closing Date and (ii) any Subsidiary of an Unrestricted Subsidiary.\"",
+      "lme_vectors": [
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "The amendment restates 'Unrestricted Subsidiary' to a closed list fixed as of the Closing Date, preventing designation of new unrestricted subsidiaries into which material assets/IP could be dropped down.",
+          "basis": "Amended definition limits Unrestricted Subsidiaries to those listed on Schedule 1.01D as of the Closing Date and their subsidiaries, eliminating forward designation capacity.",
+          "quote": "\"Unrestricted Subsidiary\" means (i) each Subsidiary of the Lead Borrower listed on Schedule 1.01D as of the Closing Date and (ii) any Subsidiary of an Unrestricted Subsidiary."
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The provided text is a limited waiver and amendment addressing waiver of default remedies and the Unrestricted Subsidiary definition; it is silent on lender voting/sacred rights or priming.",
+          "basis": "Text covers only temporary waiver of default-related rights/remedies during the Waiver Period and the amended definition; no pro rata sharing or amendment-voting provisions are excerpted.",
+          "quote": "it (i) temporarily waives its right to exercise each and every default-related right and remedy under the Loan Documents"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "No incremental facility, ratio-debt, or MFN provisions appear in the excerpted waiver/amendment text.",
+          "basis": "The excerpt concerns waiver of Specified Defaults and the Unrestricted Subsidiary definition only.",
+          "quote": "the Borrowers have requested that during the Waiver Period, the Agent and the Lenders ... agree to ... temporarily waive their default-related rights and remedies"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "The waiver expressly requires Loan Parties to continue complying with all limitations, restrictions or prohibitions applicable if a Default exists, which likely tightens restricted-payment capacity during the Waiver Period, but the underlying RP baskets are not set out in the excerpt.",
+          "basis": "During the Waiver Period each Loan Party must comply with all limitations/restrictions/prohibitions effective if a Default occurred, but no RP basket sizes are provided in the text.",
+          "quote": "each Loan Party shall comply with all limitations, restrictions or prohibitions that would be effective or applicable under the Loan Documents, as modified hereby, if any Default o[ccurred]"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-26-032793",
+        "form_type": "8-K",
+        "filing_date": "2026-03-20",
+        "exhibit": "EX-10.2",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926032793/tm269214d1_ex10-2.htm",
+        "quote": "The definition of \"Unrestricted Subsidiary\" is hereby amended and restated, in its entirety, as follows: \"\"[Unrestricted Subsidiary]\" means (i) each Subsidiary of the Lead Borrower listed on Schedule 1.01D as of the Closing Date and (ii) any Subsidiary of an Unrestricted Subsidiary.\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated September 6, 2017",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-03-20",
+      "amendment_count": 2,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "Lenders party hereto. RECITALS A. , DEUTSCHE BANK AG NEW YORK BRANCH",
+      "trustee": null,
+      "collateral_agent": "Deutsche Bank AG New York Branch",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Not specified in the provided text (this is a limited waiver and amendment; Loan Parties referenced generally)",
+      "financial_covenants": [],
+      "baskets": [
+        {
+          "name": "Asset Sale cash consideration threshold (Section 7.05(n))",
+          "value": "greater of $20,000,000 and 0.75% of Total Assets — Dispositions at or above this price must yield ≥75% cash/Cash Equivalents",
+          "quote": "with respect to any Disposition pursuant to this clause (n) for a purchase price equal to or greater than the greater of $20,000,000 and 0.75% of Total Assets (as determined at the time of such Disposition), the Lead Borrower or any of its Restricted Subsidiaries shall receive not less than 75% of such consideration in the form of cash or Cash Equivalents"
+        },
+        {
+          "name": "Asset Sale non-cash consideration deemed-cash cap (Section 7.05(n))",
+          "value": "greater of $100,000,000 and 4.25% of Total Assets",
+          "quote": "(C) aggregate non-cash consideration received by the Lead Borrower or the applicable Restricted Subsidiary having an aggregate fair market value ... not to exceed the greater of $100,000,000 and 4.25% of Total Assets, as determined at the time of such Disposition"
+        }
+      ],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": "The definition of \"Unrestricted Subsidiary\" was amended and restated to include, in addition to listed subsidiaries and those designated by the Board of Directors, \"(iii) from and after the 2025 Incremental Amendment Effective Date, Aristech and Altuglas, (iv) any Securitization Subsidiary, if a Subsidiary of the Lead Borrower and (v) any Subsidiary of an Unrestricted Subsidiary.\" Board of Directors retains designation authority; specific named entities (Aristech, Altuglas) are hard-coded as Unrestricted Subsidiaries.",
+      "anchor_clause": "\"(iii) from and after the 2025 Incremental Amendment Effective Date, Aristech and Altuglas, (iv) any Securitization Subsidiary, if a Subsidiary of the Lead Borrower and (v) any Subsidiary of an Unrestricted Subsidiary.\"",
+      "lme_vectors": [
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "open",
+          "rationale": "The amendment expands the Unrestricted Subsidiary definition to hard-code Aristech and Altuglas as Unrestricted Subsidiaries and to include any subsidiary of an Unrestricted Subsidiary, moving those assets outside the restricted group.",
+          "basis": "Amended and restated definition of 'Unrestricted Subsidiary' clauses (iii) and (v); Section 7.04(g) permitting mergers/dispositions of the Co-Borrower and Restricted Subsidiaries.",
+          "quote": "(iii) from and after the 2025 Incremental Amendment Effective Date, Aristech and Altuglas ... and (v) any Subsidiary of an Unrestricted Subsidiary."
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "The provided text does not include any restricted payments covenant or basket.",
+          "basis": "No Section 7 restricted-payment clause is present in the excerpt.",
+          "quote": ""
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "The excerpt references a prior 2025 Incremental Amendment and 2023 Incremental and Refinancing Amendment but sets no incremental debt capacity or MFN terms in the amended text.",
+          "basis": "References to prior incremental amendments only; no incremental facility sizing in the provided clauses.",
+          "quote": "from and after the 2025 Incremental Amendment Effective Date"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The text is silent on lien subordination, sacred rights, or voting thresholds beyond noting the Consenting Lenders constitute Required Lenders for this amendment.",
+          "basis": "Amendment effected under Section 10.01 with Required Lenders; no priming or pro rata sharing provisions quoted.",
+          "quote": "The Borrowers, Holdings and the Consenting Lenders desire to amend the Credit Agreement in accordance with Section 10.01 of the Credit Agreement"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-26-032793",
+        "form_type": "8-K",
+        "filing_date": "2026-03-20",
+        "exhibit": "EX-10.3",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926032793/tm269214d1_ex10-3.htm",
+        "quote": "\"(iii) from and after the 2025 Incremental Amendment Effective Date, Aristech and Altuglas, (iv) any Securitization Subsidiary, if a Subsidiary of the Lead Borrower and (v) any Subsidiary of an Unrestricted Subsidiary.\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated September 8, 2023",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-03-20",
+      "amendment_count": 1,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "LLC",
+      "trustee": null,
+      "collateral_agent": "Alter Domus (US) LLC",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Loan Parties (the Borrowers, Parent, Holdings); Foreign Guaranty parties (Luxembourg Loan Parties) — as defined in the Credit Agreement; the text does not enumerate a full guarantor class",
+      "financial_covenants": [],
+      "baskets": [
+        {
+          "name": "Affiliate transactions de minimis threshold (Section 7.08)",
+          "value": "$1,000,000 per individual transaction or series of related transactions",
+          "quote": "shall, directly or indirectly, enter into any transaction of any kind with any Affiliate involving aggregate payments or consideration in excess of $1,000,000 for any individual transaction or series of related transactions"
+        },
+        {
+          "name": "Americas Styrenics permitted debt basket (Section 7.10(b))",
+          "value": "$25,000,000 general basket outstanding at any time; plus existing revolving facility not to exceed $60,000,000",
+          "quote": "(ii) Indebtedness not to exceed $25,000,000 in the aggregate outstanding at any time and (iii) that certain revolving facility in existence on the date hereof not to exceed $60,000,000 in the aggregate outstanding at any time"
+        },
+        {
+          "name": "JV Sale asset sale (Section 7.05(a))",
+          "value": "Fair Market Value; 75% cash/Cash Equivalents; proceeds prepay Term Loans per 2.05(b)(ii)",
+          "quote": "the JV Sale so long as (i) ... receives at least Fair Market Value therefor, (ii) 75% of the consideration is paid in cash or Cash Equivalents ... and (iv) proceeds of such Disposition are applied to prepay the Term Loans"
+        },
+        {
+          "name": "Restricted debt incurrence baskets (Section 6.01(a)(ii), (c), (d), (e))",
+          "value": "Reserved/eliminated — several incurrence baskets amended to '[reserved]'",
+          "quote": "(ii) [reserved]; ... (c)[reserved]; (d)[reserved]; (e)[reserved];"
+        }
+      ],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": true,
+      "unrestricted_subsidiary_designation_flexibility": "Severely constrained. No Loan Party may form or acquire any direct Subsidiary after the Closing Date other than the Specified Subsidiary (a newly-formed wholly-owned Subsidiary of the Co-Borrower that may hold only the JV Interests and may not incur Indebtedness or suffer Liens, with failure being an Event of Default). Section 7.02: \"No Loan Party shall form or acquire any direct Subsidiary after the Closing Date, other than the Specified Subsidiary.\"",
+      "anchor_clause": "\"(a)the JV Sale so long as (i) prior to the Specified Contribution, the Co-Borrower and following the Specified Contribution, the Specified SPV, receives at least Fair Market Value therefor, (ii) 75% of the consideration is paid in cash or Cash Equivalents (in each case free and clear of all Liens at the time received), (iii) at the date of entry into a definitive document for the JV Sale, no Default or Event of Default exists or will result therefrom, and on the closing date of the JV Sale, no Event of Default pursuant to Section 8.01(a), (f) or (g) exists or will result therefrom; and (iv) proceeds of such Disposition are applied to prepay the Term Loans in accordance with Section 2.05(b)(ii) of this Agreement;\"",
+      "lme_vectors": [
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "The Specified Subsidiary that receives the JV Interests via the Specified Contribution is expressly caged — it may hold no other assets, may not incur debt or liens, and its formation is the only permitted new subsidiary, closing off asset-stripping into an unrestricted vehicle.",
+          "basis": "Definition of Specified Subsidiary; amended Section 7.02 limiting new subsidiaries; JV Interests remain Collateral with proceeds carved back in.",
+          "quote": "a newly formed wholly-owned Subsidiary of the Co-Borrower, which shall hold no property or assets, other than the JV Interests; , that such Subsidiary shall not incur or guarantee any Indebtedness or suffer to exist any Liens (it being understood that failure to comply with this proviso shall constitute an Event of Default)."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "protected",
+          "rationale": "Multiple debt-incurrence clauses under Section 6.01 have been amended and restated to '[reserved],' eliminating those incurrence capacities.",
+          "basis": "Amended Section 6.01(a)(ii) and Sections 6.01(c), (d), (e).",
+          "quote": "(ii) [reserved]; ... (c)[reserved]; (d)[reserved]; (e)[reserved];"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "protected",
+          "rationale": "The Restricted Payments lead-in extends the prohibition to every Loan Party (other than Parent) and to the Specified Subsidiary, tightening leakage through the JV-holding vehicle, subject to the enumerated exceptions.",
+          "basis": "Amended lead-in to Section 7.06.",
+          "quote": "None of any Loan Party (other than Parent) nor the Specified Subsidiary shall declare or make, directly or indirectly, any Restricted Payment, except:"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "This limited waiver and amendment addresses collateral, investments, asset sales and RP covenants but is silent on voting/sacred-rights or priming-debt mechanics.",
+          "basis": "No amendment to Section 10.01 voting or pro rata sharing provisions is included in the provided text.",
+          "quote": "in accordance with Section 10.01 of the Credit Agreement"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-26-032793",
+        "form_type": "8-K",
+        "filing_date": "2026-03-20",
+        "exhibit": "EX-10.4",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926032793/tm269214d1_ex10-4.htm",
+        "quote": "\"(a)the JV Sale so long as (i) prior to the Specified Contribution, the Co-Borrower and following the Specified Contribution, the Specified SPV, receives at least Fair Market Value therefor, (ii) 75% of the consideration is paid in cash or Cash Equivalents (in each case free and clear of all Liens at the time received), (iii) at the date of entry into a definitive document for the JV Sale, no Default or Event of Default exists or will result therefrom, and on the closing date of the JV Sale, no Event of Default pursuant to Section 8.01(a), (f) or (g) exists or will result therefrom; and (iv) proceeds of such Disposition are applied to prepay the Term Loans in accordance with Section 2.05(b)(ii) of this Agreement;\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated February 16, 2026",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-02-17",
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "Administrative Agent (not named in the provided text); Alter Domus (US) LLC referenced as consenting party under Section 9(b) of the 2023 Incremental and Refinancing Amendment",
+      "trustee": null,
+      "collateral_agent": null,
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Not specified in the provided text; the Loan Parties comprise Holdings (Trinseo LuxCo S.à r.l.), the Lead Borrower (Trinseo Holding S.à r.l.) and the Co-Borrower (Trinseo Materials Finance, Inc.)",
+      "financial_covenants": [],
+      "baskets": [],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"...(with respect to any interest payment due on or after February 1, 2026 and prior to March 1, 2026, which shall not constitute an Event of Default unless such Loan Party fails to make such interest payment on or prior to March 19, 2026) or any other amount payable hereunder or with respect to any other Loan Document...\"",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "This is a narrow grace-period amendment extending the cure period for a specific interest payment; it does not address lender priming, sacred rights, or pro rata protections.",
+          "basis": "The Amendment only modifies the Event of Default provision to grant a payment grace period; no priming or voting provisions are amended.",
+          "quote": "this Amendment shall not by implication or otherwise limit, impair, constitute a waiver of or otherwise affect the rights and remedies of the Lenders or the Administrative Agent"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "The text contains no provisions concerning unrestricted subsidiaries, IP/asset transfers, or investment capacity.",
+          "basis": "Amendment scope is limited to interest-payment grace period and effectiveness conditions.",
+          "quote": "Except as expressly set forth herein, this Amendment shall not by implication or otherwise limit, impair, constitute a waiver of or otherwise affect the rights and remedies of the Lenders"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "No incremental facility, ratio debt, or MFN provisions appear in the provided text.",
+          "basis": "Only a reference to the pre-existing 2023 Incremental and Refinancing Amendment for consent purposes; no incremental capacity is created or amended here.",
+          "quote": "the written consent of Alter Domus (US) LLC consenting to this Amendment in accordance with Section 9(b) of the 2023 Incremental and Refinancing Amendment"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "No restricted payments, distributions, or related baskets are addressed in the provided clauses.",
+          "basis": "The Amendment ratifies all existing covenants unchanged and adds only a payment grace period.",
+          "quote": "all of which are ratified and affirmed in all respects and shall continue in full force and effect"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-26-015648",
+        "form_type": "8-K",
+        "filing_date": "2026-02-17",
         "exhibit": "EX-10.1",
         "section": "Negative covenants / Definitions",
         "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926068944/tm2615985d1_ex10-1.htm",
-        "quote": "\"'Liquidity' means, as of any date of determination, the aggregate amount of unrestricted cash and Cash Equivalents of the Loan Parties.\""
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926015648/tse-20260216xex10d1.htm",
+        "quote": "\"...(with respect to any interest payment due on or after February 1, 2026 and prior to March 1, 2026, which shall not constitute an Event of Default unless such Loan Party fails to make such interest payment on or prior to March 19, 2026) or any other amount payable hereunder or with respect to any other Loan Document...\""
       },
-      "agreement_type": "Senior Secured Super-Priority Debtor-in-Possession Credit Agreement (Trinseo)",
-      "leverage_covenant_type": "None (no traditional leverage-ratio maintenance covenant). As a DIP facility, the maintenance covenant regime is a budget/permitted-variance and minimum-Liquidity construct (Section 6.16/6.20/6.22/7.16 \"Permitted Variance; Liquidity\") together with DIP Milestones (Section 6.23) and Budget/Variance Reporting.",
-      "leverage_ratio_threshold": "Not applicable — no leverage ratio threshold is stated. DIP covenant controls are (i) minimum Liquidity (\"the aggregate amount of unrestricted cash and Cash Equivalents of the Loan Parties\") tested per Sections 6.20/7.16, and (ii) Permitted Variance against the Approved Budget/Interim DIP Order budget. Specific numeric thresholds are set in the Interim/Final DIP Orders and are not quoted in the excerpted text.",
-      "restricted_payments_basket_size": "Not specified in the excerpted text (Section 7.06 \"Restricted Payments\" is referenced but its basket amounts are not reproduced). Note the Loans to Officers/Employees carve-out capped at \"not exceeding $1,000,000 in the aggregate outstanding at any time.\"",
-      "lme_risk_notes": "This is a court-supervised super-priority DIP facility governed by DIP Orders and an Intercreditor Agreement, not a typical syndicated TLB, so traditional out-of-court LME (drop-down / uptier / priming) vectors are structurally curtailed: (i) DIP claims are section 364(c) super-priority administrative claims with recourse against all Collateral, subject only to the Carve-Out; (ii) priming/adequate protection is controlled by the Bankruptcy Court via the DIP Orders and by an existing January 17, 2025 Intercreditor Agreement among the Prepetition Superpriority Revolving, Prepetition OpCo, Prepetition Super Holdco and Second Lien Notes agents; (iii) J.Crew-style IP drop-down risk is materially mitigated because the Aristech/Altuglas operating IP is licensed in under identified Technology License Agreements and the collateral package is broad, though I cannot confirm an express Section 7.05/7.14 transfer blocker from the excerpt (marked null). Key residual leverage lies with the Required Lenders, who must find the Interim/Final DIP Orders and First Day Orders \"acceptable in all respects,\" giving lenders veto-style control over restructuring steps and Milestones rather than exposing them to unilateral borrower LME maneuvers. Note the built-in \"Roll-Up Loan (Rev)\" (0.00% applicable rate) reflects a prepetition-to-DIP roll-up, itself an LME-adjacent priority enhancement for existing revolver lenders."
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "5.125% notes due 2029",
+      "doc_class": "indenture",
+      "operative_date": "2025-01-21",
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": null,
+      "trustee": "The Bank of New York Mellon",
+      "collateral_agent": null,
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "The Guarantors (as defined in the Indenture) — however, Article X (Guarantee) is deleted in its entirety and the supplemental indenture provides for termination/release of Note Guarantees; prior Guarantors added by supplements included Altuglas LLC, Trinseo Services Ireland Limited, Aristech Surfaces LLC, Trinseo Ireland Global IHB Limited and Heathland B.V.",
+      "financial_covenants": [],
+      "baskets": [],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": false,
+      "unrestricted_subsidiary_designation_flexibility": "Section 3.20 (Designation of Restricted and Unrestricted Subsidiaries) has been deleted in its entirety and is of no further force and effect; the indenture no longer governs designation of unrestricted subsidiaries.",
+      "anchor_clause": "Section 3.6 (Limitation on Liens); [INTENTIONALLY DELETED] — together with the deletion of Section 3.2 (Limitation on Indebtedness), Section 3.3 (Limitation on Restricted Payments), Section 3.20 (Designation of Restricted and Unrestricted Subsidiaries) and Article X (Guarantee) \"in their entirety, ... and these Sections and clauses shall be of no further force and effect, and the words '[INTENTIONALLY DELETED]' shall be inserted.\"",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "open",
+          "rationale": "The lien covenant (Section 3.6) and merger/sacred-right protections have been stripped, leaving no contractual limitation on incurring priming or secured debt.",
+          "basis": "Section 3.6 (Limitation on Liens) and clauses of Section 4.1 (Merger and Consolidation) deleted in their entirety and of no further force and effect.",
+          "quote": "Section 3.6 (Limitation on Liens); ... shall be of no further force and effect, and the words “[INTENTIONALLY DELETED]” shall be inserted"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "open",
+          "rationale": "Deletion of the unrestricted-subsidiary designation covenant and asset-sale/investment limitations removes any restriction on transferring assets or IP to non-guarantor or unrestricted subsidiaries.",
+          "basis": "Section 3.20 (Designation of Restricted and Unrestricted Subsidiaries) and Section 3.5 (Limitation on Sales of Assets and Subsidiary Stock) deleted in their entirety.",
+          "quote": "Section 3.20 (Designation of Restricted and Unrestricted Subsidiaries); ... shall be of no further force and effect"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "open",
+          "rationale": "The limitation on indebtedness has been deleted entirely, so the indenture imposes no cap or ratio on incurring additional debt.",
+          "basis": "Section 3.2 (Limitation on Indebtedness) deleted in its entirety and of no further force and effect.",
+          "quote": "Section 3.2 (Limitation on Indebtedness); ... shall be of no further force and effect"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "open",
+          "rationale": "The restricted payments covenant and the restriction on distributions from restricted subsidiaries have both been deleted, leaving no limitation on value leakage.",
+          "basis": "Section 3.3 (Limitation on Restricted Payments) and Section 3.4 (Limitation on Restrictions on Distributions from Restricted Subsidiaries) deleted in their entirety.",
+          "quote": "Section 3.3 (Limitation on Restricted Payments); ... shall be of no further force and effect"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-25-004689",
+        "form_type": "8-K",
+        "filing_date": "2025-01-21",
+        "exhibit": "EX-4.1",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465925004689/tm253651d1_ex4-1.htm",
+        "quote": "Section 3.6 (Limitation on Liens); [INTENTIONALLY DELETED] — together with the deletion of Section 3.2 (Limitation on Indebtedness), Section 3.3 (Limitation on Restricted Payments), Section 3.20 (Designation of Restricted and Unrestricted Subsidiaries) and Article X (Guarantee) \"in their entirety, ... and these Sections and clauses shall be of no further force and effect, and the words '[INTENTIONALLY DELETED]' shall be inserted.\""
+      },
+      "agreement_type": "indenture",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated December 12, 2024",
+      "doc_class": "credit_agreement",
+      "operative_date": "2025-01-21",
+      "amendment_count": 1,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "LLC",
+      "trustee": null,
+      "collateral_agent": "ALTER DOMUS (US) LLC, as Collateral Agent",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Each Guarantor party to the Agreement (collectively with each Borrower, the \"Loan Parties\"); Foreign Guarantors under the Amended and Restated Foreign Guaranty; Luxembourg Guarantors (a Guarantor incorporated in Luxembourg). Note: \"no Loan Party (other than Parent) shall form or acquire any Subsidiary after the Closing Date.\"",
+      "financial_covenants": [
+        {
+          "kind": "First Lien Net Leverage Ratio — springing mandatory prepayment trigger (post-JV Sale)",
+          "threshold": "3.75:1.00 (marked up from 3.50:1.00)",
+          "test_frequency": "Tested on a pro forma basis as of the most recently ended Test Period following the JV Sale",
+          "springing_trigger": "Following the JV Sale, if First Lien Net Leverage Ratio exceeds 3.75:1.00 as of the most recently ended Test Period AND the Lead Borrower receives any Excess Interest or Excess Amortization",
+          "quote": "Following the JV Sale, if (A) the First Lien Net Leverage Ratio, calculated on a pro forma basis in accordance with Section 1.10 of the Trinseo Credit Agreement, exceeds 3.503.75:1.00 as of the most recently ended Test Period ... following the JV Sale and (B) the Lead Borrower receives any Excess Interest or Excess Amortization at any time following the JV Sale, the Borrowers shall cause to be prepaid ... an aggregate principal amount of Term Loans in an amount equal to 100% of Excess Interest and Excess Amortization"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Americas Styrenics Irregular Dividend prepayment threshold (Annual Threshold)",
+          "value": "$5,000,000 in any fiscal year",
+          "quote": "Upon the receipt by the Co-Borrower of any cash dividends from Americas Styrenics ... in excess of $5,000,000 in any fiscal year (the \"Annual Threshold\"), the Co-Borrower shall cause to be prepaid ... 100% of such Irregular Dividends in excess of the Annual Threshold"
+        },
+        {
+          "name": "Debt incurrence mandatory prepayment sweep",
+          "value": "100% of proceeds of Indebtedness (other than Indebtedness not prohibited under Section 7.03)",
+          "quote": "If any Loan Party incurs or issues any Indebtedness (other than Indebtedness not prohibited under Section 7.03), the Borrowers shall cause to be prepaid an aggregate principal amount of Term Loans in an amount equal to"
+        },
+        {
+          "name": "Restricted Payments (Section 7.06) / Restricted Payment definition",
+          "value": "Not quantified in provided text; Restricted Payment defined to include dividends/distributions and Restricted Investments",
+          "quote": "(i) any dividend or other distribution (whether in cash, securities or other property) with respect to any Equity Interest of any Loan Party ... and (ii) any Restricted Investment."
+        },
+        {
+          "name": "Permitted Investments (existing ownership + intercompany + JV + cash equivalents + Term Loan investments)",
+          "value": "Enumerated categories only; no general dollar basket in provided text",
+          "quote": "Investments consisting of the 2023 Incremental Term Loans and, the 2023 Refinancing Term Loans, the 2025 Incremental Term Loans or any proceeds or distributions therefrom"
+        }
+      ],
+      "ebitda_addback_categories": [
+        "Consolidated EBITDA add-backs as defined in the Trinseo Credit Agreement, with clause (x) add-backs capped at 10% of pro forma Consolidated EBITDA (after giving effect to such add-back and all other permitted add-backs) for any period; Aristech and Altuglas treated as 'Restricted Subsidiaries' for purposes of calculating Consolidated EBITDA"
+      ],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": true,
+      "unrestricted_subsidiary_designation_flexibility": "The text does not reproduce a general unrestricted-subsidiary designation covenant; however, it documents that Aristech and Altuglas were each designated as \"Unrestricted Subsidiaries\" under the Trinseo Credit Agreement, the 2029 Senior Notes and the Super-Priority Revolving Credit Agreement as a condition to the Third Amendment, with corresponding lien/guarantee releases and release of the Specified IP. This confirms the underlying documents permit unrestricted-subsidiary designation and asset/IP release, though for Consolidated EBITDA calculation Aristech and Altuglas are still treated as Restricted Subsidiaries.",
+      "anchor_clause": "(e) ... (i) evidence satisfactory to the Required Lenders that each of Aristech and Altuglas have each been designated by the Board of Directors of the Trinseo Lead Borrower as an \"Unrestricted Subsidiary\" ... in accordance with and pursuant to the Trinseo Credit Agreement, the 2029 Senior Notes and the Super-Priority Revolving Credit Agreement ... and (iii) intellectual property security interest releases with respect to the Specified IP under the Trinseo Credit Agreement",
+      "lme_vectors": [
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "open",
+          "rationale": "This very amendment effectuates a dropdown-style transaction: Aristech and Altuglas were designated Unrestricted Subsidiaries and the Specified IP was released from the collateral package, demonstrating live capacity to move material IP/assets outside the credit group.",
+          "basis": "Section 7.14 (Specified IP Covenant) exists, but conditions precedent (e) confirm Aristech/Altuglas were designated Unrestricted Subsidiaries and Specified IP liens were released as part of the deal.",
+          "quote": "intellectual property security interest releases with respect to the Specified IP under the Trinseo Credit Agreement, in each case in form and substance satisfactory to the Administrative Agent and the Required Lenders"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "The agreement references Incremental Credit Extensions (Section 2.16) and 2025 Incremental Term Loans, and permits Indebtedness not prohibited under Section 7.03, but Section 7.03 text and any incremental cap/MFN are not reproduced, so capacity cannot be sized.",
+          "basis": "Section 7.03 (Indebtedness); Section 2.16 (Incremental Credit Extensions) referenced; mandatory prepayment sweep excludes 'Indebtedness not prohibited under Section 7.03'.",
+          "quote": "If any Loan Party incurs or issues any Indebtedness (other than Indebtedness not prohibited under Section 7.03), the Borrowers shall cause to be prepaid an aggregate principal amount of Term Loans"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "Section 7.06 governs Restricted Payments and the RP definition is provided, but the actual permitted-RP baskets and dollar thresholds are not reproduced in the excerpt, so leakage capacity cannot be assessed.",
+          "basis": "Section 7.06 (Restricted Payments); definition of Restricted Payment covering dividends, distributions and Restricted Investments.",
+          "quote": "any dividend or other distribution (whether in cash, securities or other property) with respect to any Equity Interest of any Loan Party ... and (ii) any Restricted Investment."
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The excerpt does not reproduce the voting/amendment or sacred-rights provisions needed to assess uptier/priming protection; Required Lenders is defined as >50% but no pro-rata sharing or lien-subordination sacred right is quoted.",
+          "basis": "Definition of 'Required Lenders' (more than 50% of Total Outstandings and Aggregate Commitments) is provided, but no amendment sacred-rights or priming carve-out clause appears in the text.",
+          "quote": "means, as of any date of determination, Lenders having more than 50% of the sum of the (a) Total Outstandings and (b) Aggregate Commitments"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-25-004689",
+        "form_type": "8-K",
+        "filing_date": "2025-01-21",
+        "exhibit": "EX-10.3",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465925004689/tm253651d1_ex10-3.htm",
+        "quote": "(e) ... (i) evidence satisfactory to the Required Lenders that each of Aristech and Altuglas have each been designated by the Board of Directors of the Trinseo Lead Borrower as an \"Unrestricted Subsidiary\" ... in accordance with and pursuant to the Trinseo Credit Agreement, the 2029 Senior Notes and the Super-Priority Revolving Credit Agreement ... and (iii) intellectual property security interest releases with respect to the Specified IP under the Trinseo Credit Agreement"
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "First Lien Net Leverage Ratio — springing mandatory prepayment trigger (post-JV Sale)",
+      "leverage_ratio_threshold": "3.75:1.00 (marked up from 3.50:1.00)",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
     }
   ],
   "subsidiaries": [
@@ -1994,6 +3428,756 @@
       }
     }
   ],
+  "liquidity": {
+    "is_distressed": true,
+    "as_of_label": "Q1 2026",
+    "cash": {
+      "value": 110600000.0,
+      "display": "$111M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001104659-26-052646",
+        "form_type": "10-Q",
+        "filing_date": "2026-04-30",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926052646/0001104659-26-052646-index.htm",
+        "quote": "Cash and Cash Equivalents, at Carrying Value = $111M (as of 2026-03-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "undrawn_committed": {
+      "value": 121000000.0,
+      "display": "$121M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "2028 Refinance Term Loans $7M + Super-Priority Revolver $33M + Accounts Receivable Securitization Facility $6M + Accounts Receivable Securitization Facility 2024 $75M",
+      "note": "Sum of tagged undrawn revolver / facility capacity. Facilities without a separately tagged headroom are excluded — see the debt schedule for their commitments."
+    },
+    "total_liquidity": {
+      "value": 231600000.0,
+      "display": "$232M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "cash $111M + undrawn credit $121M",
+      "note": "Cash and equivalents plus tagged undrawn committed credit."
+    },
+    "annual_burn": {
+      "value": 278700000.0,
+      "display": "$279M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "|free cash flow| (Q1 2026)",
+      "note": "Annual cash burn = negative free cash flow (OCF − capex)."
+    },
+    "runway_months": 10.0,
+    "next_maturity": {
+      "year": 2029,
+      "face": 419900000.0,
+      "instruments": [
+        "2029 Refinance Senior Notes"
+      ]
+    },
+    "next_event": {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    }
+  },
+  "liquidity_events": [
+    {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-06",
+      "kind": "coupon",
+      "instrument": "Super-Priority Revolver",
+      "amount": {
+        "value": 8360749.999999998,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$265M face × 12.62% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 3.6,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "2029 Refinance Senior Notes",
+      "amount": {
+        "value": 16008687.5,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$420M face × 7.62% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 6.9,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-09",
+      "kind": "coupon",
+      "instrument": "Super-Priority Revolver",
+      "amount": {
+        "value": 8360749.999999998,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$265M face × 12.62% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 3.6,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-12",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2026-12",
+      "kind": "coupon",
+      "instrument": "Super-Priority Revolver",
+      "amount": {
+        "value": 8360749.999999998,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$265M face × 12.62% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 3.6,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "2029 Refinance Senior Notes",
+      "amount": {
+        "value": 16008687.5,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$420M face × 7.62% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 6.9,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-03",
+      "kind": "coupon",
+      "instrument": "Super-Priority Revolver",
+      "amount": {
+        "value": 8360749.999999998,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$265M face × 12.62% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 3.6,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-06",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-06",
+      "kind": "coupon",
+      "instrument": "Super-Priority Revolver",
+      "amount": {
+        "value": 8360749.999999998,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$265M face × 12.62% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 3.6,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "2029 Refinance Senior Notes",
+      "amount": {
+        "value": 16008687.5,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$420M face × 7.62% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 6.9,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-09",
+      "kind": "coupon",
+      "instrument": "Super-Priority Revolver",
+      "amount": {
+        "value": 8360749.999999998,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$265M face × 12.62% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 3.6,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-12",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2027-12",
+      "kind": "coupon",
+      "instrument": "Super-Priority Revolver",
+      "amount": {
+        "value": 8360749.999999998,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$265M face × 12.62% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 3.6,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "2028 Refinance Term Loans",
+      "amount": {
+        "value": 26209750.000000004,
+        "display": "$26M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,233M face × 8.50% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 11.3,
+      "flags": [
+        "coupon_at_risk"
+      ],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "2029 Refinance Senior Notes",
+      "amount": {
+        "value": 16008687.5,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$420M face × 7.62% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 6.9,
+      "flags": [],
+      "assumption": "semiannual assumed; months anchored on the as-of date"
+    },
+    {
+      "date": "2028-03",
+      "kind": "coupon",
+      "instrument": "Super-Priority Revolver",
+      "amount": {
+        "value": 8360749.999999998,
+        "display": "$8M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$265M face × 12.62% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 3.6,
+      "flags": [],
+      "assumption": "quarterly assumed; months anchored on the as-of date"
+    }
+  ],
+  "liquidity_events_note": "6 instrument(s) excluded (no tagged rate or maturity)",
+  "asset_snapshot": {
+    "as_of_fy": 2025,
+    "cash": {
+      "value": 146700000.0,
+      "display": "$147M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+        "quote": "Cash and Cash Equivalents, at Carrying Value = $147M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "accounts_receivable": null,
+    "inventory": {
+      "value": 316000000.0,
+      "display": "$316M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:InventoryNet",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+        "quote": "Inventory, Net = $316M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "ppe": null,
+    "intangibles": {
+      "value": 560600000.0,
+      "display": "$561M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "goodwill ($68M) + other intangibles ($493M)",
+      "note": null
+    },
+    "other": {
+      "value": 1256900000.0,
+      "display": "$1,257M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "total assets ($2,280M) − categorized ($1,023M)",
+      "note": "uncategorized residual — lease ROU assets, deferred taxes, investments, etc."
+    },
+    "total_assets": {
+      "value": 2280200000.0,
+      "display": "$2,280M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001104659-26-027518",
+        "form_type": "10-K",
+        "filing_date": "2026-03-13",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:Assets",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+        "quote": "Assets = $2,280M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    }
+  },
+  "coverage_chips": {
+    "debt_ebitda": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "debt $2,545M ÷ EBITDA -$211M",
+      "note": "n.m. — non-positive denominator"
+    },
+    "debt_ebitda_capex": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "debt ÷ (EBITDA − capex $51M)",
+      "note": "n.m. — non-positive denominator"
+    },
+    "ebitda_interest": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "EBITDA ÷ interest None",
+      "note": "n.m. — non-positive denominator"
+    },
+    "ebitda_capex_interest": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "(EBITDA − capex) ÷ interest",
+      "note": "n.m. — non-positive denominator"
+    },
+    "capex_pct_ebitda": null
+  },
+  "mezzanine": null,
+  "nol_carryforward": {
+    "value": 1433800000.0,
+    "display": "$1,434M",
+    "unit": "USD",
+    "citation": {
+      "accession_no": "0001104659-26-027518",
+      "form_type": "10-K",
+      "filing_date": "2026-03-13",
+      "exhibit": null,
+      "section": "XBRL concept us-gaap:OperatingLossCarryforwards",
+      "page": null,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1519061/000110465926027518/0001104659-26-027518-index.htm",
+      "quote": "Operating Loss Carryforwards = $1,434M (as of 2025-12-31) [XBRL]"
+    },
+    "derived": false,
+    "formula": null,
+    "note": null
+  },
+  "rp_basket": {
+    "available": true,
+    "covenant_status": "stub",
+    "starter": {
+      "value": 0.0,
+      "display": "$0M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "builder-only (starter basket not extracted) — $0 assumed",
+      "note": "(i) any dividend or other distribution (whether in cash, securities or other property) with respect to any Equity Interest of any Loan Party ... and (ii) any Restricted Investment."
+    },
+    "points": [
+      {
+        "label": "Q3 2023",
+        "period_end": "2023-09-30",
+        "net_income": -38.4,
+        "ni_credit": -38.4,
+        "equity_proceeds": 0.0,
+        "dividends": 0.5,
+        "buybacks": 0.0,
+        "contribution": -38.9,
+        "cumulative": -38.9
+      },
+      {
+        "label": "Q4 2023",
+        "period_end": "2023-12-31",
+        "net_income": -265.0,
+        "ni_credit": -265.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.3,
+        "buybacks": 0.0,
+        "contribution": -265.3,
+        "cumulative": -304.2
+      },
+      {
+        "label": "Q1 2024",
+        "period_end": "2024-03-31",
+        "net_income": -75.5,
+        "ni_credit": -75.5,
+        "equity_proceeds": 0.0,
+        "dividends": 0.6,
+        "buybacks": 0.0,
+        "contribution": -76.1,
+        "cumulative": -380.3
+      },
+      {
+        "label": "Q2 2024",
+        "period_end": "2024-06-30",
+        "net_income": -67.8,
+        "ni_credit": -67.8,
+        "equity_proceeds": 0.0,
+        "dividends": 0.3,
+        "buybacks": 0.0,
+        "contribution": -68.1,
+        "cumulative": -448.4
+      },
+      {
+        "label": "Q3 2024",
+        "period_end": "2024-09-30",
+        "net_income": -87.3,
+        "ni_credit": -87.3,
+        "equity_proceeds": 0.0,
+        "dividends": 0.4,
+        "buybacks": 0.0,
+        "contribution": -87.7,
+        "cumulative": -536.1
+      },
+      {
+        "label": "Q4 2024",
+        "period_end": "2024-12-31",
+        "net_income": -117.9,
+        "ni_credit": -117.9,
+        "equity_proceeds": 0.0,
+        "dividends": 0.4,
+        "buybacks": 0.0,
+        "contribution": -118.3,
+        "cumulative": -654.4
+      },
+      {
+        "label": "Q1 2025",
+        "period_end": "2025-03-31",
+        "net_income": -79.0,
+        "ni_credit": -79.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.5,
+        "buybacks": 0.0,
+        "contribution": -79.5,
+        "cumulative": -733.9
+      },
+      {
+        "label": "Q2 2025",
+        "period_end": "2025-06-30",
+        "net_income": -105.5,
+        "ni_credit": -105.5,
+        "equity_proceeds": 0.0,
+        "dividends": 0.4,
+        "buybacks": 0.0,
+        "contribution": -105.9,
+        "cumulative": -839.8
+      },
+      {
+        "label": "Q3 2025",
+        "period_end": "2025-09-30",
+        "net_income": -109.7,
+        "ni_credit": -109.7,
+        "equity_proceeds": 0.0,
+        "dividends": 0.3,
+        "buybacks": 0.0,
+        "contribution": -110.0,
+        "cumulative": -949.8
+      },
+      {
+        "label": "Q4 2025",
+        "period_end": "2025-12-31",
+        "net_income": -251.4,
+        "ni_credit": -251.4,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -251.4,
+        "cumulative": -1201.2
+      },
+      {
+        "label": "Q1 2026",
+        "period_end": "2026-03-31",
+        "net_income": -115.9,
+        "ni_credit": -115.9,
+        "equity_proceeds": 0.0,
+        "dividends": 0.5,
+        "buybacks": 0.0,
+        "contribution": -116.4,
+        "cumulative": -1317.6
+      }
+    ],
+    "capacity": {
+      "value": 0.0,
+      "display": "$0M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 ($-1,318M), floored at 0",
+      "note": "omits junior-debt-issuance proceeds and unrestricted-subsidiary investment returns (not deterministically extractable); cumulation anchors at the lookback-window start — a proxy for the issuance-date build convention; builder negative — cumulative deductions exceed credits, $0 capacity"
+    },
+    "formula_note": "equity_issuance_proceeds, stock_repurchases not tagged in XBRL — treated as $0",
+    "covenant_family": "credit agreement dated December 12, 2024",
+    "covenant_value": "Not quantified in provided text; Restricted Payment defined to include dividends/distributions and Restricted Investments",
+    "covenant_quote": "(i) any dividend or other distribution (whether in cash, securities or other property) with respect to any Equity Interest of any Loan Party ... and (ii) any Restricted Investment.",
+    "notes": [
+      "issuer RP basket extracted as a stub ('Not quantified in provided text; Restricted Payment defined to include dividends') — builder-only starter $0"
+    ]
+  },
+  "liens_headroom": {
+    "available": true,
+    "archetype": "present_unquantified",
+    "unbounded_instruments": [],
+    "unbounded_note": null,
+    "rows": [
+      {
+        "family": "dip credit agreement dated May 28, 2026",
+        "name": "Roll-Up Term Loans (roll up of Prepetition Super HoldCo Secured Obligations)",
+        "value": "Roll-up of prepetition Super HoldCo Secured Obligations per DIP Orders; roll only with Required Lenders' consent",
+        "quote": "shall mean the 'roll up' of Prepetition Super HoldCo Secured Obligations into Roll-Up Term Loans pursuant to the terms of this Agreement and the DIP Orders",
+        "archetype": "present_unquantified",
+        "detail": "lien covenant present — capacity not quantified in the extraction window",
+        "dollars_mm": null,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      }
+    ],
+    "uptier_priming": {
+      "risk": "protected",
+      "rationale": "The indenture contains an anti-serial-vote protection: Additional Notes incurred substantially concurrently with a Liability Management Transaction to influence a consent are excluded from the Required Holders count for that consent, limiting sponsor stacking of votes for an uptier.",
+      "family": "7.625% notes due 2029"
+    },
+    "j_crew_blocker_present": true,
+    "suggested_priming": null,
+    "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom (Moyer ch. 9)"
+  },
   "leverage_timeline": [
     {
       "fiscal_year": 2023,
@@ -2084,7 +4268,15 @@
       "leverage": 48.966431095406364
     }
   ],
-  "maturity_wall": [],
+  "maturity_wall": [
+    {
+      "year": 2029,
+      "face": 419900000.0,
+      "instruments": [
+        "2029 Refinance Senior Notes"
+      ]
+    }
+  ],
   "what_changed": [
     {
       "metric": "Free cash flow (TTM)",
@@ -2160,6 +4352,16 @@
     }
   ],
   "sources": [
+    {
+      "accession_no": "0001104659-26-084626",
+      "form_type": "8-K",
+      "filing_date": "2026-07-17",
+      "period_of_report": "2026-07-17",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-084626-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1519061/0001104659-26-084626-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 0
+    },
     {
       "accession_no": "0001104659-26-073451",
       "form_type": "8-K/A",
@@ -2862,7 +5064,7 @@
     }
   ],
   "warnings": [
-    "Prior analysis from 2026-07-10 — LLM analysis is off. Re-enable to refresh."
+    "Maturity unknown for 5 instrument(s) (2028 Refinance Term Loans, 2028 Term Loan B, Super-Priority Revolver, Accounts Receivable Securitization Facility, Other Indebtedness) — they are missing from the maturity wall."
   ],
-  "llm_fallback_note": "Prior analysis from 2026-07-10 — LLM analysis is off. Re-enable to refresh."
+  "llm_fallback_note": null
 }

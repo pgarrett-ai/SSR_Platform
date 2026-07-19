@@ -5,10 +5,10 @@
     "resolved_ticker": "OPTU",
     "cik": "1702780",
     "years": 3,
-    "n_filings": 45,
-    "last_updated": "2026-07-14T10:25:37.723217+00:00",
+    "n_filings": 44,
+    "last_updated": "2026-07-19T20:17:16.543489+00:00",
     "from_cache": false,
-    "llm_enabled": false
+    "llm_enabled": true
   },
   "economic_debt_bridge": {
     "lines": [
@@ -115,22 +115,22 @@
       "note": null
     },
     "reported_leverage": {
-      "value": -97.43608295719034,
-      "display": "-97.4x",
+      "value": null,
+      "display": "n.m.",
       "unit": "USD",
       "citation": null,
       "derived": true,
       "formula": "reported debt $26,206M / EBITDA -$269M",
-      "note": null
+      "note": "not meaningful — negative EBITDA (-$269M)"
     },
     "economic_leverage": {
-      "value": -98.90705612028644,
-      "display": "-98.9x",
+      "value": null,
+      "display": "n.m.",
       "unit": "USD",
       "citation": null,
       "derived": true,
       "formula": "economic debt $26,602M / EBITDA -$269M",
-      "note": "Economic debt (incl. lease liabilities) over plain EBITDA — no rent add-back to the denominator."
+      "note": "not meaningful — negative EBITDA (-$269M)"
     }
   },
   "ebitda_build": {
@@ -230,8 +230,8 @@
     },
     "addbacks": [
       {
-        "category": "Restructuring/new product design, development and introduction costs and expenses",
-        "label": "Restructuring/new product design, development and introduction costs and expenses",
+        "category": "New product design, development and introductions costs",
+        "label": "New product design, development and introductions costs",
         "amount": null
       },
       {
@@ -240,13 +240,13 @@
         "amount": null
       },
       {
-        "category": "IT systems implementation, replacement, development or upgrade costs and technology initiatives",
-        "label": "IT systems implementation, replacement, development or upgrade costs and technology initiatives",
+        "category": "IT systems implementation/replacement/development/upgrade and technology initiatives",
+        "label": "IT systems implementation/replacement/development/upgrade and technology initiatives",
         "amount": null
       },
       {
-        "category": "Governmental investigation, litigation or other dispute costs (including customer disputes)",
-        "label": "Governmental investigation, litigation or other dispute costs (including customer disputes)",
+        "category": "Governmental investigation, litigation or other dispute costs (including with customers)",
+        "label": "Governmental investigation, litigation or other dispute costs (including with customers)",
         "amount": null
       },
       {
@@ -255,48 +255,8 @@
         "amount": null
       },
       {
-        "category": "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/registration/repayment or modification of Indebtedness, equity issuances, refinancings, amendments/waivers) and non-recurring merger costs",
-        "label": "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/registration/repayment or modification of Indebtedness, equity issuances, refinancings, amendments/waivers) and non-recurring merger costs",
-        "amount": null
-      },
-      {
-        "category": "Cumulative effect of a change in accounting principles",
-        "label": "Cumulative effect of a change in accounting principles",
-        "amount": null
-      },
-      {
-        "category": "Non-cash compensation charges from equity-based awards and non-cash deemed finance charges on pension liabilities",
-        "label": "Non-cash compensation charges from equity-based awards and non-cash deemed finance charges on pension liabilities",
-        "amount": null
-      },
-      {
-        "category": "Goodwill or other intangible asset impairment charges or write-offs",
-        "label": "Goodwill or other intangible asset impairment charges or write-offs",
-        "amount": null
-      },
-      {
-        "category": "Business optimization costs, charges or expenses",
-        "label": "Business optimization costs, charges or expenses",
-        "amount": null
-      },
-      {
-        "category": "New product design, development and introduction costs",
-        "label": "New product design, development and introduction costs",
-        "amount": null
-      },
-      {
-        "category": "Operational, reporting and IT systems implementation/replacement/development/upgrade costs and technology initiatives",
-        "label": "Operational, reporting and IT systems implementation/replacement/development/upgrade costs and technology initiatives",
-        "amount": null
-      },
-      {
-        "category": "Costs/expenses/charges relating to any governmental investigation, litigation or other dispute (including with any customer)",
-        "label": "Costs/expenses/charges relating to any governmental investigation, litigation or other dispute (including with any customer)",
-        "amount": null
-      },
-      {
-        "category": "Non-cash equity-based compensation charges (stock, options, other equity awards) and non-cash deemed finance charges on pensions",
-        "label": "Non-cash equity-based compensation charges (stock, options, other equity awards) and non-cash deemed finance charges on pensions",
+        "category": "Fees, charges, losses, costs and expenses related to acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/repayment/modification of Indebtedness, Capital Stock issuances/offerings, refinancing transactions, and related amendments/waivers; non-recurring merger costs",
+        "label": "Fees, charges, losses, costs and expenses related to acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/repayment/modification of Indebtedness, Capital Stock issuances/offerings, refinancing transactions, and related amendments/waivers; non-recurring merger costs",
         "amount": {
           "value": 64088000.0,
           "display": "$64M",
@@ -315,6 +275,126 @@
           "formula": null,
           "note": null
         }
+      },
+      {
+        "category": "Cumulative effect of a change in accounting principles",
+        "label": "Cumulative effect of a change in accounting principles",
+        "amount": null
+      },
+      {
+        "category": "Non-cash equity-based compensation charges and non-cash deemed finance charges on pension liabilities",
+        "label": "Non-cash equity-based compensation charges and non-cash deemed finance charges on pension liabilities",
+        "amount": null
+      },
+      {
+        "category": "Goodwill or other intangible asset impairment charges or write-offs",
+        "label": "Goodwill or other intangible asset impairment charges or write-offs",
+        "amount": null
+      },
+      {
+        "category": "Restructuring/strategic initiative and integration costs, charges or expenses",
+        "label": "Restructuring/strategic initiative and integration costs, charges or expenses",
+        "amount": null
+      },
+      {
+        "category": "Start-up, pre-opening, opening, closure and/or consolidation of operations, offices and facilities costs",
+        "label": "Start-up, pre-opening, opening, closure and/or consolidation of operations, offices and facilities costs",
+        "amount": null
+      },
+      {
+        "category": "Business optimization costs",
+        "label": "Business optimization costs",
+        "amount": null
+      },
+      {
+        "category": "New product design, development and introduction costs",
+        "label": "New product design, development and introduction costs",
+        "amount": null
+      },
+      {
+        "category": "Costs to implement/replace/develop/upgrade operational, reporting and IT systems and technology initiatives",
+        "label": "Costs to implement/replace/develop/upgrade operational, reporting and IT systems and technology initiatives",
+        "amount": null
+      },
+      {
+        "category": "Costs/expenses/charges relating to any governmental investigation, litigation or other dispute (including with any customer)",
+        "label": "Costs/expenses/charges relating to any governmental investigation, litigation or other dispute (including with any customer)",
+        "amount": null
+      },
+      {
+        "category": "Warranty payments and liabilities related to product recalls or field service campaigns",
+        "label": "Warranty payments and liabilities related to product recalls or field service campaigns",
+        "amount": null
+      },
+      {
+        "category": "Non-cash compensation charge from equity-based awards and non-cash deemed finance charges on pension liabilities",
+        "label": "Non-cash compensation charge from equity-based awards and non-cash deemed finance charges on pension liabilities",
+        "amount": null
+      },
+      {
+        "category": "Goodwill or other intangible asset impairment charge or write-off",
+        "label": "Goodwill or other intangible asset impairment charge or write-off",
+        "amount": null
+      },
+      {
+        "category": "IP development and new systems design costs",
+        "label": "IP development and new systems design costs",
+        "amount": null
+      },
+      {
+        "category": "IT systems implementation/upgrade and technology initiative costs",
+        "label": "IT systems implementation/upgrade and technology initiative costs",
+        "amount": null
+      },
+      {
+        "category": "Governmental investigation, litigation or dispute costs (including with customers)",
+        "label": "Governmental investigation, litigation or dispute costs (including with customers)",
+        "amount": null
+      },
+      {
+        "category": "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, Indebtedness incurrence/repayment/modification, Capital Stock issuance, refinancing, amendments/waivers) and non-recurring merger costs",
+        "label": "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, Indebtedness incurrence/repayment/modification, Capital Stock issuance, refinancing, amendments/waivers) and non-recurring merger costs",
+        "amount": null
+      },
+      {
+        "category": "Cumulative effect of change in accounting principles",
+        "label": "Cumulative effect of change in accounting principles",
+        "amount": null
+      },
+      {
+        "category": "Non-cash stock/equity-based compensation charges and non-cash deemed finance charges on pension liabilities",
+        "label": "Non-cash stock/equity-based compensation charges and non-cash deemed finance charges on pension liabilities",
+        "amount": null
+      },
+      {
+        "category": "Pro Forma EBITDA adjustments referenced (clauses (a) through (c) of the definition of 'Pro Forma EBITDA') — the substantive add-back categories are not set out in the provided excerpt",
+        "label": "Pro Forma EBITDA adjustments referenced (clauses (a) through (c) of the definition of 'Pro Forma EBITDA') — the substantive add-back categories are not set out in the provided excerpt",
+        "amount": null
+      },
+      {
+        "category": "Parent Expenses of a CVC Parent",
+        "label": "Parent Expenses of a CVC Parent",
+        "amount": null
+      },
+      {
+        "category": "expenses/charges/costs related to Equity Offerings, Investments, acquisitions, dispositions, recapitalizations or Indebtedness incurrence (whether or not successful)",
+        "label": "expenses/charges/costs related to Equity Offerings, Investments, acquisitions, dispositions, recapitalizations or Indebtedness incurrence (whether or not successful)",
+        "amount": null
+      },
+      {
+        "category": "management, monitoring, consultancy and advisory fees to Permitted Holders (per Section 4.09)",
+        "label": "management, monitoring, consultancy and advisory fees to Permitted Holders (per Section 4.09)",
+        "amount": null
+      },
+      {
+        "category": "other non-cash charges, write-downs or special items",
+        "label": "other non-cash charges, write-downs or special items",
+        "amount": null
+      },
+      {
+        "category": "gains/losses from discontinued operations (until actually disposed)",
+        "label": "gains/losses from discontinued operations (until actually disposed)",
+        "amount": null
       }
     ]
   },
@@ -323,6 +403,7 @@
   "forensic_table": [
     {
       "fiscal_year": 2022,
+      "label": null,
       "period_end": "2022-12-31",
       "total_debt": {
         "value": 26587733000.0,
@@ -472,6 +553,7 @@
     },
     {
       "fiscal_year": 2023,
+      "label": null,
       "period_end": "2023-12-31",
       "total_debt": {
         "value": 25074961000.0,
@@ -621,6 +703,7 @@
     },
     {
       "fiscal_year": 2024,
+      "label": null,
       "period_end": "2024-12-31",
       "total_debt": {
         "value": 25057488000.0,
@@ -770,6 +853,7 @@
     },
     {
       "fiscal_year": 2025,
+      "label": null,
       "period_end": "2025-12-31",
       "total_debt": {
         "value": 26206214000.0,
@@ -916,6 +1000,120 @@
         "formula": "accounts_payable / COGS x 365",
         "note": "Days payable outstanding (denominator: COGS)."
       }
+    },
+    {
+      "fiscal_year": 2026,
+      "label": "Q1 2026",
+      "period_end": "2026-03-31",
+      "total_debt": {
+        "value": 26443366000.0,
+        "display": "$26,443M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "lt_debt_noncurrent=$26,388M + lt_debt_current=$55M",
+        "note": "Sum of reported debt components as of the 10-Q date."
+      },
+      "cash": {
+        "value": 1048634000.0,
+        "display": "$1,049M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001702780-26-000035",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-07",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000035/0001702780-26-000035-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $1,049M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "free_cash_flow": {
+        "value": -87617000.0,
+        "display": "-$88M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "OCF − capex, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "capex": {
+        "value": 1298874000.0,
+        "display": "$1,299M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "accounts_payable": {
+        "value": 798677000.0,
+        "display": "$799M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001702780-26-000035",
+          "form_type": "10-Q",
+          "filing_date": "2026-05-07",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:AccountsPayableCurrent",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000035/0001702780-26-000035-index.htm",
+          "quote": "Accounts Payable, Current = $799M (as of 2026-03-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "inventory": null,
+      "revenue": {
+        "value": 8503553000.0,
+        "display": "$8,504M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "cogs": {
+        "value": 2597779000.0,
+        "display": "$2,598M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "ebitda": {
+        "value": -1131120000.0,
+        "display": "-$1,131M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "operating_income + D&A, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": "Proxy EBITDA = operating income + D&A (TTM)."
+      },
+      "operating_cash_flow": {
+        "value": 1211257000.0,
+        "display": "$1,211M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "note": null
+      },
+      "dpo": {
+        "value": 112.21782337912501,
+        "display": "112 days",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "accounts_payable (as of Q1 2026) / COGS (TTM) x 365",
+        "note": "Days payable outstanding (denominator: COGS, TTM)."
+      }
     }
   ],
   "forensic_flags": [
@@ -961,36 +1159,89 @@
   "obs_items": [],
   "covenants": [
     {
-      "family_label": null,
-      "doc_class": null,
-      "operative_date": null,
+      "family_label": "credit agreement dated JULY 6, 2026",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-07-06",
       "amendment_count": 0,
       "base_missing": false,
       "governs_instruments": [],
-      "admin_agent": null,
+      "admin_agent": "JPMorgan Chase Bank, N.A.",
       "trustee": null,
-      "collateral_agent": null,
-      "creditor_note": null,
-      "guarantors": null,
-      "financial_covenants": [],
-      "baskets": [],
+      "collateral_agent": "JPMorgan Chase Bank, N.A.",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Each of the Guarantors party to the Agreement (the Loan Parties); the Agreement contemplates additional guarantors under Section 6.16. The ABS Loan Parties / ABS InfraCos are structured as separate entities under the ABS (receivables) facility.",
+      "financial_covenants": [
+        {
+          "kind": "Combined Gross Pari Passu Leverage Ratio test (governs 'Amortization Period')",
+          "threshold": "2.50:1.00",
+          "test_frequency": "Tested on a rolling basis; an Amortization Period commences on the first date the ratio exceeds 2.50:1.00 and ends when it no longer exceeds that level",
+          "springing_trigger": "Combined Gross Pari Passu Leverage Ratio exceeding 2.50:1.00",
+          "quote": "“Amortization Period” shall mean each period commencing on the first date on which the Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 and ending on the first date thereafter when the Combined Gross Pari Passu Leverage Ratio on such date does not exceed 2.50:1.00."
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Asset Disposition de minimis basket (general disposition of Capital Stock/property/assets)",
+          "value": "$5 million per calendar year in the aggregate",
+          "quote": "any sale, lease, transfer, issuance or other disposition ... in a single transaction or series of related transactions with a fair market value ... not to exceed $5 million per calendar year in the aggregate"
+        },
+        {
+          "name": "Material Indebtedness threshold (cross-default reference)",
+          "value": "$5 million aggregate principal amount",
+          "quote": "“Material Indebtedness” shall mean any Indebtedness (other than the Obligations) of the Loan Parties or any of their Subsidiaries in an aggregate principal amount exceeding $5 million."
+        },
+        {
+          "name": "Material Contract threshold",
+          "value": "$5 million per annum",
+          "quote": "any contract or agreement, or series of related agreements ... that involves consideration in the aggregate, of more than $5 million per annum."
+        }
+      ],
       "ebitda_addback_categories": [
-        "Restructuring/new product design, development and introduction costs and expenses",
+        "New product design, development and introductions costs",
         "Intellectual property development and new systems design costs",
-        "IT systems implementation, replacement, development or upgrade costs and technology initiatives",
-        "Governmental investigation, litigation or other dispute costs (including customer disputes)",
+        "IT systems implementation/replacement/development/upgrade and technology initiatives",
+        "Governmental investigation, litigation or other dispute costs (including with customers)",
         "Warranty payments and product recall / field service campaign liabilities",
-        "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/registration/repayment or modification of Indebtedness, equity issuances, refinancings, amendments/waivers) and non-recurring merger costs",
+        "Fees, charges, losses, costs and expenses related to acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuances, incurrence/repayment/modification of Indebtedness, Capital Stock issuances/offerings, refinancing transactions, and related amendments/waivers; non-recurring merger costs",
         "Cumulative effect of a change in accounting principles",
-        "Non-cash compensation charges from equity-based awards and non-cash deemed finance charges on pension liabilities",
-        "One-time non-cash charges or increases in amortization/depreciation from purchase accounting or reorganization/restructuring",
+        "Non-cash equity-based compensation charges and non-cash deemed finance charges on pension liabilities",
+        "One-time non-cash charges / increases in amortization or depreciation from purchase accounting or reorganization/restructuring",
         "Goodwill or other intangible asset impairment charges or write-offs"
       ],
-      "mfn_sunset_period": "Not present in the provided text (no MFN / most-favored-nation pricing protection clause located).",
+      "mfn_sunset_period": null,
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "Notably constrained relative to typical sponsor deals. The agreement contains Section 6.01 \"Prohibition on Liability Management Exercises,\" which is an express anti-LME covenant. The \"Designation\" defined term refers only to designating the Loan Parties as \"unrestricted subsidiaries\" under the Existing Debt Documents (i.e., in relation to a separate debt stack), not a broad borrower right to designate unrestricted subsidiaries here. Section 6.17 (Delaware LLC Divisions) further restricts division-type maneuvers. No open-ended unrestricted-subsidiary designation basket is granted in the provided text.",
-      "anchor_clause": null,
-      "lme_vectors": [],
+      "unrestricted_subsidiary_designation_flexibility": "The excerpt does not include an unrestricted-subsidiary designation mechanic in the ordinary covenant-lite sense. Instead, 'Designation' refers to designating the Loan Parties as 'unrestricted subsidiaries' under the Existing Debt Documents, and the deal contemplates a separate ring-fenced ABS/receivables structure (ABS Borrower, ABS Holdings, ABS InfraCos, ABS Loan Parties). Section 6.01 (Prohibition on Liability Management Exercises) and Section 6.17 (Delaware LLC Divisions) further constrain structural transfers. Full designation flexibility cannot be confirmed from the provided text.",
+      "anchor_clause": "Section 6.01. Prohibition on Liability Management Exercises. (The table of contents identifies Section 6.01 as an express covenant prohibiting liability management exercises — a distressed analyst must read this bespoke anti-LME clause first, as it directly governs uptier/dropdown capacity; the operative text was not included in the excerpt provided.)",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "The agreement contains a bespoke Section 6.01 'Prohibition on Liability Management Exercises' plus intercreditor machinery, but the operative text was not in the excerpt, so the precise scope of uptier/priming protection cannot be confirmed.",
+          "basis": "TOC Section 6.01 'Prohibition on Liability Management Exercises'; Section 6.13 Intercreditor Agreements; defined 'Junior Debt' and 'Pari Passu Debt' concepts.",
+          "quote": "Section 6.01. Prohibition on Liability Management Exercises"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "unclear",
+          "rationale": "The deal is built around a segregated ABS/receivables structure (ABS Borrower, ABS InfraCos, IP License / Trademark License arrangements with CSC) and includes an anti-LME covenant and Delaware LLC division restriction, suggesting attention to asset/IP transfer, but the governing transfer-restriction text is not in the excerpt.",
+          "basis": "Defined ABS Transaction Parties, IP License Agreement, Trademark License Agreement; TOC Section 6.01 (anti-LME) and Section 6.17 (Delaware LLC Divisions); definition of 'Material Assets' and 'Material Intellectual Property'.",
+          "quote": "“Material Assets” shall mean any property or assets (whether intellectual property or otherwise) material to the business or operations of the Loan Parties (taken as a whole)."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "The provided excerpt (definitions and TOC) does not include the operative Section 6.04 incremental/ratio debt capacity, MFN, or free-and-clear amount, so incremental debt capacity cannot be assessed from the text.",
+          "basis": "Section 6.04 (Limitation on Indebtedness) is listed in the TOC but its operative text and any incremental basket were not provided.",
+          "quote": "Section 6.04. Limitation on Indebtedness"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "Section 6.05 (Limitation on Restricted Payments) is referenced but the operative RP capacity, builder basket and carve-outs are not included in the excerpt, so RP leakage capacity cannot be assessed.",
+          "basis": "Section 6.05 (Limitation on Restricted Payments) listed in TOC; 'Restricted Payment', 'Permitted Payment' and 'Permitted Investment' referenced in the Asset Disposition carve-outs but not defined in the excerpt.",
+          "quote": "any Restricted Payment that is permitted to be made under Section 6.05, any transaction specifically excluded from the definition of Restricted Payment and the making of any Permitted Payment and Permitted Investment"
+        }
+      ],
       "citation": {
         "accession_no": "0001104659-26-080797",
         "form_type": "8-K",
@@ -999,64 +1250,973 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465926080797/tm2619807d1_ex10-1.htm",
-        "quote": "\"Section 6.01. Prohibition on Liability Management Exercises\""
+        "quote": "Section 6.01. Prohibition on Liability Management Exercises. (The table of contents identifies Section 6.01 as an express covenant prohibiting liability management exercises — a distressed analyst must read this bespoke anti-LME clause first, as it directly governs uptier/dropdown capacity; the operative text was not included in the excerpt provided.)"
       },
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "Incurrence-based leverage ratios only; no traditional maintenance financial covenant found in the covenant package. The agreement uses a Combined Gross Pari Passu Leverage Ratio trigger (2.50:1.00) to define an \"Amortization Period,\" and a Combined Net Leverage Ratio as an incurrence test, rather than a maintenance leverage covenant tested each period.",
-      "leverage_ratio_threshold": "Combined Gross Pari Passu Leverage Ratio of 2.50:1.00 (springing trigger for an \"Amortization Period\"); Combined Net Leverage Ratio used as an incurrence test under Section 6.04(b). No numerically capped maintenance leverage covenant threshold is stated in the provided text.",
-      "restricted_payments_basket_size": "Section 6.05 (Limitation on Restricted Payments) governs; specific basket dollar amount not set out in the provided excerpt. Asset Disposition de minimis basket is $5 million per calendar year (clause (g)).",
-      "lme_risk_notes": "This agreement appears purpose-built to resist liability-management exercises, reflecting its post-Original/A&R restructuring posture. Key protections: (1) Section 6.01 is an express \"Prohibition on Liability Management Exercises\" — a direct anti-uptier/anti-drop-down covenant, unusual and highly protective; (2) Section 9.23 \"Prohibition Regarding Cooperation Agreements\" cuts against coordinated lender-group priming maneuvers; (3) Section 6.17 restricts Delaware LLC divisions (anti-Serta/anti-drop-down division play); (4) Section 6.02 \"Prohibition on Outside Accounts\" and Sections 6.12–6.13 (Impairment of Security Interests; Intercreditor Agreements) tighten collateral leakage. The ABS/InfraCo structure and IP License Agreement (Section 6.15 governs amendments to Shared Services / IP arrangements) is the principal residual value-leakage vector to watch, given prior \"Designation\" of Loan Parties as unrestricted subsidiaries under Existing Debt Documents. Net: low drop-down/uptier vulnerability by design; the residual risk is structural subordination via the separately-financed ABS Loan Parties and CSC-affiliate IP/shared-services arrangements rather than in-agreement priming."
+      "leverage_covenant_type": "Combined Gross Pari Passu Leverage Ratio test (governs 'Amortization Period')",
+      "leverage_ratio_threshold": "2.50:1.00",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
     },
     {
-      "family_label": null,
-      "doc_class": null,
-      "operative_date": null,
+      "family_label": "indenture dated March 3, 2026",
+      "doc_class": "indenture",
+      "operative_date": "2026-03-09",
       "amendment_count": 0,
       "base_missing": false,
       "governs_instruments": [],
       "admin_agent": null,
-      "trustee": null,
+      "trustee": "Wilmington Trust, National Association, as Indenture Trustee",
       "collateral_agent": null,
-      "creditor_note": null,
-      "guarantors": null,
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "The Guarantor (referenced as a distinct party alongside the Issuer and the Asset Entities); specific identity and guarantee scope not set out in the provided text.",
       "financial_covenants": [],
       "baskets": [],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"Each Holder of this Note, by accepting this Note, and each Note Owner of an interest in this Note, by accepting an ownership interest in this Note, hereby covenants and agrees that neither it nor the Indenture Trustee on behalf of it will at any time institute against the Issuer and/or the Asset Entities or the Guarantor, or join in any institution against the Issuer and/or the Asset Entities or the Guarantor of, any bankruptcy, reorganization, insolvency or similar proceedings, or other proceedings under any federal, state or foreign bankruptcy or similar law in connection with any obligations relating to the Notes, the Indenture or any of the other Transaction Documents.\"",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The excerpted text contains only transfer-registration, ERISA representation, and non-petition provisions, and does not address debt priority, sacred rights, or amendment mechanics relevant to an uptier transaction.",
+          "basis": "Provided clauses cover Note transfer procedures, ERISA/prohibited-transaction certifications, and a non-petition covenant only.",
+          "quote": "As provided in the Indenture and subject to certain limitations therein set forth, the transfer of this Note is registerable in the Note Register upon surrender of this Note for registration of transfer"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "No provisions concerning unrestricted subsidiaries, asset or IP transfers, or investment capacity appear in the excerpt.",
+          "basis": "This is a securitization (Secured Fiber Network Revenue Notes) supplement excerpt limited to transfer and non-petition mechanics; no restricted-payment or investment covenants are shown.",
+          "quote": "one or more new Notes of the same Class of the same Series in authorized denominations evidencing a like aggregate Percentage Interest will be issued to the designated transferee or transferees"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "The text does not include any debt-incurrence, ratio, or MFN provisions.",
+          "basis": "Excerpt is confined to note transfer registration, ERISA representations, and the non-petition covenant.",
+          "quote": "No service charge will be imposed for any transfer or exchange (or de-registration) of this Note"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "No restricted-payment or distribution covenant is present in the supplied clauses.",
+          "basis": "Only transfer mechanics and a bankruptcy non-petition covenant are quoted; no payment-restriction language is included.",
+          "quote": "neither it nor the Indenture Trustee on behalf of it will at any time institute against the Issuer and/or the Asset Entities or the Guarantor ... any bankruptcy, reorganization, insolvency or similar proceedings"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-26-024969",
+        "form_type": "8-K",
+        "filing_date": "2026-03-09",
+        "exhibit": "EX-4.2",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465926024969/tm268204d1_ex4-2.htm",
+        "quote": "\"Each Holder of this Note, by accepting this Note, and each Note Owner of an interest in this Note, by accepting an ownership interest in this Note, hereby covenants and agrees that neither it nor the Indenture Trustee on behalf of it will at any time institute against the Issuer and/or the Asset Entities or the Guarantor, or join in any institution against the Issuer and/or the Asset Entities or the Guarantor of, any bankruptcy, reorganization, insolvency or similar proceedings, or other proceedings under any federal, state or foreign bankruptcy or similar law in connection with any obligations relating to the Notes, the Indenture or any of the other Transaction Documents.\""
+      },
+      "agreement_type": "indenture",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated January 12, 2026",
+      "doc_class": "credit_agreement",
+      "operative_date": "2026-01-12",
+      "amendment_count": 1,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "JPMorgan Chase Bank, N.A.",
+      "trustee": null,
+      "collateral_agent": "JPMorgan Chase Bank, N.A.",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Each of the Guarantors party hereto (the Loan Parties); the agreement references a Facility Guaranty (Exhibit F-1) and Section 5.14 Guarantee and Security Requirements. Specific guarantor class not fully set out in the excerpted text.",
+      "financial_covenants": [
+        {
+          "kind": "Amortization Period trigger (springing cash sweep / amortization tied to leverage, not a maintenance covenant)",
+          "threshold": "Combined Gross Pari Passu Leverage Ratio of 2.50:1.00",
+          "test_frequency": "Tested continuously; period commences when ratio exceeds 2.50:1.00 and ends when it no longer exceeds 2.50:1.00",
+          "springing_trigger": "Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00",
+          "quote": "“Amortization Period” shall mean each period commencing on the first date on which the Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 and ending on the first date thereafter when the Combined Gross Pari Passu Leverage Ratio on such date does not exceed 2.50:1.00."
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Asset Disposition general basket (de minimis)",
+          "value": "$5 million per calendar year in the aggregate",
+          "quote": "any sale, lease, transfer, issuance or other disposition ... of Capital Stock, properties or assets ... with a fair market value ... not to exceed $5 million per calendar year in the aggregate"
+        }
+      ],
       "ebitda_addback_categories": [
-        "Business optimization costs, charges or expenses",
+        "Restructuring/strategic initiative and integration costs, charges or expenses",
+        "Start-up, pre-opening, opening, closure and/or consolidation of operations, offices and facilities costs",
+        "Business optimization costs",
         "New product design, development and introduction costs",
         "Intellectual property development and new systems design costs",
-        "Operational, reporting and IT systems implementation/replacement/development/upgrade costs and technology initiatives",
+        "Costs to implement/replace/develop/upgrade operational, reporting and IT systems and technology initiatives",
         "Costs/expenses/charges relating to any governmental investigation, litigation or other dispute (including with any customer)",
-        "Warranty payments and product recall / field service campaign liabilities",
-        "Fees, charges, losses, costs and expenses (or amortization thereof) in connection with acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, issuance/incurrence/repayment or modification of Indebtedness, equity issuances, refinancing transactions and related amendments/waivers, and non-recurring merger costs",
+        "Warranty payments and liabilities related to product recalls or field service campaigns",
+        "Fees, charges, losses, costs and expenses (or amortization thereof) in connection with acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, debt issuance/incurrence/repayment/modification, equity issuance, refinancing or amendments/waivers",
         "Cumulative effect of a change in accounting principles",
-        "Non-cash equity-based compensation charges (stock, options, other equity awards) and non-cash deemed finance charges on pensions",
-        "One-time non-cash charges or increases in amortization/depreciation resulting from purchase accounting (acquisitions, reorganizations, restructurings)",
-        "Goodwill or other intangible asset impairment charges or write-offs"
+        "Non-cash compensation charge from equity-based awards and non-cash deemed finance charges on pension liabilities",
+        "One-time non-cash charges or increases in amortization/depreciation resulting from purchase accounting",
+        "Goodwill or other intangible asset impairment charge or write-off"
       ],
-      "mfn_sunset_period": "No MFN (most-favored-nation) pricing protection clause or sunset is present in the excerpted text.",
+      "mfn_sunset_period": null,
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "The provided excerpts do not include an \"Unrestricted Subsidiary\" definition or a designation mechanic; the structure is built around Loan Parties, Subsidiaries, Group Members and a discrete set of ABS Transaction Parties (a ring-fenced receivables/ABS structure). No unrestricted-subsidiary designation flexibility is evidenced in the text provided.",
-      "anchor_clause": null,
-      "lme_vectors": [],
+      "unrestricted_subsidiary_designation_flexibility": "The agreement is structured around a fixed set of Loan Parties/Subsidiaries; the only 'Designation' concept in the excerpted text refers to the designation of the Loan Parties as 'unrestricted subsidiaries' under the Existing Debt Documents (i.e., these borrowers sit outside the CSC/Existing Debt restricted group), not a general covenant power for the Borrowers to designate their own unrestricted subsidiaries. No standard unrestricted-subsidiary designation basket appears in the provided text.",
+      "anchor_clause": "Section 6.01. Prohibition on Liability Management Exercises (as listed in the Table of Contents and reinforced by the covenant package). This is the single clause a distressed analyst must read because it directly addresses LME capacity; the excerpted text confirms its existence but does not reproduce its operative language.",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "The agreement contemplates Pari Passu Debt, Junior Debt and multiple intercreditor agreements, and a general 'Prohibition on Liability Management Exercises' (Section 6.01) is present, but the operative sacred-rights/priming language is not reproduced in the excerpt so the degree of protection against a non-pro-rata uptier cannot be confirmed.",
+          "basis": "Section 6.01 titled 'Prohibition on Liability Management Exercises'; definitions of Junior Debt, Pari Passu Debt and Additional Intercreditor Agreements (Equal Priority and First Lien/Second Lien forms) are provided.",
+          "quote": "Section 6.01. Prohibition on Liability Management Exercises"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "A 'Prohibition on Liability Management Exercises' covenant exists and the structure ring-fences ABS/IP via a dedicated IP License Agreement and Shared Services Agreement with amendment restrictions (Section 6.15), constraining transfers of material IP/assets outside the group.",
+          "basis": "Section 6.01 Prohibition on Liability Management Exercises; IP License Agreement defined; Section 6.15 Amendments to the Shared Services Agreement; asset-disposition definition carves IP licensing to ordinary course and Section 6.08 governs dispositions.",
+          "quote": "“IP License Agreement” shall mean that certain Intellectual Property License Agreement ... as the same may be amended ... in accordance with the provisions hereof (including Section 6.15 hereof)."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "The deal includes a $1,100 million Incremental Term Loan facility and a general limitation on indebtedness (Section 6.04) with a ratio construct (Combined Net Leverage Ratio referencing Section 6.04(b)), but the incremental capacity, MFN and ratio thresholds are not set out in the excerpted text.",
+          "basis": "$1,100 million Incremental Term Loan Commitment; Section 6.04 Limitation on Indebtedness; Combined Net Leverage Ratio definition referencing debt incurred under Section 6.04(b).",
+          "quote": "the pro forma calculation of the Combined Net Leverage Ratio shall not give effect to (i) any Indebtedness incurred on the date of determination pursuant to Section 6.04(b)"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "A dedicated Limitation on Restricted Payments (Section 6.05) exists and RP/Permitted Payment/Permitted Investment concepts are referenced, but the RP builder basket and fixed baskets are not reproduced in the excerpted text so leakage capacity cannot be quantified.",
+          "basis": "Section 6.05 Limitation on Restricted Payments; Schedule 6.05 Existing Investments; references to Permitted Payment and Permitted Investment in the Asset Disposition definition.",
+          "quote": "any Restricted Payment that is permitted to be made under Section 6.05, any transaction specifically excluded from the definition of Restricted Payment and the making of any Permitted Payment and Permitted Investment"
+        }
+      ],
       "citation": {
-        "accession_no": "0001213900-26-063161",
+        "accession_no": "0001104659-26-002909",
         "form_type": "8-K",
-        "filing_date": "2026-06-01",
+        "filing_date": "2026-01-12",
         "exhibit": "EX-10.1",
         "section": "Negative covenants / Definitions",
         "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000121390026063161/ea029287101ex10-1.htm",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465926002909/tm262903d1_ex10-1.htm",
+        "quote": "Section 6.01. Prohibition on Liability Management Exercises (as listed in the Table of Contents and reinforced by the covenant package). This is the single clause a distressed analyst must read because it directly addresses LME capacity; the excerpted text confirms its existence but does not reproduce its operative language."
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "Amortization Period trigger (springing cash sweep / amortization tied to leverage, not a maintenance covenant)",
+      "leverage_ratio_threshold": "Combined Gross Pari Passu Leverage Ratio of 2.50:1.00",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated December 19, 2022",
+      "doc_class": "credit_agreement",
+      "operative_date": "2025-11-25",
+      "amendment_count": 1,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "Lenders party thereto from time to time, JPMorgan Chase Bank, N.A.",
+      "trustee": null,
+      "collateral_agent": "The Security Agent (named as \"Security Agent\"; specific entity not identified in the provided text)",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "The Loan Parties/Guarantors signatory to the Facility Guaranty — a group of CSC Holdings affiliates (e.g., A-R Cable Services – NY, Inc., A R H, Ltd., Cable Systems, Inc., Cablevision of Brookhaven, Inc., Cablevision of Litchfield, LLC, Kingwood Security Services, LLC, W.K. Communications, Inc., and other listed subsidiaries)",
+      "financial_covenants": [],
+      "baskets": [
+        {
+          "name": "Incremental Term Loan Commitments (2025 tranche established under Section 2.22)",
+          "value": "$2,000,000,000",
+          "quote": "the aggregate principal amount of the 2025 Incremental Term Loan Commitments is $2,000,000,000"
+        }
+      ],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"the Borrower and the 2025 Incremental Lender desire to establish Incremental Term Loan Commitments in an aggregate principal amount of $2,000,000,000 to refinance and prepay in full all of the 2022 Refinancing Term Loans ... in accordance with Section 2.22 of the Existing Credit Agreement\"",
+      "lme_vectors": [
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "The amendment establishes a $2.0 billion incremental term loan tranche under Section 2.22 of the Credit Agreement as Refinancing Indebtedness, but the governing incremental capacity mechanics, ratio tests and MFN protections live in Section 2.22 and Annex I/II, which are not reproduced in the provided text.",
+          "basis": "New Class of Incremental Term Loan Commitments of $2,000,000,000 established pursuant to Section 2.22; loans incurred as Refinancing Indebtedness in respect of the 2022 Refinancing Term Loans; Section 2.22 governing terms not in the excerpt.",
+          "quote": "pursuant to Section 2.22 of the Existing Credit Agreement, the Borrower may establish Incremental Term Loan Commitments with one or more existing or additional Lenders"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The amendment text does not reproduce voting, sacred-rights or pro rata sharing provisions relevant to an uptier/priming transaction; it only states the incremental loans benefit ratably from existing guaranties and liens.",
+          "basis": "Text confirms new loans 'benefit equally and ratably from the Facility Guaranty, liens and security interests created by the Security Documents' but does not set out amendment-voting protections.",
+          "quote": "shall, without limiting the foregoing, benefit equally and ratably from the Facility Guaranty, liens and security interests created by the Security Documents"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "The provided excerpt does not include unrestricted-subsidiary designation mechanics or investment/IP-transfer covenants; those provisions reside in Annex I (Covenants), which is incorporated by reference but not reproduced.",
+          "basis": "Annex I (Covenants) and Annex II (Additional Definitions) are referenced as amended but their substantive text is not in the excerpt.",
+          "quote": "Annex I (Covenants) and Annex II (Additional Definitions) to the Existing Credit Agreement ... are hereby amended, solely with respect to the 2025 Incremental Term Loans"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "No restricted-payments covenant or basket is set out in the amendment text; the negative covenants are contained in the un-reproduced Annex I.",
+          "basis": "The excerpt contains only the incremental establishment mechanics, pricing and conditions; no restricted payments language appears.",
+          "quote": "the Credit Agreement and other Loan Documents remain unmodified and in full force and effect"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-25-115874",
+        "form_type": "8-K",
+        "filing_date": "2025-11-25",
+        "exhibit": "EX-10.1",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465925115874/tm2532088d1_ex10-1.htm",
+        "quote": "\"the Borrower and the 2025 Incremental Lender desire to establish Incremental Term Loan Commitments in an aggregate principal amount of $2,000,000,000 to refinance and prepay in full all of the 2022 Refinancing Term Loans ... in accordance with Section 2.22 of the Existing Credit Agreement\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated November 25, 2025",
+      "doc_class": "credit_agreement",
+      "operative_date": "2025-11-25",
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "JPMorgan Chase Bank, N.A.",
+      "trustee": null,
+      "collateral_agent": "JPMorgan Chase Bank, N.A.",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Loan Parties party hereto (CSC Optimum Holdings, LLC as a Borrower and Cablevision of Litchfield, LLC as Borrower Representative, together with the other Loan Parties); Section 6.16 addresses Additional Guarantors",
+      "financial_covenants": [
+        {
+          "kind": "Leverage-based Amortization Period trigger (springing amortization / de-leveraging construct)",
+          "threshold": "Combined Gross Pari Passu Leverage Ratio of 2.50:1.00",
+          "test_frequency": "Measured on any date of determination (springing)",
+          "springing_trigger": "Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00",
+          "quote": "\"Amortization Period\" shall mean each period commencing on the first date on which the Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 and ending on the first date thereafter when the Combined Gross Pari Passu Leverage Ratio on such date does not exceed 2.50:1.00."
+        },
+        {
+          "kind": "Combined Gross Pari Passu Leverage Ratio (reference maximum applicable to Permitted CSC Revolver Refinancing)",
+          "threshold": "4.0 to 1.0 maximum Combined Gross Pari Passu Leverage Ratio",
+          "test_frequency": "As applicable to qualifying refinancing revolver maintenance covenant",
+          "springing_trigger": null,
+          "quote": "includes a financial maintenance covenant that requires compliance with a 4.0 to 1.0 maximum Combined Gross Pari Passu Leverage Ratio (or any more restrictive financial covenant)"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Asset Disposition general per-year basket",
+          "value": "$5 million per calendar year in the aggregate",
+          "quote": "any sale, lease, transfer, issuance or other disposition... of Capital Stock, properties or assets in a single transaction or series of related transactions with a fair market value... not to exceed $5 million per calendar year in the aggregate"
+        },
+        {
+          "name": "General/ordinary-course Investments basket (Permitted Investment clause (q))",
+          "value": "$5 million plus returns",
+          "quote": "Investments in the ordinary course of business... in an aggregate amount at the time of such Investment not to exceed $5 million plus the amount of any distributions, dividends, payments or other returns in respect of such Investments"
+        },
+        {
+          "name": "Material Indebtedness / Material Contract threshold",
+          "value": "$5 million",
+          "quote": "any Indebtedness (other than the Obligations) of the Loan Parties or any of their Subsidiaries in an aggregate principal amount exceeding $5 million"
+        }
+      ],
+      "ebitda_addback_categories": [
+        "New product design, development and introduction costs",
+        "IP development and new systems design costs",
+        "IT systems implementation/upgrade and technology initiative costs",
+        "Governmental investigation, litigation or dispute costs (including with customers)",
+        "Warranty payments and product recall / field service campaign liabilities",
+        "Transaction-related fees, charges, losses and costs (acquisitions, Restricted Payments, Investments, recapitalizations, asset sales, Indebtedness incurrence/repayment/modification, Capital Stock issuance, refinancing, amendments/waivers) and non-recurring merger costs",
+        "Cumulative effect of change in accounting principles",
+        "Non-cash stock/equity-based compensation charges and non-cash deemed finance charges on pension liabilities",
+        "One-time non-cash charges / purchase-accounting depreciation & amortization increases from acquisitions or reorganizations",
+        "Goodwill or other intangible asset impairment charges or write-offs"
+      ],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": true,
+      "unrestricted_subsidiary_designation_flexibility": "Unusual structure: the Loan Parties here are themselves entities that were \"designated\" as unrestricted subsidiaries under the Existing Debt Documents (see \"Designation\"). The agreement contains a dedicated Section 6.01 \"Prohibition on Liability Management Exercises\" and Section 6.15 restricting amendments to the Shared Services Agreement / IP License Agreement, indicating tight control over subsidiary/asset movements. Text provided does not include a general unrestricted-subsidiary designation mechanic within this facility.",
+      "anchor_clause": "\"Amortization Period\" shall mean each period commencing on the first date on which the Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 and ending on the first date thereafter when the Combined Gross Pari Passu Leverage Ratio on such date does not exceed 2.50:1.00.",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "unclear",
+          "rationale": "The agreement includes a dedicated Section 6.01 'Prohibition on Liability Management Exercises' and defines Junior Debt subordinate to the Obligations, but the operative uptier/sacred-rights amendment protections are not in the provided text.",
+          "basis": "Section 6.01 caption 'Prohibition on Liability Management Exercises'; Junior Debt defined as unsecured or junior-lien via applicable Intercreditor Agreement.",
+          "quote": "Section 6.01. Prohibition on Liability Management Exercises"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "A dedicated anti-LME covenant plus restrictions on amending the IP License Agreement/Shared Services Agreement and a per-year $5mm asset-disposition cap constrain moving material IP/assets away from the collateral pool.",
+          "basis": "Section 6.01 Prohibition on Liability Management Exercises; Section 6.15 Amendments to the Shared Services Agreement; IP License Agreement definition; Material Assets / Material Intellectual Property definitions; $5mm/year Asset Disposition carve-out.",
+          "quote": "\"Material Intellectual Property\" shall mean any intellectual property owned by a Loan Party or any Subsidiary that is material to the operations of the business of the Loan Parties and the Subsidiaries, taken as a whole."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "Debt capacity runs through Section 6.04 and Pari Passu Debt / Junior Debt concepts tied to the Combined Gross Pari Passu Leverage Ratio, but the actual incremental caps in Section 6.04 are not in the provided text.",
+          "basis": "Section 6.04 Limitation on Indebtedness; Combined Net Leverage Ratio carve-out referencing Section 6.04(b); Pari Passu Debt in Combined Gross Pari Passu Leverage.",
+          "quote": "the pro forma calculation of the Combined Net Leverage Ratio shall not give effect to (i) any Indebtedness incurred on the date of determination pursuant to Section 6.04(b)"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "Restricted Payments are governed by Section 6.05 with Permitted Payment/Permitted Investment concepts, but the RP builder and specific baskets are not contained in the provided text; investments into non-Loan-Party subsidiaries are conditioned on no Amortization Period.",
+          "basis": "Section 6.05 Limitation on Restricted Payments; Permitted Investment clause (a) conditioned on no Amortization Period; Permitted Investment clause (q) $5mm basket.",
+          "quote": "such Investment is made in cash or Cash Equivalents from operating cash flow or the proceeds of Junior Debt or Pari Passu Debt permitted under this Agreement and no Event of Default has occurred and is continuing and, on a pro forma basis, no Amortization Period is in existence"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001104659-25-115874",
+        "form_type": "8-K",
+        "filing_date": "2025-11-25",
+        "exhibit": "EX-10.2",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465925115874/tm2532088d1_ex10-2.htm",
         "quote": "\"Amortization Period\" shall mean each period commencing on the first date on which the Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 and ending on the first date thereafter when the Combined Gross Pari Passu Leverage Ratio on such date does not exceed 2.50:1.00."
       },
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "No maintenance leverage covenant identified in the provided text. The agreement uses incurrence-style ratio tests (Combined Gross Pari Passu Leverage Ratio, Combined Net Leverage Ratio) rather than a stated maintenance financial covenant. There is a springing \"Amortization Period\" mechanic tied to the Combined Gross Pari Passu Leverage Ratio exceeding 2.50:1.00, but no maintenance leverage covenant threshold is stated in the excerpted clauses.",
-      "leverage_ratio_threshold": "Not stated as a maintenance covenant. Relevant ratio trigger: Amortization Period commences when Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 (and ends when it no longer exceeds 2.50:1.00).",
-      "restricted_payments_basket_size": "Not specified in the provided excerpts. Section 6.05 (\"Limitation on Restricted Payments\") is referenced with a Schedule 6.05 of Existing Investments, but no builder/starter basket dollar amount is set out in the text provided.",
-      "lme_risk_notes": "This is an atypically LME-defensive package. Article VI opens with Section 6.01 \"Prohibition on Liability Management Exercises\" and Section 6.02 \"Prohibition on Outside Accounts,\" signaling express anti-LME drafting to curb uptier/drop-down structures. Section 3.28 \"Material Assets\" plus the \"Material Assets\" definition (any property/assets, including IP, material to the business of the Loan Parties taken as a whole) supports a J.Crew-style asset/IP transfer blocker. Note residual leakage vectors: (i) the ring-fenced ABS/receivables structure (ABS Borrower, ABS Holdings, ABS InfraCos, ABS Transaction Parties) with a Trademark License to CSC and shared-services agreements sits outside the Group Member perimeter and could be a value-transfer channel; (ii) Asset Disposition exclusions permit up to $5 million/year of dispositions and Section 1031 like-kind exchanges without falling into Section 6.08; (iii) short-dated Maturity Date (Nov 25, 2028) and high 9.00% Applicable Rate suggest stressed/rescue-financing context. No maintenance leverage covenant means limited early lender leverage absent the incurrence/Amortization Period triggers."
+      "leverage_covenant_type": "Leverage-based Amortization Period trigger (springing amortization / de-leveraging construct)",
+      "leverage_ratio_threshold": "Combined Gross Pari Passu Leverage Ratio of 2.50:1.00",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated November 7, 2024",
+      "doc_class": "credit_agreement",
+      "operative_date": "2025-02-13",
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "Lenders from time to time party thereto, Goldman Sachs Bank USA",
+      "trustee": null,
+      "collateral_agent": "Deutsche Bank Trust Company Americas",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Loan Parties party hereto (Lightpath Holdings LLC as Parent Guarantor, Cablevision Lightpath CT LLC, and Lightpath of New England, LLC as subsidiary guarantors)",
+      "financial_covenants": [],
+      "baskets": [
+        {
+          "name": "2024 Incremental Term Loan Commitment",
+          "value": "$100,000,000",
+          "quote": "has agreed to provide the Borrower with an Incremental Term Loan on the Effective Date ... in the principal amount of $100,000,000"
+        }
+      ],
+      "ebitda_addback_categories": [],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"the 2024 Incremental Term Loans shall be structured as an increase to the existing Initial Term Loans outstanding under the Existing Credit Agreement immediately prior to the Effective Date that will trade fungibly with such existing Initial Term Loans.\"",
+      "lme_vectors": [
+        {
+          "vector": "incremental_debt",
+          "risk": "open",
+          "rationale": "This document is itself an exercise of the Section 2.22 incremental facility, adding $100 million of new term loans that rank pari passu and fungibly with the existing Initial Term Loans.",
+          "basis": "The Borrower obtained Incremental Term Loans of $100,000,000 pursuant to Section 2.22 of the Existing Credit Agreement, structured as a fungible increase to the Initial Term Loans.",
+          "quote": "the Borrower desires, pursuant to Section 2.22 of the Existing Credit Agreement, to obtain Incremental Term Loans ... in the principal amount of $100,000,000"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "This incremental assumption agreement does not address voting/sacred-rights or lien-subordination provisions; those reside in the underlying credit agreement amendments not excerpted here.",
+          "basis": "The excerpt is limited to establishing the 2024 Incremental Term Loan and reaffirming existing liens; no priming or voting mechanics appear.",
+          "quote": "Nothing implied in this Amendment ... shall discharge or release the Lien or priority of any Security Document"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "The text does not address unrestricted subsidiary designation or transfer of material IP/assets.",
+          "basis": "No investment, unrestricted subsidiary, or IP-transfer provisions appear in this incremental assumption agreement.",
+          "quote": "the proceeds of any 2024 Incremental Term Loans, will be used for general corporate purposes (including Permitted Investments and related fees and expenses ...)"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "The document does not address restricted payments capacity; use of proceeds references Permitted Investments but no RP basket is set out.",
+          "basis": "The excerpt contains no restricted payment covenant or basket text.",
+          "quote": "will be used for general corporate purposes (including Permitted Investments and related fees and expenses ...)"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001628280-25-005486",
+        "form_type": "10-K",
+        "filing_date": "2025-02-13",
+        "exhibit": "EX-10.20",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000162828025005486/exhibit10-20lightpathincre.htm",
+        "quote": "\"the 2024 Incremental Term Loans shall be structured as an increase to the existing Initial Term Loans outstanding under the Existing Credit Agreement immediately prior to the Effective Date that will trade fungibly with such existing Initial Term Loans.\""
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "credit agreement dated September 29, 2020",
+      "doc_class": "credit_agreement",
+      "operative_date": "2025-02-13",
+      "amendment_count": 1,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": "Goldman Sachs Bank USA",
+      "trustee": null,
+      "collateral_agent": "Administrative Agent, Deutsche Bank Trust Company Americas",
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "Not determinable from the provided excerpt; the text references \"Loan Parties\" and \"Restricted Subsidiaries\" but does not set out the guarantee class in the portions supplied.",
+      "financial_covenants": [
+        {
+          "kind": "Leverage-based financial covenant (Section 6.01, captioned 'Leverage Based Financial Covenant')",
+          "threshold": "Not stated in the provided excerpt — the operative Section 6.01 text (level, whether springing) was not included. A related pricing grid references a Consolidated Net Senior Secured Leverage Ratio breakpoint of 3.75:1.00, but that governs commitment-fee pricing, not the maintenance covenant level.",
+          "test_frequency": "Not stated in the provided excerpt",
+          "springing_trigger": null,
+          "quote": "SECTION 6.01.Leverage Based Financial Covenant      148"
+        }
+      ],
+      "baskets": [
+        {
+          "name": "Closing Date Revolving Available Amount",
+          "value": "$10,000,000",
+          "quote": "\"Closing Date Revolving Available Amount\" shall mean $10,000,000."
+        }
+      ],
+      "ebitda_addback_categories": [
+        "Pro Forma EBITDA adjustments referenced (clauses (a) through (c) of the definition of 'Pro Forma EBITDA') — the substantive add-back categories are not set out in the provided excerpt"
+      ],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"Applicable Revolving Commitment Fee Percentage\" pricing grid is keyed to the \"Consolidated Net Senior Secured Leverage Ratio\" (Level I ≥ 3.75:1.00 at 0.500%; Level II < 3.75:1.00 at 0.375%), and Section 6.01 is captioned \"Leverage Based Financial Covenant\" — but the provided text does not contain the operative threshold or trigger of Section 6.01, so the actual financial-covenant level cannot be confirmed from this excerpt.",
+      "lme_vectors": [
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The provided excerpt is limited to the refinancing amendment mechanics, definitions, and the table of contents; it contains no sacred-rights or pro rata sharing/voting provisions bearing on non-pro-rata uptiering.",
+          "basis": "No amendment/voting or 'Required Lenders' sacred-rights text is present in the supplied portions.",
+          "quote": "SECTION 9.08.Waivers; Amendment                         176"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "not_addressed",
+          "rationale": "The excerpt does not include the investments, unrestricted-subsidiary designation, or IP-transfer covenants needed to assess dropdown/J.Crew capacity.",
+          "basis": "'Restricted Subsidiary' and 'Borrower Group' are defined, but no unrestricted-subsidiary designation mechanics or asset/IP-transfer restrictions appear in the text provided.",
+          "quote": "\"Borrower Group\" shall mean the Borrower and each Restricted Subsidiary."
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "Section 2.22 (Incremental Loans) exists and the deal has already layered in incremental/refinancing tranches, but the excerpt omits the incremental capacity, ratio conditions, and MFN terms needed to gauge risk.",
+          "basis": "Table of contents lists Section 2.22 Incremental Loans and the definitions confirm executed 2024 Incremental Term Loans ($100,000,000) and 2025 Refinancing Term Loans; no incremental basket size or MFN text is in the excerpt.",
+          "quote": "SECTION 2.22.Incremental Loans                       100"
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "not_addressed",
+          "rationale": "No restricted-payments covenant or associated basket appears in the supplied text.",
+          "basis": "The excerpt contains no negative covenant on restricted payments; only pricing/commitment-fee mechanics tied to leverage are shown.",
+          "quote": "ARTICLE VI Financial Covenant                        148"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001628280-25-005486",
+        "form_type": "10-K",
+        "filing_date": "2025-02-13",
+        "exhibit": "EX-10.21",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000162828025005486/exhibit10-21lightpathrefin.htm",
+        "quote": "\"Applicable Revolving Commitment Fee Percentage\" pricing grid is keyed to the \"Consolidated Net Senior Secured Leverage Ratio\" (Level I ≥ 3.75:1.00 at 0.500%; Level II < 3.75:1.00 at 0.375%), and Section 6.01 is captioned \"Leverage Based Financial Covenant\" — but the provided text does not contain the operative threshold or trigger of Section 6.01, so the actual financial-covenant level cannot be confirmed from this excerpt."
+      },
+      "agreement_type": "credit_agreement",
+      "leverage_covenant_type": "Leverage-based financial covenant (Section 6.01, captioned 'Leverage Based Financial Covenant')",
+      "leverage_ratio_threshold": "Not stated in the provided excerpt — the operative Section 6.01 text (level, whether springing) was not included. A related pricing grid references a Consolidated Net Senior Secured Leverage Ratio breakpoint of 3.75:1.00, but that governs commitment-fee pricing, not the maintenance covenant level.",
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
+    },
+    {
+      "family_label": "11.75% notes due 2029",
+      "doc_class": "indenture",
+      "operative_date": "2024-01-25",
+      "amendment_count": 0,
+      "base_missing": false,
+      "governs_instruments": [],
+      "admin_agent": null,
+      "trustee": "DEUTSCHE BANK TRUST COMPANY AMERICAS",
+      "collateral_agent": null,
+      "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
+      "guarantors": "The Initial Guarantors named in Schedule 1; additional guarantors may be added pursuant to Section 4.21 (Additional Guarantors)",
+      "financial_covenants": [],
+      "baskets": [
+        {
+          "name": "Asset Disposition general basket (clause 7)",
+          "value": "greater of $415 million and 10.0% of L2QA Pro Forma EBITDA",
+          "quote": "any sale, lease, transfer, issuance or other disposition ... with a fair market value ... not to exceed the greater of $415 million and 10.0% of L2QA Pro Forma EBITDA"
+        },
+        {
+          "name": "Asset Disposition general basket (clause 23)",
+          "value": "greater of $415 million and 10.0% of L2QA Pro Forma EBITDA",
+          "quote": "any sales, leases, transfers, issuances or other dispositions of Capital Stock, properties or assets with an aggregate fair market value ... not to exceed the greater of $415 million and 10.0% of L2QA Pro Forma EBITDA"
+        },
+        {
+          "name": "Revolving Indebtedness carve-out from leverage calculations",
+          "value": "greater of $1,385 million and 33.3% of L2QA Pro Forma EBITDA",
+          "quote": "any revolving Indebtedness Incurred pursuant to Section 4.04 in an amount not to exceed the greater of (x) $1,385 million and (y) 33.3% L2QA Pro Forma EBITDA"
+        }
+      ],
+      "ebitda_addback_categories": [
+        "Consolidated Interest Expense and Receivables Fees",
+        "Consolidated Income Taxes",
+        "depreciation expense",
+        "amortization and impairment expense",
+        "Parent Expenses of a CVC Parent",
+        "expenses/charges/costs related to Equity Offerings, Investments, acquisitions, dispositions, recapitalizations or Indebtedness incurrence (whether or not successful)",
+        "minority interest expense",
+        "management, monitoring, consultancy and advisory fees to Permitted Holders (per Section 4.09)",
+        "other non-cash charges, write-downs or special items",
+        "gains/losses from discontinued operations (until actually disposed)"
+      ],
+      "mfn_sunset_period": null,
+      "j_crew_blocker_present": true,
+      "unrestricted_subsidiary_designation_flexibility": "The indenture contemplates Unrestricted Subsidiaries and permits dispositions of their Capital Stock/Indebtedness/securities free of the Asset Disposition regime (Asset Disposition definition clause 15). Consolidated Net Income excludes income of non-Restricted Subsidiaries except to the extent of cash actually distributed, and Restricted Payments capacity (Section 4.05) governs designation value leakage. Full designation conditions were not included in the excerpt provided.",
+      "anchor_clause": "\"Limitation on Transfer of Assets by Restricted Subsidiaries.\" (Section 4.24) — read alongside Section 4.05 (Limitation on Restricted Payments) and the Unrestricted Subsidiary designation mechanics, as these govern the ability to move value beyond the guarantor group.",
+      "lme_vectors": [
+        {
+          "vector": "incremental_debt",
+          "risk": "unclear",
+          "rationale": "The excerpt references Section 4.04 (Limitation on Indebtedness) and ratio-based debt capacity via the Consolidated Net Leverage / Senior Secured Leverage Ratio definitions, but the operative 4.04 basket ladder and ratio thresholds are not included in the provided text.",
+          "basis": "Consolidated Net Leverage Ratio and Consolidated Net Senior Secured Leverage Ratio are defined and cross-referenced to Section 4.04(b); an unlimited amount of Additional Notes with identical terms may be issued subject to covenant compliance.",
+          "quote": "an unlimited principal amount of additional securities having identical terms and conditions as the Initial Notes ... subject to the conditions and in compliance with the covenants set forth herein"
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "protected",
+          "rationale": "The indenture contains a dedicated Section 4.24 'Limitation on Transfer of Assets by Restricted Subsidiaries,' the standard J.Crew blocker restricting transfers of material assets, though the operative text of the section was not included in the excerpt.",
+          "basis": "Table of Contents lists Section 4.24 Limitation on Transfer of Assets by Restricted Subsidiaries; Asset Disposition definition also carves out (clause 15) dispositions of Capital Stock/Indebtedness/securities of an Unrestricted Subsidiary.",
+          "quote": "Section 4.24 Limitation on Transfer of Assets by Restricted Subsidiaries."
+        },
+        {
+          "vector": "rp_leakage",
+          "risk": "unclear",
+          "rationale": "Section 4.05 (Limitation on Restricted Payments) exists with a builder-basket construct (Section 4.05(a)(C)(i)/(ii) referenced), but the actual RP baskets, builder amount and Permitted Payment carve-outs were not in the provided excerpt.",
+          "basis": "Consolidated Net Income definition carves out amounts 'solely for the purpose of determining the amount available for Restricted Payments under Section 4.05(a)(C)(i)'; Designated Preference Shares proceeds excluded from Section 4.05(a)(C)(ii) calculation.",
+          "quote": "solely for the purpose of determining the amount available for Restricted Payments under Section 4.05(a)(C)(i), any net income (loss) of any Restricted Subsidiary that is not a Guarantor"
+        },
+        {
+          "vector": "uptier_priming",
+          "risk": "not_addressed",
+          "rationale": "The provided excerpt (title block, definitions, and Asset Disposition definition) does not include voting/amendment 'sacred rights' provisions or lien-subordination protections needed to assess uptier priming risk.",
+          "basis": "No amendment, waiver, sacred-rights or pro rata sharing provisions appear in the supplied text.",
+          "quote": "equal and ratable benefit of the Holders"
+        }
+      ],
+      "citation": {
+        "accession_no": "0001628280-24-002254",
+        "form_type": "8-K",
+        "filing_date": "2024-01-25",
+        "exhibit": "EX-4.2",
+        "section": "Negative covenants / Definitions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000162828024002254/cscholdingsllcseniorguaran.htm",
+        "quote": "\"Limitation on Transfer of Assets by Restricted Subsidiaries.\" (Section 4.24) — read alongside Section 4.05 (Limitation on Restricted Payments) and the Unrestricted Subsidiary designation mechanics, as these govern the ability to move value beyond the guarantor group."
+      },
+      "agreement_type": "indenture",
+      "leverage_covenant_type": null,
+      "leverage_ratio_threshold": null,
+      "restricted_payments_basket_size": null,
+      "lme_risk_notes": null
     }
   ],
   "subsidiaries": [],
+  "liquidity": {
+    "is_distressed": true,
+    "as_of_label": "Q1 2026",
+    "cash": {
+      "value": 1048634000.0,
+      "display": "$1,049M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001702780-26-000035",
+        "form_type": "10-Q",
+        "filing_date": "2026-05-07",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000035/0001702780-26-000035-index.htm",
+        "quote": "Cash and Cash Equivalents, at Carrying Value = $1,049M (as of 2026-03-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "undrawn_committed": null,
+    "total_liquidity": {
+      "value": 1048634000.0,
+      "display": "$1,049M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "cash $1,049M",
+      "note": "Cash and equivalents plus tagged undrawn committed credit."
+    },
+    "annual_burn": {
+      "value": 87617000.0,
+      "display": "$88M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "|free cash flow| (Q1 2026)",
+      "note": "Annual cash burn = negative free cash flow (OCF − capex)."
+    },
+    "runway_months": 143.6,
+    "next_maturity": null,
+    "next_event": null
+  },
+  "liquidity_events": [],
+  "liquidity_events_note": null,
+  "asset_snapshot": {
+    "as_of_fy": 2025,
+    "cash": {
+      "value": 1012201000.0,
+      "display": "$1,012M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001702780-26-000013",
+        "form_type": "10-K",
+        "filing_date": "2026-02-13",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+        "quote": "Cash and Cash Equivalents, at Carrying Value = $1,012M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "accounts_receivable": {
+      "value": 335820000.0,
+      "display": "$336M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001702780-26-000013",
+        "form_type": "10-K",
+        "filing_date": "2026-02-13",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:AccountsReceivableNetCurrent",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+        "quote": "Accounts Receivable, after Allowance for Credit Loss, Current = $336M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "inventory": null,
+    "ppe": {
+      "value": 8351391000.0,
+      "display": "$8,351M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001702780-26-000013",
+        "form_type": "10-K",
+        "filing_date": "2026-02-13",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:PropertyPlantAndEquipmentNet",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+        "quote": "Property, Plant and Equipment, Net = $8,351M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "intangibles": {
+      "value": 8743684000.0,
+      "display": "$8,744M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "goodwill ($8,041M) + other intangibles ($702M)",
+      "note": null
+    },
+    "other": {
+      "value": 12260742000.0,
+      "display": "$12,261M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "total assets ($30,704M) − categorized ($18,443M)",
+      "note": "uncategorized residual — lease ROU assets, deferred taxes, investments, etc."
+    },
+    "total_assets": {
+      "value": 30703838000.0,
+      "display": "$30,704M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001702780-26-000013",
+        "form_type": "10-K",
+        "filing_date": "2026-02-13",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:Assets",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000170278026000013/0001702780-26-000013-index.htm",
+        "quote": "Assets = $30,704M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    }
+  },
+  "coverage_chips": {
+    "debt_ebitda": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "debt $26,206M ÷ EBITDA -$269M",
+      "note": "n.m. — non-positive denominator"
+    },
+    "debt_ebitda_capex": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "debt ÷ (EBITDA − capex $1,347M)",
+      "note": "n.m. — non-positive denominator"
+    },
+    "ebitda_interest": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "EBITDA ÷ interest None",
+      "note": "n.m. — non-positive denominator"
+    },
+    "ebitda_capex_interest": {
+      "value": null,
+      "display": null,
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "(EBITDA − capex) ÷ interest",
+      "note": "n.m. — non-positive denominator"
+    },
+    "capex_pct_ebitda": null
+  },
+  "mezzanine": null,
+  "nol_carryforward": null,
+  "rp_basket": {
+    "available": true,
+    "covenant_status": "none",
+    "starter": {
+      "value": 0.0,
+      "display": "$0M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "builder-only (starter basket not extracted) — $0 assumed",
+      "note": null
+    },
+    "points": [
+      {
+        "label": "Q3 2023",
+        "period_end": "2023-09-30",
+        "net_income": 66.8,
+        "ni_credit": 33.4,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 33.4,
+        "cumulative": 33.4
+      },
+      {
+        "label": "Q4 2023",
+        "period_end": "2023-12-31",
+        "net_income": -145.2,
+        "ni_credit": -145.2,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -145.2,
+        "cumulative": -111.7
+      },
+      {
+        "label": "Q1 2024",
+        "period_end": "2024-03-31",
+        "net_income": 8.3,
+        "ni_credit": 4.1,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 4.1,
+        "cumulative": -107.6
+      },
+      {
+        "label": "Q2 2024",
+        "period_end": "2024-06-30",
+        "net_income": 15.4,
+        "ni_credit": 7.7,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 7.7,
+        "cumulative": -99.9
+      },
+      {
+        "label": "Q3 2024",
+        "period_end": "2024-09-30",
+        "net_income": 2.1,
+        "ni_credit": 1.1,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 1.1,
+        "cumulative": -98.8
+      },
+      {
+        "label": "Q4 2024",
+        "period_end": "2024-12-31",
+        "net_income": -119.7,
+        "ni_credit": -119.7,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -119.7,
+        "cumulative": -218.5
+      },
+      {
+        "label": "Q1 2025",
+        "period_end": "2025-03-31",
+        "net_income": 4.4,
+        "ni_credit": 2.2,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 2.2,
+        "cumulative": -216.3
+      },
+      {
+        "label": "Q2 2025",
+        "period_end": "2025-06-30",
+        "net_income": 8.3,
+        "ni_credit": 4.1,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 4.1,
+        "cumulative": -212.2
+      },
+      {
+        "label": "Q3 2025",
+        "period_end": "2025-09-30",
+        "net_income": 3.9,
+        "ni_credit": 2.0,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 2.0,
+        "cumulative": -210.2
+      },
+      {
+        "label": "Q4 2025",
+        "period_end": "2025-12-31",
+        "net_income": -1885.6,
+        "ni_credit": -1885.6,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -1885.6,
+        "cumulative": -2095.9
+      },
+      {
+        "label": "Q1 2026",
+        "period_end": "2026-03-31",
+        "net_income": 7.1,
+        "ni_credit": 3.5,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": 3.5,
+        "cumulative": -2092.3
+      }
+    ],
+    "capacity": {
+      "value": 0.0,
+      "display": "$0M",
+      "unit": "USD",
+      "citation": null,
+      "derived": true,
+      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 ($-2,092M), floored at 0",
+      "note": "omits junior-debt-issuance proceeds and unrestricted-subsidiary investment returns (not deterministically extractable); cumulation anchors at the lookback-window start — a proxy for the issuance-date build convention; builder negative — cumulative deductions exceed credits, $0 capacity"
+    },
+    "formula_note": "equity_issuance_proceeds, dividends_paid not tagged in XBRL — treated as $0",
+    "covenant_family": null,
+    "covenant_value": null,
+    "covenant_quote": null,
+    "notes": [
+      "no RP covenant extracted — distributions contractually unrestricted (unbounded leakage, Moyer ch. 9)"
+    ]
+  },
+  "liens_headroom": {
+    "available": true,
+    "archetype": "stated_capacity",
+    "unbounded_instruments": [],
+    "unbounded_note": null,
+    "rows": [
+      {
+        "family": "credit agreement dated December 19, 2022",
+        "name": "Incremental Term Loan Commitments (2025 tranche established under Section 2.22)",
+        "value": "$2,000,000,000",
+        "quote": "the aggregate principal amount of the 2025 Incremental Term Loan Commitments is $2,000,000,000",
+        "archetype": "stated_capacity",
+        "detail": "stated capacity (utilization unknown) — never read as headroom",
+        "dollars_mm": 2000.0,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      },
+      {
+        "family": "credit agreement dated November 7, 2024",
+        "name": "2024 Incremental Term Loan Commitment",
+        "value": "$100,000,000",
+        "quote": "has agreed to provide the Borrower with an Incremental Term Loan on the Effective Date ... in the principal amount of $100,000,000",
+        "archetype": "stated_capacity",
+        "detail": "stated capacity (utilization unknown) — never read as headroom",
+        "dollars_mm": 100.0,
+        "pct": null,
+        "ratio": null,
+        "headroom": null
+      }
+    ],
+    "uptier_priming": {
+      "risk": "unclear",
+      "rationale": "The agreement contains a bespoke Section 6.01 'Prohibition on Liability Management Exercises' plus intercreditor machinery, but the operative text was not in the excerpt, so the precise scope of uptier/priming protection cannot be confirmed.",
+      "family": "credit agreement dated JULY 6, 2026"
+    },
+    "j_crew_blocker_present": true,
+    "suggested_priming": {
+      "value": 2000.0,
+      "basis": "largest $-token on a lien fact — Incremental Term Loan Commitments (2025 tranche established under Section 2.22) (stated capacity, utilization unknown)",
+      "note": "$2,000,000,000"
+    },
+    "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom (Moyer ch. 9)"
+  },
   "leverage_timeline": [
     {
       "fiscal_year": 2023,
@@ -1626,20 +2786,8 @@
       "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1702780/0001628280-23-026763-index.html",
       "n_exhibits": 8,
       "n_credit_docs": 0
-    },
-    {
-      "accession_no": "0001628280-23-024947",
-      "form_type": "8-K",
-      "filing_date": "2023-07-17",
-      "period_of_report": "2023-07-15",
-      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1702780/0001628280-23-024947-index.html",
-      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1702780/0001628280-23-024947-index.html",
-      "n_exhibits": 7,
-      "n_credit_docs": 0
     }
   ],
-  "warnings": [
-    "Prior analysis from 2026-07-10 — LLM analysis is off. Re-enable to refresh."
-  ],
-  "llm_fallback_note": "Prior analysis from 2026-07-10 — LLM analysis is off. Re-enable to refresh."
+  "warnings": [],
+  "llm_fallback_note": null
 }
