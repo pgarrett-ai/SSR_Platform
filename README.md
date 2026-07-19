@@ -53,6 +53,27 @@ Open http://localhost:5173 and pick a company.
 cd platform\backend && .venv\Scripts\python -m pytest tests -q
 ```
 
+## Database & migrations
+
+SQLite (`DATABASE_URL`, default under `platform/backend/app/data/`) remains the default
+store and the pytest fixture. The event-store tables (`universe`, `events`, `scores`,
+watchlists, alerts) are Alembic-managed; legacy tables predate Alembic and are created
+by the app itself on startup.
+
+    cd platform\backend
+    .venv\Scripts\python -m alembic upgrade head   # fresh DB: create the event store (run BEFORE first app start on Postgres)
+    .venv\Scripts\python -m alembic stamp 0001     # existing SQLite the app has already started against
+
+Rule going forward: any schema change ships with an Alembic revision; the
+`_ensure_columns` micro-migration is frozen.
+
+**Postgres (optional):** install PostgreSQL 16 (winget `PostgreSQL.PostgreSQL.16`, or the
+EDB installer), then `createdb -U postgres distressed`, `pip install "psycopg[binary]"`,
+set `DATABASE_URL=postgresql+psycopg://postgres:<pw>@localhost:5432/distressed` in
+`platform/.env`, and run `alembic upgrade head`. The snapshots screener re-seeds itself
+from the JSON cache on first start; FTS5 clause search is SQLite-only and degrades to
+empty results on Postgres.
+
 ## Hazard model bundle
 
 Trained model bundles are not committed. Rebuild from primary sources — a quick pass
