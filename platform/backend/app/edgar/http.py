@@ -71,5 +71,6 @@ def paced_get(url: str, *, timeout: float = 30.0) -> bytes:
                 delay = float(exc.headers.get("Retry-After")) if exc.headers else None
             except (TypeError, ValueError):
                 delay = None
-            _sleep(delay if delay is not None else _BACKOFF_S * 2 ** attempt)
+            # max(0, ...) guards a hostile/buggy negative Retry-After — time.sleep raises on <0
+            _sleep(max(0.0, delay) if delay is not None else _BACKOFF_S * 2 ** attempt)
     raise AssertionError("unreachable")   # pragma: no cover
