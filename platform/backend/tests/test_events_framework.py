@@ -274,3 +274,20 @@ def test_health_exposes_worker_block(monkeypatch, tmp_path):
     with TestClient(app) as client:
         w = client.get("/api/health").json()["worker"]
     assert w["alive"] is True and w["events_ingested_today"] == 1
+
+
+def test_tick_bookkeeping_survives_fs_errors(monkeypatch):
+    def raiser(*a, **k):
+        raise OSError("disk full")
+    # heartbeat is imported inside _tick_bookkeeping -> patch the source module
+    monkeypatch.setattr("app.events.heartbeat.beat", raiser)
+    jobs = [worker.Job("a", 100, lambda: 0)]
+    worker._tick_bookkeeping(jobs, 0)                     # FS hiccup must NOT propagate
+
+
+def test_worker_status_survives_mangled_heartbeat(monkeypatch, tmp_path):
+    p = tmp_path / "hb.json"
+    p.write_text(json.dumps({"ts": "garbage", "day": "2026-07-19"}), encoding="utf-8")
+    monkeypatch.setattr(hb, "HEARTBEAT_PATH", p)
+    st = hb.worker_status()                              # non-numeric ts must not 500
+    assert st["alive"] is False and st["heartbeat_age_s"] is None

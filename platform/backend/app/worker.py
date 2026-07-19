@@ -12,6 +12,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import sys
 import time
 
 from .core.config import DATA_DIR
@@ -70,6 +71,17 @@ def refresh_lock() -> None:
                          encoding="utf-8")
 
 
+def _tick_bookkeeping(jobs, ingested) -> None:
+    """Heartbeat + lock refresh; an FS hiccup (AV lock, disk full) must never kill the
+    eternal loop — WARN and carry on, the next tick retries."""
+    from .events import heartbeat
+    try:
+        heartbeat.beat(ingested, {j.name: j.last_ok for j in jobs})
+        refresh_lock()
+    except OSError as exc:
+        print(f"WARN heartbeat/lock write: {type(exc).__name__}: {exc}")
+
+
 def run_due(jobs: list[Job], now: float) -> int:
     """Run every due job once; a failing job WARNs and waits its full period (no hot
     loop on a broken feed). Returns events ingested this pass."""
@@ -88,6 +100,10 @@ def run_due(jobs: list[Job], now: float) -> int:
 
 
 def main() -> int:
+    try:
+        sys.stdout.reconfigure(errors="backslashreplace")   # cp1252 log + unicode WARN
+    except AttributeError:
+        pass
     from .core.db import init_db
     from .events import heartbeat
     if not acquire_lock():
@@ -102,14 +118,19 @@ def main() -> int:
     try:
         while True:
             n = run_due(jobs, time.time())
-            heartbeat.beat(n, {j.name: j.last_ok for j in jobs})
-            refresh_lock()
+            _tick_bookkeeping(jobs, n)
             time.sleep(TICK_S)
     except KeyboardInterrupt:
         print("worker: shutting down")
     finally:
-        heartbeat.beat(0, {j.name: j.last_ok for j in jobs}, stopping=True)
-        LOCK_PATH.unlink(missing_ok=True)
+        try:
+            heartbeat.beat(0, {j.name: j.last_ok for j in jobs}, stopping=True)
+        except OSError:
+            pass
+        try:
+            LOCK_PATH.unlink(missing_ok=True)
+        except OSError:
+            pass
     return 0
 
 

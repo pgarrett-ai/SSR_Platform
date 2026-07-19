@@ -42,7 +42,10 @@ def beat(events_ingested: int, jobs: dict, stopping: bool = False) -> None:
 def worker_status() -> dict:
     """Read-only raw gauges: heartbeat file + authoritative events-table gauge."""
     hb = _read()
-    age = (time.time() - float(hb["ts"])) if hb.get("ts") else None
+    try:
+        age = time.time() - float(hb["ts"])
+    except (TypeError, ValueError, KeyError):
+        age = None                       # absent OR non-numeric ts -> gauge None, no 500
     alive = age is not None and age < STALE_S and not hb.get("stopping")
     last_hours = None
     try:

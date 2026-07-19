@@ -105,7 +105,15 @@ def _idx_lines(text: str, prefixes, since: str):
 def catchup_form_idx(window_days: int = 7) -> int:
     """Daily reconciliation: anything the EFTS poll missed in the last week surfaces
     here by accession diff against the current quarter's form.idx (URL labels.py:58).
-    Also the sole live path for structural forms (NT/25/15/13D/G)."""
+    Also the sole live path for structural forms (NT/25/15/13D/G).
+
+    Convergence note: the accession-diff reconciles against stored events, so a resolved
+    filing that yields NO tracked event is re-resolved on later runs. With only 1.03
+    seeded (this PR) that means a bounded daily re-fetch burst; once the full detector
+    table lands (next PR: all 16 8-K items + items_unknown + structural forms) every
+    resolved filing stores at least one event and the diff converges. Revisit with a
+    processed-accessions ledger only if post-detector-table telemetry still shows
+    re-resolution churn."""
     today = dt.date.today()
     since = (today - dt.timedelta(days=window_days)).isoformat()
     prefixes = tuple(p for p in tracked_prefixes() if p not in CATCHUP_EXCLUDE)
