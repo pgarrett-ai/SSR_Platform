@@ -133,3 +133,21 @@ def test_crisis_triggers_and_unknown(monkeypatch):
     assert firsts["2023-06-01"]["triggers"] is None and firsts["2023-06-01"]["items_unknown"]
     # the 1.03-only filing is not a crisis trigger
     assert "2023-11-20" not in firsts
+
+
+def test_cached_does_not_reamplify_429(monkeypatch, tmp_path):
+    # paced_get already spends the sanctioned 429/403 backoff (~14s); _cached must NOT retry it 3×,
+    # which would multiply the stall on request-serving /recovery/case & /recovery/crisis threads.
+    import urllib.error
+
+    calls = {"n": 0}
+
+    def throttled(cik):
+        calls["n"] += 1
+        raise urllib.error.HTTPError("https://data.sec.gov/x", 429, "throttled", None, None)
+
+    monkeypatch.setattr(eightk, "_http_get_submissions", throttled)
+    monkeypatch.setattr(eightk, "_SUBMISSIONS_CACHE_DIR", tmp_path)
+    with pytest.raises(urllib.error.HTTPError):
+        eightk._fetch_submissions(320193)
+    assert calls["n"] == 1   # re-raised immediately, no 3× retry amplification

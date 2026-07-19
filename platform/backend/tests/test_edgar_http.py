@@ -136,3 +136,33 @@ def test_labels_fetches_via_paced_get(monkeypatch):
 
     monkeypatch.setattr(labels, "paced_get", lambda url, **kw: b'{"a": 1}')
     assert labels._get_json("https://efts.sec.gov/LATEST/search-index?q=x") == {"a": 1}
+
+
+def test_retry_after_capped(monkeypatch):
+    # a hostile/buggy Retry-After (24h) must not pin a shared thread — clamped to the 60s cap
+    import email.message
+
+    sleeps = _no_pace(monkeypatch)
+    hdrs = email.message.Message()
+    hdrs["Retry-After"] = "86400"
+    calls = {"n": 0}
+
+    def flaky(req, timeout):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise urllib.error.HTTPError(req.full_url, 429, "slow down", hdrs, None)
+        return _Resp(b"ok")
+
+    monkeypatch.setattr(eh, "_urlopen", flaky)
+    assert eh.paced_get("https://data.sec.gov/x") == b"ok"
+    assert sleeps == [60.0]                      # 86400s clamped to the cap
+
+
+def test_zero_rate_setting_does_not_crash(monkeypatch):
+    # a misconfigured 0 req/s must not ZeroDivisionError; the rate clamps to 0.1 → 10s interval
+    sleeps = _frozen(monkeypatch)
+    monkeypatch.setattr(get_settings(), "edgar_max_requests_per_sec", 0.0)
+    monkeypatch.setattr(eh, "_urlopen", lambda req, timeout: _Resp(b"ok"))
+    assert eh.paced_get("https://data.sec.gov/a") == b"ok"   # first slot free — no crash
+    eh.paced_get("https://data.sec.gov/b")                   # reserved interval = 1/0.1
+    assert sleeps == [pytest.approx(10.0)]

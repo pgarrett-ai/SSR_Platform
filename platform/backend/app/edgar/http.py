@@ -50,7 +50,8 @@ def _pace() -> None:
     with _lock:
         now = _now()
         wait = _next_slot - now
-        _next_slot = max(now, _next_slot) + 1.0 / get_settings().edgar_max_requests_per_sec
+        # max(0.1, ...) clamps a misconfigured rate: 0 would ZeroDivisionError, <0 silently disable pacing
+        _next_slot = max(now, _next_slot) + 1.0 / max(0.1, get_settings().edgar_max_requests_per_sec)
     if wait > 0:
         _sleep(wait)
 
@@ -71,6 +72,7 @@ def paced_get(url: str, *, timeout: float = 30.0) -> bytes:
                 delay = float(exc.headers.get("Retry-After")) if exc.headers else None
             except (TypeError, ValueError):
                 delay = None
-            # max(0, ...) guards a hostile/buggy negative Retry-After — time.sleep raises on <0
-            _sleep(max(0.0, delay) if delay is not None else _BACKOFF_S * 2 ** attempt)
+            # clamp guards a hostile/buggy Retry-After: max(0,...) — sleep raises on <0; min(60,...)
+            # bounds absurdly large values (e.g. Retry-After: 86400) from pinning a shared thread
+            _sleep(min(60.0, max(0.0, delay)) if delay is not None else _BACKOFF_S * 2 ** attempt)
     raise AssertionError("unreachable")   # pragma: no cover

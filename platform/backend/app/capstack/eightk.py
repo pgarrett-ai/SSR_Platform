@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import re
 import time
+import urllib.error
 from typing import Optional
 
 from ..core.config import CACHE_DIR
@@ -64,7 +65,9 @@ def _cached(key: str, fetcher) -> dict:
         try:
             data = fetcher()
             break
-        except Exception as exc:   # transient 429/5xx/timeout — short backoff, then degrade
+        except Exception as exc:   # transient 5xx/timeout — short backoff, then degrade
+            if isinstance(exc, urllib.error.HTTPError) and exc.code in (429, 403):
+                raise   # paced_get already spent the sanctioned 429/403 backoff; don't re-amplify it
             last_exc = exc
             if attempt < 2:        # don't sleep after the final attempt
                 time.sleep(0.5 * (attempt + 1))
