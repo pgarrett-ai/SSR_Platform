@@ -60,8 +60,12 @@ def test_insert_events_is_idempotent():
             assert me.insert_events(s, [_row("4.01"), _row("5.02")]) == 2
         with session_scope() as s:   # re-poll: same filing again
             assert me.insert_events(s, [_row("4.01"), _row("5.02")]) == 0
+        with session_scope() as s:   # MIXED batch (one existing + one new) in ONE call:
+            # the poller/backfill submit mixed batches — this pins the driver rowcount
+            # behavior ("new rows only") the return-count contract rests on
+            assert me.insert_events(s, [_row("4.01"), _row("2.04")]) == 1
         with session_scope() as s:
-            assert s.query(me.Event).filter_by(cik=CIK).count() == 2
+            assert s.query(me.Event).filter_by(cik=CIK).count() == 3
     finally:
         _cleanup()
 
