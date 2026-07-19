@@ -121,3 +121,17 @@ def test_golden_trinseo_8k_routing():
     assert bk, "Trinseo Ch.11 fixture must yield an Item 1.03 bankruptcy event"
     assert all(e.severity == 5 and e.cik == "0001519061" for e in bk)
     assert bk[0].source_url and bk[0].accession_no.replace("-", "") in bk[0].source_url
+
+
+# --- Task 22: route_audit exit-test instrument (pure path only) ---------------
+
+def test_route_audit_rows_pure():
+    from app.events.route_audit import audit_rows
+    meta_pairs = feed.tracked_rows(
+        json.loads(GOLD.read_text(encoding="utf-8"))["filings"]["recent"],
+        "1519061", since=None, prefixes=("8-K",))
+    rows = audit_rows(meta_pairs)
+    assert rows and set(rows[0]) == {"accession_no", "cik", "form", "filing_date",
+                                     "items", "routed_event_types", "accepted_at"}
+    bk = [r for r in rows if "bankruptcy" in r["routed_event_types"]]
+    assert bk and "1.03" in bk[0]["items"]
