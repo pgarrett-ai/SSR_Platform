@@ -58,3 +58,72 @@ def test_year_citations_drilldown():
     assert cited["fcf"]["value"] == 1e9
     assert "−" in cited["fcf"]["formula"]                 # ocf − capex
     assert "net_income" not in cited                       # absent fact -> no citation
+
+
+def _bridge_overview(econ_debt, ebitda, lev=None):
+    from app.schemas import CitedValue, EconomicDebtBridge, IssuerHeader, Overview
+    return Overview(
+        header=IssuerHeader(ticker="BURN", years=3),
+        economic_debt_bridge=EconomicDebtBridge(
+            economic_debt=CitedValue(value=econ_debt),
+            ebitda=CitedValue(value=ebitda),
+            economic_leverage=CitedValue(value=lev) if lev is not None else None))
+
+
+def test_capstack_signals_cash_burner_not_dropped(monkeypatch):
+    # LCID shape: bridge stored NO leverage ratio (EBITDA < 0) — pre-fix this returned {}.
+    monkeypatch.setattr("app.core.cache.load_latest_overview",
+                        lambda t: _bridge_overview(6.85e9, -2.15e9))
+    cs = capstack_signals("BURN")
+    assert cs["hidden_leverage"]["risk"] == 90.0
+    assert cs["hidden_leverage"]["raw"] is None       # no meaningful ratio to display
+    assert "EBITDA" in cs["hidden_leverage"]["note"]
+
+
+def test_capstack_signals_negative_ratio_not_dropped(monkeypatch):
+    # ATUS shape: a negative ratio WAS stored (−98.9x) — the lev > 0 guard dropped it.
+    monkeypatch.setattr("app.core.cache.load_latest_overview",
+                        lambda t: _bridge_overview(26.6e9, -0.27e9, lev=-98.9))
+    assert capstack_signals("BURN")["hidden_leverage"]["risk"] == 90.0
+
+
+def test_capstack_signals_net_cash_stays_quiet(monkeypatch):
+    # Positive EBITDA, negative economic debt (true net cash): still no flag.
+    monkeypatch.setattr("app.core.cache.load_latest_overview",
+                        lambda t: _bridge_overview(-1.0e9, 2.0e9, lev=-0.5))
+    assert capstack_signals("BURN") == {}
+
+
+def test_cash_burner_year_features_sign_safe():
+    # C3 regression: negative EBITDA must not yield a negative (monotone-"safe")
+    # net_debt_to_ebitda; the burner carries a runway feature instead.
+    import datetime as dt
+    from types import SimpleNamespace
+
+    import pytest
+
+    from app.edgar.facts import YearFacts
+    from app.hazard.features import year_features
+
+    def fact(v):
+        return SimpleNamespace(numeric_value=v)
+
+    burner = YearFacts(fiscal_year=2025, period_end=dt.date(2025, 12, 31), metrics={
+        "lt_debt_noncurrent": fact(2.0e9), "cash": fact(0.5e9),
+        "operating_income": fact(-2.5e9), "d_and_a": fact(0.4e9),
+        "operating_cash_flow": fact(-2.0e9), "capex": fact(1.0e9),
+        "total_assets": fact(9.0e9),
+    })
+    f = year_features(burner)
+    assert f["ebitda"] == pytest.approx(-2.1e9)
+    assert f["net_debt_to_ebitda"] is None            # pre-fix: −0.71 → "safe"
+    assert f["runway_years"] == pytest.approx(0.5e9 / 3.0e9)   # cash / |OCF − capex|
+
+    healthy = YearFacts(fiscal_year=2025, period_end=dt.date(2025, 12, 31), metrics={
+        "lt_debt_noncurrent": fact(2.0e9), "cash": fact(0.5e9),
+        "operating_income": fact(1.0e9), "d_and_a": fact(0.2e9),
+        "operating_cash_flow": fact(1.5e9), "capex": fact(0.5e9),
+    })
+    h = year_features(healthy)
+    assert h["net_debt_to_ebitda"] == pytest.approx(1.5e9 / 1.2e9)  # classic ratio survives
+    assert h["runway_years"] is None                  # FCF-positive: not the binding constraint

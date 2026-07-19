@@ -37,12 +37,12 @@ MODEL_PATH = MODEL_DIR / "trained_hazard.joblib"
 # the live MarketData snapshot (serving) — same trailing-window semantics.
 ACCOUNTING_FEATURES = ["leverage", "net_debt_to_ebitda", "interest_coverage", "current_ratio",
                        "quick_ratio", "cash_ratio", "roa", "fcf_margin", "wc_to_assets",
-                       "re_to_assets", "size_log_assets"]
+                       "re_to_assets", "size_log_assets", "runway_years"]
 MARKET_FEATURES = ["equity_vol", "drawdown_52w", "excess_return_1y"]
 TRAIN_FEATURES = ACCOUNTING_FEATURES + MARKET_FEATURES
 MONOTONE = {"leverage": 1, "net_debt_to_ebitda": 1, "interest_coverage": -1, "current_ratio": -1,
             "quick_ratio": -1, "cash_ratio": -1, "roa": -1, "fcf_margin": -1, "wc_to_assets": -1,
-            "re_to_assets": -1, "size_log_assets": -1,
+            "re_to_assets": -1, "size_log_assets": -1, "runway_years": -1,
             # drawdown_52w is <= 0 (price/52w-high - 1): deeper (more negative) -> riskier
             "equity_vol": 1, "drawdown_52w": -1, "excess_return_1y": -1}
 

@@ -6,9 +6,9 @@
     "cik": "1811210",
     "years": 3,
     "n_filings": 76,
-    "last_updated": "2026-07-17T17:23:21.128228+00:00",
+    "last_updated": "2026-07-19T20:09:34.255698+00:00",
     "from_cache": false,
-    "llm_enabled": false
+    "llm_enabled": true
   },
   "economic_debt_bridge": {
     "lines": [
@@ -73,29 +73,6 @@
         "is_total": false
       },
       {
-        "key": "guarantee",
-        "label": "Guarantees of external / JV / SPE debt",
-        "amount": {
-          "value": 130900000.0,
-          "display": "$131M",
-          "unit": "USD",
-          "citation": {
-            "accession_no": "0001628280-26-011053",
-            "form_type": "10-K",
-            "filing_date": "2026-02-24",
-            "exhibit": null,
-            "section": "Note 12 - Commitments and Contingencies - Indemnification",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-            "quote": "The Company has indemnification obligations with respect to letters of credit and surety bond primarily used as security against facility leases, utilities infrastructure and other agreements that require securitization. The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
-          },
-          "derived": false,
-          "formula": null,
-          "note": "Debt-like obligation added to reach economic debt."
-        },
-        "is_total": false
-      },
-      {
         "key": "take_or_pay",
         "label": "Take-or-pay / purchase commitments",
         "amount": {
@@ -110,7 +87,7 @@
             "section": "Note 12 - Commitments and Contingencies",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-            "quote": "As of December 31, 2025, pursuant to the terms of agreements the Company entered into in connection with the supply of lithium-ion battery cells, the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion... Total$2,626,674"
+            "quote": "the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion, calculated using the current base prices ... Total $2,626,674"
           },
           "derived": false,
           "formula": null,
@@ -122,12 +99,12 @@
         "key": "economic_debt",
         "label": "Economic (adjusted) debt",
         "amount": {
-          "value": 6854282000.0,
-          "display": "$6,854M",
+          "value": 6723382000.0,
+          "display": "$6,723M",
           "unit": "USD",
           "citation": null,
           "derived": true,
-          "formula": "reported debt $2,718M + $290M + $189M + $131M + $3,527M",
+          "formula": "reported debt $2,718M + $290M + $189M + $3,527M",
           "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
         },
         "is_total": true
@@ -143,12 +120,12 @@
       "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases."
     },
     "economic_debt": {
-      "value": 6854282000.0,
-      "display": "$6,854M",
+      "value": 6723382000.0,
+      "display": "$6,723M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "reported debt $2,718M + $290M + $189M + $131M + $3,527M",
+      "formula": "reported debt $2,718M + $290M + $189M + $3,527M",
       "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
     },
     "ebitda": {
@@ -175,7 +152,7 @@
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "economic debt $6,854M / EBITDA -$2,154M",
+      "formula": "economic debt $6,723M / EBITDA -$2,154M",
       "note": "not meaningful — negative EBITDA (-$2,154M)"
     }
   },
@@ -321,20 +298,29 @@
         "formula": null,
         "note": null
       },
-      "coupon": "SOFR + 1.40% → 5.04%",
-      "maturity": null,
+      "coupon": "SOFR + 1.40% → 5.02%",
+      "maturity": "February 24, 2028",
       "secured": null,
       "seniority": null,
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "gap-fill re-search (persisted corpus)",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "On February 24, 2025, Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": 1.4,
       "effective_rate_pct": null,
       "rate_type": "floating",
-      "rate_base": "SOFR",
+      "rate_base": "SAIBOR",
       "xbrl_member": "lcid:A2025GIBCreditFacilityMember",
       "obligor": null,
-      "governed_by": null,
+      "governed_by": "credit agreement dated November 4, 2025",
       "facility_type": "revolver",
       "commitment": {
         "value": 1900000000.0,
@@ -399,10 +385,19 @@
         "note": null
       },
       "coupon": "5.00%",
-      "maturity": "2030",
+      "maturity": "April 2030",
       "secured": false,
       "seniority": "convertible",
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "The 2030 Notes will mature on April 1, 2030, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+      },
       "coupon_pct": 5.0,
       "coupon_pct_max": 5.0,
       "spread_pct": null,
@@ -411,7 +406,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2030NotesMember",
       "obligor": null,
-      "governed_by": null,
+      "governed_by": "5% notes due 2030",
       "facility_type": "notes",
       "commitment": null,
       "undrawn": null,
@@ -476,10 +471,19 @@
         "note": null
       },
       "coupon": "7.00%",
-      "maturity": "2031",
+      "maturity": "November 2031",
       "secured": false,
       "seniority": "convertible",
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "The 2031 Notes will mature on November 1, 2031, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+      },
       "coupon_pct": 7.0,
       "coupon_pct_max": 7.0,
       "spread_pct": null,
@@ -488,7 +492,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2031NotesMember",
       "obligor": null,
-      "governed_by": null,
+      "governed_by": "7% notes due 2031",
       "facility_type": "notes",
       "commitment": null,
       "undrawn": null,
@@ -553,10 +557,19 @@
         "note": null
       },
       "coupon": null,
-      "maturity": null,
+      "maturity": "February 24, 2028",
       "secured": null,
       "seniority": null,
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "gap-fill re-search (persisted corpus)",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "On February 24, 2025, Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028 to increase the credit facility committed amount from SAR 1.0 billion (approximately $266.1 million) to SAR 1.9 billion (approximately $506.6 million)"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -596,10 +609,19 @@
         "note": null
       },
       "coupon": "1.25%",
-      "maturity": "2026",
+      "maturity": "December 2026",
       "secured": false,
       "seniority": "convertible",
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+        "quote": "The 2026 Notes will mature on December 15, 2026, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+      },
       "coupon_pct": 1.25,
       "coupon_pct_max": 1.25,
       "spread_pct": null,
@@ -608,7 +630,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2026NotesMember",
       "obligor": null,
-      "governed_by": null,
+      "governed_by": "credit agreement dated April 14, 2026",
       "facility_type": "notes",
       "commitment": null,
       "undrawn": null,
@@ -805,7 +827,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2025DDTLCreditFacilityMember",
       "obligor": null,
-      "governed_by": null,
+      "governed_by": "credit agreement dated November 4, 2025",
       "facility_type": null,
       "commitment": {
         "value": 1980000000.0,
@@ -878,7 +900,7 @@
       "instrument": "2023 Amended GIB Facility Agreement",
       "principal": null,
       "outstanding": null,
-      "coupon": "SOFR + 1.40% → 5.04%",
+      "coupon": "SOFR + 1.40% → 5.02%",
       "maturity": null,
       "secured": null,
       "seniority": null,
@@ -1793,6 +1815,58 @@
   ],
   "obs_items": [
     {
+      "category": "related_party",
+      "label": "Related-party lease liabilities (KAEC & KAFD, Saudi Arabia)",
+      "amount": {
+        "value": 8900000.0,
+        "display": "$9M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 16 - Related Party Transactions",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "The lease liability was $6.5 million and $6.1 million as of December 31, 2025 and 2024, respectively. ... The lease liability was $2.4 million as of December 31, 2025 and 2024, respectively."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Related-party lease liabilities of $6.5M (KAEC) and $2.4M (KAFD) are already recorded as lease liabilities on the balance sheet and are subsumed within the Note 11 total operating/related-party lease figures; flagged as informational to avoid double counting with the operating lease total."
+      },
+      "tax_effect": {
+        "value": 8900.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $9M × effective tax rate 0.1%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
+      },
+      "net": {
+        "value": 8891100.0,
+        "display": "$9M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $9M − tax effect $0M",
+        "note": null
+      },
+      "recourse": "recourse",
+      "include_in_bridge": false,
+      "notes": "Related-party lease liabilities of $6.5M (KAEC) and $2.4M (KAFD) are already recorded as lease liabilities on the balance sheet and are subsumed within the Note 11 total operating/related-party lease figures; flagged as informational to avoid double counting with the operating lease total."
+    },
+    {
       "category": "take_or_pay",
       "label": "Lithium-ion battery cell minimum purchase commitments",
       "amount": {
@@ -1807,7 +1881,7 @@
           "section": "Note 12 - Commitments and Contingencies",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "As of December 31, 2025, pursuant to the terms of agreements the Company entered into in connection with the supply of lithium-ion battery cells, the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion... Total$2,626,674"
+          "quote": "the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion, calculated using the current base prices ... Total $2,626,674"
         },
         "derived": false,
         "formula": null,
@@ -1908,14 +1982,14 @@
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 12 - Commitments and Contingencies - Indemnification",
+          "section": "Note 12 - Commitments and Contingencies (Indemnification)",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "The Company has indemnification obligations with respect to letters of credit and surety bond primarily used as security against facility leases, utilities infrastructure and other agreements that require securitization. The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
+          "quote": "The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
         },
         "derived": false,
         "formula": null,
-        "note": "Debt-like obligation added to reach economic debt."
+        "note": "Contingent indemnification obligations backing LCs/surety bonds for which no liability is recorded; contingent and not an unconditional claim, so treated as informational off-balance-sheet exposure rather than a bridge item."
       },
       "tax_effect": {
         "value": 130900.0,
@@ -1945,53 +2019,33 @@
         "note": null
       },
       "recourse": "recourse",
-      "include_in_bridge": true,
-      "notes": "Debt-like obligation added to reach economic debt."
+      "include_in_bridge": false,
+      "notes": "Contingent indemnification obligations backing LCs/surety bonds for which no liability is recorded; contingent and not an unconditional claim, so treated as informational off-balance-sheet exposure rather than a bridge item."
     },
     {
       "category": "guarantee",
-      "label": "General indemnification provisions (customers, vendors, directors, officers)",
-      "amount": null,
-      "tax_effect": null,
-      "net": null,
-      "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "Amount is indeterminable and no material claims ever paid. Disclosed without a dollar amount; informational only, not included in bridge."
-    },
-    {
-      "category": "litigation_env",
-      "label": "Securities and derivative litigation (In re Lucid Group Securities Litigation)",
-      "amount": null,
-      "tax_effect": null,
-      "net": null,
-      "recourse": "unknown",
-      "include_in_bridge": false,
-      "notes": "No dollar amount disclosed; company considers matters not material. Included as informational with null amount; not in bridge."
-    },
-    {
-      "category": "related_party",
-      "label": "SIDF Loan Agreement (committed but undrawn related-party facility)",
+      "label": "Outstanding letters of credit under ABL Credit Facility",
       "amount": {
-        "value": 1400000000.0,
-        "display": "$1,400M",
+        "value": 104100000.0,
+        "display": "$104M",
         "unit": "USD",
         "citation": {
           "accession_no": "0001628280-26-011053",
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 6 - Debt / Note 16 - Related Party Transactions",
+          "section": "Note 6 - Debt (ABL Credit Facility)",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "SIDF has committed to provide the SIDF Loans to Lucid LLC in an aggregate principal amount of up to SAR 5.19 billion (approximately $1.4 billion)... As of December 31, 2025 and 2024, no amount was outstanding under the SIDF Loan Agreement. ... Obligations under the SIDF Loan Agreement do not extend to the Company or any of its other subsidiaries."
+          "quote": "Outstanding letters of credit under the ABL Credit Facility were $104.1 million and $56.9 million as of December 31, 2025 and 2024, respectively."
         },
         "derived": false,
         "formula": null,
-        "note": "Undrawn committed facility with no amount outstanding; not a current claim. Non-recourse to the parent. Informational, not included in bridge."
+        "note": "Outstanding letters of credit reduce facility availability but are contingent instruments (security against leases/utilities); not drawn funded debt, treated as informational."
       },
       "tax_effect": {
-        "value": 1400000.0,
-        "display": "$1M",
+        "value": 104100.0,
+        "display": "$0M",
         "unit": "USD",
         "citation": {
           "accession_no": "0001628280-26-011053",
@@ -2004,25 +2058,45 @@
           "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
         },
         "derived": true,
-        "formula": "gross $1,400M × effective tax rate 0.1%",
+        "formula": "gross $104M × effective tax rate 0.1%",
         "note": "Uniform tax effect (latest effective tax rate); refine per item later."
       },
       "net": {
-        "value": 1398600000.0,
-        "display": "$1,399M",
+        "value": 103995900.0,
+        "display": "$104M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "gross $1,400M − tax effect $1M",
+        "formula": "gross $104M − tax effect $0M",
         "note": null
       },
-      "recourse": "nonrecourse",
+      "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "Undrawn committed facility with no amount outstanding; not a current claim. Non-recourse to the parent. Informational, not included in bridge."
+      "notes": "Outstanding letters of credit reduce facility availability but are contingent instruments (security against leases/utilities); not drawn funded debt, treated as informational."
+    },
+    {
+      "category": "guarantee",
+      "label": "Indemnification arrangements (general, uncapped)",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "unknown",
+      "include_in_bridge": false,
+      "notes": "Maximum potential future payments under general indemnification provisions are stated to be indeterminable; disclosed without a dollar amount so included with null amount as informational only."
+    },
+    {
+      "category": "litigation_env",
+      "label": "Securities class action and derivative litigation",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "unknown",
+      "include_in_bridge": false,
+      "notes": "Pending securities class action and shareholder derivative suits; the Company does not consider them material and no reserve amount is disclosed, so included with null amount as informational only."
     },
     {
       "category": "related_party",
-      "label": "SIDF service fees over term of loans (contingent on drawdown)",
+      "label": "SIDF Loan Agreement service fees (non-interest financing cost)",
       "amount": {
         "value": 472000000.0,
         "display": "$472M",
@@ -2032,14 +2106,14 @@
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 6 - Debt",
+          "section": "Note 6 - Debt (SIDF Loan Agreement)",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "Lucid LLC will be required to pay SIDF service fees, consisting of follow-up and technical evaluation fees, ranging, in aggregate, from SAR 415 million (approximately $110.7 million) to SAR 1.77 billion (approximately $472.0 million), over the term of the SIDF Loans."
+          "quote": "SIDF has committed to provide the SIDF Loans to Lucid LLC in an aggregate principal amount of up to SAR 5.19 billion (approximately $1.4 billion) ... As of December 31, 2025 and 2024, no amount was outstanding under the SIDF Loan Agreement. ... Obligations under the SIDF Loan Agreement do not extend to the Company or any of its other subsidiaries. ... service fees ... ranging, in aggregate, from SAR 415 million (approximately $110.7 million) to SAR 1.77 billion (approximately $472.0 million)"
         },
         "derived": false,
         "formula": null,
-        "note": "Service fees contingent on drawing loans which are currently undrawn; not yet an obligation. Recorded upper-bound amount for reference. Not included in bridge."
+        "note": "SIDF committed facility of up to ~$1.4 billion is fully undrawn as of 2025-12-31 (no amount outstanding) and obligations do not extend to the Company or its other subsidiaries; a committed but unfunded, non-recourse (to parent) facility, so not added to the bridge. Service fees range disclosed as informational."
       },
       "tax_effect": {
         "value": 472000.0,
@@ -2070,17 +2144,59 @@
       },
       "recourse": "nonrecourse",
       "include_in_bridge": false,
-      "notes": "Service fees contingent on drawing loans which are currently undrawn; not yet an obligation. Recorded upper-bound amount for reference. Not included in bridge."
+      "notes": "SIDF committed facility of up to ~$1.4 billion is fully undrawn as of 2025-12-31 (no amount outstanding) and obligations do not extend to the Company or its other subsidiaries; a committed but unfunded, non-recourse (to parent) facility, so not added to the bridge. Service fees range disclosed as informational."
     },
     {
       "category": "related_party",
-      "label": "Ayar prepaid forward transaction fee (2030 & 2031 Notes)",
-      "amount": null,
-      "tax_effect": null,
-      "net": null,
-      "recourse": "recourse",
+      "label": "Ayar prepaid forward transactions (2030 & 2031 Notes)",
+      "amount": {
+        "value": 1066700000.0,
+        "display": "$1,067M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 6 - Debt (Ayar Prepaid Forward Transactions)",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "Ayar entered into a privately negotiated prepaid forward transaction ... to purchase approximately $430.0 million of the Company's common stock ... Ayar entered into a privately negotiated prepaid forward transaction ... to purchase approximately $636.7 million of the Company's common stock ... The Company is not a party to the prepaid forward transactions."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Ayar (a related party), not the Company, is party to the prepaid forward transactions; the Company only pays a small periodic 0.5% fee. Not a debt claim on the enterprise, so treated as informational related-party disclosure."
+      },
+      "tax_effect": {
+        "value": 1066700.0,
+        "display": "$1M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $1,067M × effective tax rate 0.1%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
+      },
+      "net": {
+        "value": 1065633300.0,
+        "display": "$1,066M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $1,067M − tax effect $1M",
+        "note": null
+      },
+      "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "The Company is not a party to the prepaid forward transactions themselves; only owes an immaterial periodic fee. No material liability; informational only."
+      "notes": "Ayar (a related party), not the Company, is party to the prepaid forward transactions; the Company only pays a small periodic 0.5% fee. Not a debt claim on the enterprise, so treated as informational related-party disclosure."
     }
   ],
   "covenants": [
@@ -2574,60 +2690,7 @@
       ]
     },
     "next_event": {
-      "date": "2026-06",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23814000.0,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
-    }
-  },
-  "liquidity_events": [
-    {
-      "date": "2026-06",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23814000.0,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
-    },
-    {
-      "date": "2026-09",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23814000.0,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
-    },
-    {
-      "date": "2026-09",
+      "date": "2026-04",
       "kind": "coupon",
       "instrument": "2030 Notes",
       "amount": {
@@ -2641,10 +2704,97 @@
       },
       "pct_of_liquidity": 2.1,
       "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
+      "assumption": "semiannual assumed"
+    }
+  },
+  "liquidity_events": [
+    {
+      "date": "2026-04",
+      "kind": "coupon",
+      "instrument": "2030 Notes",
+      "amount": {
+        "value": 27125000.0,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,085M face × 5.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
     },
     {
-      "date": "2026-09",
+      "date": "2026-05",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23719499.999999996,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-08",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23719499.999999996,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-10",
+      "kind": "coupon",
+      "instrument": "2030 Notes",
+      "amount": {
+        "value": 27125000.0,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,085M face × 5.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 2.1,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2026-11",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23719499.999999996,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2026-11",
       "kind": "coupon",
       "instrument": "2031 Notes",
       "amount": {
@@ -2658,10 +2808,10 @@
       },
       "pct_of_liquidity": 2.6,
       "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
+      "assumption": "semiannual assumed"
     },
     {
-      "date": "2026-09",
+      "date": "2026-12",
       "kind": "coupon",
       "instrument": "2026 Notes",
       "amount": {
@@ -2675,24 +2825,7 @@
       },
       "pct_of_liquidity": 0.1,
       "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
-    },
-    {
-      "date": "2026-12",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23814000.0,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
+      "assumption": "semiannual assumed"
     },
     {
       "date": "2026-12",
@@ -2704,32 +2837,32 @@
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "face due at maturity (2026)",
+        "formula": "face due at maturity (December 2026)",
         "note": null
       },
       "pct_of_liquidity": 15.5,
       "flags": [],
-      "assumption": "month unknown — placed at year-end"
+      "assumption": null
     },
     {
-      "date": "2027-03",
+      "date": "2027-02",
       "kind": "coupon",
       "instrument": "2025 GIB Credit Facility",
       "amount": {
-        "value": 23814000.0,
+        "value": 23719499.999999996,
         "display": "$24M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
+        "formula": "$1,890M face × 5.02% ÷ 4",
         "note": null
       },
       "pct_of_liquidity": 1.8,
       "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
+      "assumption": "quarterly assumed"
     },
     {
-      "date": "2027-03",
+      "date": "2027-04",
       "kind": "coupon",
       "instrument": "2030 Notes",
       "amount": {
@@ -2743,10 +2876,27 @@
       },
       "pct_of_liquidity": 2.1,
       "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
+      "assumption": "semiannual assumed"
     },
     {
-      "date": "2027-03",
+      "date": "2027-05",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23719499.999999996,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-05",
       "kind": "coupon",
       "instrument": "2031 Notes",
       "amount": {
@@ -2760,44 +2910,27 @@
       },
       "pct_of_liquidity": 2.6,
       "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
+      "assumption": "semiannual assumed"
     },
     {
-      "date": "2027-06",
+      "date": "2027-08",
       "kind": "coupon",
       "instrument": "2025 GIB Credit Facility",
       "amount": {
-        "value": 23814000.0,
+        "value": 23719499.999999996,
         "display": "$24M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
+        "formula": "$1,890M face × 5.02% ÷ 4",
         "note": null
       },
       "pct_of_liquidity": 1.8,
       "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
+      "assumption": "quarterly assumed"
     },
     {
-      "date": "2027-09",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23814000.0,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
-    },
-    {
-      "date": "2027-09",
+      "date": "2027-10",
       "kind": "coupon",
       "instrument": "2030 Notes",
       "amount": {
@@ -2811,10 +2944,27 @@
       },
       "pct_of_liquidity": 2.1,
       "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
+      "assumption": "semiannual assumed"
     },
     {
-      "date": "2027-09",
+      "date": "2027-11",
+      "kind": "coupon",
+      "instrument": "2025 GIB Credit Facility",
+      "amount": {
+        "value": 23719499.999999996,
+        "display": "$24M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,890M face × 5.02% ÷ 4",
+        "note": null
+      },
+      "pct_of_liquidity": 1.8,
+      "flags": [],
+      "assumption": "quarterly assumed"
+    },
+    {
+      "date": "2027-11",
       "kind": "coupon",
       "instrument": "2031 Notes",
       "amount": {
@@ -2828,78 +2978,63 @@
       },
       "pct_of_liquidity": 2.6,
       "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
+      "assumption": "semiannual assumed"
     },
     {
-      "date": "2027-12",
+      "date": "2028-02",
       "kind": "coupon",
       "instrument": "2025 GIB Credit Facility",
       "amount": {
-        "value": 23814000.0,
+        "value": 23719499.999999996,
         "display": "$24M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
+        "formula": "$1,890M face × 5.02% ÷ 4",
         "note": null
       },
       "pct_of_liquidity": 1.8,
       "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
+      "assumption": "quarterly assumed"
     },
     {
-      "date": "2028-03",
-      "kind": "coupon",
+      "date": "2028-02",
+      "kind": "maturity",
       "instrument": "2025 GIB Credit Facility",
       "amount": {
-        "value": 23814000.0,
-        "display": "$24M",
+        "value": 1890000000.0,
+        "display": "$1,890M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "$1,890M face × 5.04% ÷ 4",
+        "formula": "face due at maturity (February 24, 2028)",
         "note": null
       },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed; months anchored on the as-of date"
+      "pct_of_liquidity": 143.3,
+      "flags": [
+        "maturity_unfundable"
+      ],
+      "assumption": null
     },
     {
-      "date": "2028-03",
-      "kind": "coupon",
-      "instrument": "2030 Notes",
+      "date": "2028-02",
+      "kind": "maturity",
+      "instrument": "GIB credit facility",
       "amount": {
-        "value": 27125000.0,
-        "display": "$27M",
+        "value": 503500000.0,
+        "display": "$504M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "$1,085M face × 5.00% ÷ 2",
+        "formula": "face due at maturity (February 24, 2028)",
         "note": null
       },
-      "pct_of_liquidity": 2.1,
+      "pct_of_liquidity": 38.2,
       "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
-    },
-    {
-      "date": "2028-03",
-      "kind": "coupon",
-      "instrument": "2031 Notes",
-      "amount": {
-        "value": 33698000.0,
-        "display": "$34M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$963M face × 7.00% ÷ 2",
-        "note": null
-      },
-      "pct_of_liquidity": 2.6,
-      "flags": [],
-      "assumption": "semiannual assumed; months anchored on the as-of date"
+      "assumption": null
     }
   ],
-  "liquidity_events_note": "7 instrument(s) excluded (no tagged rate or maturity)",
+  "liquidity_events_note": "6 instrument(s) excluded (no tagged rate or maturity)",
   "asset_snapshot": {
     "as_of_fy": 2025,
     "cash": {
@@ -3043,6 +3178,7 @@
     "formula": null,
     "note": null
   },
+  "nol_carryforward": null,
   "rp_basket": {
     "available": true,
     "covenant_status": "none",
@@ -3298,6 +3434,14 @@
       "face": 203900000.0,
       "instruments": [
         "2026 Notes"
+      ]
+    },
+    {
+      "year": 2028,
+      "face": 2393500000.0,
+      "instruments": [
+        "2025 GIB Credit Facility",
+        "GIB credit facility"
       ]
     },
     {
@@ -4128,9 +4272,7 @@
     }
   ],
   "warnings": [
-    "Debt schedule sums to $4,645M vs $2,718M reported total debt (latest FY) — instruments may overlap (a facility and its sub-facility) or be missing; review the schedule citations.",
-    "Maturity unknown for 2 instrument(s) (2025 GIB Credit Facility, GIB credit facility) — they are missing from the maturity wall.",
-    "Prior analysis from 2026-07-17 — LLM analysis is off. Re-enable to refresh."
+    "Debt schedule sums to $4,645M vs $2,718M reported total debt (latest FY) — instruments may overlap (a facility and its sub-facility) or be missing; review the schedule citations."
   ],
-  "llm_fallback_note": "Prior analysis from 2026-07-17 — LLM analysis is off. Re-enable to refresh."
+  "llm_fallback_note": null
 }
