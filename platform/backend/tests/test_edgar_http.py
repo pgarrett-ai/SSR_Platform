@@ -121,3 +121,11 @@ def test_other_errors_propagate_untouched(monkeypatch):
     with pytest.raises(urllib.error.HTTPError):
         eh.paced_get("https://data.sec.gov/x")
     assert sleeps == []
+
+
+def test_eightk_fetches_via_paced_get(monkeypatch):
+    import app.capstack.eightk as eightk
+
+    monkeypatch.setattr(eightk, "paced_get", lambda url, **kw: b'{"a": 1}')
+    assert eightk._http_get_json(
+        "https://data.sec.gov/submissions/CIK0000320193.json") == {"a": 1}
