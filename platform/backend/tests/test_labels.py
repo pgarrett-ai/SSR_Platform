@@ -223,7 +223,9 @@ def test_sign_safe_panel_backfills_stale_checkpoint_rows():
     assert out.loc[0, "runway_years"] == pytest.approx(0.5 / 3.0)
     assert out.loc[1, "net_debt_to_ebitda"] == pytest.approx(1.5 / 1.2)
     assert np.isnan(out.loc[1, "runway_years"])
-    assert np.isnan(out.loc[2, "net_debt_to_ebitda"])
+    # both debt+cash missing with EBITDA>0: 0.0, mirroring year_features' _sum semantics
+    # (adversarial-gate fix — the panel recompute must match the serve-side source of truth)
+    assert out.loc[2, "net_debt_to_ebitda"] == 0.0
 
 
 def test_runway_feature_registered_with_monotone_sign():

@@ -390,8 +390,7 @@ def sign_safe_panel(df):
     if {"ebitda", "total_debt", "cash"} <= set(df.columns):
         td, cash = df["total_debt"], df["cash"]
         nd = td.fillna(0.0) - cash.fillna(0.0)          # mirrors _sum(td, -(cash or 0))
-        valid = (df["ebitda"] > 0) & ~(td.isna() & cash.isna())
-        df["net_debt_to_ebitda"] = (nd / df["ebitda"]).where(valid)
+        df["net_debt_to_ebitda"] = (nd / df["ebitda"]).where(df["ebitda"] > 0)
     if {"cash", "fcf"} <= set(df.columns):
         df["runway_years"] = (df["cash"] / -df["fcf"]).where(df["fcf"] < 0)
     return df
