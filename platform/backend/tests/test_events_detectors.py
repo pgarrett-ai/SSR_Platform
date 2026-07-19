@@ -106,3 +106,18 @@ def test_ratings_events_pure_and_idempotent():
     assert e.cik == "0000001234"                        # padded via feed.pad_cik
     # pure + stable: same rows -> same dedupe key across calls (keys the idempotent insert)
     assert events_from_sd_rows(rows)[0].dedupe_key == e.dedupe_key
+
+
+# --- Task 21: golden fixture (real captured Trinseo submissions doc) ----------
+GOLD = Path(__file__).parent / "data" / "submissions_1519061_8k.json"
+
+
+def test_golden_trinseo_8k_routing():
+    arrays = json.loads(GOLD.read_text(encoding="utf-8"))["filings"]["recent"]
+    pairs = feed.tracked_rows(arrays, "1519061", since=None, prefixes=("8-K",))
+    assert pairs, "fixture must contain 8-K rows"
+    evs = [e for meta, raw in pairs for e in detect_8k_items(meta, raw, None)]
+    bk = [e for e in evs if e.event_type == "bankruptcy"]
+    assert bk, "Trinseo Ch.11 fixture must yield an Item 1.03 bankruptcy event"
+    assert all(e.severity == 5 and e.cik == "0001519061" for e in bk)
+    assert bk[0].source_url and bk[0].accession_no.replace("-", "") in bk[0].source_url
