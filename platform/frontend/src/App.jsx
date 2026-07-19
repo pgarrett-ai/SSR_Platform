@@ -2,9 +2,9 @@ import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
-import { fetchHealth, overviewJsonUrl, setLlmEnabled, streamOverview } from "./api.js";
+import { fetchHealth, getToken, overviewJsonUrl, setLlmEnabled, setToken, streamOverview } from "./api.js";
 import { getCached, setCached } from "./cache.js";
-import { Button, ErrorCard, Input, Loading } from "./ui/index.jsx";
+import { Badge, Button, ErrorCard, Input, Loading } from "./ui/index.jsx";
 import ProgressLog from "./components/ProgressLog.jsx";
 import ScreenTable from "./components/ScreenTable.jsx";
 
@@ -241,6 +241,11 @@ export default function App() {
             >
               Events feed
               <span className="ml-2 text-[10px] text-slate-600">event-store firehose</span>
+              {health?.zero_ingest_alarm && (
+                <span title="ingestion worker heartbeat stale, or zero events during filing hours">
+                  <Badge tone="high" className="ml-2">stalled</Badge>
+                </span>
+              )}
             </NavLink>
           </nav>
 
@@ -268,6 +273,22 @@ export default function App() {
               ) : (
                 <span className="text-amber-400" title="set ANTHROPIC_API_KEY in platform/.env">no key</span>
               )}
+            </div>
+          )}
+
+          {health?.auth_required && (
+            <div className="mt-4">
+              <label className="mb-1 block text-[10px] uppercase tracking-wide text-slate-600">
+                API token
+              </label>
+              <Input
+                type="password"
+                defaultValue={getToken()}
+                onBlur={(e) => setToken(e.target.value.trim())}
+                placeholder="bearer token"
+                title="shared bearer token — stored locally, sent on every API call"
+                className="w-full font-mono"
+              />
             </div>
           )}
         </div>
