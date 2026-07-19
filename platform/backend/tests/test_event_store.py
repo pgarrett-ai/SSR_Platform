@@ -25,14 +25,31 @@ def test_event_indexes_exist():
     assert {"ix_events_cik_occurred", "ix_events_type_detected"} <= names
 
 
-def test_event_tables_match_models():
-    # create_all never ALTERs and _ensure_columns skips event tables — a model column
-    # added without an Alembic revision would surface only as a runtime OperationalError.
-    insp = sa.inspect(engine)
-    for name in me.EVENT_STORE_TABLES:
-        db_cols = {c["name"] for c in insp.get_columns(name)}
-        model_cols = {c.name for c in me.Event.metadata.tables[name].columns}
-        assert db_cols == model_cols, name
+def test_migration_matches_models(tmp_path):
+    # Drift tripwire: the hand-written 0001 migration is the INDEPENDENT artifact —
+    # compare the Alembic-built schema against the models column-by-column. (Comparing
+    # the conftest create_all DB to the models would be a tautology: both sides derive
+    # from the same current model and could never diverge.)
+    from pathlib import Path
+
+    from alembic import command
+    from alembic.config import Config
+
+    backend = Path(__file__).resolve().parents[1]
+    url = "sqlite:///" + (tmp_path / "drift.db").as_posix()
+    cfg = Config(str(backend / "alembic.ini"))
+    cfg.set_main_option("script_location", str(backend / "migrations"))
+    cfg.set_main_option("sqlalchemy.url", url)
+    command.upgrade(cfg, "head")
+    eng = sa.create_engine(url)
+    try:
+        insp = sa.inspect(eng)
+        for name in me.EVENT_STORE_TABLES:
+            db_cols = {c["name"] for c in insp.get_columns(name)}
+            model_cols = {c.name for c in me.Event.metadata.tables[name].columns}
+            assert db_cols == model_cols, name
+    finally:
+        eng.dispose()
 
 
 def _row(subtype="4.01", detected_at=None):
