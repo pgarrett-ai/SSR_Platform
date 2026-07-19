@@ -96,6 +96,7 @@ def test_input_bounds_and_charset():
     assert client.get("/api/events?ticker=..%2fetc").status_code == 422  # charset pattern
     assert client.get("/api/events?since=2026-13-40").status_code == 400 # real-date check
     assert client.get("/api/events?event_type=..%2fx").status_code == 400
+    assert client.get("/api/events?cik=0000000000").json()["events"] == []  # padded-to-None ≠ firehose
 
 
 # ---- /api/company/{ticker}/timeline: events + cached filings + what-changed --------

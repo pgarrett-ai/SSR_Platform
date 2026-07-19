@@ -14,6 +14,7 @@ import asyncio
 import json
 import queue
 import re
+import secrets
 import threading
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -74,6 +75,26 @@ async def _limit_request_body(request, call_next):
     return await call_next(request)
 
 
+@app.middleware("http")
+async def _bearer_auth(request, call_next):
+    """Auth v1 (plan §11): when PLATFORM_API_TOKEN is set, every /api/* request needs
+    `Authorization: Bearer <token>`. /api/health stays open — liveness probes and the
+    token-entry UI need a pre-auth signal, and it carries operational metadata only.
+    EventSource can't send headers, so the platform_token cookie is an equivalent
+    bearer for the SSE routes. Unset token (localhost default) = open. Registered after
+    _limit_request_body so Starlette runs it outermost."""
+    token = get_settings().platform_api_token.strip()
+    path = request.url.path
+    if token and path.startswith("/api/") and path != "/api/health":
+        auth = request.headers.get("authorization", "")
+        supplied = auth[7:].strip() if auth.lower().startswith("bearer ") else ""
+        supplied = supplied or request.cookies.get("platform_token", "")
+        if not secrets.compare_digest(supplied, token):
+            return JSONResponse(status_code=401, content={"error": "unauthorized"},
+                                headers={"WWW-Authenticate": "Bearer"})
+    return await call_next(request)
+
+
 @app.get("/", include_in_schema=False)
 def root():
     """The API has no UI — send stray visitors (e.g. a preview tab on :8001) to the docs."""
@@ -87,6 +108,7 @@ def health() -> dict:
         "status": "ok",
         "llm_enabled": s.llm_enabled,
         "llm_key_set": s.llm_key_set,   # lets the UI tell "toggled off" from "no key"
+        "auth_required": bool(s.platform_api_token.strip()),   # PR-6: SPA shows the token box
         "hero_tickers": sorted(s.hero_ticker_set),
         "cached": cached_tickers(),
         "sec_user_agent_set": bool(s.sec_user_agent and "example.com" not in s.sec_user_agent),
@@ -579,6 +601,9 @@ def list_events(
 
     with session_scope() as session:
         the_cik = _pad_cik(cik) if cik else None
+        if cik and the_cik is None:        # supplied CIK padded to nothing (e.g. all-zeros):
+            return JSONResponse(content={  # don't fall through to the unfiltered firehose
+                "events": [], "limit": limit, "offset": offset})
         if the_cik is None and ticker:
             the_cik = _resolve_cik(session, ticker)
             if the_cik is None:
