@@ -43,11 +43,10 @@ import random
 import re
 import time
 import urllib.parse
-import urllib.request
 from pathlib import Path
 from typing import Optional
 
-from ..core.config import get_settings
+from ..edgar.http import paced_get
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 EVENTS_PATH = DATA_DIR / "default_events.json"
@@ -59,9 +58,7 @@ _FORM_IDX = "https://www.sec.gov/Archives/edgar/full-index/{y}/QTR{q}/form.idx"
 
 
 def _get_json(url: str) -> dict:
-    req = urllib.request.Request(url, headers={"User-Agent": get_settings().sec_user_agent})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode("utf-8"))
+    return json.loads(paced_get(url).decode("utf-8"))
 
 
 def _fts_page(start: str, end: str, frm: int) -> dict:
@@ -79,8 +76,7 @@ def _has_item_103(src: dict) -> bool:
     return ("1.03" in items) if items else True   # no items field -> trust the phrase match
 
 
-def harvest_default_events(start_year: int, end_year: int,
-                           pause_s: float = 0.15) -> list[dict]:
+def harvest_default_events(start_year: int, end_year: int) -> list[dict]:
     """All 8-K Item 1.03 filings in [start_year, end_year] via EDGAR full-text search.
     Returns one event per CIK (the FIRST bankruptcy filing): {cik, name, filed}."""
     events: dict[str, dict] = {}
@@ -119,7 +115,6 @@ def harvest_default_events(start_year: int, end_year: int,
                 frm += 10
                 if frm >= total:
                     break
-                time.sleep(pause_s)
         print(f"  {year}: {len(events)} cumulative defaulter CIKs")
     return sorted(events.values(), key=lambda e: e["filed"])
 
@@ -169,10 +164,7 @@ def norm_name(s: str) -> str:
 def _cik_by_name() -> dict[str, str]:
     """EDGAR's full historical company list (dead firms included): normalized name -> CIK.
     Names that map to more than one CIK are dropped — unique matches only."""
-    req = urllib.request.Request(_CIK_LOOKUP,
-                                 headers={"User-Agent": get_settings().sec_user_agent})
-    with urllib.request.urlopen(req, timeout=120) as r:
-        text = r.read().decode("latin-1")
+    text = paced_get(_CIK_LOOKUP, timeout=120).decode("latin-1")
     out: dict[str, str] = {}
     dupes: set[str] = set()
     for line in text.splitlines():                 # "COMPANY NAME:CIK:" (name may hold colons)
@@ -235,10 +227,9 @@ def harvest_sd_events() -> list[dict]:
     lookup = _cik_by_name()
     by_cik: dict[str, dict] = {}
     for url, ratings, type_pattern, source in _SD_SOURCES:
-        req = urllib.request.Request(url,
-                                     headers={"User-Agent": get_settings().sec_user_agent})
-        with urllib.request.urlopen(req, timeout=300) as r:
-            df = pd.read_csv(io.BytesIO(r.read()), dtype=str)
+        # ratingshistory.info isn't EDGAR but riding the paced client is harmless for two
+        # one-shot downloads and keeps one outbound seam
+        df = pd.read_csv(io.BytesIO(paced_get(url, timeout=300)), dtype=str)
         events, unmatched = sd_events_from_frame(df, lookup, ratings, type_pattern, source)
         print(f"  {source}: {len(events)} issuers matched to a CIK, "
               f"{unmatched} unmatched (mostly non-SEC filers)")
@@ -267,20 +258,16 @@ def ten_k_ciks(form_idx_text: str) -> set[str]:
     return out
 
 
-def harvest_pit_universe(start_year: int, end_year: int,
-                         pause_s: float = 0.15) -> dict[str, list[int]]:
+def harvest_pit_universe(start_year: int, end_year: int) -> dict[str, list[int]]:
     """CIK -> [first, last] year it filed a 10-K, from EDGAR's quarterly form indexes.
     This is the point-in-time universe: a firm that filed a 10-K in year Y existed in
     year Y, whether or not it exists today. The spans also give firm-years at risk,
     which is what turns the harvest into a measured annual default base rate."""
-    headers = {"User-Agent": get_settings().sec_user_agent}
     span: dict[str, list[int]] = {}
     for year in range(start_year, end_year + 1):
         for q in (1, 2, 3, 4):
-            req = urllib.request.Request(_FORM_IDX.format(y=year, q=q), headers=headers)
             try:
-                with urllib.request.urlopen(req, timeout=60) as r:
-                    text = r.read().decode("latin-1")
+                text = paced_get(_FORM_IDX.format(y=year, q=q), timeout=60).decode("latin-1")
             except Exception:
                 continue                        # future quarter / transient hiccup
             for cik in ten_k_ciks(text):
@@ -288,7 +275,6 @@ def harvest_pit_universe(start_year: int, end_year: int,
                     span[cik][1] = max(span[cik][1], year)
                 else:
                     span[cik] = [year, year]
-            time.sleep(pause_s)
         print(f"  {year}: {len(span)} cumulative 10-K filer CIKs")
     return span
 
