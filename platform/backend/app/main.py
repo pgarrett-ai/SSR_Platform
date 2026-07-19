@@ -101,9 +101,35 @@ def root():
     return RedirectResponse("/docs")
 
 
+_QUIET_AFTER_H = 6.0
+
+
+def _zero_ingest_alarm(worker: dict, now: dt.datetime) -> bool:
+    """Poller silent-death alarm (plan §10), from PR-2b's raw worker_status() gauges.
+    True when: the heartbeat exists but is dead, OR the worker is alive yet detected
+    nothing for 6h inside weekday filing hours (EDGAR runs 3-6k filings/business day —
+    a quiet afternoon means a broken poller, not a quiet market). Never alarms before
+    the first beat: not-deployed != dead.
+    ponytail: fixed 13-23 UTC weekday window ≈ EDGAR filing hours; add a holiday
+    calendar only if false alarms actually annoy."""
+    if worker.get("heartbeat_age_s") is None:
+        return False                       # never deployed
+    if not worker.get("alive"):
+        return True
+    if now.weekday() >= 5 or not 13 <= now.hour < 23:
+        return False
+    last = worker.get("last_event_hours")
+    return last is None or last > _QUIET_AFTER_H
+
+
 @app.get("/api/health")
 def health() -> dict:
     s = get_settings()
+    try:   # worker gauges are read once and must never take health down (uptime probe)
+        w = worker_status()
+        alarm = _zero_ingest_alarm(w, dt.datetime.utcnow())
+    except Exception:
+        w, alarm = {"alive": False}, False
     return {
         "status": "ok",
         "llm_enabled": s.llm_enabled,
@@ -112,7 +138,8 @@ def health() -> dict:
         "hero_tickers": sorted(s.hero_ticker_set),
         "cached": cached_tickers(),
         "sec_user_agent_set": bool(s.sec_user_agent and "example.com" not in s.sec_user_agent),
-        "worker": worker_status(),
+        "worker": w,                       # PR-2b raw gauges (kept)
+        "zero_ingest_alarm": alarm,        # PR-6 filing-hours-aware alarm from those gauges
     }
 
 
