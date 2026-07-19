@@ -46,8 +46,24 @@ def capstack_signals(ticker: str) -> dict:
         return {}
     out = {}
     bridge = ov.economic_debt_bridge
-    lev = bridge.economic_leverage.value if bridge and bridge.economic_leverage else None
-    if lev is not None and lev > 0:
+    if bridge is None:
+        return out
+    lev = bridge.economic_leverage.value if bridge.economic_leverage else None
+    debt = bridge.economic_debt.value if bridge.economic_debt else None
+    ebd = bridge.ebitda.value if bridge.ebitda else None
+    if ebd is not None and ebd <= 0 and debt is not None and debt > 0:
+        # C3 sign fix: debt/EBITDA is meaningless at EBITDA <= 0, and "unmeasurable" is
+        # not "unlevered" — LCID/ATUS/TSE carry billions of economic debt against
+        # negative EBITDA and used to fall out of the composite here, reading as safe.
+        # ponytail: pinned at the 8x distress anchor (=90); burn-scaled gradation if
+        # anyone ever needs to rank insolvent-slowly vs insolvent-quickly.
+        out["hidden_leverage"] = {
+            "raw": None, "unit": "x economic debt / EBITDA",
+            "risk": 90.0,
+            "note": "EBITDA <= 0 — leverage unmeasurable, floored at the distress anchor",
+            "source": "capstack economic-debt bridge (snapshot cache)",
+        }
+    elif lev is not None and lev > 0:
         out["hidden_leverage"] = {
             "raw": round(float(lev), 2), "unit": "x economic debt / EBITDA",
             "risk": round(_leverage_to_risk(float(lev)), 1),

@@ -58,3 +58,37 @@ def test_year_citations_drilldown():
     assert cited["fcf"]["value"] == 1e9
     assert "−" in cited["fcf"]["formula"]                 # ocf − capex
     assert "net_income" not in cited                       # absent fact -> no citation
+
+
+def _bridge_overview(econ_debt, ebitda, lev=None):
+    from app.schemas import CitedValue, EconomicDebtBridge, IssuerHeader, Overview
+    return Overview(
+        header=IssuerHeader(ticker="BURN", years=3),
+        economic_debt_bridge=EconomicDebtBridge(
+            economic_debt=CitedValue(value=econ_debt),
+            ebitda=CitedValue(value=ebitda),
+            economic_leverage=CitedValue(value=lev) if lev is not None else None))
+
+
+def test_capstack_signals_cash_burner_not_dropped(monkeypatch):
+    # LCID shape: bridge stored NO leverage ratio (EBITDA < 0) — pre-fix this returned {}.
+    monkeypatch.setattr("app.core.cache.load_latest_overview",
+                        lambda t: _bridge_overview(6.85e9, -2.15e9))
+    cs = capstack_signals("BURN")
+    assert cs["hidden_leverage"]["risk"] == 90.0
+    assert cs["hidden_leverage"]["raw"] is None       # no meaningful ratio to display
+    assert "EBITDA" in cs["hidden_leverage"]["note"]
+
+
+def test_capstack_signals_negative_ratio_not_dropped(monkeypatch):
+    # ATUS shape: a negative ratio WAS stored (−98.9x) — the lev > 0 guard dropped it.
+    monkeypatch.setattr("app.core.cache.load_latest_overview",
+                        lambda t: _bridge_overview(26.6e9, -0.27e9, lev=-98.9))
+    assert capstack_signals("BURN")["hidden_leverage"]["risk"] == 90.0
+
+
+def test_capstack_signals_net_cash_stays_quiet(monkeypatch):
+    # Positive EBITDA, negative economic debt (true net cash): still no flag.
+    monkeypatch.setattr("app.core.cache.load_latest_overview",
+                        lambda t: _bridge_overview(-1.0e9, 2.0e9, lev=-0.5))
+    assert capstack_signals("BURN") == {}
