@@ -68,10 +68,15 @@ def year_features(yf: YearFacts) -> dict:
     capex = raw_value(yf, "capex")
     rev = raw_value(yf, "revenue")
     cash = raw_value(yf, "cash")
+    fc = fcf(yf)
     f = {
         "fiscal_year": yf.fiscal_year,
         "leverage": _div(td, ta),                                  # total debt / assets
-        "net_debt_to_ebitda": _div(_sum(td, -(cash or 0.0)), ebd),
+        # C3 sign fix: debt/EBITDA only reads as leverage when EBITDA > 0 — a negative
+        # ratio from negative EBITDA would score as maximal safety under the monotone(+1)
+        # constraint (train.MONOTONE). None -> NaN, which HistGBM handles natively.
+        "net_debt_to_ebitda": (_div(_sum(td, -(cash or 0.0)), ebd)
+                               if ebd is not None and ebd > 0 else None),
         "interest_coverage": _div(ebit, intex),                    # EBIT / interest
         "ebitda_capex_coverage": _div((ebd - capex) if (ebd is not None and capex is not None) else None, intex),
         "current_ratio": _div(raw_value(yf, "current_assets"), raw_value(yf, "current_liabilities")),
@@ -79,7 +84,10 @@ def year_features(yf: YearFacts) -> dict:
                             raw_value(yf, "current_liabilities")),
         "cash_ratio": _div(cash, raw_value(yf, "current_liabilities")),
         "roa": _div(ebit, ta),
-        "fcf_margin": _div(fcf(yf), rev),
+        "fcf_margin": _div(fc, rev),
+        # cash-burner buffer: years of cash at the current burn; None when FCF >= 0
+        # (same "not the binding constraint" convention as cash_runway_months)
+        "runway_years": (cash / -fc) if (cash is not None and fc is not None and fc < 0) else None,
         # Altman Z'' components
         "wc_to_assets": _div(working_capital(yf), ta),
         "re_to_assets": _div(raw_value(yf, "retained_earnings"), ta),
@@ -93,7 +101,7 @@ def year_features(yf: YearFacts) -> dict:
         "total_liabilities": tl,
         "net_income": raw_value(yf, "net_income"),
         "book_equity": book_equity(yf),
-        "fcf": fcf(yf),
+        "fcf": fc,
         "cash": cash,
     }
     return f

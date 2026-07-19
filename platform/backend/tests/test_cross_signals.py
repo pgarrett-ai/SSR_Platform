@@ -92,3 +92,38 @@ def test_capstack_signals_net_cash_stays_quiet(monkeypatch):
     monkeypatch.setattr("app.core.cache.load_latest_overview",
                         lambda t: _bridge_overview(-1.0e9, 2.0e9, lev=-0.5))
     assert capstack_signals("BURN") == {}
+
+
+def test_cash_burner_year_features_sign_safe():
+    # C3 regression: negative EBITDA must not yield a negative (monotone-"safe")
+    # net_debt_to_ebitda; the burner carries a runway feature instead.
+    import datetime as dt
+    from types import SimpleNamespace
+
+    import pytest
+
+    from app.edgar.facts import YearFacts
+    from app.hazard.features import year_features
+
+    def fact(v):
+        return SimpleNamespace(numeric_value=v)
+
+    burner = YearFacts(fiscal_year=2025, period_end=dt.date(2025, 12, 31), metrics={
+        "lt_debt_noncurrent": fact(2.0e9), "cash": fact(0.5e9),
+        "operating_income": fact(-2.5e9), "d_and_a": fact(0.4e9),
+        "operating_cash_flow": fact(-2.0e9), "capex": fact(1.0e9),
+        "total_assets": fact(9.0e9),
+    })
+    f = year_features(burner)
+    assert f["ebitda"] == pytest.approx(-2.1e9)
+    assert f["net_debt_to_ebitda"] is None            # pre-fix: −0.71 → "safe"
+    assert f["runway_years"] == pytest.approx(0.5e9 / 3.0e9)   # cash / |OCF − capex|
+
+    healthy = YearFacts(fiscal_year=2025, period_end=dt.date(2025, 12, 31), metrics={
+        "lt_debt_noncurrent": fact(2.0e9), "cash": fact(0.5e9),
+        "operating_income": fact(1.0e9), "d_and_a": fact(0.2e9),
+        "operating_cash_flow": fact(1.5e9), "capex": fact(0.5e9),
+    })
+    h = year_features(healthy)
+    assert h["net_debt_to_ebitda"] == pytest.approx(1.5e9 / 1.2e9)  # classic ratio survives
+    assert h["runway_years"] is None                  # FCF-positive: not the binding constraint

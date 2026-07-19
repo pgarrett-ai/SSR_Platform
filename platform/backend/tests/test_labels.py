@@ -203,3 +203,31 @@ def test_bundle_meta_and_real_labels_flag():
     sc2 = TrainedHazardScorer(demo).score({f: 0.5 for f in demo["features"]})
     assert sc2["real_labels"] is False
     assert "demo-trained" in sc2["note"]
+
+
+def test_sign_safe_panel_backfills_stale_checkpoint_rows():
+    # panel.db rows fetched before the C3 fix carry a negative net_debt_to_ebitda and no
+    # runway_years — build_real_panel recomputes both from the cached raw levels.
+    import pytest
+
+    df = pd.DataFrame([
+        {"ebitda": -2.1e9, "total_debt": 2.0e9, "cash": 0.5e9, "fcf": -3.0e9,
+         "net_debt_to_ebitda": -0.71},
+        {"ebitda": 1.2e9, "total_debt": 2.0e9, "cash": 0.5e9, "fcf": 1.0e9,
+         "net_debt_to_ebitda": 1.25},
+        {"ebitda": 1.0e9, "total_debt": np.nan, "cash": np.nan, "fcf": np.nan,
+         "net_debt_to_ebitda": np.nan},
+    ])
+    out = labels.sign_safe_panel(df)
+    assert np.isnan(out.loc[0, "net_debt_to_ebitda"])
+    assert out.loc[0, "runway_years"] == pytest.approx(0.5 / 3.0)
+    assert out.loc[1, "net_debt_to_ebitda"] == pytest.approx(1.5 / 1.2)
+    assert np.isnan(out.loc[1, "runway_years"])
+    assert np.isnan(out.loc[2, "net_debt_to_ebitda"])
+
+
+def test_runway_feature_registered_with_monotone_sign():
+    from app.hazard import train
+    assert "runway_years" in train.TRAIN_FEATURES
+    assert train.MONOTONE["runway_years"] == -1
+    assert all(f in train.MONOTONE for f in train.TRAIN_FEATURES)  # _fit indexes MONOTONE[f]

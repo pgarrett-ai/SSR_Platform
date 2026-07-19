@@ -381,6 +381,22 @@ def _panel_db():
     return con
 
 
+def sign_safe_panel(df):
+    """Recompute the C3-sign-safe feature columns from the raw levels every panel row
+    carries (ebitda/total_debt/cash/fcf): net_debt_to_ebitda only reads as leverage when
+    EBITDA > 0, and runway_years = cash / burn exists only while FCF < 0. Applied to the
+    assembled panel so rows checkpointed in panel.db BEFORE the fix retrain correctly
+    without refetching EDGAR. Pure; idempotent on fresh rows."""
+    if {"ebitda", "total_debt", "cash"} <= set(df.columns):
+        td, cash = df["total_debt"], df["cash"]
+        nd = td.fillna(0.0) - cash.fillna(0.0)          # mirrors _sum(td, -(cash or 0))
+        valid = (df["ebitda"] > 0) & ~(td.isna() & cash.isna())
+        df["net_debt_to_ebitda"] = (nd / df["ebitda"]).where(valid)
+    if {"cash", "fcf"} <= set(df.columns):
+        df["runway_years"] = (df["cash"] / -df["fcf"]).where(df["fcf"] < 0)
+    return df
+
+
 def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: int = 120,
                      lookback_years: int = 8, horizon_days: int = 365, seed: int = 0,
                      start_year: int = 2015):
@@ -464,6 +480,7 @@ def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: in
     df = pd.DataFrame(rows)
     if df.empty:
         raise RuntimeError("panel came back empty — first skip reasons: " + "; ".join(skips))
+    df = sign_safe_panel(df)    # repair stale checkpoint rows from before the C3 fix
     print(f"panel: {len(df)} firm-years, {int(df['label'].sum())} defaults, "
           f"{used_defaulters} defaulter firms, {used_controls} controls "
           f"({dead_controls} no longer filing — the survivorship-bias fix at work)")
