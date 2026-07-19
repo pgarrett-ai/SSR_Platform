@@ -95,3 +95,25 @@ def test_live_detected_at_is_never_overwritten():
             assert row.detected_at == first      # earliest live stamp is the truth
     finally:
         _cleanup()
+
+
+def test_alembic_baseline_creates_event_store(tmp_path):
+    from pathlib import Path
+
+    from alembic import command
+    from alembic.config import Config
+
+    backend = Path(__file__).resolve().parents[1]
+    url = "sqlite:///" + (tmp_path / "mig.db").as_posix()
+    cfg = Config(str(backend / "alembic.ini"))
+    cfg.set_main_option("script_location", str(backend / "migrations"))
+    cfg.set_main_option("sqlalchemy.url", url)      # env.py honors a preset URL
+    command.upgrade(cfg, "head")
+    eng = sa.create_engine(url)
+    try:
+        insp = sa.inspect(eng)
+        assert me.EVENT_STORE_TABLES | {"alembic_version"} <= set(insp.get_table_names())
+        names = {ix["name"] for ix in insp.get_indexes("events")}
+        assert {"ix_events_cik_occurred", "ix_events_type_detected"} <= names
+    finally:
+        eng.dispose()
