@@ -1,8 +1,6 @@
 """PR-4 backfill: idx parsing, checkpoint/resume, detected_at=NULL discipline."""
 from __future__ import annotations
 
-import datetime as dt
-import json
 
 import app.events.backfill as backfill
 import app.events.edgar_feed as feed

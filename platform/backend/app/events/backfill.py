@@ -85,7 +85,7 @@ def backfill(start: str = "2020-01-01", include_form4: bool = False,
     con = _backfill_db()
     done = {row[0] for row in con.execute("SELECT cik FROM ciks_done")}
     todo = sorted(ciks - done)
-    if limit:
+    if limit is not None:
         todo = todo[:limit]
     total = 0
     for i, cik in enumerate(todo, 1):
