@@ -10,6 +10,8 @@ from .registry import register
 from .types import Event, FilingMeta
 
 # (form prefix, event_type, severity, title label)
+# Scope note: "15" covers 15-12B/15-12G/15-15D; Form 15F (foreign-private-issuer
+# deregistration) is deliberately out of P6 scope — add a "15F" row if FPI coverage matters.
 _FORM_SPECS: tuple[tuple[str, str, int, str], ...] = (
     ("NT 10-K", "late_filing", 4, "Late annual report"),
     ("NT 10-Q", "late_filing", 3, "Late quarterly report"),

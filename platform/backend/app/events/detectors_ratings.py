@@ -56,6 +56,10 @@ def refresh_ratings() -> int:
         df = pd.read_csv(io.BytesIO(feed.get_bytes(url, timeout=300.0)), dtype=str)
         rows, _unmatched = labels.sd_events_from_frame(df, lookup, ratings, type_pattern, src)
         for ev in rows:                     # earliest default action per obligor wins
+            # ponytail: the synthetic accession embeds the source agency, so a later
+            # monthly run that finds an EARLIER default from the OTHER agency inserts a
+            # second rating_default beside the first (old row isn't superseded). Rare —
+            # historical default dates are stable; dedupe/supersede only if it shows up.
             cur = by_cik.get(ev["cik"])
             if cur is None or ev["filed"] < cur["filed"]:
                 by_cik[ev["cik"]] = ev
