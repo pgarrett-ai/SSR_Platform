@@ -96,3 +96,69 @@ def test_input_bounds_and_charset():
     assert client.get("/api/events?ticker=..%2fetc").status_code == 422  # charset pattern
     assert client.get("/api/events?since=2026-13-40").status_code == 400 # real-date check
     assert client.get("/api/events?event_type=..%2fx").status_code == 400
+
+
+# ---- /api/company/{ticker}/timeline: events + cached filings + what-changed --------
+
+def _fake_overview():
+    """A cached Overview (2 filings, one what-changed row) — the first source shares its
+    accession with the backfilled 1.03 event so the merge must drop the duplicate filing."""
+    from app.schemas import ChangeItem, FilingRef, IssuerHeader, Overview
+    return Overview(
+        header=IssuerHeader(ticker="EVTX", years=3, cik=CIK),
+        what_changed=[ChangeItem(metric="Net leverage", delta_pct=42.0, direction="worse",
+                                 latest_fy=2025, prior_fy=2024)],
+        sources=[
+            FilingRef(accession_no="0000999-24-000001", form_type="8-K",   # dup -> dropped
+                      filing_date="2024-03-01",
+                      filing_index_url="https://www.sec.gov/dup-index.htm"),
+            FilingRef(accession_no="0000888-25-000009", form_type="10-K",   # kept
+                      filing_date="2025-11-15",
+                      filing_index_url="https://www.sec.gov/10k-index.htm"),
+        ],
+    )
+
+
+def test_timeline_merges_events_filings_changes(monkeypatch):
+    from app import main
+    monkeypatch.setattr(main, "load_overview", lambda ticker, years: _fake_overview())
+    r = client.get("/api/company/EVTX/timeline")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    items = body["items"]
+    assert {it["kind"] for it in items} == {"event", "filing", "changes"}
+
+    # accession-dedupe drops the filing that already exists as the backfilled 1.03 event
+    filings = [it for it in items if it["kind"] == "filing"]
+    assert [f["accession_no"] for f in filings] == ["0000888-25-000009"]
+
+    # the what-changed card is dated to the FY period-end (derived display, not a filing date)
+    changes = [it for it in items if it["kind"] == "changes"]
+    assert changes[0]["date"] == "2025-12-31"
+
+    # one merged vertical, newest-first (None-dated rows sort last)
+    dates = [it["date"] for it in items if it["date"]]
+    assert dates == sorted(dates, reverse=True)
+    assert items[0]["kind"] == "event" and items[0]["date"] == "2026-07-01"
+    assert body["cik"] == CIK
+    assert body["note"] is None            # a cached overview is present
+
+
+def test_timeline_is_cache_only(monkeypatch):
+    """A page mount must never launch a live pipeline run (PR-B). With no cache the
+    endpoint still returns 200, a build-me note, and the DB event rows."""
+    from app import main
+
+    def _boom(*a, **k):
+        raise AssertionError("timeline must not trigger a live pipeline run")
+
+    monkeypatch.setattr(main, "run_overview", _boom)
+    monkeypatch.setattr(main, "load_overview", lambda *a, **k: None)
+    monkeypatch.setattr(main, "load_latest_overview", lambda *a, **k: None)
+    r = client.get("/api/company/EVTX/timeline")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["note"]                    # "open the Overview tab once" hint
+    events = [it for it in body["items"] if it["kind"] == "event"]
+    assert len(events) == 3                 # DB rows still served, cache-free
+    assert all(it["kind"] == "event" for it in body["items"])  # nothing but events w/o a cache

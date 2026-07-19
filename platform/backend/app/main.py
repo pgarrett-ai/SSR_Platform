@@ -610,6 +610,66 @@ def list_events(
             "limit": limit, "offset": offset}))
 
 
+def _change_period_end(items: list[dict]) -> Optional[str]:
+    """Date a what-changed card for the sorted vertical: quarter-end from 'Q3 2025'
+    labels, else FY-end. Derived-display only — never presented as a filing date."""
+    it = items[0]
+    m = re.match(r"^Q([1-4])\s+(\d{4})$", it.get("latest_label") or "")
+    if m:
+        q, y = int(m.group(1)), int(m.group(2))
+        return f"{y}-{q * 3:02d}-{[31, 30, 30, 31][q - 1]:02d}"
+    fy = it.get("latest_fy")
+    return f"{fy}-12-31" if fy else None
+
+
+@app.get("/api/company/{ticker}/timeline")
+def company_timeline(ticker: str, years: int = Query(3, ge=1, le=10),
+                     limit: int = Query(300, ge=1, le=500)):
+    """Company Timeline tab (plan §9): event-store rows + the cached overview's filings
+    (`sources`) and what-changed card, one merged vertical, newest first. Cache+DB only —
+    a page mount must never launch a live pipeline run (PR-B). Filings that already
+    exist as events (same accession) are dropped in favor of the richer event row."""
+    from sqlalchemy import desc, nulls_last
+
+    ov = _cached_overview(ticker, years)   # {} when the company was never built
+    items: list[dict] = []
+    seen_acc: set[str] = set()
+    with session_scope() as session:
+        cik = _pad_cik(_ov_cik(ov)) or _resolve_cik(session, ticker)
+        if cik:
+            evs = (session.query(models_events.Event)
+                   .filter(models_events.Event.cik == cik)
+                   .order_by(nulls_last(desc(models_events.Event.detected_at)),
+                             desc(models_events.Event.occurred_at))
+                   .limit(limit).all())
+            for e in evs:
+                if e.accession_no:
+                    seen_acc.add(e.accession_no)
+                items.append({"kind": "event",
+                              "date": e.occurred_at.date().isoformat()
+                                      if e.occurred_at else None,
+                              **_event_dict(e)})
+    for s in ov.get("sources") or []:
+        if s.get("accession_no") in seen_acc:
+            continue
+        items.append({"kind": "filing", "date": s.get("filing_date"),
+                      "form_type": s.get("form_type"),
+                      "accession_no": s.get("accession_no"),
+                      "url": s.get("filing_index_url") or s.get("primary_doc_url")})
+    changes = ov.get("what_changed") or []
+    if changes:
+        c0 = changes[0]
+        label = (f"{c0.get('latest_label') or c0.get('latest_fy')} vs "
+                 f"{c0.get('prior_label') or c0.get('prior_fy')}")
+        items.append({"kind": "changes", "date": _change_period_end(changes),
+                      "label": label, "items": changes})
+    items.sort(key=lambda x: x.get("date") or "", reverse=True)   # None-dated last
+    note = None if ov else ("no cached overview — open this company's Overview tab once "
+                            "to add its filings and what-changed items to the timeline")
+    return JSONResponse(content=jsonable({
+        "ticker": ticker.strip().upper(), "cik": cik, "items": items, "note": note}))
+
+
 def jsonable(obj):
     """dates and other non-JSON scalars -> strings (filing dicts carry datetime.date)."""
     return json.loads(json.dumps(obj, default=str))
