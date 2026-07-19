@@ -136,3 +136,47 @@ class AlertLog(Base):
     event_id: Mapped[Optional[int]] = mapped_column(ForeignKey("events.id"))
     fired_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     delivered_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
+
+
+# --- idempotent insert seam (poller and backfill both write through this, via
+# --- app/events/store.py's dataclass adapter in PR-2b) ------------------------------
+
+def make_dedupe_key(accession_no: Optional[str], event_type: str,
+                    subtype: Optional[str]) -> str:
+    """dedupe_key = hash(accession_no, event_type, subtype) — plan §5. The ONE hash
+    implementation; events.types.Event.dedupe_key delegates here."""
+    raw = f"{accession_no or ''}|{event_type}|{subtype or ''}"
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+_INSERT_CHUNK = 500   # ponytail: ~15 params/row keeps far under SQLite's bind limits
+
+
+def insert_events(session: Session, rows: list[dict]) -> int:
+    """Idempotent insert of event row dicts; returns the number of NEW rows.
+
+    Conflict policy (plan §10): first writer wins the row, with one exception —
+    detected_at upgrades NULL -> non-NULL exactly once, so a backfilled row never
+    permanently masks a later live detection. A non-NULL detected_at is never changed:
+    the earliest live stamp is the point-in-time truth the Phase-12 backtest replays.
+    """
+    if not rows:
+        return 0
+    table = Event.__table__
+    ins = pg_insert if session.get_bind().dialect.name == "postgresql" else sqlite_insert
+    inserted = 0
+    for i in range(0, len(rows), _INSERT_CHUNK):
+        stmt = (ins(table).values(rows[i:i + _INSERT_CHUNK])
+                .on_conflict_do_nothing(index_elements=["dedupe_key"]))
+        inserted += session.execute(stmt).rowcount
+    upgrades = [{"k": r["dedupe_key"], "d": r["detected_at"]}
+                for r in rows if r.get("detected_at") is not None]
+    if upgrades:   # NULL -> non-NULL only; a set stamp never moves
+        session.execute(
+            update(table)
+            .where(table.c.dedupe_key == bindparam("k"),
+                   table.c.detected_at.is_(None))
+            .values(detected_at=bindparam("d")),
+            upgrades,
+        )
+    return inserted
