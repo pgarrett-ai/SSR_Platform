@@ -302,3 +302,25 @@ export async function saveScenario(ticker, payload) {
 export async function deleteScenario(id) {
   return jsonOrThrow(await fetch(`/api/scenarios/${id}`, { method: "DELETE" }));
 }
+
+// ---- Events + company timeline (Phase 6 event store) --------------------------
+
+export async function fetchEvents({ ticker, cik, event_type = [], min_severity,
+                                    since, until, limit = 100, offset = 0 } = {}) {
+  const qs = new URLSearchParams();
+  if (ticker) qs.set("ticker", ticker);
+  if (cik) qs.set("cik", cik);
+  event_type.forEach((t) => qs.append("event_type", t));
+  if (min_severity) qs.set("min_severity", min_severity);
+  if (since) qs.set("since", since);
+  if (until) qs.set("until", until);
+  qs.set("limit", limit);
+  qs.set("offset", offset);
+  return jsonOrThrow(await fetch(`/api/events?${qs}`));
+}
+
+export async function fetchCompanyTimeline(ticker, years = 3) {
+  return jsonOrThrow(
+    await fetch(`/api/company/${encodeURIComponent(ticker)}/timeline?years=${years}`)
+  );
+}

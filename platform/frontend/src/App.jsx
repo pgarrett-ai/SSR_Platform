@@ -14,6 +14,8 @@ const OverviewPage = lazy(() => import("./pages/OverviewPage.jsx"));
 const CapitalPage = lazy(() => import("./pages/CapitalPage.jsx"));
 const RiskPage = lazy(() => import("./pages/RiskPage.jsx"));
 const RecoveryPage = lazy(() => import("./pages/RecoveryPage.jsx"));
+const TimelinePage = lazy(() => import("./pages/TimelinePage.jsx"));
+const EventsPage = lazy(() => import("./pages/EventsPage.jsx"));
 
 const HEROES = [
   { t: "AAL", note: "airline · leases + pension" },
@@ -27,6 +29,7 @@ const TABS = [
   { id: "capital", label: "Capital Structure", key: "c" },
   { id: "risk", label: "Default Risk", key: "r" },
   { id: "recovery", label: "Recovery", key: "v" },
+  { id: "timeline", label: "Timeline", key: "t" },
 ];
 
 function CompanyLayout({ years, health, overview }) {
@@ -41,6 +44,7 @@ function CompanyLayout({ years, health, overview }) {
         />
         <Route path="risk" element={<RiskPage ticker={ticker} years={years} />} />
         <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
+        <Route path="timeline" element={<TimelinePage ticker={ticker} years={years} />} />
         <Route path="*" element={<Navigate to="overview" replace />} />
       </Routes>
     </Suspense>
@@ -227,9 +231,22 @@ export default function App() {
             ))}
           </nav>
 
+          <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">Platform</div>
+          <nav className="mb-6 flex flex-col gap-1">
+            <NavLink
+              to="/events"
+              className={({ isActive }) =>
+                `rounded-md px-2 py-1.5 text-left text-sm hover:bg-ink-700 ${isActive ? "bg-ink-700 text-white" : "text-slate-400"}`
+              }
+            >
+              Events feed
+              <span className="ml-2 text-[10px] text-slate-600">event-store firehose</span>
+            </NavLink>
+          </nav>
+
           <div className="space-y-1 text-[11px] text-slate-600">
             <div><kbd className="rounded bg-ink-700 px-1">/</kbd> search</div>
-            <div><kbd className="rounded bg-ink-700 px-1">g</kbd>+<kbd className="rounded bg-ink-700 px-1">o c r v</kbd> tabs</div>
+            <div><kbd className="rounded bg-ink-700 px-1">g</kbd>+<kbd className="rounded bg-ink-700 px-1">o c r v t</kbd> tabs</div>
           </div>
 
           {health && (
@@ -291,6 +308,10 @@ export default function App() {
           )}
           <Routes>
             <Route path="/" element={<Landing onPick={go} />} />
+            <Route
+              path="/events"
+              element={<Suspense fallback={<Loading />}><EventsPage /></Suspense>}
+            />
             <Route
               path="/company/:ticker/*"
               element={<CompanyLayout years={appliedYears} health={health} overview={overview} />}
