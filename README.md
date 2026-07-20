@@ -97,13 +97,24 @@ yfinance market data · FINRA fixed-income data (optional).
 
 ## Security posture
 
-This is a **single-user, localhost research tool** — the backend has **no authentication**
-and several endpoints intentionally do expensive work (LLM extraction, live EDGAR fetches,
-Monte Carlo). Run it bound to `127.0.0.1` only; do **not** expose it to an untrusted network
-or reverse-proxy it to the public internet without adding authentication and rate limiting
-in front. Inputs at the API boundary are validated (ticker charset/length, request-body
-size and iteration/allocation bounds) to prevent path traversal and resource-exhaustion
-against a *local* caller, but that is defense-in-depth, not a substitute for network isolation.
+This is a **single-user research tool**. By default (`PLATFORM_API_TOKEN` unset) the backend
+is **open** — the intended posture when it is bound to `127.0.0.1` and nothing else can reach
+it. Several endpoints intentionally do expensive work (LLM extraction, live EDGAR fetches,
+Monte Carlo), so keep it off untrusted networks.
+
+**The day it leaves localhost**, set `PLATFORM_API_TOKEN` in `platform/.env`. Every `/api/*`
+route then requires `Authorization: Bearer <token>` (`/api/health` stays open so uptime
+probes and the token-entry UI have a pre-auth liveness signal). The two SSE streams
+(`/api/overview/stream`, `/api/hazard/stream`) authenticate via a same-origin `platform_token`
+cookie instead, because `EventSource` cannot send headers and tokens must never go in URLs
+(they land in server logs). The SPA shows a token field in the sidebar whenever
+`health.auth_required` is true.
+
+This is **shared-secret auth v1** — timing-safe (`secrets.compare_digest`) but a single
+static token with no per-user identity, rotation, or rate limiting. Put a reverse proxy with
+TLS in front for anything internet-facing. The API-boundary input validation (ticker
+charset/length, request-body size, iteration/allocation bounds) remains defense-in-depth
+*underneath* the token, not a substitute for it.
 
 ## Disclaimer
 

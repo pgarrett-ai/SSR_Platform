@@ -69,7 +69,6 @@ def upgrade() -> None:
             sa.Column("title", sa.Text(), nullable=True),
             sa.Column("payload", _JSON, nullable=True),
             sa.Column("dedupe_key", sa.String(64), nullable=False),
-            sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
             sa.UniqueConstraint("dedupe_key", name="uq_event_dedupe"),
             sa.CheckConstraint("severity BETWEEN 1 AND 5", name="ck_event_severity"),
             sa.CheckConstraint("confidence BETWEEN 0 AND 1", name="ck_event_confidence"),
@@ -86,7 +85,6 @@ def upgrade() -> None:
             sa.Column("value", sa.Float(), nullable=True),
             sa.Column("components", _JSON, nullable=True),
             sa.Column("model_version", sa.String(32), nullable=True),
-            sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
         )
 
     if "watchlists" not in existing:
@@ -104,7 +102,6 @@ def upgrade() -> None:
             sa.Column("cik", sa.String(16), primary_key=True, nullable=False),
             sa.Column("note", sa.Text(), nullable=True),
             sa.ForeignKeyConstraint(["watchlist_id"], ["watchlists.id"]),
-            sa.ForeignKeyConstraint(["cik"], ["universe.cik"]),
         )
 
     if "alerts" not in existing:

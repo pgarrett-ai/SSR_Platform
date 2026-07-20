@@ -14,6 +14,7 @@ import asyncio
 import json
 import queue
 import re
+import secrets
 import threading
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -74,23 +75,73 @@ async def _limit_request_body(request, call_next):
     return await call_next(request)
 
 
+@app.middleware("http")
+async def _bearer_auth(request, call_next):
+    """Auth v1 (plan §11): when PLATFORM_API_TOKEN is set, every /api/* request needs
+    `Authorization: Bearer <token>`. /api/health stays open — liveness probes and the
+    token-entry UI need a pre-auth signal, and it carries operational metadata only.
+    EventSource can't send headers, so the platform_token cookie is an equivalent
+    bearer for the SSE routes. Unset token (localhost default) = open. Registered after
+    _limit_request_body so Starlette runs it outermost."""
+    token = get_settings().platform_api_token.strip()
+    path = request.url.path
+    if token and path.startswith("/api/") and path != "/api/health":
+        auth = request.headers.get("authorization", "")
+        supplied = auth[7:].strip() if auth.lower().startswith("bearer ") else ""
+        supplied = supplied or request.cookies.get("platform_token", "")
+        # byte comparison: str compare_digest raises TypeError on non-ASCII (an
+        # attacker-triggerable 500 in the auth path); bytes never raise, still timing-safe
+        if not secrets.compare_digest(supplied.encode("utf-8"), token.encode("utf-8")):
+            return JSONResponse(status_code=401, content={"error": "unauthorized"},
+                                headers={"WWW-Authenticate": "Bearer"})
+    return await call_next(request)
+
+
 @app.get("/", include_in_schema=False)
 def root():
     """The API has no UI — send stray visitors (e.g. a preview tab on :8001) to the docs."""
     return RedirectResponse("/docs")
 
 
+_QUIET_AFTER_H = 6.0
+
+
+def _zero_ingest_alarm(worker: dict, now: dt.datetime) -> bool:
+    """Poller silent-death alarm (plan §10), from PR-2b's raw worker_status() gauges.
+    True when: the heartbeat exists but is dead, OR the worker is alive yet detected
+    nothing for 6h inside weekday filing hours (EDGAR runs 3-6k filings/business day —
+    a quiet afternoon means a broken poller, not a quiet market). Never alarms before
+    the first beat: not-deployed != dead.
+    ponytail: fixed 13-23 UTC weekday window ≈ EDGAR filing hours; add a holiday
+    calendar only if false alarms actually annoy."""
+    if worker.get("heartbeat_age_s") is None:
+        return False                       # never deployed
+    if not worker.get("alive"):
+        return True
+    if now.weekday() >= 5 or not 13 <= now.hour < 23:
+        return False
+    last = worker.get("last_event_hours")
+    return last is None or last > _QUIET_AFTER_H
+
+
 @app.get("/api/health")
 def health() -> dict:
     s = get_settings()
+    try:   # worker gauges are read once and must never take health down (uptime probe)
+        w = worker_status()
+        alarm = _zero_ingest_alarm(w, dt.datetime.utcnow())
+    except Exception:
+        w, alarm = {"alive": False}, False
     return {
         "status": "ok",
         "llm_enabled": s.llm_enabled,
         "llm_key_set": s.llm_key_set,   # lets the UI tell "toggled off" from "no key"
+        "auth_required": bool(s.platform_api_token.strip()),   # PR-6: SPA shows the token box
         "hero_tickers": sorted(s.hero_ticker_set),
         "cached": cached_tickers(),
         "sec_user_agent_set": bool(s.sec_user_agent and "example.com" not in s.sec_user_agent),
-        "worker": worker_status(),
+        "worker": w,                       # PR-2b raw gauges (kept)
+        "zero_ingest_alarm": alarm,        # PR-6 filing-hours-aware alarm from those gauges
     }
 
 
@@ -579,6 +630,9 @@ def list_events(
 
     with session_scope() as session:
         the_cik = _pad_cik(cik) if cik else None
+        if cik and the_cik is None:        # supplied CIK padded to nothing (e.g. all-zeros):
+            return JSONResponse(content={  # don't fall through to the unfiltered firehose
+                "events": [], "limit": limit, "offset": offset})
         if the_cik is None and ticker:
             the_cik = _resolve_cik(session, ticker)
             if the_cik is None:

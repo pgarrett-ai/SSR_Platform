@@ -39,6 +39,10 @@ class Settings(BaseSettings):
 
     hero_tickers: str = "AAL,ATUS,TSE"
 
+    # PR-6 auth v1 (plan §11): shared bearer token for every /api/* route except /api/health.
+    # Empty (the localhost default) = open — set it the day the app leaves localhost.
+    platform_api_token: str = ""
+
     # Politeness: edgartools/EDGAR allow ~10 req/s; we stay well under.
     edgar_max_requests_per_sec: float = 8.0
 
