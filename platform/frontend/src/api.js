@@ -1,13 +1,37 @@
 // Thin API client for the FastAPI backend.
 
+// ---- auth v1 (PR-6): shared bearer token ---------------------------------------
+// Stored in localStorage for fetch headers, mirrored to a same-origin cookie because
+// EventSource (the two SSE streams) cannot send headers.
+
+const TOKEN_KEY = "platform_token";
+
+export function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || "";
+}
+
+export function setToken(t) {
+  if (t) localStorage.setItem(TOKEN_KEY, t);
+  else localStorage.removeItem(TOKEN_KEY);
+  document.cookie = t
+    ? `platform_token=${encodeURIComponent(t)}; path=/; SameSite=Lax`
+    : "platform_token=; path=/; Max-Age=0";
+}
+
+function apiFetch(url, opts = {}) {
+  const t = getToken();
+  const headers = { ...(opts.headers || {}), ...(t ? { Authorization: `Bearer ${t}` } : {}) };
+  return fetch(url, { ...opts, headers });
+}
+
 export async function fetchHealth() {
-  const r = await fetch("/api/health");
+  const r = await apiFetch("/api/health");
   if (!r.ok) throw new Error("health check failed");
   return r.json();
 }
 
 export async function setLlmEnabled(enabled) {
-  const r = await fetch("/api/settings/llm", {
+  const r = await apiFetch("/api/settings/llm", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ enabled }),
@@ -18,7 +42,7 @@ export async function setLlmEnabled(enabled) {
 
 export async function fetchOverview(ticker, years, live = false) {
   const url = `/api/overview?ticker=${encodeURIComponent(ticker)}&years=${years}&live=${live}`;
-  const r = await fetch(url);
+  const r = await apiFetch(url);
   const body = await r.json();
   if (!r.ok) {
     throw new Error(body?.detail || body?.error || `request failed (${r.status})`);
@@ -79,7 +103,7 @@ export function overviewJsonUrl(ticker, years, live = false) {
 // ---- Default risk (hazard) ---------------------------------------------------
 
 export async function fetchHazard(ticker, years = 10) {
-  const r = await fetch(`/api/company/${encodeURIComponent(ticker)}?years=${years}&sections=hazard`);
+  const r = await apiFetch(`/api/company/${encodeURIComponent(ticker)}?years=${years}&sections=hazard`);
   const body = await r.json();
   if (!r.ok) throw new Error(body?.error || `request failed (${r.status})`);
   const hz = body?.sections?.hazard;
@@ -133,34 +157,34 @@ export function streamHazard(ticker, years, onProgress) {
 // ---- Key rates -----------------------------------------------------------------
 
 export async function fetchRates() {
-  return jsonOrThrow(await fetch("/api/rates"));
+  return jsonOrThrow(await apiFetch("/api/rates"));
 }
 
 export async function fetchHolders(ticker) {
-  return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/holders`));
+  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/holders`));
 }
 
 // ---- MD&A reader ---------------------------------------------------------------
 
 export async function fetchMdnaPeriods(ticker) {
-  return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/mdna`));
+  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/mdna`));
 }
 
 export async function fetchMdnaText(ticker, accessionNo) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/mdna/${encodeURIComponent(accessionNo)}`)
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/mdna/${encodeURIComponent(accessionNo)}`)
   );
 }
 
 // ---- Bonds + creation ladder (Moyer market layer) ------------------------------
 
 export async function fetchBonds(ticker) {
-  return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/bonds`));
+  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/bonds`));
 }
 
 export async function fetchLadder(ticker, years = 3, recast = false) {
   return jsonOrThrow(
-    await fetch(
+    await apiFetch(
       `/api/company/${encodeURIComponent(ticker)}/capital/ladder?years=${years}&recast_mezz=${recast ? 1 : 0}`
     )
   );
@@ -168,37 +192,37 @@ export async function fetchLadder(ticker, years = 3, recast = false) {
 
 export async function fetchCapacity(ticker, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/capacity?years=${years}`)
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/capacity?years=${years}`)
   );
 }
 
 export async function fetchRefiWall(ticker, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/capital/refi?years=${years}`)
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/capital/refi?years=${years}`)
   );
 }
 
 export async function fetchTelegraph(ticker, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/telegraph?years=${years}`)
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/telegraph?years=${years}`)
   );
 }
 
 export async function fetchOptions(ticker, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/options?years=${years}`)
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/options?years=${years}`)
   );
 }
 
 // ---- Screening + full-text search --------------------------------------------
 
 export async function fetchScreen() {
-  return jsonOrThrow(await fetch("/api/screen"));
+  return jsonOrThrow(await apiFetch("/api/screen"));
 }
 
 export async function searchText(q, ticker) {
   const t = ticker ? `&ticker=${encodeURIComponent(ticker)}` : "";
-  return jsonOrThrow(await fetch(`/api/search?q=${encodeURIComponent(q)}${t}`));
+  return jsonOrThrow(await apiFetch(`/api/search?q=${encodeURIComponent(q)}${t}`));
 }
 
 // ---- Recovery (fulcrum) ------------------------------------------------------
@@ -210,12 +234,12 @@ async function jsonOrThrow(r) {
 }
 
 export async function fetchRecoveryStructure(ticker, years = 3) {
-  return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/structure?years=${years}`));
+  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/structure?years=${years}`));
 }
 
 export async function simulateRecovery(ticker, structure, sim, years = 3, extra = {}) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/simulate?years=${years}`, {
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/simulate?years=${years}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ structure, sim, ...extra }),
@@ -225,7 +249,7 @@ export async function simulateRecovery(ticker, structure, sim, years = 3, extra 
 
 export async function exploreRecovery(ticker, body, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/explore?years=${years}`, {
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/explore?years=${years}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -235,7 +259,7 @@ export async function exploreRecovery(ticker, body, years = 3) {
 
 export async function exchangeRecovery(ticker, body, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/exchange?years=${years}`, {
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/exchange?years=${years}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -245,7 +269,7 @@ export async function exchangeRecovery(ticker, body, years = 3) {
 
 export async function liquidateRecovery(ticker, body, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/liquidation?years=${years}`, {
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/liquidation?years=${years}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -255,7 +279,7 @@ export async function liquidateRecovery(ticker, body, years = 3) {
 
 export async function planRecovery(ticker, body, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/plan?years=${years}`, {
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/plan?years=${years}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -265,19 +289,19 @@ export async function planRecovery(ticker, body, years = 3) {
 
 export async function fetchCh11Case(ticker, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/case?years=${years}`)
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/case?years=${years}`)
   );
 }
 
 export async function fetchCrisisScreen(ticker, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/crisis?years=${years}`)
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/crisis?years=${years}`)
   );
 }
 
 export async function computeTax382(ticker, body, years = 3) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/recovery/tax382?years=${years}`, {
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/tax382?years=${years}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -286,12 +310,12 @@ export async function computeTax382(ticker, body, years = 3) {
 }
 
 export async function listScenarios(ticker) {
-  return jsonOrThrow(await fetch(`/api/company/${encodeURIComponent(ticker)}/scenarios`));
+  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/scenarios`));
 }
 
 export async function saveScenario(ticker, payload) {
   return jsonOrThrow(
-    await fetch(`/api/company/${encodeURIComponent(ticker)}/scenarios`, {
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/scenarios`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -300,5 +324,27 @@ export async function saveScenario(ticker, payload) {
 }
 
 export async function deleteScenario(id) {
-  return jsonOrThrow(await fetch(`/api/scenarios/${id}`, { method: "DELETE" }));
+  return jsonOrThrow(await apiFetch(`/api/scenarios/${id}`, { method: "DELETE" }));
+}
+
+// ---- Events + company timeline (Phase 6 event store) --------------------------
+
+export async function fetchEvents({ ticker, cik, event_type = [], min_severity,
+                                    since, until, limit = 100, offset = 0 } = {}) {
+  const qs = new URLSearchParams();
+  if (ticker) qs.set("ticker", ticker);
+  if (cik) qs.set("cik", cik);
+  event_type.forEach((t) => qs.append("event_type", t));
+  if (min_severity) qs.set("min_severity", min_severity);
+  if (since) qs.set("since", since);
+  if (until) qs.set("until", until);
+  qs.set("limit", limit);
+  qs.set("offset", offset);
+  return jsonOrThrow(await apiFetch(`/api/events?${qs}`));
+}
+
+export async function fetchCompanyTimeline(ticker, years = 3) {
+  return jsonOrThrow(
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/timeline?years=${years}`)
+  );
 }

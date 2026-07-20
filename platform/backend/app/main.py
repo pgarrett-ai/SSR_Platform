@@ -13,6 +13,8 @@ from __future__ import annotations
 import asyncio
 import json
 import queue
+import re
+import secrets
 import threading
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -27,6 +29,7 @@ from sse_starlette.sse import EventSourceResponse
 import datetime as dt
 
 from . import models
+from . import models_events
 from .core.cache import cached_tickers, load_latest_overview, load_overview, safe_ticker
 from .core.config import CACHE_DIR, get_settings, set_llm_runtime_enabled
 from .core.db import init_db, session_scope
@@ -38,6 +41,7 @@ from .fulcrum.waterfall import run_waterfall
 from .hazard.pipeline import analyze as hazard_analyze
 from .pipeline import run_overview
 from .store import update_snapshot_risk
+from .events.heartbeat import worker_status
 from .core.progress import ProgressEvent, ProgressLog
 
 
@@ -71,22 +75,73 @@ async def _limit_request_body(request, call_next):
     return await call_next(request)
 
 
+@app.middleware("http")
+async def _bearer_auth(request, call_next):
+    """Auth v1 (plan §11): when PLATFORM_API_TOKEN is set, every /api/* request needs
+    `Authorization: Bearer <token>`. /api/health stays open — liveness probes and the
+    token-entry UI need a pre-auth signal, and it carries operational metadata only.
+    EventSource can't send headers, so the platform_token cookie is an equivalent
+    bearer for the SSE routes. Unset token (localhost default) = open. Registered after
+    _limit_request_body so Starlette runs it outermost."""
+    token = get_settings().platform_api_token.strip()
+    path = request.url.path
+    if token and path.startswith("/api/") and path != "/api/health":
+        auth = request.headers.get("authorization", "")
+        supplied = auth[7:].strip() if auth.lower().startswith("bearer ") else ""
+        supplied = supplied or request.cookies.get("platform_token", "")
+        # byte comparison: str compare_digest raises TypeError on non-ASCII (an
+        # attacker-triggerable 500 in the auth path); bytes never raise, still timing-safe
+        if not secrets.compare_digest(supplied.encode("utf-8"), token.encode("utf-8")):
+            return JSONResponse(status_code=401, content={"error": "unauthorized"},
+                                headers={"WWW-Authenticate": "Bearer"})
+    return await call_next(request)
+
+
 @app.get("/", include_in_schema=False)
 def root():
     """The API has no UI — send stray visitors (e.g. a preview tab on :8001) to the docs."""
     return RedirectResponse("/docs")
 
 
+_QUIET_AFTER_H = 6.0
+
+
+def _zero_ingest_alarm(worker: dict, now: dt.datetime) -> bool:
+    """Poller silent-death alarm (plan §10), from PR-2b's raw worker_status() gauges.
+    True when: the heartbeat exists but is dead, OR the worker is alive yet detected
+    nothing for 6h inside weekday filing hours (EDGAR runs 3-6k filings/business day —
+    a quiet afternoon means a broken poller, not a quiet market). Never alarms before
+    the first beat: not-deployed != dead.
+    ponytail: fixed 13-23 UTC weekday window ≈ EDGAR filing hours; add a holiday
+    calendar only if false alarms actually annoy."""
+    if worker.get("heartbeat_age_s") is None:
+        return False                       # never deployed
+    if not worker.get("alive"):
+        return True
+    if now.weekday() >= 5 or not 13 <= now.hour < 23:
+        return False
+    last = worker.get("last_event_hours")
+    return last is None or last > _QUIET_AFTER_H
+
+
 @app.get("/api/health")
 def health() -> dict:
     s = get_settings()
+    try:   # worker gauges are read once and must never take health down (uptime probe)
+        w = worker_status()
+        alarm = _zero_ingest_alarm(w, dt.datetime.utcnow())
+    except Exception:
+        w, alarm = {"alive": False}, False
     return {
         "status": "ok",
         "llm_enabled": s.llm_enabled,
         "llm_key_set": s.llm_key_set,   # lets the UI tell "toggled off" from "no key"
+        "auth_required": bool(s.platform_api_token.strip()),   # PR-6: SPA shows the token box
         "hero_tickers": sorted(s.hero_ticker_set),
         "cached": cached_tickers(),
         "sec_user_agent_set": bool(s.sec_user_agent and "example.com" not in s.sec_user_agent),
+        "worker": w,                       # PR-2b raw gauges (kept)
+        "zero_ingest_alarm": alarm,        # PR-6 filing-hours-aware alarm from those gauges
     }
 
 
@@ -502,6 +557,171 @@ def search(q: str = Query(..., min_length=1, max_length=200),
         return JSONResponse(content={"hits": [
             {"source_kind": r[0], "ticker": r[1], "ref_id": r[2], "snippet": r[3]}
             for r in rows]})
+
+
+# ---- events feed + company timeline (Phase 6 event store; PR-5) --------------------
+
+_EVENT_TYPE_RE = re.compile(r"^[a-z0-9_.\-]{1,48}$")   # detector slugs; trust boundary
+
+
+def _pad_cik(cik) -> Optional[str]:
+    """Any CIK form ('6201', 'CIK0000006201') -> the event store's canonical 10-digit
+    zero-padded key (eightk.py convention); None for junk/empty."""
+    if not cik:
+        return None
+    digits = str(cik).strip().upper().lstrip("CIK").lstrip("0")
+    return digits.zfill(10) if digits.isdigit() and digits else None
+
+
+def _resolve_cik(session, ticker: str) -> Optional[str]:
+    """ticker -> event-store CIK: raw CIK forms pass through; universe first
+    (daily-refreshed); snapshots fallback (names analyzed before the universe job ran)."""
+    t = ticker.strip().upper()
+    if t.lstrip("CIK").isdigit():          # raw CIK typed/linked directly
+        return _pad_cik(t)
+    row = (session.query(models_events.UniverseCompany)
+           .filter(models_events.UniverseCompany.ticker == t).first())
+    if row is not None:
+        return _pad_cik(row.cik)
+    snap = session.get(models.Snapshot, t)
+    return _pad_cik(snap.cik) if snap is not None else None
+
+
+def _event_dict(e, ticker: Optional[str] = None) -> dict:
+    return {
+        "id": e.id, "cik": e.cik, "ticker": ticker,
+        "event_type": e.event_type, "subtype": e.subtype,
+        "severity": e.severity, "confidence": e.confidence,
+        "occurred_at": e.occurred_at.isoformat() if e.occurred_at else None,
+        "detected_at": e.detected_at.isoformat() if e.detected_at else None,
+        "source": e.source, "source_form": e.source_form,
+        "accession_no": e.accession_no, "source_url": e.source_url,
+        "title": e.title, "payload": e.payload,
+    }
+
+
+@app.get("/api/events")
+def list_events(
+    cik: Optional[str] = Query(None, min_length=1, max_length=10, pattern=r"^\d+$"),
+    ticker: Optional[str] = Query(None, min_length=1, max_length=12,
+                                  pattern=r"^[A-Za-z0-9.\-]+$"),
+    event_type: Optional[list[str]] = Query(None),
+    min_severity: Optional[int] = Query(None, ge=1, le=5),
+    since: Optional[str] = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    until: Optional[str] = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0, le=100_000),
+):
+    """Event-store firehose (plan §9). Ordered detected_at DESC NULLS LAST — live
+    detections first, honest backfill (detected_at NULL) last. since/until filter
+    occurred_at (the world-time axis; backfill rows have no detected_at).
+    No total count: the client pages by 'came back full'."""
+    from sqlalchemy import desc, nulls_last
+
+    for t in event_type or []:
+        if not _EVENT_TYPE_RE.fullmatch(t):
+            return JSONResponse(status_code=400,
+                                content={"error": f"bad event_type {t!r}"})
+    try:
+        since_d = dt.date.fromisoformat(since) if since else None
+        until_d = dt.date.fromisoformat(until) if until else None
+    except ValueError as exc:              # pattern passed but not a real date
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+
+    with session_scope() as session:
+        the_cik = _pad_cik(cik) if cik else None
+        if cik and the_cik is None:        # supplied CIK padded to nothing (e.g. all-zeros):
+            return JSONResponse(content={  # don't fall through to the unfiltered firehose
+                "events": [], "limit": limit, "offset": offset})
+        if the_cik is None and ticker:
+            the_cik = _resolve_cik(session, ticker)
+            if the_cik is None:
+                return JSONResponse(status_code=404, content={
+                    "error": "ticker_not_found",
+                    "detail": f"{ticker.strip().upper()!r} is in neither the universe "
+                              f"nor the snapshot index"})
+        q = (session.query(models_events.Event, models_events.UniverseCompany.ticker)
+             .outerjoin(models_events.UniverseCompany,
+                        models_events.UniverseCompany.cik == models_events.Event.cik))
+        if the_cik:
+            q = q.filter(models_events.Event.cik == the_cik)
+        if event_type:
+            q = q.filter(models_events.Event.event_type.in_(event_type))
+        if min_severity:
+            q = q.filter(models_events.Event.severity >= min_severity)
+        if since_d:
+            q = q.filter(models_events.Event.occurred_at
+                         >= dt.datetime.combine(since_d, dt.time.min))
+        if until_d:                        # inclusive end date
+            q = q.filter(models_events.Event.occurred_at
+                         < dt.datetime.combine(until_d + dt.timedelta(days=1), dt.time.min))
+        rows = (q.order_by(nulls_last(desc(models_events.Event.detected_at)),
+                           desc(models_events.Event.occurred_at),
+                           desc(models_events.Event.id))
+                .offset(offset).limit(limit).all())
+        return JSONResponse(content=jsonable({
+            "events": [_event_dict(e, tk) for e, tk in rows],
+            "limit": limit, "offset": offset}))
+
+
+def _change_period_end(items: list[dict]) -> Optional[str]:
+    """Date a what-changed card for the sorted vertical: quarter-end from 'Q3 2025'
+    labels, else FY-end. Derived-display only — never presented as a filing date."""
+    it = items[0]
+    m = re.match(r"^Q([1-4])\s+(\d{4})$", it.get("latest_label") or "")
+    if m:
+        q, y = int(m.group(1)), int(m.group(2))
+        return f"{y}-{q * 3:02d}-{[31, 30, 30, 31][q - 1]:02d}"
+    fy = it.get("latest_fy")
+    return f"{fy}-12-31" if fy else None
+
+
+@app.get("/api/company/{ticker}/timeline")
+def company_timeline(ticker: str, years: int = Query(3, ge=1, le=10),
+                     limit: int = Query(300, ge=1, le=500)):
+    """Company Timeline tab (plan §9): event-store rows + the cached overview's filings
+    (`sources`) and what-changed card, one merged vertical, newest first. Cache+DB only —
+    a page mount must never launch a live pipeline run (PR-B). Filings that already
+    exist as events (same accession) are dropped in favor of the richer event row."""
+    from sqlalchemy import desc, nulls_last
+
+    ov = _cached_overview(ticker, years)   # {} when the company was never built
+    items: list[dict] = []
+    seen_acc: set[str] = set()
+    with session_scope() as session:
+        cik = _pad_cik(_ov_cik(ov)) or _resolve_cik(session, ticker)
+        if cik:
+            evs = (session.query(models_events.Event)
+                   .filter(models_events.Event.cik == cik)
+                   .order_by(nulls_last(desc(models_events.Event.detected_at)),
+                             desc(models_events.Event.occurred_at))
+                   .limit(limit).all())
+            for e in evs:
+                if e.accession_no:
+                    seen_acc.add(e.accession_no)
+                items.append({"kind": "event",
+                              "date": e.occurred_at.date().isoformat()
+                                      if e.occurred_at else None,
+                              **_event_dict(e)})
+    for s in ov.get("sources") or []:
+        if s.get("accession_no") in seen_acc:
+            continue
+        items.append({"kind": "filing", "date": s.get("filing_date"),
+                      "form_type": s.get("form_type"),
+                      "accession_no": s.get("accession_no"),
+                      "url": s.get("filing_index_url") or s.get("primary_doc_url")})
+    changes = ov.get("what_changed") or []
+    if changes:
+        c0 = changes[0]
+        label = (f"{c0.get('latest_label') or c0.get('latest_fy')} vs "
+                 f"{c0.get('prior_label') or c0.get('prior_fy')}")
+        items.append({"kind": "changes", "date": _change_period_end(changes),
+                      "label": label, "items": changes})
+    items.sort(key=lambda x: x.get("date") or "", reverse=True)   # None-dated last
+    note = None if ov else ("no cached overview — open this company's Overview tab once "
+                            "to add its filings and what-changed items to the timeline")
+    return JSONResponse(content=jsonable({
+        "ticker": ticker.strip().upper(), "cik": cik, "items": items, "note": note}))
 
 
 def jsonable(obj):

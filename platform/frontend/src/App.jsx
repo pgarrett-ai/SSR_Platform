@@ -2,9 +2,9 @@ import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
-import { fetchHealth, overviewJsonUrl, setLlmEnabled, streamOverview } from "./api.js";
+import { fetchHealth, getToken, overviewJsonUrl, setLlmEnabled, setToken, streamOverview } from "./api.js";
 import { getCached, setCached } from "./cache.js";
-import { Button, ErrorCard, Input, Loading } from "./ui/index.jsx";
+import { Badge, Button, ErrorCard, Input, Loading } from "./ui/index.jsx";
 import ProgressLog from "./components/ProgressLog.jsx";
 import ScreenTable from "./components/ScreenTable.jsx";
 
@@ -14,6 +14,8 @@ const OverviewPage = lazy(() => import("./pages/OverviewPage.jsx"));
 const CapitalPage = lazy(() => import("./pages/CapitalPage.jsx"));
 const RiskPage = lazy(() => import("./pages/RiskPage.jsx"));
 const RecoveryPage = lazy(() => import("./pages/RecoveryPage.jsx"));
+const TimelinePage = lazy(() => import("./pages/TimelinePage.jsx"));
+const EventsPage = lazy(() => import("./pages/EventsPage.jsx"));
 
 const HEROES = [
   { t: "AAL", note: "airline · leases + pension" },
@@ -27,6 +29,7 @@ const TABS = [
   { id: "capital", label: "Capital Structure", key: "c" },
   { id: "risk", label: "Default Risk", key: "r" },
   { id: "recovery", label: "Recovery", key: "v" },
+  { id: "timeline", label: "Timeline", key: "t" },
 ];
 
 function CompanyLayout({ years, health, overview }) {
@@ -41,6 +44,7 @@ function CompanyLayout({ years, health, overview }) {
         />
         <Route path="risk" element={<RiskPage ticker={ticker} years={years} />} />
         <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
+        <Route path="timeline" element={<TimelinePage ticker={ticker} years={years} />} />
         <Route path="*" element={<Navigate to="overview" replace />} />
       </Routes>
     </Suspense>
@@ -227,9 +231,27 @@ export default function App() {
             ))}
           </nav>
 
+          <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">Platform</div>
+          <nav className="mb-6 flex flex-col gap-1">
+            <NavLink
+              to="/events"
+              className={({ isActive }) =>
+                `rounded-md px-2 py-1.5 text-left text-sm hover:bg-ink-700 ${isActive ? "bg-ink-700 text-white" : "text-slate-400"}`
+              }
+            >
+              Events feed
+              <span className="ml-2 text-[10px] text-slate-600">event-store firehose</span>
+              {health?.zero_ingest_alarm && (
+                <span title="ingestion worker heartbeat stale, or zero events during filing hours">
+                  <Badge tone="high" className="ml-2">stalled</Badge>
+                </span>
+              )}
+            </NavLink>
+          </nav>
+
           <div className="space-y-1 text-[11px] text-slate-600">
             <div><kbd className="rounded bg-ink-700 px-1">/</kbd> search</div>
-            <div><kbd className="rounded bg-ink-700 px-1">g</kbd>+<kbd className="rounded bg-ink-700 px-1">o c r v</kbd> tabs</div>
+            <div><kbd className="rounded bg-ink-700 px-1">g</kbd>+<kbd className="rounded bg-ink-700 px-1">o c r v t</kbd> tabs</div>
           </div>
 
           {health && (
@@ -251,6 +273,22 @@ export default function App() {
               ) : (
                 <span className="text-amber-400" title="set ANTHROPIC_API_KEY in platform/.env">no key</span>
               )}
+            </div>
+          )}
+
+          {health?.auth_required && (
+            <div className="mt-4">
+              <label className="mb-1 block text-[10px] uppercase tracking-wide text-slate-600">
+                API token
+              </label>
+              <Input
+                type="password"
+                defaultValue={getToken()}
+                onBlur={(e) => setToken(e.target.value.trim())}
+                placeholder="bearer token"
+                title="shared bearer token — stored locally, sent on every API call"
+                className="w-full font-mono"
+              />
             </div>
           )}
         </div>
@@ -291,6 +329,10 @@ export default function App() {
           )}
           <Routes>
             <Route path="/" element={<Landing onPick={go} />} />
+            <Route
+              path="/events"
+              element={<Suspense fallback={<Loading />}><EventsPage /></Suspense>}
+            />
             <Route
               path="/company/:ticker/*"
               element={<CompanyLayout years={appliedYears} health={health} overview={overview} />}
