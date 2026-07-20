@@ -1,4 +1,5 @@
-"""The ONE EDGAR module: retrieval (client), XBRL facts (facts), document text (documents).
+"""The ONE EDGAR module: retrieval (client), XBRL facts (facts), document text (documents),
+paced raw transport (http).
 
 Exposes both styles the merged apps use: capstack's `EdgarClient` class and hazard's
 module-level functions (thin wrappers over the same client).
@@ -23,6 +24,7 @@ from .facts import (
     raw_value,
     source_url,
 )
+from .http import paced_get
 
 
 def resolve_company(ticker: str):
@@ -48,4 +50,5 @@ __all__ = [
     "build_financial_series",
     "raw_value",
     "source_url",
+    "paced_get",
 ]

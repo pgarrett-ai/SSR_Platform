@@ -38,6 +38,7 @@ from .fulcrum.waterfall import run_waterfall
 from .hazard.pipeline import analyze as hazard_analyze
 from .pipeline import run_overview
 from .store import update_snapshot_risk
+from .events.heartbeat import worker_status
 from .core.progress import ProgressEvent, ProgressLog
 
 
@@ -87,6 +88,7 @@ def health() -> dict:
         "hero_tickers": sorted(s.hero_ticker_set),
         "cached": cached_tickers(),
         "sec_user_agent_set": bool(s.sec_user_agent and "example.com" not in s.sec_user_agent),
+        "worker": worker_status(),
     }
 
 
