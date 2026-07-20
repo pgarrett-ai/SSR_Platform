@@ -66,7 +66,9 @@ class Event(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    cik: Mapped[str] = mapped_column(String(16), ForeignKey("universe.cik"))
+    cik: Mapped[str] = mapped_column(String(16))  # no FK: events key on CIK forever,
+    # independent of universe membership — backfill ingests dead filers company_tickers
+    # never lists, and Postgres would enforce the FK fatally (whole-branch review F1)
     event_type: Mapped[str] = mapped_column(String(48))
     subtype: Mapped[Optional[str]] = mapped_column(String(48))
     severity: Mapped[int] = mapped_column(Integer, default=1)        # 1-5
@@ -87,7 +89,7 @@ class Score(Base):
 
     __tablename__ = "scores"
 
-    cik: Mapped[str] = mapped_column(String(16), ForeignKey("universe.cik"),
+    cik: Mapped[str] = mapped_column(String(16),  # no FK — see Event.cik note
                                      primary_key=True)
     score_name: Mapped[str] = mapped_column(String(48), primary_key=True)
     asof: Mapped[date] = mapped_column(Date, primary_key=True)
@@ -109,7 +111,7 @@ class WatchlistMember(Base):
 
     watchlist_id: Mapped[int] = mapped_column(ForeignKey("watchlists.id"),
                                               primary_key=True)
-    cik: Mapped[str] = mapped_column(String(16), ForeignKey("universe.cik"),
+    cik: Mapped[str] = mapped_column(String(16),  # no FK — see Event.cik note
                                      primary_key=True)
     note: Mapped[Optional[str]] = mapped_column(Text)
 
