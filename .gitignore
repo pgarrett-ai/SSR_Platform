@@ -58,3 +58,4 @@ platform/backend/data/
 # hazard day-cache: derived, valid one day — never committed (hero overview caches ARE committed)
 platform/backend/app/cache/hazard/
 route_audit.csv
+.superpowers/
