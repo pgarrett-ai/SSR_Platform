@@ -9,9 +9,28 @@ from __future__ import annotations
 from .registry import register
 from .types import Event, FilingMeta
 
-# item -> (event_type, severity, title label). PR-2b seeds 1.03; PR-3 completes.
+# The full plan-§3 item map. Row = the detector: (event_type, severity 1-5, title label).
+# Severity rationale: 1.03/2.04/4.02 Moyer crown jewels -> 5; 4.01/3.01
+# confidence-of-accounts/listing distress -> 4; 1.02/2.03/2.05/2.06/3.02 material
+# credit/ops facts -> 3; 1.01/2.01/5.02 high-volume context-needed -> 2 (5.02 noisiness
+# documented at eightk.py:29-31); 5.07/7.01/8.01 catch-alls -> 1.
 ITEM_SPECS: dict[str, tuple[str, int, str]] = {
+    "1.01": ("material_agreement", 2, "Material agreement entered"),
+    "1.02": ("agreement_terminated", 3, "Material agreement terminated"),
     "1.03": ("bankruptcy", 5, "Bankruptcy or receivership"),
+    "2.01": ("acquisition_disposition", 2, "Completed acquisition or disposition"),
+    "2.03": ("new_debt_obligation", 3, "New direct financial obligation"),
+    "2.04": ("acceleration", 5, "Triggering event accelerating a direct financial obligation"),
+    "2.05": ("exit_costs", 3, "Exit or disposal costs"),
+    "2.06": ("impairment", 3, "Material impairment"),
+    "3.01": ("delisting_notice", 4, "Delisting notice / listing-standards deficiency"),
+    "3.02": ("unregistered_equity", 3, "Unregistered sale of equity (PIPE)"),
+    "4.01": ("auditor_change", 4, "Auditor change"),
+    "4.02": ("non_reliance", 5, "Non-reliance on prior financials (restatement)"),
+    "5.02": ("officer_change", 2, "Officer/director departure or appointment"),
+    "5.07": ("vote_results", 1, "Shareholder vote results"),
+    "7.01": ("reg_fd", 1, "Reg FD disclosure"),
+    "8.01": ("other_events", 1, "Other events"),
 }
 
 
