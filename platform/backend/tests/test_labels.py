@@ -233,3 +233,24 @@ def test_runway_feature_registered_with_monotone_sign():
     assert "runway_years" in train.TRAIN_FEATURES
     assert train.MONOTONE["runway_years"] == -1
     assert all(f in train.MONOTONE for f in train.TRAIN_FEATURES)  # _fit indexes MONOTONE[f]
+
+
+def test_fts_429_truncates_without_outer_retries(monkeypatch, capsys):
+    # paced_get already spends the sanctioned 429/403 backoff (~14s) before re-raising;
+    # the harvest's 4-attempt outer loop must NOT re-amplify it (~56s/page pre-fix).
+    # A persistent 429 goes straight to the documented WARN-and-truncate path.
+    import urllib.error
+
+    calls, sleeps = [], []
+
+    def throttled(start, end, frm):
+        calls.append((start, end, frm))
+        raise urllib.error.HTTPError("u", 429, "throttled", None, None)
+
+    monkeypatch.setattr(labels, "_fts_page", throttled)
+    monkeypatch.setattr(labels.time, "sleep", sleeps.append)
+    events = labels.harvest_default_events(2020, 2020)
+    assert events == []
+    assert len(calls) == 4          # ONE attempt per quarter window, no outer retries
+    assert sleeps == []             # zero outer backoff sleeps stacked on paced_get's
+    assert "window truncated" in capsys.readouterr().out

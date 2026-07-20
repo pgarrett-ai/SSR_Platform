@@ -42,6 +42,7 @@ import json
 import random
 import re
 import time
+import urllib.error
 import urllib.parse
 from pathlib import Path
 from typing import Optional
@@ -87,14 +88,21 @@ def harvest_default_events(start_year: int, end_year: int) -> list[dict]:
             frm = 0
             while frm < 400:                       # FTS pages are 10 hits; sane cap per quarter
                 # FTS throws intermittent 500s; a silent skip here once cost two whole years
-                # of defaulters (2012–2013), so retry with backoff and WARN before giving up
+                # of defaulters (2012–2013), so retry with backoff and WARN before giving up.
+                # 429/403 skip the outer retries entirely — paced_get already spent the
+                # sanctioned throttle backoff (same guard as capstack.eightk._cached).
+                page = None
                 for attempt in range(4):
                     try:
                         page = _fts_page(start, end, frm)
                         break
+                    except urllib.error.HTTPError as exc:
+                        if exc.code in (429, 403):
+                            break              # straight to WARN-and-truncate
+                        time.sleep(2.0 * (attempt + 1))
                     except Exception:
                         time.sleep(2.0 * (attempt + 1))
-                else:
+                if page is None:
                     print(f"  WARN: FTS unreachable for {start}..{end} from page {frm // 10} "
                           f"— window truncated, events may be missing")
                     break
@@ -269,7 +277,9 @@ def harvest_pit_universe(start_year: int, end_year: int) -> dict[str, list[int]]
             try:
                 text = paced_get(_FORM_IDX.format(y=year, q=q), timeout=60).decode("latin-1")
             except Exception:
-                continue                        # future quarter / transient hiccup
+                # no outer retry here by design — paced_get owns 429/403 backoff, and a
+                # missing/future quarter or transient hiccup just skips one idx file
+                continue
             for cik in ten_k_ciks(text):
                 if cik in span:
                     span[cik][1] = max(span[cik][1], year)
