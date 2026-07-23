@@ -6,8 +6,8 @@ from app.core import cache, db
 from app.core.db import init_db, session_scope
 from app.main import app
 from app.schemas import (CitedValue, EconomicDebtBridge, ForensicFlag,
-                         IssuerHeader, Overview)
-from app.store import rebuild_fts, update_snapshot_risk
+                         IssuerHeader, LiquidityRunway, Overview)
+from app.store import rebuild_fts, update_snapshot_risk, upsert_snapshot
 
 client = TestClient(app).__enter__()   # lifespan runs init_db (tables + FTS)
 
@@ -86,6 +86,28 @@ def test_screen_market_columns_and_badge(tmp_path, monkeypatch):
     assert row["net_market_leverage"] == 4.1
     assert row["creation_multiple_fulcrum"] == 3.0
     assert row["distress_badge"] is None      # no drop-file quotes for ZZTEST
+    _cleanup()
+
+
+def test_snapshot_runway_months():
+    """runway_months rides the snapshot from overview.liquidity and surfaces on /api/screen."""
+    ov = _overview()
+    ov.liquidity = LiquidityRunway(runway_months=8.0)
+    with session_scope() as s:
+        upsert_snapshot(s, "ZZTEST", ov)
+    with session_scope() as s:
+        assert s.get(models.Snapshot, "ZZTEST").runway_months == 8.0
+    row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
+    assert row["runway_months"] == 8.0
+    _cleanup()
+
+
+def test_snapshot_runway_months_none_without_liquidity():
+    """No liquidity block (e.g. a healthy issuer) -> column stays None, no crash."""
+    with session_scope() as s:
+        upsert_snapshot(s, "ZZTEST", _overview())   # liquidity=None
+    with session_scope() as s:
+        assert s.get(models.Snapshot, "ZZTEST").runway_months is None
     _cleanup()
 
 

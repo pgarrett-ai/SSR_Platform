@@ -332,6 +332,7 @@ def screen() -> JSONResponse:
                 "flag_count": r.flag_count,
                 "overall_risk": r.overall_risk, "trained_pd": r.trained_pd,
                 "implied_rating": r.implied_rating,
+                "runway_months": r.runway_months,
                 "distress_badge": badge,
             })
         return JSONResponse(content=jsonable(out))
