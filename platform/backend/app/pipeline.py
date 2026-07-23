@@ -30,7 +30,7 @@ from .edgar.client import (
     TickerNotFoundError,
 )
 from .edgar.documents import get_filing_text
-from .edgar.facts import build_financial_series, fmt_money_millions
+from .edgar.facts import FinancialSeries, build_financial_series, fmt_money_millions
 from .core.progress import ProgressLog
 from .schemas import IssuerHeader, Overview
 from .store import (
@@ -44,6 +44,28 @@ from .store import (
 
 # Cap on per-run covenant LLM extractions; the per-doc cache amortizes repeat runs to ~zero.
 _MAX_COVENANT_EXTRACTS = 10
+
+# An empty schedule is only worth a loud warning when the balance sheet actually carries debt —
+# below this, "no instruments found" is just correct (near-zero-debt issuer), not a silent gap.
+_MATERIAL_DEBT_FLOOR = 500e6
+
+
+def _empty_schedule_warning(debt_schedule: list, series: Optional[FinancialSeries]) -> Optional[str]:
+    """Both the LLM-off path (footnote fallback skipped) and the LLM-on path (footnote
+    extraction found no debt window) can silently return an empty debt schedule. If the
+    balance sheet reports material debt, that silence hides a real gap — warn loudly."""
+    if debt_schedule or series is None or not series.years:
+        return None
+    reported, _parts = total_debt(series.years[-1])
+    if not reported or reported <= _MATERIAL_DEBT_FLOOR:
+        return None
+    return (
+        f"Debt schedule is EMPTY but the balance sheet reports "
+        f"{fmt_money_millions(reported)} of debt (latest FY). XBRL wasn't dimensioned "
+        f"and footnote extraction found no debt window — cap structure, creation ladder "
+        f"and recovery are incomplete. Re-run with LLM on; if still empty the debt note "
+        f"wasn't located in the filing text (edgar/documents._largest_item)."
+    )
 
 
 def run_overview(
@@ -256,6 +278,10 @@ def run_overview(
                 f"Maturity unknown for {len(missing_mat)} instrument(s) "
                 f"({', '.join(missing_mat[:6])}) — they are missing from the maturity wall."
             )
+    else:
+        empty_warning = _empty_schedule_warning(debt_schedule, series)
+        if empty_warning:
+            warnings.append(empty_warning)
 
     # --- Phase 4: covenant extraction from credit agreements / indentures (§5) ---
     credit_docs = []

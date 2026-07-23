@@ -96,6 +96,13 @@ def get_filing_text(filing) -> Optional[FilingText]:
     if not notes:
         # 10-Q: financial statements are Item 1
         notes = _largest_item(obj, ("Item 1",))
+    if not notes:
+        # ATUS/TSE Item-8 gap: item keys didn't expose the statements. Fall back to the whole
+        # filing plaintext — debt_window()/obs_window() keyword-carve it regardless of structure.
+        try:
+            notes = _as_str(filing.text())
+        except Exception:
+            notes = ""
 
     if not mdna and not notes:
         return None

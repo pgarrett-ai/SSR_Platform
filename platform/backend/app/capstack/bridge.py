@@ -38,6 +38,7 @@ from ..schemas import (
     EconomicDebtBridge,
     ObsItem as ObsItemSchema,
 )
+from .forensic import _ebitda as _proxy_ebitda
 from .forensic import total_debt
 from .obs_llm import ObsExtraction
 
@@ -238,6 +239,7 @@ def build_bridge(
     # Lease liabilities sit in the numerator with no rent add-back to the denominator by
     # design (user call: plain EBITDA) — heavy lessees read conservatively high.
     ebitda = _ebitda_value(latest)
+    _annotate_ebitda_reconciliation(ebitda, latest)
     rep_lev, econ_lev = _leverage_ratios(rep_val, running, ebitda)
 
     bridge = EconomicDebtBridge(
@@ -305,6 +307,7 @@ def renormalize_spliced_bridge(bridge: EconomicDebtBridge,
     if rep is None or econ is None:
         return bridge
     ebitda = _ebitda_value(latest)
+    _annotate_ebitda_reconciliation(ebitda, latest)
     bridge.ebitda = ebitda
     bridge.reported_leverage, bridge.economic_leverage = _leverage_ratios(rep, econ, ebitda)
     return bridge
@@ -345,6 +348,23 @@ def _walk_components(yf: YearFacts) -> Optional[list[tuple[str, str, float]]]:
             out.append((key, label, v))
     out.append(("d_and_a", "D&A", da))
     return out
+
+
+def _annotate_ebitda_reconciliation(ebitda: Optional[CitedValue], yf: YearFacts) -> None:
+    """C5: bridge=NI-walk, forensic/timeline=OI+D&A proxy. Name the gap so the two
+    surfaces reconcile instead of reading as two 'FY EBITDA' ~$900M apart."""
+    if ebitda is None or ebitda.value is None or ebitda.note:
+        return
+    proxy = _proxy_ebitda(yf)                 # OI + D&A
+    if proxy is None:
+        return
+    delta = ebitda.value - proxy              # 0 when _ebitda_value fell back to proxy
+    if abs(delta) < 100e6 or abs(delta) < 0.05 * max(abs(ebitda.value), abs(proxy)):
+        return
+    ebitda.note = (f"NI-walk EBITDA. Forensic table & timeline use proxy EBITDA "
+        f"(operating income + D&A) = {fmt_money_millions(proxy)}; the "
+        f"{fmt_money_millions(abs(delta))} gap is non-operating items (interest/other "
+        f"income, one-offs) the walk keeps and the proxy drops.")
 
 
 def _ebitda_value(yf: YearFacts) -> Optional[CitedValue]:
@@ -404,6 +424,8 @@ def build_ebitda_box(series: FinancialSeries,
             value=val, display=fmt_money_millions(val), citation=_xbrl_cite(latest, key, cik)))
         for key, _label, val in comps
     ]
+    # C5: deliberately NOT annotated with the walk-vs-proxy reconciliation note — the EBITDA
+    # box is a separate surface (the covenant add-back walk itself), not the leverage bridge.
     ebitda = _ebitda_value(latest)
     lines.append(BridgeLine(key="ebitda", label="EBITDA", amount=ebitda, is_total=True))
 
