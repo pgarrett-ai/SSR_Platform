@@ -18,6 +18,7 @@ from .. import edgar
 from . import features
 from .market import get_market_data
 from .score import all_scorers
+from .survival.serve import survival_panel
 from .trace import get_credit_backdrop, get_issuer_bonds
 from ..core.config import get_settings
 from ..core.progress import ProgressLog
@@ -160,6 +161,7 @@ def analyze(ticker: str, years: int = 10, progress: Optional[ProgressLog] = None
     scores = {s.name: s.score(latest, market) for s in scorers}
     contributions = {s.name: s.contributions(latest, market) for s in scorers
                      if s.contributions(latest, market) is not None}
+    survival = survival_panel(latest, market)   # None when no bundle has been fit yet
 
     # Risk timeline: quarterly composite when 10-Q XBRL supports it; annual Altman fallback.
     progress.emit("Building quarterly risk timeline from 10-Q XBRL…", step="timeline", pct=75)
@@ -211,6 +213,7 @@ def analyze(ticker: str, years: int = 10, progress: Optional[ProgressLog] = None
         "cross_signals": cross,
         "scores": scores,
         "contributions": contributions,
+        "survival": survival,
         "risk_timeline": risk_timeline,
         "features_timeline": timeline,
         "market": market.__dict__,

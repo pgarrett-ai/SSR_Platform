@@ -34,15 +34,16 @@ LOG_FEATURES: set[str] = {"interest_coverage", "current_ratio", "equity_vol"}
 _TINY = 1e-6
 
 
-def build_model_matrix(df: pd.DataFrame) -> tuple[np.ndarray, list[str]]:
+def build_model_matrix(df: pd.DataFrame, features: list[str] = FEATURES) -> tuple[np.ndarray, list[str]]:
     """Return the numeric model matrix (log-transformed where appropriate).
 
-    Column order follows FEATURES. Names of log-transformed columns are prefixed
+    Column order follows `features` (defaults to the full FEATURES list, so every
+    existing caller is unaffected). Names of log-transformed columns are prefixed
     with 'log_' so coefficient tables read correctly.
     """
     cols = []
     names = []
-    for f in FEATURES:
+    for f in features:
         x = df[f].to_numpy(dtype=float)
         if f in LOG_FEATURES:
             x = np.log(np.clip(x, _TINY, None))
