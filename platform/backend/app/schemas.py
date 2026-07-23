@@ -356,6 +356,38 @@ class RpBasket(BaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
+class BeneficialOwner(BaseModel):
+    """One row of the DEF 14A beneficial-ownership table."""
+
+    name: str
+    pct: Optional[CitedValue] = None
+    shares: Optional[CitedValue] = None
+
+
+class SponsorItem(BaseModel):
+    """One related-person support action (a loan, DDTL, preferred purchase, …), cited."""
+
+    kind: str
+    counterparty: Optional[str] = None
+    amount: Optional[CitedValue] = None
+    description: Optional[str] = None
+
+
+class SponsorSupport(BaseModel):
+    """Sponsor / related-party support (Moyer control-holder framing, C8): the deterministic
+    admin_agent lender flag (free, from the covenant package) plus the DEF 14A ownership %
+    when the LLM ran. has_sponsor False -> the Overview card shows an empty state."""
+
+    has_sponsor: bool = False
+    sponsor_name: Optional[str] = None
+    ownership_pct: Optional[CitedValue] = None   # from DEF 14A beneficial table (verbatim-quoted)
+    related_party_lender: Optional[str] = None
+    lender_source: Optional[str] = None
+    support_items: list[SponsorItem] = Field(default_factory=list)
+    owners: list[BeneficialOwner] = Field(default_factory=list)
+    note: Optional[str] = None
+
+
 class Overview(BaseModel):
     header: IssuerHeader
     economic_debt_bridge: Optional[EconomicDebtBridge] = None
@@ -374,6 +406,7 @@ class Overview(BaseModel):
     coverage_chips: Optional["CoverageChips"] = None  # dual-leverage + interest-coverage pairs
     mezzanine: Optional[CitedValue] = None   # temporary equity — the recast-as-debt input
     nol_carryforward: Optional[CitedValue] = None  # gross NOL — the §382 tax-asset input (ch. 11)
+    sponsor: Optional[SponsorSupport] = None  # C8: control holder + related-party lender
     rp_basket: Optional[RpBasket] = None     # F1 RP-basket capacity build (Moyer ch. 7)
     liens_headroom: Optional[dict] = None    # F2 permitted-liens headroom archetypes (ch. 9)
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)

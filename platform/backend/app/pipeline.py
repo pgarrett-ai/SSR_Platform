@@ -22,6 +22,7 @@ from .capstack.forensic import (build_asset_snapshot, build_forensic_table, dete
                                 quarter_forensic_row, total_debt)
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
+from .capstack.sponsor import build_sponsor, extract_sponsor_ownership
 from .core.config import get_settings
 from .core.db import session_scope
 from .edgar.client import (
@@ -156,6 +157,8 @@ def run_overview(
     debt_schedule = []
     covenants = []
     subsidiaries = []
+    owners = []
+    rpts = []
     # Document text is fetched even when the LLM is off (runtime toggle or no key) so the
     # EDGAR disk cache stays warm and re-enabling analyzes instantly.
     ft = None
@@ -354,6 +357,16 @@ def run_overview(
                               step="entities", pct=94)
         except Exception as exc:
             warnings.append(f"Exhibit 21 step failed: {exc}")
+
+        # --- Phase 4.7: sponsor ownership — DEF 14A beneficial table + related-party notes ---
+        try:
+            progress.emit("Extracting sponsor ownership (DEF 14A beneficial table + "
+                          "related-party notes)…", step="sponsor", pct=94)
+            owners, rpts, sp_err = extract_sponsor_ownership(company)
+            if sp_err:
+                warnings.append(f"Sponsor extraction: {sp_err}")
+        except Exception as exc:
+            warnings.append(f"Sponsor step failed: {exc}")
     else:
         progress.emit("Skipping LLM extraction (LLM analysis is off).", step="obs", pct=88)
 
@@ -461,6 +474,22 @@ def run_overview(
             asset_snapshot = build_asset_snapshot(series, series.cik)
     except Exception as exc:
         warnings.append(f"Asset snapshot step failed: {exc}")
+
+    # --- Sponsor / related-party support (Moyer control-holder framing, C8) — deterministic
+    # assembler; runs unconditionally so the free admin_agent lender flag survives LLM-off.
+    # `covenants` may already be the LLM-off splice above, so admin_agent flows through
+    # automatically. Only backfill the richer cached snapshot (e.g. a DEF 14A ownership_pct
+    # read on a prior LLM-on run) when this run's deterministic build found nothing at all —
+    # the fresh build always wins when it has content (mirrors the covenants/debt_schedule
+    # splice above, but composed here since build_sponsor needs the post-splice covenants).
+    sponsor = None
+    try:
+        sponsor = build_sponsor(covenants, owners, rpts)
+    except Exception as exc:
+        warnings.append(f"Sponsor assembly failed: {exc}")
+    if (sponsor is None or not sponsor.has_sponsor) and not settings.llm_enabled:
+        prior_sponsor = getattr(load_latest_overview(ticker), "sponsor", None)
+        sponsor = prior_sponsor or sponsor
 
     # --- Liquidity & runway (distressed-mode framing) — deterministic, LLM-independent ---
     liquidity = None
@@ -576,6 +605,7 @@ def run_overview(
         coverage_chips=coverage,
         mezzanine=mezzanine,
         nol_carryforward=nol_carryforward,
+        sponsor=sponsor,
         rp_basket=rp_basket,
         liens_headroom=liens_headroom,
         leverage_timeline=lev_timeline,
