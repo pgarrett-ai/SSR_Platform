@@ -496,6 +496,34 @@ def known_holders(ticker: str) -> JSONResponse:
         }))
 
 
+@app.get("/api/company/{ticker}/sponsor")
+def company_sponsor(ticker: str, years: int = Query(3, ge=1, le=10)) -> JSONResponse:
+    """C8 sponsor-support card: the cached Overview's sponsor block (admin_agent lender
+    flag + DEF 14A ownership %, both deterministic/LLM-cached) merged with the LIVE 13D/G
+    event rows. Cache+DB only (/timeline idiom) — a page mount must never launch a live run.
+    `sponsor` is null/{has_sponsor:false} for sponsor-less names."""
+    from sqlalchemy import desc, nulls_last
+
+    ov = _cached_overview(ticker, years)   # {} when the company was never built
+    sponsor = ov.get("sponsor")
+    stakes = []
+    cik = None
+    with session_scope() as session:
+        cik = _pad_cik(_ov_cik(ov)) or _resolve_cik(session, ticker)
+        if cik:
+            rows = (session.query(models_events.Event)
+                    .filter(models_events.Event.cik == cik,
+                            models_events.Event.event_type.in_(["stake_13d", "stake_13g"]))
+                    .order_by(nulls_last(desc(models_events.Event.occurred_at)))
+                    .limit(50).all())
+            stakes = [_event_dict(e) for e in rows]
+    note = None if ov else "open this company's Overview once to populate the sponsor card"
+    return JSONResponse(content=jsonable({
+        "ticker": ticker.strip().upper(), "cik": cik,
+        "sponsor": sponsor, "stake_filings": stakes, "note": note,
+    }))
+
+
 @app.get("/api/company/{ticker}/mdna")
 def mdna_periods(ticker: str) -> JSONResponse:
     """Stored MD&A sections for the ticker, newest first — the reader's table of contents."""

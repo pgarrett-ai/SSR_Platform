@@ -4,6 +4,7 @@ import { fetchHazard, fetchLadder, fetchOverview, fetchRates, simulateRecovery }
 import { useAsync } from "../cache.js";
 import { Badge, Card, Loading, fmt, riskColor } from "../ui/index.jsx";
 import CitedNumber from "../components/CitedNumber.jsx";
+import SponsorCard from "../components/SponsorCard.jsx";
 
 // Key reference rates strip — DB-stored observations with their as-of dates.
 function KeyRates() {
@@ -263,6 +264,8 @@ export default function OverviewPage({ ticker, years }) {
           </div>
         </OverviewCard>
       </div>
+
+      <SponsorCard ticker={ticker} years={years} />
 
       <WhatChangedCard ov={ov.data} />
     </div>

@@ -164,6 +164,12 @@ export async function fetchHolders(ticker) {
   return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/holders`));
 }
 
+export async function fetchSponsor(ticker, years = 3) {
+  return jsonOrThrow(
+    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/sponsor?years=${years}`)
+  );
+}
+
 // ---- MD&A reader ---------------------------------------------------------------
 
 export async function fetchMdnaPeriods(ticker) {
