@@ -32,6 +32,8 @@ BENEFICIAL_KEYWORDS = (
     "delayed draw", "credit facility", "prepaid forward",
 )
 _CONTROL_PCT = 20.0   # ponytail: control/anchor threshold, tune knob
+# Cache key is (accession, _PROMPT_VERSION) only — bump this whenever BENEFICIAL_KEYWORDS,
+# the window radius, or max_chars change, or a stale extraction stays pinned silently.
 _PROMPT_VERSION = "v1"
 
 _SYSTEM = (
@@ -248,7 +250,11 @@ def build_sponsor(covenants, owners: list[OwnerRaw],
         return SponsorSupport(has_sponsor=False)
     return SponsorSupport(
         has_sponsor=True,
-        sponsor_name=(rp_lender.counterparty if rp_lender else None) or (top.name if top else lenders[0]),
+        # Attribute the % to its owner: the owner's cited pct must sit under the owner's own
+        # name, not the (possibly different) related-party lender's name.
+        sponsor_name=(top.name if top else None)
+                     or (rp_lender.counterparty if rp_lender else None)
+                     or (lenders[0] if lenders else None),
         ownership_pct=_cv(top.pct, "%", top.quote) if top else None,
         related_party_lender=(rp_lender.counterparty if rp_lender else (lenders[0] if lenders else None)),
         lender_source="related-party-transactions footnote" if rp_lender else

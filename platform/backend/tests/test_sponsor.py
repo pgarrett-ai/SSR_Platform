@@ -23,6 +23,8 @@ def test_build_sponsor_lcid_hero():
                    quote="Ayar, an affiliate of PIF, is the lender under our DDTL")]
     sp = build_sponsor(covenants, owners, rpts)
     assert sp.has_sponsor is True
+    # sponsor_name attributes to the owner PIF's % is cited under, not the Ayar lender name.
+    assert sp.sponsor_name == "Public Investment Fund"
     assert sp.ownership_pct.value == 57.0
     assert sp.ownership_pct.citation.quote == owners[0].quote
     assert sp.related_party_lender == "Ayar Third Investment Company"
@@ -39,9 +41,22 @@ def test_llm_off_deterministic_lender():
     covenants = [CovenantPackage(admin_agent="Ayar Third Investment Company")]
     sp = build_sponsor(covenants, [], [])
     assert sp.has_sponsor is True
+    # No qualifying owner and no RPT lender -> sponsor_name falls back to the admin-agent
+    # lender's own name (owner-less lender-only naming).
+    assert sp.sponsor_name == "Ayar Third Investment Company"
     assert sp.related_party_lender == "Ayar Third Investment Company"
     assert sp.lender_source == "covenant admin agent"
     assert sp.ownership_pct is None
+
+
+def test_build_sponsor_no_crash_empty_counterparty():
+    """rpt is_lender=True with empty counterparty, no qualifying owner, no admin_agent —
+    the name-fallback chain must not IndexError on an empty lenders list (finding 2)."""
+    rpts = [RptRaw(counterparty="", description="DDTL facility", amount_usd=None,
+                   is_lender=True, quote="an affiliate is the lender under our DDTL")]
+    sp = build_sponsor([], [], rpts)
+    assert sp.has_sponsor is True
+    assert sp.sponsor_name is None
 
 
 # ---- extract_sponsor_ownership (LLM seam, monkeypatched) ---------------------------
