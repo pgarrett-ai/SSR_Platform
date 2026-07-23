@@ -251,7 +251,12 @@ def harvest_sd_events() -> list[dict]:
         # Florida-UCLA-LoPucki Bankruptcy Research Database (attribution required by its license).
         df = df.rename(columns={"NameCorp": "obligor_name", "CikBefore": "central_index_key"})
         df["central_index_key"] = df["central_index_key"].replace("", pd.NA)  # blank -> name-lookup fallback
-        df["rating_action_date"] = pd.to_datetime(df["DateFiled"]).dt.strftime("%Y-%m-%d")
+        parsed = pd.to_datetime(df["DateFiled"], errors="coerce")
+        bad = parsed.isna()
+        if bad.any():
+            print(f"  lopucki_brd: dropped {bad.sum()} rows with unparseable DateFiled")
+        df = df.loc[~bad].copy()
+        df["rating_action_date"] = parsed[~bad].dt.strftime("%Y-%m-%d")
         df["rating"] = "D"
         df["rating_type"] = "Issuer Default"
         events, unmatched = sd_events_from_frame(df, lookup, {"D"}, "Issuer Default", "lopucki_brd")
