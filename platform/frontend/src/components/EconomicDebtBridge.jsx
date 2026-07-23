@@ -184,6 +184,8 @@ export default function EconomicDebtBridge({ bridge }) {
           build below. Leases from XBRL; other lines from footnotes.
         </p>
       )}
+      {bridge.ebitda?.note && (
+        <p className="mt-1 text-[11px] text-amber-300/70">{bridge.ebitda.note}</p>)}
     </div>
   );
 }

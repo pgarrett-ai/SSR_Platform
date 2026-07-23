@@ -2,10 +2,15 @@
 display, and the tranche-coupon preference order. Canned facts from the AAL probe shapes."""
 from __future__ import annotations
 
+import datetime as dt
+from types import SimpleNamespace
+
 from app.capstack.debt_schedule import drop_retired
 from app.capstack.debt_xbrl import (_instrument_from_member, facility_capacity,
                                     group_debt_facts, prettify_member, rate_display)
+from app.edgar.facts import FinancialSeries, YearFacts
 from app.fulcrum.adapter import _parse_coupon, _tranche_coupon
+from app.pipeline import _empty_schedule_warning
 from app.schemas import CitedValue, DebtInstrument
 
 
@@ -212,6 +217,35 @@ def test_drop_retired():
     kept = drop_retired([inst(1e9, "2025"), inst(1e9, "February 2028"),
                          inst(0, "2030"), inst(1e9, "2026 to 2038")], "2026-03-31")
     assert [i.maturity for i in kept] == ["February 2028", "2026 to 2038"]
+
+
+# ---- empty-schedule warning (ATUS-style silent gap) --------------------------------------
+
+
+def _series_with_debt(lt_debt_noncurrent):
+    fact = SimpleNamespace(
+        numeric_value=lt_debt_noncurrent, concept="lt_debt_noncurrent",
+        label="lt_debt_noncurrent", period_end=dt.date(2025, 12, 31),
+        accession="0000000000-26-000001", form_type="10-K", filing_date=dt.date(2026, 2, 18),
+    )
+    yf = YearFacts(fiscal_year=2025, period_end=dt.date(2025, 12, 31),
+                   metrics={"lt_debt_noncurrent": fact})
+    return FinancialSeries(cik="6201", years=[yf])
+
+
+def test_empty_schedule_warns_when_balance_sheet_debt_is_material():
+    msg = _empty_schedule_warning([], _series_with_debt(26e9))
+    assert msg is not None and "EMPTY" in msg
+
+
+def test_empty_schedule_no_warning_when_schedule_populated():
+    populated = [DebtInstrument(instrument="x", outstanding=CitedValue(value=1e9))]
+    assert _empty_schedule_warning(populated, _series_with_debt(26e9)) is None
+
+
+def test_empty_schedule_no_warning_when_debt_immaterial():
+    assert _empty_schedule_warning([], _series_with_debt(1e6)) is None
+    assert _empty_schedule_warning([], None) is None
 
 
 def test_tranche_coupon_preference_order():

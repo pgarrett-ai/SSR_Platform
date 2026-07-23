@@ -46,6 +46,18 @@ def test_ebitda_prefers_net_income_walk():
     assert "net income" in bridge.ebitda.formula
 
 
+def test_ebitda_reconciliation_note_labels_walk_vs_proxy():
+    walk = dict(net_income=3.0e9, interest_expense=0.5e9, income_tax_expense=0.2e9)
+    bridge, _ = build_bridge(_series(**BASE, **walk), [], None)   # walk 5.9e9 vs proxy 3.7e9
+    assert bridge.ebitda.value == 5.9e9
+    assert "non-operating" in bridge.ebitda.note
+
+
+def test_no_reconciliation_note_when_ebitda_is_proxy():
+    bridge, _ = build_bridge(_series(**BASE), [], None)           # no walk anchors -> proxy
+    assert "non-operating" not in (bridge.ebitda.note or "")
+
+
 def test_negative_ebitda_leverage_is_not_meaningful():
     # Cash-burner (LCID-style): OI -4.0 + D&A 2.2 = EBITDA -1.8e9. Debt / negative EBITDA
     # sign-flips into "less levered than reported" — must render n.m., never a number.
