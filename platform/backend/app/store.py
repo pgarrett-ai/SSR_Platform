@@ -273,6 +273,7 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
                            if overview.coverage_chips
                            and overview.coverage_chips.ebitda_interest else None),
         last_price=prior.last_price if prior else None,
+        runway_months=(overview.liquidity.runway_months if overview.liquidity else None),
     ))
 
 

@@ -324,3 +324,4 @@ class Snapshot(Base):
     ebitda_capex_leverage: Mapped[Optional[float]] = mapped_column(Float)   # Debt/(EBITDA−CAPX)
     interest_coverage: Mapped[Optional[float]] = mapped_column(Float)       # EBITDA/interest
     last_price: Mapped[Optional[float]] = mapped_column(Float)              # equity, from hazard run
+    runway_months: Mapped[Optional[float]] = mapped_column(Float)   # overview.liquidity.runway_months

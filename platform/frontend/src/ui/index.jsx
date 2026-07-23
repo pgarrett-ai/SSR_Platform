@@ -158,10 +158,11 @@ export function Stat({ label, value, sub, color, bare = false }) {
 
 export const rowClass = "border-b border-ink-700/60 hover:bg-ink-700/30";
 
-export function Th({ right = false, className = "", title, children }) {
+export function Th({ right = false, className = "", title, onClick, children }) {
   return (
     <th
       title={title}
+      onClick={onClick}
       className={`px-2 py-2 text-[11px] font-medium uppercase tracking-wide text-slate-500 ${right ? "text-right" : "text-left"} ${className}`}
     >
       {children}
