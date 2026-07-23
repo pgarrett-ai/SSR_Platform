@@ -287,6 +287,11 @@ export async function planRecovery(ticker, body, years = 3) {
   );
 }
 
+export async function addDocketEvent(ticker, body) {
+  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/docket`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
+}
+
 export async function fetchCh11Case(ticker, years = 3) {
   return jsonOrThrow(
     await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/case?years=${years}`)

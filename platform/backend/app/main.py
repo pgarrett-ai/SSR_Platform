@@ -1325,6 +1325,72 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
     }))
 
 
+DOCKET_SUBTYPES = {   # Moyer ch.12 milestones -> severity 1-5
+    "petition": 5, "first_day": 3, "dip": 4, "363_sale": 4,
+    "disclosure_statement": 3, "plan": 4, "confirmation": 5,
+    "effective": 4, "exclusivity_extension": 2}
+
+
+class DocketBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    subtype: str = Field(pattern=r"^[a-z0-9_]{1,32}$")
+    occurred_at: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    title: str = Field(min_length=1, max_length=300)
+    docket_no: Optional[str] = Field(None, max_length=32, pattern=r"^[A-Za-z0-9.\-]*$")
+    source_url: Optional[str] = Field(None, max_length=500)
+
+
+def _docket_event(cik, b: DocketBody):   # pure -> unit-testable, mirrors events_from_sd_rows
+    from .events.types import Event
+
+    # cik in synthetic accession because make_dedupe_key omits cik (models_events.py:~146)
+    acc = f"manual:docket:{cik}:{b.occurred_at}:{b.subtype}" + (f":{b.docket_no}" if b.docket_no else "")
+    return Event(cik=cik, event_type="docket", subtype=b.subtype,
+                 severity=DOCKET_SUBTYPES[b.subtype], confidence=1.0,
+                 occurred_at=b.occurred_at, source="manual", source_form="docket",
+                 accession_no=acc, source_url=b.source_url, title=b.title, payload={})
+
+
+@app.post("/api/company/{ticker}/recovery/docket")
+def add_docket_event(ticker: str, body: DocketBody):
+    """Layer A (manual) docket ingest (Moyer ch. 12 milestones) — a direct event-store
+    write, not a registry-detector route (source='manual' already anticipated in
+    models_events.py:~78). Re-POST of the same (cik, date, subtype[, docket_no]) is
+    idempotent (inserted=0) — that IS the edit path. Rendering is free: /api/events and
+    /api/company/{ticker}/timeline already select+emit these rows (TimelinePage.jsx:~50,
+    EventsPage.jsx:~137 render the badge; TimelinePage.jsx:~52-53, EventsPage.jsx:~142-143
+    render source_url as a raw <a href>)."""
+    from .events.store import insert_events
+
+    if body.subtype not in DOCKET_SUBTYPES:
+        return JSONResponse(status_code=400, content={"error": f"unknown subtype {body.subtype!r}"})
+    if body.source_url and not body.source_url.startswith(("http://", "https://")):
+        return JSONResponse(status_code=400, content={"error": "source_url must be http(s)"})  # href XSS guard
+    try:
+        dt.date.fromisoformat(body.occurred_at)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"error": "occurred_at is not a real calendar date"})
+    with session_scope() as session:
+        cik = _resolve_cik(session, ticker)
+        if cik is None:
+            return JSONResponse(status_code=404, content={"error": "ticker_not_found"})
+        ev = _docket_event(cik, body)
+        # ponytail: manual rows must be filtered source!='manual' at backtest time — not enforced here
+        n = insert_events(session, [ev], detected_at=dt.datetime.utcnow())
+    return JSONResponse(content={"inserted": n, "dedupe_key": ev.dedupe_key,
+                                 "note": None if n else "already recorded (idempotent)"})
+
+
+@app.delete("/api/events/{event_id}")
+def delete_docket_event(event_id: int):
+    """Undo for the manual docket surface only — never deletes a detector-sourced row."""
+    with session_scope() as session:
+        n = (session.query(models_events.Event)
+             .filter(models_events.Event.id == event_id,
+                     models_events.Event.source == "manual").delete())
+        return JSONResponse(content={"deleted": n})
+
+
 @app.get("/api/company/{ticker}/recovery/crisis")
 def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
     """Crisis-of-confidence four-factor screen (Moyer ch. 8): a restatement/fraud 8-K

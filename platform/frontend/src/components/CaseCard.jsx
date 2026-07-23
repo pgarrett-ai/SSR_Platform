@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { fetchCh11Case } from "../api.js";
+import { addDocketEvent, fetchCh11Case, fetchEvents } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Section } from "../ui/index.jsx";
+import { Badge, Button, Input, Section } from "../ui/index.jsx";
 
 // Ch 11 case card (Moyer ch. 12): statutory clocks off the petition date (pure date math,
 // IrrMatrix-style frontend calc). Petition date is seeded + cited from the 8-K Item 1.03
@@ -16,10 +16,88 @@ const BENCHMARK_MONTHS = 14;    // Moyer: average time in ch.11 ≈ 14 mo (range
 const dateCls =
   "rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent";
 
+// mirrors backend DOCKET_SUBTYPES (main.py) — Moyer ch.12 milestones
+const DOCKET_SUBTYPES = ["petition", "first_day", "dip", "363_sale", "disclosure_statement",
+  "plan", "confirmation", "effective", "exclusivity_extension"];
+const EMPTY_DOCKET_FORM = { subtype: DOCKET_SUBTYPES[0], occurred_at: "", title: "",
+                            docket_no: "", source_url: "" };
+
 function addDays(iso, n) {
   const d = new Date(iso + "T00:00:00Z");
   d.setUTCDate(d.getUTCDate() + n);
   return d.toISOString().slice(0, 10);
+}
+
+// Docket sub-surface (Moyer F2 manual ingest, Layer A): mini list + add-form writing
+// event_type='docket' rows into the Phase-6 event store. Rendering on Timeline/Events
+// is free — this only needs to list + submit.
+function DocketSurface({ ticker }) {
+  const [events, setEvents] = useState([]);
+  const [form, setForm] = useState(EMPTY_DOCKET_FORM);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+
+  function refetch() {
+    fetchEvents({ ticker, event_type: ["docket"], limit: 50 })
+      .then((d) => setEvents(d.events || []))
+      .catch(() => {});
+  }
+
+  useEffect(() => { refetch(); setForm(EMPTY_DOCKET_FORM); }, [ticker]);   // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function submit(e) {
+    e.preventDefault();
+    if (busy || !form.occurred_at || !form.title.trim()) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await addDocketEvent(ticker, {
+        subtype: form.subtype, occurred_at: form.occurred_at, title: form.title.trim(),
+        docket_no: form.docket_no.trim() || undefined,
+        source_url: form.source_url.trim() || undefined,
+      });
+      setForm((f) => ({ ...EMPTY_DOCKET_FORM, subtype: f.subtype }));
+      refetch();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-5 border-t border-ink-700 pt-4">
+      <span className="text-[10px] uppercase tracking-wide text-slate-500">Docket events</span>
+      <ul className="mt-2 flex flex-col gap-1">
+        {events.map((ev) => (
+          <li key={ev.id} className="flex items-center gap-2 text-xs text-slate-300">
+            <span className="font-mono text-slate-500">{ev.occurred_at?.slice(0, 10)}</span>
+            <Badge tone="info" mono>{ev.subtype}</Badge>
+            <span className="truncate">{ev.title}</span>
+          </li>
+        ))}
+        {!events.length && <li className="text-[11px] text-slate-500">no docket entries yet</li>}
+      </ul>
+      <form onSubmit={submit} className="mt-3 flex flex-wrap items-end gap-2">
+        <select value={form.subtype} onChange={(e) => setForm((f) => ({ ...f, subtype: e.target.value }))}
+          className="rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-accent">
+          {DOCKET_SUBTYPES.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <input type="date" value={form.occurred_at}
+          onChange={(e) => setForm((f) => ({ ...f, occurred_at: e.target.value }))} className={dateCls} />
+        <Input placeholder="title" value={form.title}
+          onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} className="w-48" />
+        <Input placeholder="docket no. (optional)" value={form.docket_no}
+          onChange={(e) => setForm((f) => ({ ...f, docket_no: e.target.value }))} className="w-32" />
+        <Input placeholder="source URL (optional)" value={form.source_url}
+          onChange={(e) => setForm((f) => ({ ...f, source_url: e.target.value }))} className="w-48" />
+        <Button variant="primary" disabled={busy || !form.occurred_at || !form.title.trim()}>
+          {busy ? "Adding…" : "Add"}
+        </Button>
+      </form>
+      {error && <div className="mt-1 text-[11px] text-rose-300">{error}</div>}
+    </div>
+  );
 }
 
 export default function CaseCard({ ticker, years, petitionDate, setPetitionDate }) {
@@ -133,6 +211,8 @@ export default function CaseCard({ ticker, years, petitionDate, setPetitionDate 
         </Badge>
         {caseInfo?.note && <span className="text-[11px] text-slate-500">{caseInfo.note}</span>}
       </div>
+
+      <DocketSurface ticker={ticker} />
     </Section>
   );
 }
