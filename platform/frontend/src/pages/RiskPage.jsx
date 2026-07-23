@@ -10,6 +10,7 @@ import HealthRadar from "../components/risk/HealthRadar.jsx";
 import Financials from "../components/risk/Financials.jsx";
 import MarketPanel from "../components/risk/MarketPanel.jsx";
 import EventTimeline from "../components/risk/EventTimeline.jsx";
+import SurvivalPanel from "../components/risk/SurvivalPanel.jsx";
 import RestatementScreen from "../components/RestatementScreen.jsx";
 
 // The hazard dashboard, ported from hazard/frontend (its header/search now lives in the shell).
@@ -98,6 +99,7 @@ export default function RiskPage({ ticker, years }) {
       <Financials data={data} />
       <MarketPanel data={data} />
       <EventTimeline data={data} />
+      {data.survival?.available && <SurvivalPanel data={data.survival} />}
       <RestatementScreen ticker={ticker} years={years} />
       <p className="mt-6 text-xs text-slate-600">
         Altman Z″, Merton, CHS — published coefficients. * CHS is a point-in-time approximation.
