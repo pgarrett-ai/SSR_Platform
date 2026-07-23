@@ -1365,6 +1365,10 @@ def add_docket_event(ticker: str, body: DocketBody):
         return JSONResponse(status_code=400, content={"error": f"unknown subtype {body.subtype!r}"})
     if body.source_url and not body.source_url.startswith(("http://", "https://")):
         return JSONResponse(status_code=400, content={"error": "source_url must be http(s)"})  # href XSS guard
+    try:
+        dt.date.fromisoformat(body.occurred_at)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"error": "occurred_at is not a real calendar date"})
     with session_scope() as session:
         cik = _resolve_cik(session, ticker)
         if cik is None:

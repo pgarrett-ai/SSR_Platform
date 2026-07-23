@@ -62,6 +62,15 @@ def test_javascript_source_url_400():
     assert r.status_code == 400
 
 
+def test_invalid_calendar_date_400():
+    before = len(client.get(f"/api/events?ticker={TICKER}&event_type=docket").json()["events"])
+    r = client.post(f"/api/company/{TICKER}/recovery/docket", json={
+        "subtype": "plan", "occurred_at": "2026-02-30", "title": "x"})
+    assert r.status_code == 400
+    after = len(client.get(f"/api/events?ticker={TICKER}&event_type=docket").json()["events"])
+    assert after == before
+
+
 def test_unknown_ticker_404():
     r = client.post("/api/company/ZZZZNOPE/recovery/docket", json={
         "subtype": "plan", "occurred_at": "2026-03-01", "title": "x"})
