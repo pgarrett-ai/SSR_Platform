@@ -53,6 +53,7 @@ DATA_DIR = Path(__file__).resolve().parent / "data"
 EVENTS_PATH = DATA_DIR / "default_events.json"
 UNIVERSE_PATH = DATA_DIR / "pit_universe.json"
 SD_PATH = DATA_DIR / "sd_events.json"
+BRD_CSV = DATA_DIR / "lopucki_brd_cases.csv"  # Florida-UCLA-LoPucki BRD Cases table (operator-supplied; license: free commercial/academic use w/ attribution)
 
 _FTS = "https://efts.sec.gov/LATEST/search-index?"
 _FORM_IDX = "https://www.sec.gov/Archives/edgar/full-index/{y}/QTR{q}/form.idx"
@@ -241,6 +242,25 @@ def harvest_sd_events() -> list[dict]:
         events, unmatched = sd_events_from_frame(df, lookup, ratings, type_pattern, source)
         print(f"  {source}: {len(events)} issuers matched to a CIK, "
               f"{unmatched} unmatched (mostly non-SEC filers)")
+        for ev in events:
+            cur = by_cik.get(ev["cik"])
+            if cur is None or ev["filed"] < cur["filed"]:
+                by_cik[ev["cik"]] = ev
+    if BRD_CSV.exists():
+        df = pd.read_csv(BRD_CSV, dtype=str, encoding="latin-1")  # legacy export, non-UTF8 bytes
+        # Florida-UCLA-LoPucki Bankruptcy Research Database (attribution required by its license).
+        df = df.rename(columns={"NameCorp": "obligor_name", "CikBefore": "central_index_key"})
+        df["central_index_key"] = df["central_index_key"].replace("", pd.NA)  # blank -> name-lookup fallback
+        parsed = pd.to_datetime(df["DateFiled"], errors="coerce")
+        bad = parsed.isna()
+        if bad.any():
+            print(f"  lopucki_brd: dropped {bad.sum()} rows with unparseable DateFiled")
+        df = df.loc[~bad].copy()
+        df["rating_action_date"] = parsed[~bad].dt.strftime("%Y-%m-%d")
+        df["rating"] = "D"
+        df["rating_type"] = "Issuer Default"
+        events, unmatched = sd_events_from_frame(df, lookup, {"D"}, "Issuer Default", "lopucki_brd")
+        print(f"  lopucki_brd: {len(events)} matched, {unmatched} unmatched")
         for ev in events:
             cur = by_cik.get(ev["cik"])
             if cur is None or ev["filed"] < cur["filed"]:

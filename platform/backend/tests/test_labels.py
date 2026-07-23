@@ -113,6 +113,53 @@ def test_sd_events_from_frame_moodys_config():
     assert [(e["cik"], e["source"]) for e in events] == [("1234", "moodys_c")]
 
 
+def test_harvest_sd_events_includes_lopucki_brd(tmp_path, monkeypatch, capsys):
+    csv_path = tmp_path / "brd.csv"
+    csv_path.write_text(
+        "NameCorp,CikBefore,DateFiled\n"
+        '"Alpha Aviation, Inc.",0000012345,3/25/2009\n'
+        '"Alpha Aviation, Inc.",0000012345,1/1/2015\n'   # dup obligor, later date -> dropped
+        '"Beta Retail Corp",,1/15/2019\n'                # blank CIK, name resolvable
+        '"Gamma Foreign GmbH",,2/2/2018\n',              # blank CIK, name unresolvable
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(labels, "_SD_SOURCES", [])        # isolate: no live ratingshistory.info calls
+    monkeypatch.setattr(labels, "BRD_CSV", csv_path)
+    monkeypatch.setattr(labels, "_cik_by_name", lambda: {"BETA RETAIL": "777"})
+
+    events = labels.harvest_sd_events()
+
+    # zero-padded CikBefore normalized to the same lstrip("0") format the 8-K harvest uses
+    assert [(e["cik"], e["filed"], e["source"]) for e in events] == [
+        ("12345", "2009-03-25", "lopucki_brd"),   # M/D/YYYY -> ISO; earliest of the two dup rows
+        ("777", "2019-01-15", "lopucki_brd"),     # blank CikBefore resolved via name lookup
+    ]
+    assert "lopucki_brd: 2 matched, 1 unmatched" in capsys.readouterr().out  # Gamma unresolved
+
+
+def test_harvest_sd_events_drops_unparseable_lopucki_dates(tmp_path, monkeypatch, capsys):
+    csv_path = tmp_path / "brd.csv"
+    csv_path.write_text(
+        "NameCorp,CikBefore,DateFiled\n"
+        '"Alpha Aviation, Inc.",0000012345,3/25/2009\n'   # good row
+        '"Blank Date Corp",0000099999,\n'                 # blank DateFiled -> NaT
+        '"Bad Date Corp",0000088888,not-a-date\n'          # malformed DateFiled -> NaT
+        '"Beta Retail Corp",,1/15/2019\n',                # good row, blank CIK
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(labels, "_SD_SOURCES", [])        # isolate: no live ratingshistory.info calls
+    monkeypatch.setattr(labels, "BRD_CSV", csv_path)
+    monkeypatch.setattr(labels, "_cik_by_name", lambda: {"BETA RETAIL": "777"})
+
+    events = labels.harvest_sd_events()   # must not raise
+
+    assert [(e["cik"], e["filed"], e["source"]) for e in events] == [
+        ("12345", "2009-03-25", "lopucki_brd"),
+        ("777", "2019-01-15", "lopucki_brd"),
+    ]
+    assert "lopucki_brd: dropped 2 rows with unparseable DateFiled" in capsys.readouterr().out
+
+
 def test_panel_store_checkpoints_and_resumes(tmp_path, monkeypatch):
     calls = []
 

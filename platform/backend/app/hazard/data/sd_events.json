@@ -1,13 +1,4531 @@
 [
  {
-  "cik": "4515",
-  "name": "American Airlines, Inc.",
-  "filed": "2012-06-15",
-  "source": "fitch_rd"
+  "cik": "52795",
+  "name": "Itel Corporation",
+  "filed": "1981-01-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "320171",
+  "name": "Dreco Energy Services Ltd.",
+  "filed": "1982-06-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "315641",
+  "name": "UNR Industries Inc.",
+  "filed": "1982-07-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "355473",
+  "name": "Manville Corp.",
+  "filed": "1982-08-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "94673",
+  "name": "Storage Technology Corp.",
+  "filed": "1984-10-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "721083",
+  "name": "Smith International Inc.",
+  "filed": "1986-03-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "75307",
+  "name": "Oxoco Inc.",
+  "filed": "1986-09-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "745907",
+  "name": "Crystal Oil Co.",
+  "filed": "1986-10-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "97349",
+  "name": "Texaco Inc.",
+  "filed": "1987-04-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "738339",
+  "name": "American Healthcare Management, Inc.",
+  "filed": "1987-08-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "98537",
+  "name": "Todd Shipyards Corp.",
+  "filed": "1987-08-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "315256",
+  "name": "Public Service Co of New Hampshire",
+  "filed": "1988-01-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "83496",
+  "name": "Revco D.S. Inc.",
+  "filed": "1988-07-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "24071",
+  "name": "Continental Information Systems Corp",
+  "filed": "1989-01-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "832549",
+  "name": "Eastern Airlines Inc.",
+  "filed": "1989-03-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "722573",
+  "name": "Maxicare Health Plans Inc.",
+  "filed": "1989-03-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "34945",
+  "name": "Federated Department Stores, Inc.",
+  "filed": "1990-01-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1310974",
+  "name": "Integrated Resources Inc.",
+  "filed": "1990-02-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "319650",
+  "name": "TGX Corp.",
+  "filed": "1990-02-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "5177",
+  "name": "Amdura Corp.",
+  "filed": "1990-04-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "760678",
+  "name": "International American Homes Inc.",
+  "filed": "1990-04-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "35679",
+  "name": "Financial Corp. of Santa Barbara",
+  "filed": "1990-09-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "276189",
+  "name": "Fairfield Communities Inc.",
+  "filed": "1990-10-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "92344",
+  "name": "Southland Corp.",
+  "filed": "1990-10-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "60195",
+  "name": "Lone Star Industries Inc.",
+  "filed": "1990-12-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "50957",
+  "name": "Interco Inc.",
+  "filed": "1991-01-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "797543",
+  "name": "WTD Industries Inc.",
+  "filed": "1991-01-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "786877",
+  "name": "Hills Department Stores Inc.",
+  "filed": "1991-02-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "33939",
+  "name": "Forum Group Inc.",
+  "filed": "1991-02-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "706270",
+  "name": "America West Airlines Inc.",
+  "filed": "1991-06-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "835544",
+  "name": "Trump Taj Mahal Funding Inc.",
+  "filed": "1991-07-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "22099",
+  "name": "Columbia Gas System Inc.",
+  "filed": "1991-07-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "76732",
+  "name": "Pay N Pak Stores, Inc.",
+  "filed": "1991-09-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "829218",
+  "name": "Rexene Corp.",
+  "filed": "1991-10-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "106374",
+  "name": "New Valley Corp.",
+  "filed": "1991-11-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "795182",
+  "name": "Bonneville Pacific Corporation",
+  "filed": "1991-12-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "35590",
+  "name": "Orion Pictures Corp.",
+  "filed": "1991-12-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "814013",
+  "name": "Specialty Equipment Companies, Inc.",
+  "filed": "1991-12-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "109156",
+  "name": "Zale Corp.",
+  "filed": "1992-01-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "811801",
+  "name": "Sudbury Inc.",
+  "filed": "1992-01-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "61300",
+  "name": "R H Macy & Co. Inc.",
+  "filed": "1992-01-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "93308",
+  "name": "Standard Brands Paint Co.",
+  "filed": "1992-02-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "63801",
+  "name": "McCrory Corp.",
+  "filed": "1992-02-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "770618",
+  "name": "Trumps Castle Funding Inc.",
+  "filed": "1992-03-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "791445",
+  "name": "Trump Plaza Funding Inc.",
+  "filed": "1992-03-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "3499",
+  "name": "Alexanders Inc.",
+  "filed": "1992-05-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "19411",
+  "name": "Charter Medical Corp.",
+  "filed": "1992-06-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "104519",
+  "name": "Wang Laboratories Inc.",
+  "filed": "1992-08-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "819898",
+  "name": "SPI Holding, Inc.",
+  "filed": "1992-09-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "824096",
+  "name": "Spreckels Industries Inc.",
+  "filed": "1992-10-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "44801",
+  "name": "Hadson Corp.",
+  "filed": "1992-10-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "857102",
+  "name": "Edisto Resources Corp.",
+  "filed": "1992-10-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "33073",
+  "name": "Envirodyne Industries Inc.",
+  "filed": "1993-01-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "840260",
+  "name": "Live Entertainment Inc.",
+  "filed": "1993-02-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "814250",
+  "name": "Ladish Co. Inc.",
+  "filed": "1993-02-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "717216",
+  "name": "Calton Inc.",
+  "filed": "1993-03-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "314485",
+  "name": "Commonwealth Equity Trust",
+  "filed": "1993-08-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "85149",
+  "name": "Roses Stores Inc.",
+  "filed": "1993-09-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "32621",
+  "name": "Emerson Radio Corp.",
+  "filed": "1993-09-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "317833",
+  "name": "Great American Communications Co.",
+  "filed": "1993-11-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "814228",
+  "name": "Value Merchants Inc.",
+  "filed": "1993-12-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "719721",
+  "name": "Merry-Go-Round Enterprises Inc.",
+  "filed": "1994-01-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "778169",
+  "name": "Crystal Brands, Inc.",
+  "filed": "1994-01-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "83394",
+  "name": "Resorts International Inc. (1994)",
+  "filed": "1994-03-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "888139",
+  "name": "Megafoods Stores, Inc.",
+  "filed": "1994-08-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "795185",
+  "name": "O Brien Environmental Energy, Inc.",
+  "filed": "1994-09-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "315125",
+  "name": "House of Fabrics, Inc.",
+  "filed": "1994-11-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "106455",
+  "name": "Westmoreland Coal Co. (1994)",
+  "filed": "1994-11-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "842913",
+  "name": "Kash N Karry Food Stores, Inc.",
+  "filed": "1994-11-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "316236",
+  "name": "Grand Union Company (1995)",
+  "filed": "1995-01-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "811119",
+  "name": "Americold Corp.",
+  "filed": "1995-05-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "29917",
+  "name": "Dow Corning Corporation",
+  "filed": "1995-05-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "890326",
+  "name": "UDC Homes, Inc.",
+  "filed": "1995-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "887356",
+  "name": "Bradlees, Inc. (1995)",
+  "filed": "1995-06-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "50859",
+  "name": "Wherehouse Entertainment, Inc. (1995)",
+  "filed": "1995-08-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "79259",
+  "name": "Mortgage & Realty Trust (1995)",
+  "filed": "1995-08-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "857954",
+  "name": "Caldor Corporation",
+  "filed": "1995-09-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "798246",
+  "name": "Forstmann & Company, Inc.",
+  "filed": "1995-09-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "49588",
+  "name": "ICH Corporation",
+  "filed": "1995-10-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "60150",
+  "name": "Lomas Financial Corp. (1995)",
+  "filed": "1995-10-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "31575",
+  "name": "Edison Brothers Stores, Inc. (1995)",
+  "filed": "1995-11-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "801441",
+  "name": "Carolco Pictures, Inc.",
+  "filed": "1995-11-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "6260",
+  "name": "Anacomp, Inc.",
+  "filed": "1996-01-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "276780",
+  "name": "Color Tile, Inc.",
+  "filed": "1996-01-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "807708",
+  "name": "Kenetech Corp. (Kenetech Windpower, Inc. only)",
+  "filed": "1996-05-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "763739",
+  "name": "Morrison Knudsen Corp.",
+  "filed": "1996-06-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "814570",
+  "name": "Bibb Co",
+  "filed": "1996-07-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "924635",
+  "name": "Ernst Home Center, Inc.",
+  "filed": "1996-07-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "80134",
+  "name": "Presidio Oil Company",
+  "filed": "1996-08-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "716644",
+  "name": "FoxMeyer Health Corp. (FoxMeyer Drug Co. only)",
+  "filed": "1996-08-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1052163",
+  "name": "Anchor Glass Container Corp. (1996)",
+  "filed": "1996-09-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "11821",
+  "name": "Best Products Company, Inc. (1996)",
+  "filed": "1996-09-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "790815",
+  "name": "Fretter, Inc.",
+  "filed": "1996-09-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "732935",
+  "name": "Ithaca Industries, Inc.",
+  "filed": "1996-10-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "933035",
+  "name": "County Seat, Inc.",
+  "filed": "1996-10-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "874808",
+  "name": "Marvel Entertainment Group, Inc.",
+  "filed": "1996-12-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "798671",
+  "name": "Mid-American Waste Systems, Inc.",
+  "filed": "1997-01-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "912192",
+  "name": "MobileMedia Communications, Inc.",
+  "filed": "1997-01-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "919988",
+  "name": "Jayhawk Acceptance Corp.",
+  "filed": "1997-02-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "46012",
+  "name": "Harvard Industries, Inc. (1997)",
+  "filed": "1997-05-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "852772",
+  "name": "Flagstar Companies, Inc.",
+  "filed": "1997-06-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "836974",
+  "name": "Montgomery Ward Holding Corp. (1997)",
+  "filed": "1997-07-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "926296",
+  "name": "First Merchants Acceptance Corporation",
+  "filed": "1997-07-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "840216",
+  "name": "Koll Real Estate Group, Inc.",
+  "filed": "1997-07-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "885066",
+  "name": "Alliance Entertainment Corp.",
+  "filed": "1997-07-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "76744",
+  "name": "Payless Cashways, Inc. (1997)",
+  "filed": "1997-07-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "846615",
+  "name": "JPS Textile Group, Inc. (1997)",
+  "filed": "1997-08-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "8137",
+  "name": "Guy F. Atkinson Company of California",
+  "filed": "1997-08-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "818350",
+  "name": "RDM Sports Group, Inc.",
+  "filed": "1997-08-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "902279",
+  "name": "Levitz Furniture Incorporated",
+  "filed": "1997-09-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "787618",
+  "name": "Consolidated Hydro, Inc.",
+  "filed": "1997-09-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "799274",
+  "name": "Reeves Industries Inc.",
+  "filed": "1997-11-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "895517",
+  "name": "Molten Metal Technology, Inc.",
+  "filed": "1997-12-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "889429",
+  "name": "Paragon Trade Brands, Inc.",
+  "filed": "1998-01-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "838448",
+  "name": "FF Holdings Corporation",
+  "filed": "1998-01-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "875090",
+  "name": "Home Holdings, Inc.",
+  "filed": "1998-01-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "746961",
+  "name": "Pegasus Gold, Inc.",
+  "filed": "1998-01-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "864968",
+  "name": "Venture Stores, Inc",
+  "filed": "1998-01-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "860420",
+  "name": "APS Holding Corp.",
+  "filed": "1998-02-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "14920",
+  "name": "Brunos Inc.",
+  "filed": "1998-02-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "721059",
+  "name": "Reliance Acceptance Group, Inc.",
+  "filed": "1998-02-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "726617",
+  "name": "Builders Transport Inc.",
+  "filed": "1998-05-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "844843",
+  "name": "Geotek Communications, Inc.",
+  "filed": "1998-06-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "846378",
+  "name": "Mercury Finance Company",
+  "filed": "1998-07-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "920173",
+  "name": "FPA Medical Management, Inc.",
+  "filed": "1998-07-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "914749",
+  "name": "CAI Wireless Systems, Inc.",
+  "filed": "1998-07-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "824206",
+  "name": "American Rice, Inc.",
+  "filed": "1998-08-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "703701",
+  "name": "Westbridge Capital Corp.",
+  "filed": "1998-09-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "874690",
+  "name": "Sun Television and Appliances, Inc.",
+  "filed": "1998-09-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "883702",
+  "name": "Acme Metals, Incorporated",
+  "filed": "1998-09-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "30966",
+  "name": "Erly Industries Inc.",
+  "filed": "1998-09-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1011836",
+  "name": "Southern Pacific Funding Corporation",
+  "filed": "1998-10-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "894751",
+  "name": "Boston Chicken, Inc.",
+  "filed": "1998-10-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "847322",
+  "name": "Criimi Mae Inc.",
+  "filed": "1998-10-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "866253",
+  "name": "Cityscape Financial Corp.",
+  "filed": "1998-10-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "812423",
+  "name": "Nu-kote Holding, Inc.",
+  "filed": "1998-11-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1004153",
+  "name": "AmeriTruck Distribution Corp.",
+  "filed": "1998-11-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "803568",
+  "name": "PHP Healthcare Corporation",
+  "filed": "1998-11-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "57187",
+  "name": "Laclede Steel Company (1998)",
+  "filed": "1998-11-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "870756",
+  "name": "National Energy Group, Inc.",
+  "filed": "1998-12-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "917707",
+  "name": "Heartland Wireless Communications, Inc.",
+  "filed": "1998-12-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "890093",
+  "name": "JumboSports, Inc.",
+  "filed": "1998-12-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "86346",
+  "name": "Salant Corp. (1998)",
+  "filed": "1998-12-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1011584",
+  "name": "Fine Host Corporation",
+  "filed": "1999-01-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "945979",
+  "name": "Mobile Energy Services Holdings, Inc.",
+  "filed": "1999-01-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1018730",
+  "name": "Smartalk Teleservices, Inc.",
+  "filed": "1999-01-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "860192",
+  "name": "Geneva Steel Company (1999)",
+  "filed": "1999-02-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "918358",
+  "name": "Wireless One, Inc.",
+  "filed": "1999-02-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "790706",
+  "name": "Golden Books Family Entertainment, Inc.",
+  "filed": "1999-02-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "769879",
+  "name": "Recycling Industries, Inc.",
+  "filed": "1999-02-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "77155",
+  "name": "Penn Traffic Co (1999)",
+  "filed": "1999-03-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "217416",
+  "name": "United Companies Financial Corporation",
+  "filed": "1999-03-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1024321",
+  "name": "Wilshire Financial Services Group, Inc.",
+  "filed": "1999-03-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "38851",
+  "name": "Thorn Apple Valley, Inc.",
+  "filed": "1999-03-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "89107",
+  "name": "Service Merchandise Company, Inc.",
+  "filed": "1999-03-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "946140",
+  "name": "Forcenergy Inc",
+  "filed": "1999-03-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1018221",
+  "name": "Florida Coast Paper Company, LLC",
+  "filed": "1999-04-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1015360",
+  "name": "Dailey International Inc.",
+  "filed": "1999-05-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "845577",
+  "name": "Loewen Group, Inc.",
+  "filed": "1999-06-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "933747",
+  "name": "Renaissance Cosmetics, Inc.",
+  "filed": "1999-06-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "801898",
+  "name": "Harnischfeger Industries, Inc.",
+  "filed": "1999-06-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "46517",
+  "name": "Hechinger Company",
+  "filed": "1999-06-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "894076",
+  "name": "Philip Services Corp. (1999)",
+  "filed": "1999-06-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "945530",
+  "name": "Gulf States Steel, Inc. of Alabama",
+  "filed": "1999-07-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1018214",
+  "name": "Goss Graphic Systems, Inc. (1999)",
+  "filed": "1999-07-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "948421",
+  "name": "Iridium LLC (six omitted)",
+  "filed": "1999-08-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "109265",
+  "name": "Zenith Electronics Corp.",
+  "filed": "1999-08-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "908797",
+  "name": "Coho Energy, Inc. (1999)",
+  "filed": "1999-08-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1018980",
+  "name": "Costilla Energy, Inc.",
+  "filed": "1999-09-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "922341",
+  "name": "Hvide Marine Incorporated",
+  "filed": "1999-09-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1060009",
+  "name": "Vencor, Inc.",
+  "filed": "1999-09-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "914480",
+  "name": "Trism, Inc.",
+  "filed": "1999-09-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "891531",
+  "name": "Breed Technologies, Inc.",
+  "filed": "1999-09-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1039971",
+  "name": "Eagle Geophysical, Inc.",
+  "filed": "1999-09-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1008597",
+  "name": "Planet Hollywood International, Inc.",
+  "filed": "1999-10-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1002063",
+  "name": "Complete Management, Inc.",
+  "filed": "1999-10-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "904978",
+  "name": "Sun HealthCare Group, Inc.",
+  "filed": "1999-10-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1036712",
+  "name": "OpTel, Inc.",
+  "filed": "1999-10-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "913437",
+  "name": "Purina Mills, Inc.",
+  "filed": "1999-10-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "918111",
+  "name": "Just For Feet, Inc.",
+  "filed": "1999-11-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "803443",
+  "name": "Leasing Solutions, Inc.",
+  "filed": "1999-11-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "921623",
+  "name": "PacificAmerica Money Center, Inc.",
+  "filed": "1999-11-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "100166",
+  "name": "Tultex Corporation",
+  "filed": "1999-12-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "51124",
+  "name": "American Banknote Corporation",
+  "filed": "1999-12-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "910562",
+  "name": "Arm Financial Group, Inc.",
+  "filed": "1999-12-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "709136",
+  "name": "Graham-Field Health Products, Inc.",
+  "filed": "1999-12-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1053303",
+  "name": "Fruit of the Loom, Ltd.",
+  "filed": "1999-12-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "832820",
+  "name": "KCS Energy, Inc.",
+  "filed": "2000-01-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1060242",
+  "name": "Imperial Home Decor Group Inc.",
+  "filed": "2000-01-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "6948",
+  "name": "Applied Magnetics Corporation",
+  "filed": "2000-01-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "5588",
+  "name": "American Pad & Paper Company",
+  "filed": "2000-01-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "882287",
+  "name": "Mariner Post-Acute Network, Inc.",
+  "filed": "2000-01-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "876320",
+  "name": "AgriBioTech, Inc.",
+  "filed": "2000-01-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "875612",
+  "name": "Ameriserve Food Distribution, Inc.",
+  "filed": "2000-01-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "785814",
+  "name": "Integrated Health Services, Inc.",
+  "filed": "2000-02-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "805956",
+  "name": "CellNet Data Systems, Inc.",
+  "filed": "2000-02-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "890449",
+  "name": "PennCorp Financial Group, Inc.",
+  "filed": "2000-02-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1007588",
+  "name": "DecisionOne Holdings Corp.",
+  "filed": "2000-02-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "778718",
+  "name": "Tower Air, Inc.",
+  "filed": "2000-02-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "30908",
+  "name": "Eagle Food Centers, Inc.",
+  "filed": "2000-02-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "766738",
+  "name": "Genicom Corporation",
+  "filed": "2000-03-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "948073",
+  "name": "Crown Vantage Inc.",
+  "filed": "2000-03-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1016741",
+  "name": "Grand Court Lifestyles, Inc.",
+  "filed": "2000-03-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1061499",
+  "name": "Key Plastics L.L.C.",
+  "filed": "2000-03-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "924374",
+  "name": "CHS Electronics, Inc.",
+  "filed": "2000-04-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "868263",
+  "name": "Vista Eyecare, Inc.",
+  "filed": "2000-04-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "725151",
+  "name": "Medical Resources, Inc.",
+  "filed": "2000-04-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1042422",
+  "name": "Hedstrom Holdings, Inc.",
+  "filed": "2000-04-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "814249",
+  "name": "MicroAge, Inc.",
+  "filed": "2000-04-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1029253",
+  "name": "Clark Material Handling Company",
+  "filed": "2000-04-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1005653",
+  "name": "New American Healthcare Corp.",
+  "filed": "2000-04-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1007184",
+  "name": "Einstein Noah Bagel Corp",
+  "filed": "2000-04-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "932110",
+  "name": "Kitty Hawk, Inc.",
+  "filed": "2000-05-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "797556",
+  "name": "Laroche Industries Inc.",
+  "filed": "2000-05-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "808207",
+  "name": "System Software Associates, Inc.",
+  "filed": "2000-05-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "929941",
+  "name": "Family Golf Centers, Inc.",
+  "filed": "2000-05-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1044649",
+  "name": "Cambridge Industries, Inc.",
+  "filed": "2000-05-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1060948",
+  "name": "MMH Holdings, Inc.",
+  "filed": "2000-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "911522",
+  "name": "GST Telecommunications, Inc.",
+  "filed": "2000-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1002130",
+  "name": "ContiFinancial Corp.",
+  "filed": "2000-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1016577",
+  "name": "Sunterra Corp.",
+  "filed": "2000-05-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "6885",
+  "name": "Stage Stores, Inc. (2000)",
+  "filed": "2000-06-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "94601",
+  "name": "Stone & Webster, Inc.",
+  "filed": "2000-06-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "701856",
+  "name": "Safety Kleen Corp.",
+  "filed": "2000-06-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "856200",
+  "name": "Kaiser Group International, Inc.",
+  "filed": "2000-06-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1033671",
+  "name": "Safelite Glass Corporation",
+  "filed": "2000-06-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "910468",
+  "name": "Flooring America, Inc.",
+  "filed": "2000-06-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "818815",
+  "name": "Inacom Corp.",
+  "filed": "2000-06-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1043497",
+  "name": "Creditrust Corporation",
+  "filed": "2000-06-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "874265",
+  "name": "Genesis Health Ventures, Inc.",
+  "filed": "2000-06-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1041830",
+  "name": "Reliant Building Products, Inc.",
+  "filed": "2000-07-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1023294",
+  "name": "Prime Succession, Inc.",
+  "filed": "2000-07-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "95585",
+  "name": "Pathmark Stores, Inc.",
+  "filed": "2000-07-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "878324",
+  "name": "Paging Network, Inc.",
+  "filed": "2000-07-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "868076",
+  "name": "American Eco Corp.",
+  "filed": "2000-08-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1047368",
+  "name": "Glenoit Corp.",
+  "filed": "2000-08-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "799088",
+  "name": "Carmike Cinemas, Inc.",
+  "filed": "2000-08-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "924174",
+  "name": "Coram Healthcare Corp.",
+  "filed": "2000-08-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "922978",
+  "name": "Trend-Lines, Inc.",
+  "filed": "2000-08-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "46601",
+  "name": "Heilig-Meyers Company",
+  "filed": "2000-08-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "98559",
+  "name": "Tokheim Corp. (2000)",
+  "filed": "2000-08-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "889571",
+  "name": "United Artists Theatre Company",
+  "filed": "2000-09-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "94026",
+  "name": "Stellex Industries, Inc. (Stellex Technologies, Inc.)",
+  "filed": "2000-09-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "758722",
+  "name": "Paracelsus Healthcare Corp.",
+  "filed": "2000-09-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1021649",
+  "name": "Orbcomm Global, LP",
+  "filed": "2000-09-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "912142",
+  "name": "Specialty Foods Corp.",
+  "filed": "2000-09-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "884999",
+  "name": "Dyersburg Corp.",
+  "filed": "2000-09-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1066048",
+  "name": "Fine Air Services Corp.",
+  "filed": "2000-09-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "3941",
+  "name": "Allied Products Corp.",
+  "filed": "2000-10-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "75234",
+  "name": "Owens Corning",
+  "filed": "2000-10-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "894232",
+  "name": "Drypers Corp.",
+  "filed": "2000-10-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "912295",
+  "name": "GC Companies, Inc.",
+  "filed": "2000-10-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "879969",
+  "name": "CareMatrix Corp.",
+  "filed": "2000-11-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "896265",
+  "name": "Pillowtex Corp. (2000)",
+  "filed": "2000-11-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1013240",
+  "name": "ICG Communications, Inc.",
+  "filed": "2000-11-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "941738",
+  "name": "Wheeling Pittsburgh Corp. (2000)",
+  "filed": "2000-11-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "12105",
+  "name": "Big V Supermarkets, Inc.",
+  "filed": "2000-11-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1002131",
+  "name": "Lernout & Hauspie Speech Products NV",
+  "filed": "2000-11-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "7431",
+  "name": "Armstrong World Industries, Inc.",
+  "filed": "2000-12-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1055684",
+  "name": "Unicapital Corporation",
+  "filed": "2000-12-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "73093",
+  "name": "Northwestern Steel & Wire Co.",
+  "filed": "2000-12-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "75149",
+  "name": "Outboard Marine Corporation",
+  "filed": "2000-12-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "60731",
+  "name": "LTV Corp. (2000)",
+  "filed": "2000-12-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1004967",
+  "name": "Pacific Gateway Exchange, Inc.",
+  "filed": "2000-12-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1021352",
+  "name": "JCC Holding Co.",
+  "filed": "2001-01-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "935802",
+  "name": "Anicom, Inc.",
+  "filed": "2001-01-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "278327",
+  "name": "Trans World Airlines, Inc. (2001)",
+  "filed": "2001-01-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "847468",
+  "name": "Waste Systems International, Inc.",
+  "filed": "2001-01-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "922812",
+  "name": "American Homestar Corp.",
+  "filed": "2001-01-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1080558",
+  "name": "NorthPoint Communications Group, Inc.",
+  "filed": "2001-01-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "831327",
+  "name": "Imperial Sugar Company",
+  "filed": "2001-01-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "350920",
+  "name": "Mediq, Inc.",
+  "filed": "2001-01-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1056312",
+  "name": "Vlasic Foods International, Inc.",
+  "filed": "2001-01-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1021706",
+  "name": "Kevco, Inc.",
+  "filed": "2001-02-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "3662",
+  "name": "Sunbeam Corporation",
+  "filed": "2001-02-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1054588",
+  "name": "Loews Cineplex Entertainment Corp",
+  "filed": "2001-02-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "934852",
+  "name": "U.S. Office Products Company",
+  "filed": "2001-03-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "883701",
+  "name": "Finova Group, Inc.",
+  "filed": "2001-03-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1052245",
+  "name": "eToys, Inc.",
+  "filed": "2001-03-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "892604",
+  "name": "Worldtex, Inc.",
+  "filed": "2001-03-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1026486",
+  "name": "Star Telecommunications Inc.",
+  "filed": "2001-03-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1036297",
+  "name": "RSL Communications, Ltd.",
+  "filed": "2001-03-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1059888",
+  "name": "Holt Group, Inc.",
+  "filed": "2001-03-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "932140",
+  "name": "e.spire Communications, Inc.",
+  "filed": "2001-03-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "832922",
+  "name": "Drug Emporium, Inc.",
+  "filed": "2001-03-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1043438",
+  "name": "U.S.A. Floral Products, Inc.",
+  "filed": "2001-04-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1045309",
+  "name": "W.R. Grace & Company",
+  "filed": "2001-04-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1098311",
+  "name": "Republic Technologies International Holdings, LLC (2001)",
+  "filed": "2001-04-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1099231",
+  "name": "Pathnet Telecommunications, Inc.",
+  "filed": "2001-04-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "821202",
+  "name": "Borden Chemicals & Plastics LP (Borden Chemicals & Plastics Operating LP only)",
+  "filed": "2001-04-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1071645",
+  "name": "World Access, Inc.",
+  "filed": "2001-04-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1011630",
+  "name": "ProMedCo Management Company",
+  "filed": "2001-04-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "75488",
+  "name": "Pacific Gas & Electric Co. (2001)",
+  "filed": "2001-04-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1009403",
+  "name": "marchFIRST, Inc.",
+  "filed": "2001-04-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "868797",
+  "name": "Winstar Communications, Inc.",
+  "filed": "2001-04-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1039780",
+  "name": "Friede Goldman Halter, Inc.",
+  "filed": "2001-04-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1046558",
+  "name": "Convergent Communications, Inc.",
+  "filed": "2001-04-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1096287",
+  "name": "Xpedior, Inc.",
+  "filed": "2001-04-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1010286",
+  "name": "Advanced Radio Telecom Corp.",
+  "filed": "2001-04-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "925928",
+  "name": "Telscape International, Inc.",
+  "filed": "2001-04-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "945771",
+  "name": "Viatel Inc.",
+  "filed": "2001-05-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1064526",
+  "name": "Grove Worldwide, LLC",
+  "filed": "2001-05-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1059706",
+  "name": "Transportation Components Inc.",
+  "filed": "2001-05-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "906469",
+  "name": "Washington Group International, Inc.",
+  "filed": "2001-05-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "792570",
+  "name": "Casual Male Corp.",
+  "filed": "2001-05-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1047021",
+  "name": "Teligent Inc",
+  "filed": "2001-05-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "947268",
+  "name": "WebLink Wireless, Inc.",
+  "filed": "2001-05-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "940716",
+  "name": "PSINet Inc.",
+  "filed": "2001-05-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "801351",
+  "name": "Warnaco Group Inc.",
+  "filed": "2001-06-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "356395",
+  "name": "Reliance Group Holdings, Inc.",
+  "filed": "2001-06-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "757011",
+  "name": "USG Corp. (2001)",
+  "filed": "2001-06-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1061800",
+  "name": "Talon Automotive Group, Inc.",
+  "filed": "2001-06-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "225569",
+  "name": "AMRESCO, Inc.",
+  "filed": "2001-07-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1015535",
+  "name": "AMF Bowling Worldwide, Inc.",
+  "filed": "2001-07-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "884318",
+  "name": "Metricom, Inc.",
+  "filed": "2001-07-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1092657",
+  "name": "WebVan Group, Inc.",
+  "filed": "2001-07-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "722487",
+  "name": "Comdisco, Inc.",
+  "filed": "2001-07-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "795662",
+  "name": "Sterling Chemicals Holdings, Inc.",
+  "filed": "2001-07-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "780118",
+  "name": "Amwest Insurance Group Inc.",
+  "filed": "2001-07-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "891285",
+  "name": "Ha-Lo Industries",
+  "filed": "2001-07-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "830141",
+  "name": "Pioneer Companies, Inc.",
+  "filed": "2001-07-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1065869",
+  "name": "Rhythms NetConnections, Inc.",
+  "filed": "2001-08-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "946323",
+  "name": "Midway Airlines Corp (2001)",
+  "filed": "2001-08-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1043769",
+  "name": "Covad Communications Group, Inc.",
+  "filed": "2001-08-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "6071",
+  "name": "Ames Department Stores, Inc. (2001)",
+  "filed": "2001-08-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1067447",
+  "name": "Derby Cycle Corp",
+  "filed": "2001-08-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "813347",
+  "name": "Komag, Inc.",
+  "filed": "2001-08-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1095827",
+  "name": "American Tissue, Inc.",
+  "filed": "2001-09-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1098341",
+  "name": "Goss Holdings, Inc. (2001)",
+  "filed": "2001-09-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "888918",
+  "name": "Carbide Graphite Group Inc.",
+  "filed": "2001-09-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "764960",
+  "name": "Phar-Mor, Inc. (2001)",
+  "filed": "2001-09-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1013740",
+  "name": "Exodus Communications, Inc.",
+  "filed": "2001-09-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1020620",
+  "name": "At Home Corp",
+  "filed": "2001-09-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "34879",
+  "name": "Federal-Mogul Corporation",
+  "filed": "2001-10-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "929994",
+  "name": "Assisted Living Concepts, Inc.",
+  "filed": "2001-10-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1055468",
+  "name": "Fountain View Inc.",
+  "filed": "2001-10-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "946392",
+  "name": "Global TeleSystems, Inc.",
+  "filed": "2001-10-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "79326",
+  "name": "Polaroid Corp",
+  "filed": "2001-10-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "11860",
+  "name": "Bethlehem Steel Corp",
+  "filed": "2001-10-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "913364",
+  "name": "ABC-NACO, Inc.",
+  "filed": "2001-10-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "315136",
+  "name": "American Classic Voyages Co.",
+  "filed": "2001-10-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "915390",
+  "name": "Arch Wireless Inc.",
+  "filed": "2001-11-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1069602",
+  "name": "Classic Communications, Inc.",
+  "filed": "2001-11-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1097523",
+  "name": "ANC Rental Corp.",
+  "filed": "2001-11-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1038363",
+  "name": "Metals USA, Inc.",
+  "filed": "2001-11-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "870213",
+  "name": "Burlington Industries, Inc.",
+  "filed": "2001-11-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1088914",
+  "name": "SleepMaster LLC",
+  "filed": "2001-11-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "850660",
+  "name": "Thermadyne Holdings Corp. (2001)",
+  "filed": "2001-11-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1074908",
+  "name": "Valley Media Inc.",
+  "filed": "2001-11-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "101063",
+  "name": "Chiquita Brands International, Inc.",
+  "filed": "2001-11-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1024401",
+  "name": "Enron Corp.",
+  "filed": "2001-12-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1020616",
+  "name": "Lason, Inc.",
+  "filed": "2001-12-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "893670",
+  "name": "Hayes Lemmerz International, Inc. (2001)",
+  "filed": "2001-12-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1043310",
+  "name": "Startec Global Communications Corporation",
+  "filed": "2001-12-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1062515",
+  "name": "NationsRent, Inc.",
+  "filed": "2001-12-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1005015",
+  "name": "Audio Visual Services Corp.",
+  "filed": "2001-12-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1066138",
+  "name": "Lodgian, Inc.",
+  "filed": "2001-12-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "108976",
+  "name": "York Research Corporation (2002)",
+  "filed": "2001-12-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "937971",
+  "name": "ACT Manufacturing, Inc.",
+  "filed": "2001-12-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1058956",
+  "name": "DTI Holdings, Inc.",
+  "filed": "2001-12-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1076732",
+  "name": "USInterNetworking, Inc.",
+  "filed": "2002-01-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "53025",
+  "name": "Jacobson Stores, Inc.",
+  "filed": "2002-01-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "731190",
+  "name": "IT Group, Inc.",
+  "filed": "2002-01-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1040475",
+  "name": "Oxford Automotive, Inc.",
+  "filed": "2002-01-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "56824",
+  "name": "Kmart Corp.",
+  "filed": "2002-01-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1128709",
+  "name": "Geneva Steel Holdings Corp. (2002)",
+  "filed": "2002-01-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1061322",
+  "name": "Global Crossing Ltd.",
+  "filed": "2002-01-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "919943",
+  "name": "McLeodUSA, Inc. (2002)",
+  "filed": "2002-01-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1065633",
+  "name": "Network Plus Corp.",
+  "filed": "2002-02-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1037067",
+  "name": "Kasper A.S.L., Ltd.",
+  "filed": "2002-02-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1001136",
+  "name": "Stockwalk Group, Inc.",
+  "filed": "2002-02-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "811596",
+  "name": "Kaiser Aluminum Corp.",
+  "filed": "2002-02-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "924632",
+  "name": "International Fibercom, Inc.",
+  "filed": "2002-02-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1061583",
+  "name": "Verado Holdings, Inc.",
+  "filed": "2002-02-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1037927",
+  "name": "Globalstar LP",
+  "filed": "2002-02-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "884124",
+  "name": "Galey & Lord, Inc. (2002)",
+  "filed": "2002-02-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "918275",
+  "name": "Kellstrom Industries, Inc.",
+  "filed": "2002-02-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1043055",
+  "name": "Leiner Health Products, Inc. (2002)",
+  "filed": "2002-02-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1065458",
+  "name": "Logix Communications Enterprises Inc.",
+  "filed": "2002-02-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1003111",
+  "name": "Globix Corp.",
+  "filed": "2002-03-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "814241",
+  "name": "Formica Corp.",
+  "filed": "2002-03-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "70578",
+  "name": "National Steel Corp.",
+  "filed": "2002-03-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1054422",
+  "name": "U.S. Aggregates, Inc.",
+  "filed": "2002-03-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "44471",
+  "name": "Guilford Mills, Inc.",
+  "filed": "2002-03-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1017522",
+  "name": "Benedek Communications Corp. (Stations Holding Co, Inc.)",
+  "filed": "2002-03-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "927417",
+  "name": "Polymer Group, Inc.",
+  "filed": "2002-03-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1017648",
+  "name": "Adelphia Business Solutions, Inc.",
+  "filed": "2002-03-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1028965",
+  "name": "Special Metals Corp.",
+  "filed": "2002-03-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1015611",
+  "name": "United Australia-Pacific, Inc.",
+  "filed": "2002-03-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "73902",
+  "name": "Covanta Energy Corp.",
+  "filed": "2002-04-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1040570",
+  "name": "Orbital Imaging Corp.",
+  "filed": "2002-04-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1117042",
+  "name": "Mpower Holding Corp.",
+  "filed": "2002-04-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1102752",
+  "name": "FLAG Telecom Holdings, Ltd",
+  "filed": "2002-04-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "813781",
+  "name": "Exide Technologies (2002)",
+  "filed": "2002-04-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1044583",
+  "name": "Williams Communications Group, Inc.",
+  "filed": "2002-04-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "906347",
+  "name": "NTL Communications Corp.",
+  "filed": "2002-05-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1111938",
+  "name": "APW Ltd.",
+  "filed": "2002-05-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1043533",
+  "name": "Metromedia Fiber Network, Inc.",
+  "filed": "2002-05-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1058986",
+  "name": "Pinnacle Holdings, Inc.",
+  "filed": "2002-05-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1050504",
+  "name": "Pentacon Inc.",
+  "filed": "2002-05-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1116563",
+  "name": "Velocita Corp.",
+  "filed": "2002-05-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1063574",
+  "name": "WKI Holding Company, Inc.",
+  "filed": "2002-05-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "34616",
+  "name": "Farmland Industries, Inc.",
+  "filed": "2002-05-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "779334",
+  "name": "Birmingham Steel Corp.",
+  "filed": "2002-06-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1022329",
+  "name": "IMPSAT Fiber Networks, Inc.",
+  "filed": "2002-06-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1119307",
+  "name": "NewPower Holdings, Inc.",
+  "filed": "2002-06-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1052743",
+  "name": "Frontline Capital Group",
+  "filed": "2002-06-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1111634",
+  "name": "XO Communications, Inc.",
+  "filed": "2002-06-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "796486",
+  "name": "Adelphia Communications Corp.",
+  "filed": "2002-06-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1041954",
+  "name": "ITC DeltaCom, Inc.",
+  "filed": "2002-06-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "723527",
+  "name": "Worldcom, Inc.",
+  "filed": "2002-07-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "922471",
+  "name": "Budget Group Inc.",
+  "filed": "2002-07-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "942307",
+  "name": "Dade Behring Inc.",
+  "filed": "2002-08-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "701345",
+  "name": "US Airways Group, Inc. (2002)",
+  "filed": "2002-08-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1035423",
+  "name": "Atlantic Express Transportation Corp.",
+  "filed": "2002-08-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1022581",
+  "name": "Consolidated Freightways Corp.",
+  "filed": "2002-09-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "942138",
+  "name": "SLI, Inc.",
+  "filed": "2002-09-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1031107",
+  "name": "Peregrine Systems, Inc.",
+  "filed": "2002-09-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1101169",
+  "name": "ViaSystems Group Inc.",
+  "filed": "2002-10-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "2852",
+  "name": "Agway Inc.",
+  "filed": "2002-10-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1092319",
+  "name": "CTC Communications Group, Inc.",
+  "filed": "2002-10-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "917464",
+  "name": "EOTT Energy Partners, L.P.",
+  "filed": "2002-10-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1077552",
+  "name": "GenTek, Inc.",
+  "filed": "2002-10-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1002816",
+  "name": "Highlands Insurance Group, Inc.",
+  "filed": "2002-10-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "927790",
+  "name": "Union Acceptance Corporation",
+  "filed": "2002-10-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1072048",
+  "name": "SpectraSite Holdings, Inc.",
+  "filed": "2002-11-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1087008",
+  "name": "Orius Corp.",
+  "filed": "2002-11-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "73609",
+  "name": "Oakwood Homes Corp.",
+  "filed": "2002-11-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1113836",
+  "name": "Asia Global Crossing, Ltd.",
+  "filed": "2002-11-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1039690",
+  "name": "Encompass Services Corporation",
+  "filed": "2002-11-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1013871",
+  "name": "NRG Energy, Inc. (2002)",
+  "filed": "2002-11-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1110794",
+  "name": "Genuity Inc.",
+  "filed": "2002-11-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "100517",
+  "name": "UAL Corporation",
+  "filed": "2002-12-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1078420",
+  "name": "Advanced GlassFiber Yarns LLC",
+  "filed": "2002-12-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1068292",
+  "name": "Clarent Corp.",
+  "filed": "2002-12-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "719241",
+  "name": "Conseco, Inc.",
+  "filed": "2002-12-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1059130",
+  "name": "Focal Communications Corporation",
+  "filed": "2002-12-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "947156",
+  "name": "Seven Seas Petroleum, Inc.",
+  "filed": "2002-12-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1031754",
+  "name": "Wherehouse Entertainment, Inc. (2003)",
+  "filed": "2003-01-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1013218",
+  "name": "Alterra HealthCare Corp",
+  "filed": "2003-01-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1068078",
+  "name": "American Commercial Lines LLC",
+  "filed": "2003-01-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1108727",
+  "name": "iPCS, Inc.",
+  "filed": "2003-02-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1097516",
+  "name": "divine, inc.",
+  "filed": "2003-02-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1019285",
+  "name": "Superior Telecom, Inc.",
+  "filed": "2003-03-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "829676",
+  "name": "NTELOS, Inc.",
+  "filed": "2003-03-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "276641",
+  "name": "Spiegel Inc.",
+  "filed": "2003-03-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "46205",
+  "name": "Hawaiian Airlines Inc.",
+  "filed": "2003-03-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "850519",
+  "name": "SONICblue, Inc.",
+  "filed": "2003-03-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1088341",
+  "name": "Venture Holdings Co LLC",
+  "filed": "2003-03-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "352949",
+  "name": "Fleming Companies, Inc.",
+  "filed": "2003-04-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "82536",
+  "name": "Recoton Corp.",
+  "filed": "2003-04-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1113527",
+  "name": "AT&T Latin America Corp.",
+  "filed": "2003-04-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1065049",
+  "name": "Leap Wireless International Inc.",
+  "filed": "2003-04-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1027574",
+  "name": "Outsourcing Solutions Inc.",
+  "filed": "2003-05-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "30841",
+  "name": "Acterna Corp.",
+  "filed": "2003-05-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "887403",
+  "name": "DaisyTek International Corp.",
+  "filed": "2003-05-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1058703",
+  "name": "Allegiance Telecom Inc.",
+  "filed": "2003-05-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "66895",
+  "name": "Mississippi Chemical Corp.",
+  "filed": "2003-05-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "849979",
+  "name": "Weirton Steel Corp.",
+  "filed": "2003-05-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "852952",
+  "name": "WestPoint Stevens Inc. (2003)",
+  "filed": "2003-06-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1095701",
+  "name": "Philip Services Corp. (2003)",
+  "filed": "2003-06-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1023519",
+  "name": "MCSI Inc.",
+  "filed": "2003-06-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "750813",
+  "name": "Seitel Inc.",
+  "filed": "2003-06-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "819480",
+  "name": "Read-Rite Corp.",
+  "filed": "2003-06-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1144835",
+  "name": "Touch America Holdings Inc.",
+  "filed": "2003-06-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "4457",
+  "name": "Amerco",
+  "filed": "2003-06-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1051381",
+  "name": "National Equipment Services Inc.",
+  "filed": "2003-06-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "930735",
+  "name": "Crown Pacific Partners L.P.",
+  "filed": "2003-06-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1041454",
+  "name": "UPC Polska, Inc.",
+  "filed": "2003-07-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "892553",
+  "name": "Chart Industries Inc.",
+  "filed": "2003-07-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1129989",
+  "name": "PG&E National Energy Group, Inc.",
+  "filed": "2003-07-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1010775",
+  "name": "Mirant Corp.",
+  "filed": "2003-07-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1006269",
+  "name": "Loral Space & Communications Ltd.",
+  "filed": "2003-07-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1019101",
+  "name": "Texas Petrochemical Holdings, Inc.",
+  "filed": "2003-07-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "911115",
+  "name": "Atchison Casting Corp.",
+  "filed": "2003-08-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1040599",
+  "name": "Neenah Foundry Company (2003)",
+  "filed": "2003-08-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1113920",
+  "name": "Horizon PCS Inc.",
+  "filed": "2003-08-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1104252",
+  "name": "DDI Corp.",
+  "filed": "2003-08-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1122211",
+  "name": "Trenwick Group Ltd",
+  "filed": "2003-08-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "801550",
+  "name": "DVI Inc.",
+  "filed": "2003-08-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "73088",
+  "name": "NorthWestern Corporation",
+  "filed": "2003-09-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "897745",
+  "name": "WCI Steel Inc.",
+  "filed": "2003-09-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "23304",
+  "name": "Cone Mills Corp",
+  "filed": "2003-09-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1003114",
+  "name": "Impath Inc.",
+  "filed": "2003-09-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1216462",
+  "name": "Republic Engineered Products Holdings, LLC (2003)",
+  "filed": "2003-10-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1072258",
+  "name": "American Plumbing & Mechanical Inc.",
+  "filed": "2003-10-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1001430",
+  "name": "Thaxton Group Inc.",
+  "filed": "2003-10-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "918577",
+  "name": "Rouge Industries, Inc.",
+  "filed": "2003-10-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1081290",
+  "name": "Redback Networks Inc.",
+  "filed": "2003-11-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1060024",
+  "name": "Aurora Foods Inc.",
+  "filed": "2003-12-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1043382",
+  "name": "Solutia, Inc.",
+  "filed": "2003-12-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1135185",
+  "name": "Atlas Air Worldwide Holdings Inc.",
+  "filed": "2004-01-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "65384",
+  "name": "Metropolitan Mortgage & Securities Co., Inc.",
+  "filed": "2004-02-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "849101",
+  "name": "Avado Brands Inc.",
+  "filed": "2004-02-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "840302",
+  "name": "MTS, Incorporated",
+  "filed": "2004-02-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1129981",
+  "name": "Oglebay Norton Company",
+  "filed": "2004-02-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "47395",
+  "name": "High Voltage Engineering Corporation (2004)",
+  "filed": "2004-03-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1011308",
+  "name": "Footstar Inc.",
+  "filed": "2004-03-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1072548",
+  "name": "Geo Specialty Chemicals Inc.",
+  "filed": "2004-03-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "947429",
+  "name": "International Wire Group Inc.",
+  "filed": "2004-03-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "887591",
+  "name": "Fibermark Inc.",
+  "filed": "2004-03-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "914384",
+  "name": "Dan River Inc.",
+  "filed": "2004-03-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "758604",
+  "name": "Bush Industries, Inc.",
+  "filed": "2004-03-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1085776",
+  "name": "Liberate Technologies",
+  "filed": "2004-04-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1081878",
+  "name": "New World Pasta Co.",
+  "filed": "2004-05-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1041858",
+  "name": "RCN Corporation",
+  "filed": "2004-05-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1015629",
+  "name": "Pegasus Satellite Communications, Inc.",
+  "filed": "2004-06-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1024338",
+  "name": "Cornerstone Propane Partners, L.P.",
+  "filed": "2004-06-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "215310",
+  "name": "BMC Industries Inc.",
+  "filed": "2004-06-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "829499",
+  "name": "Interstate Bakeries Corporation",
+  "filed": "2004-09-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "745287",
+  "name": "Intermet Corp.",
+  "filed": "2004-09-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1091953",
+  "name": "Choice One Communications, Inc.",
+  "filed": "2004-10-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "225463",
+  "name": "Huffy Corp.",
+  "filed": "2004-10-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "898904",
+  "name": "ATA Holdings Corp.",
+  "filed": "2004-10-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "943320",
+  "name": "Trump Hotels & Casino Resorts Inc. (2004)",
+  "filed": "2004-11-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "27425",
+  "name": "Amcast Industrial Corporation (2004)",
+  "filed": "2004-11-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "874389",
+  "name": "Applied Extrusion Technologies, Inc.",
+  "filed": "2004-12-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "921549",
+  "name": "Trico Marine Services, Inc. (2004)",
+  "filed": "2004-12-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1116181",
+  "name": "IWO Holdings, Inc.",
+  "filed": "2005-01-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "74783",
+  "name": "Acceptance Insurance Companies Inc.",
+  "filed": "2005-01-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "911626",
+  "name": "Ultimate Electronics, Inc.",
+  "filed": "2005-01-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "911004",
+  "name": "Friedman's Inc.",
+  "filed": "2005-01-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "772349",
+  "name": "American Business Financial Services, Inc.",
+  "filed": "2005-01-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "34339",
+  "name": "Falcon Products, Inc.",
+  "filed": "2005-01-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "925548",
+  "name": "Tower Automotive, Inc.",
+  "filed": "2005-02-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "107681",
+  "name": "Winn-Dixie Stores, Inc.",
+  "filed": "2005-02-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "106618",
+  "name": "WHX Corporation",
+  "filed": "2005-03-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1059364",
+  "name": "Eagle Picher Holdings, Inc. (2005)",
+  "filed": "2005-04-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1013243",
+  "name": "aaiPharma Inc.",
+  "filed": "2005-05-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "846815",
+  "name": "Collins & Aikman Corporation",
+  "filed": "2005-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "909950",
+  "name": "Allied Holdings, Inc.",
+  "filed": "2005-07-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1058033",
+  "name": "Northwest Airlines Corporation",
+  "filed": "2005-09-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "27904",
+  "name": "Delta Air Lines, Inc.",
+  "filed": "2005-09-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "912908",
+  "name": "Foamex International, Inc. (2005)",
+  "filed": "2005-09-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "71508",
+  "name": "Entergy New Orleans, Inc.",
+  "filed": "2005-09-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1072342",
+  "name": "Delphi Corporation",
+  "filed": "2005-10-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1305464",
+  "name": "Refco Finance Inc.",
+  "filed": "2005-10-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "904020",
+  "name": "FLYi, Inc.",
+  "filed": "2005-11-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "916457",
+  "name": "Calpine Corp.",
+  "filed": "2005-12-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1049442",
+  "name": "Pliant Corporation (2006)",
+  "filed": "2006-01-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1048268",
+  "name": "Integrated Electrical Services, Inc.",
+  "filed": "2006-02-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "26780",
+  "name": "Dana Corporation",
+  "filed": "2006-03-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "931702",
+  "name": "OCA, Inc.",
+  "filed": "2006-03-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "74585",
+  "name": "Oneida Ltd.",
+  "filed": "2006-03-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "802301",
+  "name": "Silicon Graphics, Inc. (2006)",
+  "filed": "2006-05-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1056112",
+  "name": "Werner Holding Co. (PA), Inc.",
+  "filed": "2006-06-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "911576",
+  "name": "Vesta Insurance Group Inc.",
+  "filed": "2006-07-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1029893",
+  "name": "Radnor Holdings Corporation",
+  "filed": "2006-08-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1286382",
+  "name": "Premier Entertainment Biloxi LLC",
+  "filed": "2006-09-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1136294",
+  "name": "Global Power Equipment Group Inc.",
+  "filed": "2006-09-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "88095",
+  "name": "Sea Containers Ltd.",
+  "filed": "2006-10-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1016177",
+  "name": "Dura Automotive Systems, Inc.",
+  "filed": "2006-10-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "839621",
+  "name": "Granite Broadcasting Corporation",
+  "filed": "2006-12-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "812906",
+  "name": "Hancock Fabrics, Inc.",
+  "filed": "2007-03-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1287286",
+  "name": "New Century Financial Corporation",
+  "filed": "2007-04-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1145238",
+  "name": "InSight Health Services Holdings Corp",
+  "filed": "2007-05-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1060390",
+  "name": "Tweeter Home Entertainment Group, Inc.",
+  "filed": "2007-06-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "770944",
+  "name": "Bally Total Fitness Holding Corporation (2007)",
+  "filed": "2007-07-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1256536",
+  "name": "American Home Mortgage Investment Corp.",
+  "filed": "2007-08-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1283683",
+  "name": "HomeBanc Corp.",
+  "filed": "2007-08-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1035826",
+  "name": "NetBank, Inc.",
+  "filed": "2007-09-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1046859",
+  "name": "Remy International, Inc.",
+  "filed": "2007-10-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "925178",
+  "name": "Movie Gallery, Inc. (2007)",
+  "filed": "2007-10-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1133324",
+  "name": "InPhonic, Inc.",
+  "filed": "2007-11-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "311871",
+  "name": "Pope & Talbot, Inc.",
+  "filed": "2007-11-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1021848",
+  "name": "Delta Financial Corporation",
+  "filed": "2007-12-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1311803",
+  "name": "Propex, Inc.",
+  "filed": "2008-01-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1292731",
+  "name": "Buffets Holdings, Inc.",
+  "filed": "2008-01-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1046578",
+  "name": "TOUSA, Inc.",
+  "filed": "2008-01-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1181232",
+  "name": "Sirva, Inc.",
+  "filed": "2008-02-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "811696",
+  "name": "Sharper Image Corporation",
+  "filed": "2008-02-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "812708",
+  "name": "Wellman, Inc.",
+  "filed": "2008-02-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1124566",
+  "name": "Ziff Davis Holdings Inc.",
+  "filed": "2008-03-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "703799",
+  "name": "ViCorp Restaurants, Inc.",
+  "filed": "2008-04-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1351548",
+  "name": "Frontier Airlines Holdings, Inc. (2008)",
+  "filed": "2008-04-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1357062",
+  "name": "Kimball Hill, Inc.",
+  "filed": "2008-04-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1366913",
+  "name": "Linens Holding Co.",
+  "filed": "2008-05-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "38984",
+  "name": "Fremont General Corporation",
+  "filed": "2008-06-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1232229",
+  "name": "Syntax-Brillian Corporation",
+  "filed": "2008-07-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1178717",
+  "name": "Vertis, Inc. (2008)",
+  "filed": "2008-07-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "67494",
+  "name": "Pierre Foods, Inc.",
+  "filed": "2008-07-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "773468",
+  "name": "IndyMac Bancorp, Inc",
+  "filed": "2008-07-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1137778",
+  "name": "WCI Communities, Inc.",
+  "filed": "2008-08-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1003515",
+  "name": "Hines Horticulture, Inc.",
+  "filed": "2008-08-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1236309",
+  "name": "Luminent Mortgage Capital, Inc.",
+  "filed": "2008-09-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "806085",
+  "name": "Lehman Brothers Holdings Inc.",
+  "filed": "2008-09-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "933136",
+  "name": "Washington Mutual, Inc.",
+  "filed": "2008-09-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1103764",
+  "name": "Integrity Bancshares, Inc.",
+  "filed": "2008-10-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1315054",
+  "name": "WorldSpace, Inc.",
+  "filed": "2008-10-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "834408",
+  "name": "Brooke Corporation",
+  "filed": "2008-10-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1343202",
+  "name": "VeraSun Energy Corporation",
+  "filed": "2008-10-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1289871",
+  "name": "MPC Corporation",
+  "filed": "2008-11-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "104599",
+  "name": "Circuit City Stores, Inc.",
+  "filed": "2008-11-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1207070",
+  "name": "Franklin Bank Corp.",
+  "filed": "2008-11-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "726513",
+  "name": "Lenox Group, Inc.",
+  "filed": "2008-11-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "935063",
+  "name": "Downey Financial Corp.",
+  "filed": "2008-11-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "877355",
+  "name": "LandAmerica Financial Group, Inc.",
+  "filed": "2008-11-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "802481",
+  "name": "Pilgrims Pride Corporation",
+  "filed": "2008-12-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1349120",
+  "name": "Hawaiian Telcom Communications, Inc.",
+  "filed": "2008-12-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1004969",
+  "name": "PFF Bancorp, Inc.",
+  "filed": "2008-12-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "19731",
+  "name": "Chesapeake Corporation",
+  "filed": "2008-12-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "29806",
+  "name": "Constar International Inc. (2008)",
+  "filed": "2008-12-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "842635",
+  "name": "Lyondell Chemical Company",
+  "filed": "2009-01-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1362719",
+  "name": "Silver State Bancorp",
+  "filed": "2009-01-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1283664",
+  "name": "Merisant Worldwide, Inc.",
+  "filed": "2009-01-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1328910",
+  "name": "Tronox Incorporated",
+  "filed": "2009-01-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1038217",
+  "name": "Tarragon Corporation",
+  "filed": "2009-01-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1011509",
+  "name": "Apex Silver Mines Limited",
+  "filed": "2009-01-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "72911",
+  "name": "Nortel Networks Corp. (Nortel Networks, Inc. only)",
+  "filed": "2009-01-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "790414",
+  "name": "Gottschalks Inc.",
+  "filed": "2009-01-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "723371",
+  "name": "Hartmarx Corporation",
+  "filed": "2009-01-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "919226",
+  "name": "Smurfit-Stone Container Corporation",
+  "filed": "2009-01-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1028985",
+  "name": "Spectrum Brands, Inc.",
+  "filed": "2009-02-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1085320",
+  "name": "Muzak Holdings LLC",
+  "filed": "2009-02-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "202890",
+  "name": "Aleris International, Inc.",
+  "filed": "2009-02-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "929144",
+  "name": "Young Broadcasting, Inc.",
+  "filed": "2009-02-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1113247",
+  "name": "BearingPoint, Inc.",
+  "filed": "2009-02-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1035815",
+  "name": "Journal Register Company",
+  "filed": "2009-02-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1322705",
+  "name": "Spansion Inc.",
+  "filed": "2009-03-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "910619",
+  "name": "Monaco Coach Corporation",
+  "filed": "2009-03-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1093273",
+  "name": "Magna Entertainment Corp.",
+  "filed": "2009-03-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "314132",
+  "name": "Fleetwood Enterprises, Inc.",
+  "filed": "2009-03-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "716823",
+  "name": "Milacron Inc.",
+  "filed": "2009-03-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1006837",
+  "name": "Primus Telecommunications Group, Inc.",
+  "filed": "2009-03-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1091862",
+  "name": "Chemtura Corporation",
+  "filed": "2009-03-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "9779",
+  "name": "Fairchild Corporation",
+  "filed": "2009-03-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1351667",
+  "name": "Indalex Holdings Finance, Inc.",
+  "filed": "2009-03-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1132645",
+  "name": "Transmeridian Exploration Incorporated",
+  "filed": "2009-03-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1160294",
+  "name": "Herbst Gaming, Inc.",
+  "filed": "2009-03-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1097081",
+  "name": "1st Centennial Bancorp",
+  "filed": "2009-03-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1091667",
+  "name": "Charter Communications, Inc.",
+  "filed": "2009-03-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1375083",
+  "name": "Meruelo Maddux Properties, Inc.",
+  "filed": "2009-03-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "868512",
+  "name": "Sun-Times Media Group, Inc.",
+  "filed": "2009-03-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1367396",
+  "name": "Idearc Inc.",
+  "filed": "2009-03-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1082484",
+  "name": "Team Financial, Inc.",
+  "filed": "2009-04-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1285043",
+  "name": "Aventine Renewable Energy Holdings, Inc.",
+  "filed": "2009-04-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1034258",
+  "name": "Noble International, Ltd.",
+  "filed": "2009-04-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1393066",
+  "name": "AbitibiBowater Inc.",
+  "filed": "2009-04-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "895648",
+  "name": "General Growth Properties, Inc.",
+  "filed": "2009-04-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "854709",
+  "name": "Dayton Superior Corporation",
+  "filed": "2009-04-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "909326",
+  "name": "Asyst Technologies, Inc.",
+  "filed": "2009-04-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "943605",
+  "name": "Source Interlink Companies, Inc.",
+  "filed": "2009-04-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "892535",
+  "name": "Thornburg Mortgage, Inc.",
+  "filed": "2009-05-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "750199",
+  "name": "Energy Partners, Ltd.",
+  "filed": "2009-05-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1004740",
+  "name": "Capital Corp of the West",
+  "filed": "2009-05-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1237941",
+  "name": "Hayes Lemmerz International, Inc. (2009)",
+  "filed": "2009-05-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "313395",
+  "name": "TXCO Resources Inc.",
+  "filed": "2009-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "923877",
+  "name": "ION Media Networks, Inc.",
+  "filed": "2009-05-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "30419",
+  "name": "R.H. Donnelley Corporation",
+  "filed": "2009-05-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1111335",
+  "name": "Visteon Corporation",
+  "filed": "2009-05-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "825692",
+  "name": "Caraustar Industries, Inc.",
+  "filed": "2009-05-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "40730",
+  "name": "General Motors Corporation",
+  "filed": "2009-06-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1325702",
+  "name": "MagnaChip Semiconductor LLC",
+  "filed": "2009-06-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "701374",
+  "name": "Six Flags, Inc.",
+  "filed": "2009-06-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1046356",
+  "name": "Building Materials Holding Corporation",
+  "filed": "2009-06-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1345968",
+  "name": "Eddie Bauer Holdings, Inc.",
+  "filed": "2009-06-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1334872",
+  "name": "Cape Fear Bank Corporation",
+  "filed": "2009-06-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "842162",
+  "name": "Lear Corporation",
+  "filed": "2009-07-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1363346",
+  "name": "RathGibson, Inc.",
+  "filed": "2009-07-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "840256",
+  "name": "Vineyard National Bancorp",
+  "filed": "2009-07-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "898660",
+  "name": "Station Casinos, Inc.",
+  "filed": "2009-07-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "925464",
+  "name": "Security Bank Corporation",
+  "filed": "2009-07-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1320461",
+  "name": "Cooper-Standard Holdings, Inc.",
+  "filed": "2009-08-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "878731",
+  "name": "Finlay Enterprises, Inc.",
+  "filed": "2009-08-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "923529",
+  "name": "Cooperative Bankshares, Inc.",
+  "filed": "2009-08-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "858558",
+  "name": "Readers Digest Association, Inc.",
+  "filed": "2009-08-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "92339",
+  "name": "Colonial Bancgroup, Inc.",
+  "filed": "2009-08-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1406081",
+  "name": "Guaranty Financial Group Inc.",
+  "filed": "2009-08-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "861955",
+  "name": "CIB Marine Bancshares, Inc.",
+  "filed": "2009-09-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1362614",
+  "name": "Barzel Industries Inc.",
+  "filed": "2009-09-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "52617",
+  "name": "Irwin Financial Corporation",
+  "filed": "2009-09-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1021010",
+  "name": "Edge Petroleum Corporation",
+  "filed": "2009-10-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "817979",
+  "name": "Accuride Corporation",
+  "filed": "2009-10-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1318035",
+  "name": "NTK Holdings, Inc.",
+  "filed": "2009-10-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1406508",
+  "name": "Capmark Financial Group Inc.",
+  "filed": "2009-10-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1062613",
+  "name": "FairPoint Communications, Inc.",
+  "filed": "2009-10-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1171825",
+  "name": "CIT Group Inc.",
+  "filed": "2009-11-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1086385",
+  "name": "Panolam Industries International, Inc.",
+  "filed": "2009-11-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1296937",
+  "name": "Lazy Days R.V. Center, Inc.",
+  "filed": "2009-11-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1172678",
+  "name": "Temecula Valley Bancorp Inc.",
+  "filed": "2009-11-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "96638",
+  "name": "Advanta Corp.",
+  "filed": "2009-11-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "814068",
+  "name": "Champion Enterprises, Inc.",
+  "filed": "2009-11-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1275211",
+  "name": "Simmons Company",
+  "filed": "2009-11-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1076930",
+  "name": "GSI Group, Inc.",
+  "filed": "2009-11-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1016466",
+  "name": "Majestic Star Casino, LLC",
+  "filed": "2009-11-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1061580",
+  "name": "UCBH Holdings, Inc.",
+  "filed": "2009-11-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1000234",
+  "name": "Imperial Capital Bancorp, Inc.",
+  "filed": "2009-12-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1174527",
+  "name": "Citadel Broadcasting Corporation",
+  "filed": "2009-12-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "810332",
+  "name": "Mesa Air Group, Inc.",
+  "filed": "2010-01-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "810536",
+  "name": "FirstFed Financial Corp.",
+  "filed": "2010-01-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "918944",
+  "name": "MediaNews Group, Inc. (Affiliated Media, Inc. only)",
+  "filed": "2010-01-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "855667",
+  "name": "Neenah Enterprises, Inc. (2010)",
+  "filed": "2010-02-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1355804",
+  "name": "Spheris Inc.",
+  "filed": "2010-02-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "38570",
+  "name": "Orleans Homebuilders, Inc.",
+  "filed": "2010-03-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1050112",
+  "name": "Anthracite Capital, Inc.",
+  "filed": "2010-03-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1287151",
+  "name": "Xerium Technologies, Inc.",
+  "filed": "2010-03-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "878774",
+  "name": "American Mortgage Acceptance Company",
+  "filed": "2010-04-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1073429",
+  "name": "U.S. Concrete, Inc.",
+  "filed": "2010-04-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "949228",
+  "name": "Beach First National Bancshares, Inc.",
+  "filed": "2010-05-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1057725",
+  "name": "Neff Corp.",
+  "filed": "2010-05-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1304366",
+  "name": "Community Bancorp",
+  "filed": "2010-05-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1143566",
+  "name": "EvergreenBancorp, Inc.",
+  "filed": "2010-05-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1047290",
+  "name": "Newark Group, Inc.",
+  "filed": "2010-06-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "51939",
+  "name": "Corus Bankshares, Inc.",
+  "filed": "2010-06-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1170605",
+  "name": "TierOne Corporation",
+  "filed": "2010-06-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1084727",
+  "name": "Nexity Financial Corporation",
+  "filed": "2010-07-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "714756",
+  "name": "AMCORE Financial, Inc.",
+  "filed": "2010-08-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1051379",
+  "name": "Midwest Banc Holdings, Inc.",
+  "filed": "2010-08-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1063997",
+  "name": "Harrington West Financial Group, Inc.",
+  "filed": "2010-09-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1085734",
+  "name": "Blockbuster Inc.",
+  "filed": "2010-09-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1099980",
+  "name": "Tamalpais Bancorp",
+  "filed": "2010-09-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "913665",
+  "name": "TerreStar Corporation (TerreStar Networks Inc. only) (2010)",
+  "filed": "2010-10-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "726990",
+  "name": "AmericanWest Bancorporation",
+  "filed": "2010-10-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "874501",
+  "name": "Ambac Financial Group, Inc.",
+  "filed": "2010-11-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "853927",
+  "name": "American Media Operations, Inc.",
+  "filed": "2010-11-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1439600",
+  "name": "Local Insight Regatta Holdings, Inc.",
+  "filed": "2010-11-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "923473",
+  "name": "Palm Harbor Homes, Inc.",
+  "filed": "2010-11-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1410637",
+  "name": "RHI Entertainment, Inc.",
+  "filed": "2010-12-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "43300",
+  "name": "Great Atlantic & Pacific Tea Company, Inc.",
+  "filed": "2010-12-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1234383",
+  "name": "Bank Holdings",
+  "filed": "2010-12-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1095274",
+  "name": "First National Bancshares, Inc.",
+  "filed": "2010-12-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1452384",
+  "name": "Seahawk Drilling, Inc.",
+  "filed": "2011-02-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "940510",
+  "name": "Borders Group, Inc.",
+  "filed": "2011-02-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "766004",
+  "name": "Sbarro, Inc.",
+  "filed": "2011-04-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "897861",
+  "name": "First State Bancorporation",
+  "filed": "2011-04-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1338949",
+  "name": "Majestic Capital Ltd.",
+  "filed": "2011-04-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1283552",
+  "name": "Jackson Hewitt Tax Service Inc.",
+  "filed": "2011-05-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1047040",
+  "name": "Perkins & Marie Callenders Inc.",
+  "filed": "2011-06-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1056758",
+  "name": "Nebraska Book Company, Inc.",
+  "filed": "2011-06-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1160165",
+  "name": "ShengdaTech, Inc.",
+  "filed": "2011-08-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1329069",
+  "name": "NewPage Corporation",
+  "filed": "2011-09-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1289480",
+  "name": "Real Mex Restaurants, Inc.",
+  "filed": "2011-10-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1401106",
+  "name": "MF Global Holdings Ltd.",
+  "filed": "2011-10-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "724742",
+  "name": "Syms Corp.",
+  "filed": "2011-11-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1105055",
+  "name": "Dynegy Holdings, LLC",
+  "filed": "2011-11-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1443799",
+  "name": "General Maritime Corporation",
+  "filed": "2011-11-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "935724",
+  "name": "PMI Group, Inc.",
+  "filed": "2011-11-23",
+  "source": "lopucki_brd"
  },
  {
   "cik": "6201",
-  "name": "American Airlines Group Inc.",
+  "name": "AMR Corporation",
+  "filed": "2011-11-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "58361",
+  "name": "Lee Enterprises, Incorporated",
+  "filed": "2011-12-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "821483",
+  "name": "Delta Petroleum Corporation",
+  "filed": "2011-12-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1095996",
+  "name": "William Lyon Homes",
+  "filed": "2011-12-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1337913",
+  "name": "Ahern Rentals, Inc.",
+  "filed": "2011-12-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "859475",
+  "name": "Trident Microsystems, Inc.",
+  "filed": "2012-01-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "31235",
+  "name": "Eastman Kodak Company",
+  "filed": "2012-01-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "895642",
+  "name": "Ener1, Inc.",
+  "filed": "2012-01-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1397867",
+  "name": "Global Aviation Holdings Inc. (2012)",
+  "filed": "2012-02-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1479920",
+  "name": "TBS International plc",
+  "filed": "2012-02-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "32878",
+  "name": "Energy Conversion Devices, Inc.",
+  "filed": "2012-02-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "216039",
+  "name": "Grubb & Ellis Company",
+  "filed": "2012-02-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "944725",
+  "name": "United Western Bancorp, Inc.",
+  "filed": "2012-03-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1166291",
+  "name": "Pinnacle Airlines Corp.",
+  "filed": "2012-04-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1268984",
+  "name": "Reddy Ice Holdings, Inc.",
+  "filed": "2012-04-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1396426",
+  "name": "Hawker Beechcraft Acquisition Company, LLC",
+  "filed": "2012-05-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1171079",
+  "name": "Circus and Eldorado Joint Venture",
+  "filed": "2012-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "4515",
+  "name": "American Airlines, Inc.",
   "filed": "2012-06-15",
   "source": "fitch_rd"
  },
@@ -18,22 +4536,58 @@
   "source": "fitch_rd"
  },
  {
-  "cik": "1105055",
-  "name": "Dynegy Holdings LLC",
-  "filed": "2012-06-15",
-  "source": "fitch_rd"
- },
- {
   "cik": "908262",
   "name": "Cinram International Inc.",
   "filed": "2012-06-27",
   "source": "moodys_c"
  },
  {
+  "cik": "1376812",
+  "name": "Patriot Coal Corporation (2012)",
+  "filed": "2012-07-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "840264",
+  "name": "Capitol Bancorp Ltd.",
+  "filed": "2012-08-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1123647",
+  "name": "ATP Oil & Gas Corporation",
+  "filed": "2012-08-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1104358",
+  "name": "Broadview Networks Holdings, Inc.",
+  "filed": "2012-08-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "731859",
+  "name": "Ampal-American Israel Corporation",
+  "filed": "2012-08-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1167178",
+  "name": "A123 Systems, Inc.",
+  "filed": "2012-10-16",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "75208",
   "name": "Overseas Shipholding Group, Inc.",
   "filed": "2012-10-22",
   "source": "moodys_c"
+ },
+ {
+  "cik": "1068912",
+  "name": "First Place Financial Corp.",
+  "filed": "2012-10-29",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1263050",
@@ -54,10 +4608,22 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1358057",
+  "name": "LifeCare Holdings, Inc.",
+  "filed": "2012-12-11",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "930835",
   "name": "Edison Mission Energy",
-  "filed": "2012-12-21",
-  "source": "fitch_rd"
+  "filed": "2012-12-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "865570",
+  "name": "THQ Inc.",
+  "filed": "2012-12-19",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1134016",
@@ -66,16 +4632,124 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1123541",
+  "name": "Penson Worldwide, Inc.",
+  "filed": "2013-01-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "911002",
+  "name": "LodgeNet Interactive Corporation",
+  "filed": "2013-01-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1055454",
+  "name": "School Specialty, Inc.",
+  "filed": "2013-01-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1023362",
+  "name": "Powerwave Technologies, Inc.",
+  "filed": "2013-01-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1120830",
+  "name": "China Natural Gas, Inc.",
+  "filed": "2013-02-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1503813",
+  "name": "RDA Holding Co. (2013)",
+  "filed": "2013-02-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1069353",
+  "name": "Conexant Systems, Inc.",
+  "filed": "2013-02-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "314606",
+  "name": "Geokinetics Inc.",
+  "filed": "2013-03-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1551510",
+  "name": "Revel AC, Inc. (2013)",
+  "filed": "2013-03-25",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1551512",
   "name": "Revel Atlantic City, LLC",
   "filed": "2013-03-26",
   "source": "moodys_c"
  },
  {
+  "cik": "1127342",
+  "name": "GMX Resources Inc.",
+  "filed": "2013-04-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1046880",
+  "name": "Central European Distribution Corporation",
+  "filed": "2013-04-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1175108",
+  "name": "Rotech Healthcare Inc.",
+  "filed": "2013-04-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1076700",
+  "name": "KIT digital, Inc.",
+  "filed": "2013-04-25",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "931987",
   "name": "Corporacion GEO, S.A. de C.V.",
   "filed": "2013-05-08",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "911631",
+  "name": "Triad Guaranty Inc.",
+  "filed": "2013-06-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1375424",
+  "name": "OnCure Holdings, Inc.",
+  "filed": "2013-06-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "896842",
+  "name": "Orchard Supply Hardware Stores Corporation",
+  "filed": "2013-06-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1289701",
+  "name": "Mercantile Bancorp, Inc.",
+  "filed": "2013-06-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1178336",
+  "name": "Hoku Corporation",
+  "filed": "2013-07-02",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1293153",
@@ -88,6 +4762,24 @@
   "name": "hibu Plc",
   "filed": "2013-07-29",
   "source": "moodys_c"
+ },
+ {
+  "cik": "885322",
+  "name": "Anchor BanCorp Wisconsin Inc.",
+  "filed": "2013-08-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1451951",
+  "name": "FriendFinder Networks Inc.",
+  "filed": "2013-09-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1368900",
+  "name": "GateHouse Media, Inc.",
+  "filed": "2013-09-27",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1678131",
@@ -108,10 +4800,94 @@
   "source": "moodys_c"
  },
  {
+  "cik": "946090",
+  "name": "First Mariner Bancorp",
+  "filed": "2014-02-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1065059",
+  "name": "USEC Inc.",
+  "filed": "2014-03-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1441567",
+  "name": "MModal Inc.",
+  "filed": "2014-03-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1396838",
+  "name": "Dolan Company",
+  "filed": "2014-03-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1311486",
+  "name": "Global Geophysical Services, Inc.",
+  "filed": "2014-03-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1297720",
+  "name": "James River Coal Company",
+  "filed": "2014-04-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1018005",
+  "name": "Coldwater Creek Inc.",
+  "filed": "2014-04-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1405041",
+  "name": "Momentive Performance Materials Inc.",
+  "filed": "2014-04-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1326200",
+  "name": "Genco Shipping & Trading Limited",
+  "filed": "2014-04-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1023291",
+  "name": "Energy Future Holdings Corp.",
+  "filed": "2014-04-29",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1283898",
   "name": "Sare Holding, S.A.B. de C.V.",
   "filed": "2014-07-15",
   "source": "moodys_c"
+ },
+ {
+  "cik": "1322439",
+  "name": "Eagle Bulk Shipping Inc.",
+  "filed": "2014-08-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1037016",
+  "name": "NII Holdings, Inc. (2014)",
+  "filed": "2014-09-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1394954",
+  "name": "GT Advanced Technologies Inc.",
+  "filed": "2014-10-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1112412",
+  "name": "Endeavour International Corporation",
+  "filed": "2014-10-10",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1347850",
@@ -120,16 +4896,64 @@
   "source": "moodys_c"
  },
  {
+  "cik": "1107332",
+  "name": "Dendreon Corporation",
+  "filed": "2014-11-10",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "858395",
   "name": "Caesars Entertainment Operating Company, Inc.",
-  "filed": "2015-01-15",
-  "source": "fitch_rd"
+  "filed": "2015-01-12",
+  "source": "lopucki_brd"
  },
  {
   "cik": "96289",
   "name": "RadioShack Corporation",
-  "filed": "2015-02-06",
-  "source": "fitch_rd"
+  "filed": "2015-02-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1121783",
+  "name": "American Spectrum Realty, Inc.",
+  "filed": "2015-02-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1364100",
+  "name": "Cal Dive International, Inc.",
+  "filed": "2015-03-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1023734",
+  "name": "BPZ Resources, Inc.",
+  "filed": "2015-03-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1376610",
+  "name": "Allied Nevada Gold Corp.",
+  "filed": "2015-03-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "840889",
+  "name": "Doral Financial Corporation",
+  "filed": "2015-03-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "93456",
+  "name": "Standard Register Company",
+  "filed": "2015-03-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1060990",
+  "name": "Quicksilver Resources Inc.",
+  "filed": "2015-03-17",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1638371",
@@ -138,16 +4962,106 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1066134",
+  "name": "Corinthian Colleges, Inc.",
+  "filed": "2015-05-04",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1484705",
   "name": "Magnetation LLC",
   "filed": "2015-05-06",
   "source": "moodys_c"
  },
  {
+  "cik": "1489137",
+  "name": "Molycorp, Inc.",
+  "filed": "2015-06-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1530796",
+  "name": "Milagro Oil & Gas, Inc.",
+  "filed": "2015-07-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "837173",
+  "name": "Walter Energy, Inc.",
+  "filed": "2015-07-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "38079",
+  "name": "Sabine Oil & Gas Corporation",
+  "filed": "2015-07-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1301063",
+  "name": "Alpha Natural Resources, Inc.",
+  "filed": "2015-08-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "785968",
+  "name": "Miller Energy Resources, Inc.",
+  "filed": "2015-08-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1518909",
+  "name": "Black Elk Energy Offshore Operations, LLC",
+  "filed": "2015-08-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1330849",
+  "name": "Hercules Offshore, Inc.",
+  "filed": "2015-08-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "805305",
+  "name": "Quiksilver, Inc.",
+  "filed": "2015-09-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1548691",
+  "name": "Samson Resources Corporation",
+  "filed": "2015-09-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1336545",
+  "name": "American Apparel, Inc. (2015)",
+  "filed": "2015-10-05",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1511139",
+  "name": "RAAM Global Energy Company",
+  "filed": "2015-10-26",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1161785",
   "name": "Abengoa S.A.",
   "filed": "2015-12-14",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1335190",
+  "name": "Magnum Hunter Resources Corporation",
+  "filed": "2015-12-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "351817",
+  "name": "Swift Energy Company",
+  "filed": "2015-12-31",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1037676",
@@ -162,10 +5076,52 @@
   "source": "moodys_c"
  },
  {
+  "cik": "1421182",
+  "name": "Verso Corporation",
+  "filed": "2016-01-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1568832",
+  "name": "RCS Capital Corporation",
+  "filed": "2016-01-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1553588",
+  "name": "SFX Entertainment, Inc.",
+  "filed": "2016-02-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1385544",
+  "name": "Horsehead Holding Corp.",
+  "filed": "2016-02-02",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1421845",
   "name": "Noranda Aluminum Acquisition Corporation",
   "filed": "2016-02-08",
   "source": "moodys_c"
+ },
+ {
+  "cik": "1422105",
+  "name": "Noranda Aluminum Holding Corporation",
+  "filed": "2016-02-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1594590",
+  "name": "Paragon Offshore plc",
+  "filed": "2016-02-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1159154",
+  "name": "Republic Airways Holdings Inc.",
+  "filed": "2016-02-25",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1486724",
@@ -174,10 +5130,34 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1506545",
+  "name": "Aspect Software Parent Inc.",
+  "filed": "2016-03-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1560443",
+  "name": "New Source Energy Partners L.P.",
+  "filed": "2016-03-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1313024",
+  "name": "Venoco, Inc. (Denver Parent Corp.)",
+  "filed": "2016-03-18",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1414937",
   "name": "UCI INTERNATIONAL, LLC",
   "filed": "2016-03-21",
   "source": "moodys_c"
+ },
+ {
+  "cik": "1283843",
+  "name": "Emerald Oil, Inc.",
+  "filed": "2016-03-22",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1346980",
@@ -192,16 +5172,52 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1343719",
+  "name": "Energy XXI Ltd",
+  "filed": "2016-04-14",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1404973",
   "name": "Energy XXI Gulf Coast, Inc.",
   "filed": "2016-04-15",
   "source": "fitch_rd"
  },
  {
-  "cik": "1343719",
-  "name": "Energy XXI LTD",
-  "filed": "2016-04-15",
-  "source": "fitch_rd"
+  "cik": "945436",
+  "name": "SunEdison, Inc.",
+  "filed": "2016-04-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1022646",
+  "name": "Ultra Petroleum Corp. (2016)",
+  "filed": "2016-04-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1533924",
+  "name": "Midstates Petroleum Company, Inc.",
+  "filed": "2016-04-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1555492",
+  "name": "Fairway Group Holdings Corp.",
+  "filed": "2016-05-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1168213",
+  "name": "Aeropostale, Inc.",
+  "filed": "2016-05-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1586300",
+  "name": "CHC Group Ltd.",
+  "filed": "2016-05-05",
+  "source": "lopucki_brd"
  },
  {
   "cik": "892986",
@@ -210,10 +5226,52 @@
   "source": "moodys_c"
  },
  {
+  "cik": "1326428",
+  "name": "Linn Energy, LLC",
+  "filed": "2016-05-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "77159",
+  "name": "Penn Virginia Corporation",
+  "filed": "2016-05-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1357371",
+  "name": "Breitburn Energy Partners LP",
+  "filed": "2016-05-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1556739",
+  "name": "Dex Media, Inc. (2016)",
+  "filed": "2016-05-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1349436",
+  "name": "SandRidge Energy, Inc.",
+  "filed": "2016-05-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1532930",
+  "name": "Seventy Seven Energy Inc.",
+  "filed": "2016-06-07",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1160846",
   "name": "Oi S.A.",
   "filed": "2016-06-21",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1281922",
+  "name": "Triangle Petroleum Corp. (Triangle USA Petroleum Corp. only)",
+  "filed": "2016-06-29",
+  "source": "lopucki_brd"
  },
  {
   "cik": "2060485",
@@ -222,10 +5280,118 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1615817",
+  "name": "C&J Energy Services Ltd.",
+  "filed": "2016-07-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1282648",
+  "name": "Halcon Resources Corporation",
+  "filed": "2016-07-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1532750",
+  "name": "Atlas Resource Partners, L.P.",
+  "filed": "2016-07-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "278041",
+  "name": "International Shipholding Corporation",
+  "filed": "2016-08-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1383875",
+  "name": "LRI Holdings, Inc.",
+  "filed": "2016-08-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "922475",
+  "name": "ITT Educational Services, Inc.",
+  "filed": "2016-09-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "318996",
+  "name": "Key Energy Services, Inc.",
+  "filed": "2016-10-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1109189",
+  "name": "Basic Energy Services, Inc. (2016)",
+  "filed": "2016-10-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1514242",
+  "name": "Performance Sports Group Ltd.",
+  "filed": "2016-10-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1490165",
+  "name": "Erickson Incorporated",
+  "filed": "2016-11-08",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1135361",
+  "name": "Illinois Power Generating Company",
+  "filed": "2016-12-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "904080",
+  "name": "Stone Energy Corporation",
+  "filed": "2016-12-14",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "911692",
   "name": "Carboclor S.A.",
   "filed": "2017-01-03",
   "source": "moodys_c"
+ },
+ {
+  "cik": "1509589",
+  "name": "Bonanza Creek Energy, Inc.",
+  "filed": "2017-01-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1521847",
+  "name": "Memorial Production Partners LP",
+  "filed": "2017-01-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1116521",
+  "name": "Avaya Inc.",
+  "filed": "2017-01-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1434842",
+  "name": "Forbes Energy Services Ltd.",
+  "filed": "2017-01-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1575599",
+  "name": "Azure Midstream Partners, LP",
+  "filed": "2017-01-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1384072",
+  "name": "Vanguard Natural Resources, LLC",
+  "filed": "2017-02-01",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1448701",
@@ -238,6 +5404,84 @@
   "name": "iHeartCommunications, Inc.",
   "filed": "2017-02-08",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1396279",
+  "name": "hhgregg, Inc.",
+  "filed": "2017-03-06",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1505966",
+  "name": "SquareTwo Financial Corporation",
+  "filed": "2017-03-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "918581",
+  "name": "Ciber, Inc.",
+  "filed": "2017-04-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1602367",
+  "name": "Adeptus Health Inc.",
+  "filed": "2017-04-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1403853",
+  "name": "Nuverra Environmental Solutions, Inc.",
+  "filed": "2017-05-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1496631",
+  "name": "First NBC Bank Holding Company",
+  "filed": "2017-05-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1030749",
+  "name": "GulfMark Offshore, Inc.",
+  "filed": "2017-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "98222",
+  "name": "Tidewater Inc.",
+  "filed": "2017-05-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1503518",
+  "name": "21st Century Oncology Holdings, Inc.",
+  "filed": "2017-05-25",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "786110",
+  "name": "Gymboree Corporation (2017)",
+  "filed": "2017-06-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1126294",
+  "name": "GenOn Energy, Inc.",
+  "filed": "2017-06-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "18172",
+  "name": "A. M. Castle & Co.",
+  "filed": "2017-06-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "880460",
+  "name": "Perfumania Holdings, Inc.",
+  "filed": "2017-08-26",
+  "source": "lopucki_brd"
  },
  {
   "cik": "885012",
@@ -258,10 +5502,64 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1005414",
+  "name": "Toys R Us, Inc.",
+  "filed": "2017-09-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1166365",
+  "name": "Paperweight Development Corp.",
+  "filed": "2017-10-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1532288",
+  "name": "Armstrong Energy, Inc.",
+  "filed": "2017-11-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1058623",
+  "name": "Cumulus Media Inc.",
+  "filed": "2017-11-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1040719",
+  "name": "Walter Investment Management Corp.",
+  "filed": "2017-11-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1499912",
+  "name": "Global Brokerage, Inc.",
+  "filed": "2017-12-11",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1062781",
   "name": "Ultrapetrol (Bahamas) Limited",
   "filed": "2017-12-12",
   "source": "moodys_c"
+ },
+ {
+  "cik": "1580185",
+  "name": "J.G. Wentworth Company",
+  "filed": "2017-12-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1471261",
+  "name": "Cobalt International Energy, Inc.",
+  "filed": "2017-12-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "868725",
+  "name": "Rentech, Inc.",
+  "filed": "2017-12-19",
+  "source": "lopucki_brd"
  },
  {
   "cik": "316300",
@@ -282,10 +5580,52 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1619917",
+  "name": "Patriot National, Inc.",
+  "filed": "2018-01-30",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "357294",
   "name": "Hovnanian Enterprises, Inc.",
   "filed": "2018-02-02",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "920321",
+  "name": "Cenveo, Inc.",
+  "filed": "2018-02-02",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "878079",
+  "name": "Bon Ton Stores, Inc.",
+  "filed": "2018-02-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1584701",
+  "name": "Tops Holding II Corporation",
+  "filed": "2018-02-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1382911",
+  "name": "Orexigen Therapeutics, Inc.",
+  "filed": "2018-03-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1400891",
+  "name": "iHeartMedia, Inc.",
+  "filed": "2018-03-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "34115",
+  "name": "Claires Stores, Inc.",
+  "filed": "2018-03-19",
+  "source": "lopucki_brd"
  },
  {
   "cik": "88255",
@@ -300,12 +5640,6 @@
   "source": "fitch_rd"
  },
  {
-  "cik": "56824",
-  "name": "Kmart Corp.",
-  "filed": "2018-03-21",
-  "source": "fitch_rd"
- },
- {
   "cik": "1448818",
   "name": "Noble Group Ltd.",
   "filed": "2018-03-22",
@@ -314,8 +5648,14 @@
  {
   "cik": "1407703",
   "name": "FirstEnergy Solutions Corp.",
+  "filed": "2018-03-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1361937",
+  "name": "EV Energy Partners, L.P.",
   "filed": "2018-04-02",
-  "source": "moodys_c"
+  "source": "lopucki_brd"
  },
  {
   "cik": "1407702",
@@ -328,6 +5668,12 @@
   "name": "FirstEnergy Nuclear Generation, LLC",
   "filed": "2018-04-03",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1397516",
+  "name": "Rex Energy Corporation",
+  "filed": "2018-05-18",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1058626",
@@ -354,10 +5700,10 @@
   "source": "moodys_c"
  },
  {
-  "cik": "106455",
-  "name": "Westmoreland Coal Company",
-  "filed": "2018-10-11",
-  "source": "moodys_c"
+  "cik": "1419852",
+  "name": "Mattress Firm Holding Corp.",
+  "filed": "2018-10-05",
+  "source": "lopucki_brd"
  },
  {
   "cik": "319256",
@@ -372,6 +5718,18 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1431372",
+  "name": "Gastar Exploration Inc.",
+  "filed": "2018-10-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "76321",
+  "name": "Parker Drilling Company",
+  "filed": "2018-12-12",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1645826",
   "name": "Digicel Group Limited",
   "filed": "2019-01-11",
@@ -384,6 +5742,18 @@
   "source": "moodys_c"
  },
  {
+  "cik": "2034",
+  "name": "Aceto Corporation",
+  "filed": "2019-02-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1282266",
+  "name": "Windstream Holdings, Inc. (Windstream Services, LLC)",
+  "filed": "2019-02-25",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1585644",
   "name": "Windstream Services, LLC",
   "filed": "2019-02-27",
@@ -392,8 +5762,32 @@
  {
   "cik": "350403",
   "name": "PHI, Inc.",
-  "filed": "2019-03-15",
-  "source": "fitch_rd"
+  "filed": "2019-03-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "13239",
+  "name": "Hexion Inc.",
+  "filed": "2019-04-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1324189",
+  "name": "Orchids Paper Products Company",
+  "filed": "2019-04-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1547638",
+  "name": "Southcross Energy Partners, L.P.",
+  "filed": "2019-04-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1573166",
+  "name": "Jones Energy, Inc.",
+  "filed": "2019-04-14",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1489271",
@@ -408,10 +5802,28 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1441849",
+  "name": "Cloud Peak Energy Inc.",
+  "filed": "2019-05-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "73887",
+  "name": "Bristow Group Inc.",
+  "filed": "2019-05-11",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1493144",
   "name": "Cloud Peak Energy Resources LLC",
   "filed": "2019-05-13",
   "source": "moodys_c"
+ },
+ {
+  "cik": "1575360",
+  "name": "FTD Companies, Inc.",
+  "filed": "2019-06-03",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1637655",
@@ -420,10 +5832,46 @@
   "source": "moodys_c"
  },
  {
+  "cik": "1735828",
+  "name": "Legacy Reserves Inc.",
+  "filed": "2019-06-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1265107",
+  "name": "Monitronics International, Inc.",
+  "filed": "2019-06-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1603923",
+  "name": "Weatherford International plc",
+  "filed": "2019-07-01",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1575969",
   "name": "Avianca Holdings S.A.",
   "filed": "2019-07-22",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1528837",
+  "name": "Sanchez Energy Corporation",
+  "filed": "2019-08-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1045425",
+  "name": "RAIT Financial Trust",
+  "filed": "2019-08-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1690769",
+  "name": "Alta Mesa Resources, Inc. (Alta Mesa Holdings, LP)",
+  "filed": "2019-09-11",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1439578",
@@ -432,16 +5880,100 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1584952",
+  "name": "EP Energy Corporation (EP Energy LLC)",
+  "filed": "2019-10-03",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1409916",
+  "name": "Nobilis Health Corp.",
+  "filed": "2019-10-21",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1640281",
   "name": "Murray Energy Corporation",
   "filed": "2019-10-30",
   "source": "moodys_c"
  },
  {
+  "cik": "931336",
+  "name": "Dean Foods Company",
+  "filed": "2019-11-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1405073",
+  "name": "Approach Resources Inc.",
+  "filed": "2019-11-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1461993",
+  "name": "Melinta Therapeutics, Inc.",
+  "filed": "2019-12-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "708819",
+  "name": "McDermott International, Inc.",
+  "filed": "2020-01-21",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1056087",
+  "name": "McClatchy Company",
+  "filed": "2020-02-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "278130",
+  "name": "Pier 1 Imports, Inc.",
+  "filed": "2020-02-17",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "320575",
+  "name": "Pioneer Energy Services Corp.",
+  "filed": "2020-03-01",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1540729",
   "name": "Foresight Energy LP",
-  "filed": "2020-03-11",
-  "source": "fitch_rd"
+  "filed": "2020-03-10",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1056386",
+  "name": "Internap Corporation",
+  "filed": "2020-03-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1255474",
+  "name": "Whiting Petroleum Corporation",
+  "filed": "2020-04-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1650445",
+  "name": "Quorum Health Corporation",
+  "filed": "2020-04-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1669812",
+  "name": "LSC Communications, Inc.",
+  "filed": "2020-04-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "20520",
+  "name": "Frontier Communications Corporation",
+  "filed": "2020-04-14",
+  "source": "lopucki_brd"
  },
  {
   "cik": "40867",
@@ -452,12 +5984,6 @@
  {
   "cik": "40865",
   "name": "Frontier Florida LLC",
-  "filed": "2020-04-16",
-  "source": "fitch_rd"
- },
- {
-  "cik": "20520",
-  "name": "Frontier Communications Corporation",
   "filed": "2020-04-16",
   "source": "fitch_rd"
  },
@@ -480,28 +6006,70 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "949039",
+  "name": "Diamond Offshore Drilling, Inc.",
+  "filed": "2020-04-26",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1817667",
   "name": "Enjoy S.A.",
   "filed": "2020-04-27",
   "source": "fitch_rd"
  },
  {
-  "cik": "1022646",
-  "name": "Ultra Petroleum Corp.",
-  "filed": "2020-05-18",
-  "source": "fitch_rd"
+  "cik": "1051251",
+  "name": "J. Crew Group, Inc.",
+  "filed": "2020-05-04",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1358651",
+  "name": "Neiman Marcus Group LTD LLC",
+  "filed": "2020-05-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1525773",
+  "name": "Intelsat S.A.",
+  "filed": "2020-05-13",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1166126",
   "name": "J. C. Penney Company, Inc.",
+  "filed": "2020-05-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "844143",
+  "name": "Centric Brands Inc.",
+  "filed": "2020-05-18",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1131227",
+  "name": "Hornbeck Offshore Services, Inc.",
   "filed": "2020-05-19",
-  "source": "fitch_rd"
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "3116",
+  "name": "Akorn, Inc.",
+  "filed": "2020-05-20",
+  "source": "lopucki_brd"
  },
  {
   "cik": "798949",
   "name": "Unit Corporation",
-  "filed": "2020-05-26",
-  "source": "fitch_rd"
+  "filed": "2020-05-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1657853",
+  "name": "Hertz Global Holdings, Inc. (Hertz Corporation)",
+  "filed": "2020-05-22",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1047716",
@@ -510,10 +6078,34 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "878726",
+  "name": "Tuesday Morning Corporation",
+  "filed": "2020-05-27",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "902274",
+  "name": "Libbey Inc.",
+  "filed": "2020-06-01",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1655020",
   "name": "Extraction Oil & Gas, Inc.",
-  "filed": "2020-06-16",
-  "source": "fitch_rd"
+  "filed": "2020-06-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "939930",
+  "name": "Pyxus International, Inc.",
+  "filed": "2020-06-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1606180",
+  "name": "AAC Holdings, Inc.",
+  "filed": "2020-06-20",
+  "source": "lopucki_brd"
  },
  {
   "cik": "893538",
@@ -522,16 +6114,94 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "1579252",
+  "name": "Jason Industries, Inc.",
+  "filed": "2020-06-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "813920",
+  "name": "CEC Entertainment, Inc.",
+  "filed": "2020-06-24",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "895126",
+  "name": "Chesapeake Energy Corporation",
+  "filed": "2020-06-28",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1722287",
+  "name": "Covia Holdings Corporation",
+  "filed": "2020-06-29",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1549848",
+  "name": "Hi-Crush Inc.",
+  "filed": "2020-07-12",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1615063",
   "name": "Inspired Entertainment, Inc.",
   "filed": "2020-07-13",
   "source": "fitch_rd"
  },
  {
-  "cik": "1549848",
-  "name": "Hi-Crush Inc.",
+  "cik": "1211351",
+  "name": "RTW Retailwinds, Inc.",
   "filed": "2020-07-13",
-  "source": "moodys_c"
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1609253",
+  "name": "California Resources Corporation",
+  "filed": "2020-07-15",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "14195",
+  "name": "Briggs & Stratton Corporation",
+  "filed": "2020-07-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1512077",
+  "name": "Global Eagle Entertainment Inc.",
+  "filed": "2020-07-22",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1498301",
+  "name": "Ascena Retail Group, Inc.",
+  "filed": "2020-07-23",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1659122",
+  "name": "Rosehill Resources Inc.",
+  "filed": "2020-07-26",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "945764",
+  "name": "Denbury Resources Inc.",
+  "filed": "2020-07-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1458891",
+  "name": "Noble Corporation plc",
+  "filed": "2020-07-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "884217",
+  "name": "Tailored Brands, Inc.",
+  "filed": "2020-08-02",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1737484",
@@ -540,22 +6210,130 @@
   "source": "fitch_rd"
  },
  {
+  "cik": "884940",
+  "name": "Stein Mart, Inc.",
+  "filed": "2020-08-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "314808",
+  "name": "Valaris plc",
+  "filed": "2020-08-19",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1029787",
   "name": "Town Sports International, LLC",
   "filed": "2020-08-31",
   "source": "moodys_c"
  },
  {
+  "cik": "1281774",
+  "name": "Town Sports International Holdings, Inc. (TSI, LLC only)",
+  "filed": "2020-09-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1735707",
+  "name": "Garrett Motion Inc.",
+  "filed": "2020-09-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1529463",
+  "name": "FTS International, Inc.",
+  "filed": "2020-09-22",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1661920",
-  "name": "Lonestar Resources US, Inc.",
-  "filed": "2020-10-02",
-  "source": "fitch_rd"
+  "name": "Lonestar Resources US Inc.",
+  "filed": "2020-09-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1486159",
+  "name": "Oasis Petroleum Inc.",
+  "filed": "2020-09-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1567892",
+  "name": "Mallinckrodt plc",
+  "filed": "2020-10-12",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1517342",
+  "name": "Pacific Drilling S.A. (2020)",
+  "filed": "2020-10-30",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "77281",
+  "name": "Pennsylvania Real Estate Investment Trust",
+  "filed": "2020-11-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "910612",
+  "name": "CBL & Associates Properties Inc. (CBL & Associates LP)",
+  "filed": "2020-11-01",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "874499",
+  "name": "Gulfport Energy Corporation",
+  "filed": "2020-11-13",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1163739",
   "name": "Nabors Industries, Ltd.",
   "filed": "2020-12-03",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "886835",
+  "name": "Superior Energy Services, Inc.",
+  "filed": "2020-12-07",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "922358",
+  "name": "Ferrellgas Partners, L.P. (Ferrellgas Partners Finance Corp.)",
+  "filed": "2021-01-11",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1326089",
+  "name": "Sundance Energy Inc.",
+  "filed": "2021-03-09",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1725526",
+  "name": "HighPoint Resources Corporation",
+  "filed": "2021-03-14",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1583077",
+  "name": "Hospitality Investors Trust, Inc.",
+  "filed": "2021-05-19",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1594686",
+  "name": "Washington Prime Group Inc. (Washington Prime Group, L.P.)",
+  "filed": "2021-06-13",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1648428",
+  "name": "Sequential Brands Group, Inc.",
+  "filed": "2021-08-31",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1745621",
@@ -570,6 +6348,24 @@
   "source": "moodys_c"
  },
  {
+  "cik": "1315255",
+  "name": "GTT Communications, Inc.",
+  "filed": "2021-10-31",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1522690",
+  "name": "GWG Holdings, Inc.",
+  "filed": "2022-04-20",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1655075",
+  "name": "Armstrong Flooring, Inc.",
+  "filed": "2022-05-08",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1161976",
   "name": "Talen Energy Supply, LLC",
   "filed": "2022-05-11",
@@ -582,10 +6378,28 @@
   "source": "moodys_c"
  },
  {
+  "cik": "887921",
+  "name": "Revlon, Inc. (Revlon Consumer Products Corporation)",
+  "filed": "2022-06-15",
+  "source": "lopucki_brd"
+ },
+ {
   "cik": "1737927",
   "name": "Canopy Growth Corporation",
   "filed": "2022-07-20",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1593034",
+  "name": "Endo International plc",
+  "filed": "2022-08-16",
+  "source": "lopucki_brd"
+ },
+ {
+  "cik": "1579823",
+  "name": "NewAge, Inc.",
+  "filed": "2022-08-30",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1344154",
@@ -598,6 +6412,12 @@
   "name": "Bausch Health Companies Inc.",
   "filed": "2022-10-06",
   "source": "fitch_rd"
+ },
+ {
+  "cik": "1466301",
+  "name": "Clovis Oncology, Inc.",
+  "filed": "2022-12-11",
+  "source": "lopucki_brd"
  },
  {
   "cik": "1004530",
@@ -615,12 +6435,6 @@
   "cik": "1340554",
   "name": "Party City Holdings Inc.",
   "filed": "2023-01-19",
-  "source": "fitch_rd"
- },
- {
-  "cik": "1116521",
-  "name": "Avaya LLC",
-  "filed": "2023-02-16",
   "source": "fitch_rd"
  },
  {

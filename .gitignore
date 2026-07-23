@@ -55,6 +55,9 @@ Thumbs.db
 *.zip
 platform/backend/data/
 
+# Florida-UCLA-LoPucki BRD Cases table (operator-supplied raw CSV; derived sd_events.json IS committed)
+platform/backend/app/hazard/data/lopucki_brd_cases.csv
+
 # hazard day-cache: derived, valid one day — never committed (hero overview caches ARE committed)
 platform/backend/app/cache/hazard/
 route_audit.csv
