@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { fetchCompanyTimeline } from "../api.js";
 import { useAsync } from "../cache.js";
-import { Badge, Card, ErrorCard, Loading, Section } from "../ui/index.jsx";
+import { Badge, Card, EmptyState, ErrorCard, Loading, Section, useShowMore } from "../ui/index.jsx";
 import { DetectedStamp, SevBadge } from "../components/EventBits.jsx";
 
 const FORM_TONE = { "10-K": "info", "10-Q": "accent", "8-K": "watch" }; // same map as risk/EventTimeline
+const KINDS = [["event", "events"], ["filing", "filings"], ["changes", "what changed"]];
+// same pill styling as the EventsPage type filters
+const pillCls = (on) =>
+  `rounded-full border px-2.5 py-0.5 text-[11px] ${
+    on ? "border-accent text-white" : "border-ink-600 text-slate-400 hover:border-accent"
+  }`;
 
 export default function TimelinePage({ ticker, years }) {
   const { data, loading, error } = useAsync(
@@ -12,23 +18,43 @@ export default function TimelinePage({ ticker, years }) {
     () => fetchCompanyTimeline(ticker, years),
     [ticker, years],
   );
+  const [kinds, setKinds] = useState([]);   // empty = all
+  const filtered = useMemo(() => {
+    const items = data?.items || [];
+    return kinds.length ? items.filter((it) => kinds.includes(it.kind)) : items;
+  }, [data, kinds]);
+  const { shown, control } = useShowMore(filtered, 100, "entries");
+
   if (loading) return <Loading>Merging events, filings and changes…</Loading>;
   if (error) return <ErrorCard>{error}</ErrorCard>;
   if (!data) return null;
 
+  const toggleKind = (k) =>
+    setKinds((prev) => (prev.includes(k) ? prev.filter((x) => x !== k) : [...prev, k]));
+
   return (
-    <Section flush title="Company timeline" subtitle="events · filings · what changed">
+    <Section flush title="Company timeline" subtitle="events · filings · what changed"
+      right={
+        <span className="flex gap-1.5">
+          {KINDS.map(([k, label]) => (
+            <button key={k} onClick={() => toggleKind(k)} className={pillCls(kinds.includes(k))}>
+              {label}
+            </button>
+          ))}
+        </span>
+      }>
       {data.note && <div className="mb-3 text-xs text-amber-400">{data.note}</div>}
       <Card>
         <ul>
-          {data.items.map((it, i) => (
+          {shown.map((it, i) => (
             <TimelineItem key={`${it.kind}-${it.id ?? it.accession_no ?? i}`} it={it} />
           ))}
         </ul>
-        {data.items.length === 0 && (
-          <div className="py-6 text-center text-sm text-slate-500">
+        {control}
+        {filtered.length === 0 && (
+          <EmptyState hint={kinds.length ? "a kind filter is active" : undefined}>
             nothing yet — the ingestion daemon fills this as it runs
-          </div>
+          </EmptyState>
         )}
       </Card>
     </Section>

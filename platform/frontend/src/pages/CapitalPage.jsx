@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Header from "../components/Header.jsx";
 import { EmptyState, Section } from "../ui/index.jsx";
 import ForensicTable from "../components/ForensicTable.jsx";
@@ -20,6 +20,45 @@ import LiquidityCalendar from "../components/LiquidityCalendar.jsx";
 import DocSearch from "../components/DocSearch.jsx";
 import HoldersPanel from "../components/HoldersPanel.jsx";
 
+// The page map: a quiet sticky rail of section anchors with scroll-spy. Plain fragment
+// links — native navigation auto-opens a collapsed <details> section, and scroll-mt on
+// Section clears the sticky header. Hidden below xl (the page is the map there).
+function SectionRail({ sections }) {
+  const [active, setActive] = useState(null);
+  useEffect(() => {
+    const els = sections.map((s) => document.getElementById(s.id)).filter(Boolean);
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
+      },
+      { rootMargin: "-15% 0px -75% 0px" },
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [sections]);
+  return (
+    <nav aria-label="sections" className="hidden w-40 shrink-0 xl:block">
+      <div className="sticky top-16 max-h-[calc(100vh-5rem)] space-y-1.5 overflow-y-auto border-l border-ink-700 pl-3">
+        {sections.map((s) => (
+          <a
+            key={s.id}
+            href={`#${s.id}`}
+            onClick={() =>
+              // the anchor is the <details>' parent, so fragment nav alone won't
+              // auto-expand — open it directly (toggle event syncs state + storage)
+              document.getElementById(s.id)?.querySelector("details")?.setAttribute("open", "")}
+            className={`block text-[10px] uppercase tracking-wide hover:text-slate-300 ${
+              active === s.id ? "text-accent" : "text-slate-500"
+            }`}
+          >
+            {s.title}
+          </a>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
 // Overview data + Run Live + progress log live in the shell (App.jsx) — this page renders
 // whatever snapshot the shell holds for the routed ticker.
 export default function CapitalPage({ ticker, health, overview, onRunLive }) {
@@ -34,6 +73,29 @@ export default function CapitalPage({ ticker, health, overview, onRunLive }) {
         ? { label: "needs API key", tone: "high", title: "set ANTHROPIC_API_KEY in platform/.env" }
         : { label: "LLM off", tone: "watch", title: "LLM analysis toggled off — enable it in the sidebar" };
 
+  // Rail entries mirror the section render conditionals below (ids = Section's title
+  // slugs, or the explicit obs/covenants anchors). Known holders omitted — async.
+  const sections = useMemo(() => {
+    if (!overview) return [];
+    return [
+      { id: "economic-debt-bridge", title: "Debt bridge" },
+      ...(overview.ebitda_build ? [{ id: "ebitda-build", title: "EBITDA build" }] : []),
+      { id: "as-reported-debt-schedule", title: "Debt schedule" },
+      { id: "creation-multiple-ladder", title: "Creation ladder" },
+      { id: "trade-basis", title: "Trade basis" },
+      { id: "liquidity-event-calendar", title: "Liquidity calendar" },
+      { id: "credit-capacity", title: "Credit capacity" },
+      { id: "bank-position-filing-telegraph", title: "Bank & telegraph" },
+      { id: "company-options", title: "Company options" },
+      { id: "forensic-cash-vs-debt-test", title: "Forensic test" },
+      { id: "obs", title: "OBS findings" },
+      ...(overview.subsidiaries?.length ? [{ id: "legal-entities", title: "Legal entities" }] : []),
+      { id: "document-search", title: "Doc search" },
+      { id: "covenants", title: "Covenants" },
+      { id: "sources", title: "Sources" },
+    ];
+  }, [overview]);
+
   return (
     <div>
       {!overview && (
@@ -45,7 +107,8 @@ export default function CapitalPage({ ticker, health, overview, onRunLive }) {
         </EmptyState>
       )}
       {overview && (
-        <>
+        <div className="flex gap-6">
+          <div className="min-w-0 flex-1">
           <Header header={overview.header} />
 
           {overview.warnings?.length > 0 && (
@@ -199,7 +262,9 @@ export default function CapitalPage({ ticker, health, overview, onRunLive }) {
           <Section collapsible defaultOpen={false} title="Sources" subtitle={`${overview.sources.length} filings analyzed`}>
             <SourcesPanel sources={overview.sources} />
           </Section>
-        </>
+          </div>
+          <SectionRail sections={sections} />
+        </div>
       )}
     </div>
   );
