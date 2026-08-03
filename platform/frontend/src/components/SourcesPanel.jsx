@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Badge, Td, Th, rowClass } from "../ui/index.jsx";
+import React from "react";
+import { Badge, Td, Th, rowClass, useShowMore } from "../ui/index.jsx";
 
 export default function SourcesPanel({ sources }) {
-  const [showAll, setShowAll] = useState(false);
+  const { shown, control } = useShowMore(sources || [], 12, "filings");
   if (!sources || sources.length === 0) return null;
-  const shown = showAll ? sources : sources.slice(0, 12);
   return (
     <div>
       <div className="overflow-x-auto">
@@ -50,14 +49,7 @@ export default function SourcesPanel({ sources }) {
           </tbody>
         </table>
       </div>
-      {sources.length > 12 && (
-        <button
-          onClick={() => setShowAll((v) => !v)}
-          className="mt-3 text-xs text-accent hover:underline"
-        >
-          {showAll ? "show fewer" : `show all ${sources.length} filings`}
-        </button>
-      )}
+      {control}
     </div>
   );
 }

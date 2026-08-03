@@ -91,6 +91,14 @@ export default function EventsPage() {
             <option key={s} value={s}>≥ S{s}</option>
           ))}
         </select>
+        {(types.length > 0 || minSev > 0 || ticker) && (
+          <button
+            onClick={() => { setTypes([]); setMinSev(0); setTicker(""); setTickerDraft(""); }}
+            className="text-[11px] text-accent hover:underline"
+          >
+            clear filters ({types.length + (minSev > 0 ? 1 : 0) + (ticker ? 1 : 0)})
+          </button>
+        )}
         <form
           onSubmit={(e) => { e.preventDefault(); setTicker(tickerDraft.trim().toUpperCase()); }}
           className="ml-auto"

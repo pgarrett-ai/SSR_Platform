@@ -3,7 +3,7 @@ import { fetchTelegraph } from "../api.js";
 import { useAsync } from "../cache.js";
 import CitedNumber from "./CitedNumber.jsx";
 import { markOnly } from "./DocSearch.jsx";
-import { Badge, Loading } from "../ui/index.jsx";
+import { Badge, EmptyState, Skeleton, useShowMore } from "../ui/index.jsx";
 
 // Bank triage + filing telegraph (Moyer ch. 8): where the bank sits when trouble
 // starts, and the five disclosure/behavior tells that a filing is being telegraphed.
@@ -30,10 +30,13 @@ function coverageLabel(cov) {
 export default function Telegraph({ ticker, years }) {
   const { data, loading, error } = useAsync(
     `telegraph:${ticker}:${years}`, () => fetchTelegraph(ticker, years), [ticker, years]);
+  const covCtx = useShowMore(data?.telegraph?.context?.covenants || [], 4, "covenants");
 
-  if (loading) return <Loading />;
+  if (loading) return <Skeleton rows={3} />;
   if (error) return <div className="text-xs text-rose-300">{error}</div>;
-  if (!data) return null;
+  if (!data) {
+    return <EmptyState>No bank-position read — needs a cached overview for {ticker}.</EmptyState>;
+  }
   const bank = data.bank || {};
   const tel = data.telegraph || {};
   const signals = tel.signals || [];
@@ -114,12 +117,12 @@ export default function Telegraph({ ticker, years }) {
         {tel.context?.covenants?.length > 0 && (
           <div>
             covenant context:{" "}
-            {tel.context.covenants.slice(0, 4).map((c, i) => (
+            {covCtx.shown.map((c, i) => (
               <span key={i} className="mr-2">
                 {c.kind || "covenant"} {c.threshold || ""}{c.test_frequency ? ` (${c.test_frequency})` : ""}
               </span>
             ))}
-            {tel.context.covenants.length > 4 && `+${tel.context.covenants.length - 4} more`}
+            {covCtx.control}
           </div>
         )}
         {tel.context?.note}

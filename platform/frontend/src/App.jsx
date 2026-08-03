@@ -32,7 +32,7 @@ const TABS = [
   { id: "timeline", label: "Timeline", key: "t" },
 ];
 
-function CompanyLayout({ years, health, overview }) {
+function CompanyLayout({ years, health, overview, onRunLive }) {
   const { ticker } = useParams();
   return (
     <Suspense fallback={<Loading />}>
@@ -40,7 +40,7 @@ function CompanyLayout({ years, health, overview }) {
         <Route path="overview" element={<OverviewPage ticker={ticker} years={years} />} />
         <Route
           path="capital"
-          element={<CapitalPage ticker={ticker} health={health} overview={overview} />}
+          element={<CapitalPage ticker={ticker} health={health} overview={overview} onRunLive={onRunLive} />}
         />
         <Route path="risk" element={<RiskPage ticker={ticker} years={years} />} />
         <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
@@ -343,7 +343,8 @@ export default function App() {
             />
             <Route
               path="/company/:ticker/*"
-              element={<CompanyLayout years={appliedYears} health={health} overview={overview} />}
+              element={<CompanyLayout years={appliedYears} health={health} overview={overview}
+                onRunLive={() => runOverview(true)} />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

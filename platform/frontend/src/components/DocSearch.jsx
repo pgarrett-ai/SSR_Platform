@@ -45,7 +45,8 @@ export default function DocSearch({ ticker }) {
   }
 
   return (
-    <Section title="Document search" subtitle="covenants · OBS findings · MD&A for this issuer">
+    <Section collapsible defaultOpen={false} title="Document search"
+      subtitle="covenants · OBS findings · MD&A for this issuer">
       <form onSubmit={run} className="flex gap-2">
         <Input
           value={q}
@@ -66,9 +67,16 @@ export default function DocSearch({ ticker }) {
           {hits.map((h, i) => (
             <button
               key={i}
-              onClick={() =>
-                // plain scrollIntoView: smooth-behavior is a no-op under reduced-motion
-                document.getElementById(SECTION_IDS[h.source_kind])?.scrollIntoView()}
+              onClick={() => {
+                const id = SECTION_IDS[h.source_kind];
+                const el = document.getElementById(id);
+                if (!el) return;
+                // open the collapsed section first (toggle event syncs state + storage),
+                // then jump — scroll-mt keeps the title clear of the sticky header
+                el.querySelector("details")?.setAttribute("open", "");
+                window.location.hash = id;
+                el.scrollIntoView();
+              }}
               className="mb-1 block w-full rounded-md border border-ink-700 px-3 py-2 text-left text-sm hover:border-accent"
               title="jump to the matching section"
             >

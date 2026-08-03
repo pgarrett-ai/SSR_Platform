@@ -1,6 +1,6 @@
 import React from "react";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Td, Th } from "../ui/index.jsx";
+import { Badge, EmptyState, Td, Th, useShowMore } from "../ui/index.jsx";
 
 // Liquidity-event calendar (Moyer ch. 8): every coupon and maturity over the next 24
 // months against total liquidity — for a cash-burner with an undersecured bank, every
@@ -12,11 +12,12 @@ const FLAG_LABEL = {
 };
 
 export default function LiquidityCalendar({ events, note }) {
+  const { shown, control } = useShowMore(events || [], 12, "events");
   if (!events?.length) {
     return (
-      <div className="text-xs text-slate-500">
-        No coupon or maturity events in the next 24 months{note ? ` — ${note}` : ""}.
-      </div>
+      <EmptyState hint={note}>
+        No coupon or maturity events in the next 24 months.
+      </EmptyState>
     );
   }
   return (
@@ -32,7 +33,7 @@ export default function LiquidityCalendar({ events, note }) {
             </tr>
           </thead>
           <tbody>
-            {events.map((e, i) => (
+            {shown.map((e, i) => (
               <tr key={i} className={`border-b border-ink-800 ${e.flags?.length ? "bg-rose-500/5" : ""}`}>
                 <Td mono className="text-slate-300">{e.date}</Td>
                 <Td className={e.kind === "maturity" ? "text-slate-100" : "text-slate-400"}>{e.kind}</Td>
@@ -64,6 +65,7 @@ export default function LiquidityCalendar({ events, note }) {
           </tbody>
         </table>
       </div>
+      {control}
       {note && <div className="mt-2 text-[11px] text-slate-500">⚠ {note}</div>}
       <div className="mt-1 text-[11px] text-slate-600">
         coupon months anchored on the maturity anniversary (dates are not tagged in XBRL);

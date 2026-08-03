@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { fetchLadder } from "../api.js";
 import { useAsync } from "../cache.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Loading, Td, Th } from "../ui/index.jsx";
+import { Badge, Skeleton, Td, Th } from "../ui/index.jsx";
 
 // Moyer's creation-value test: what multiple of EBITDA are you creating the company at
 // through each class — cumulative claims at face and at market (TRACE drop-file quotes;
@@ -23,7 +23,7 @@ export default function CreationLadder({ ticker, years }) {
     key, () => fetchLadder(ticker, years, recast), [ticker, years, recast]);
   const [variant, setVariant] = useState("ltm");
 
-  if (loading) return <Loading />;
+  if (loading) return <Skeleton rows={3} />;
   if (error) return <div className="text-xs text-rose-300">{error}</div>;
   if (!data?.classes?.length)
     return <div className="text-xs text-slate-500">No instruments in the debt schedule.</div>;

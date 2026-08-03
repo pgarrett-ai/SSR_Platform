@@ -181,7 +181,9 @@ export default function OverviewPage({ ticker, years }) {
                   </div>
                 ))}
                 {(rs.tranches || []).length > 4 && (
-                  <div className="text-slate-600">+ {(rs.tranches || []).length - 4} more tranches</div>
+                  <Link to={`/company/${ticker}/recovery`} className="block text-[11px] text-accent hover:underline">
+                    view all {(rs.tranches || []).length} tranches on Recovery →
+                  </Link>
                 )}
               </div>
               <div className="mt-2 text-[10px] text-slate-600">
@@ -204,7 +206,9 @@ export default function OverviewPage({ ticker, years }) {
               </div>
             ))}
             {flags.length > 0 && (
-              <div className="text-[11px] text-slate-600">details on Capital Structure</div>
+              <Link to={`/company/${ticker}/capital`} className="block text-[11px] text-accent hover:underline">
+                {flags.length > 4 ? `+ ${flags.length - 4} more — ` : ""}details on Capital Structure →
+              </Link>
             )}
             {(ov.data?.warnings || []).length > 0 && (
               <div className="text-[11px] text-slate-600">{ov.data.warnings.length} pipeline warning{ov.data.warnings.length === 1 ? "" : "s"} — see Capital Structure</div>

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { fetchLadder } from "../api.js";
 import { useAsync } from "../cache.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Loading, Td, Th } from "../ui/index.jsx";
+import { Skeleton, Td, Th } from "../ui/index.jsx";
 
 // Effective cost basis (Moyer ch. 5): quote + accrued unless the paper trades flat;
 // claim/100 at accreted value; cash-at-risk = basis − coupons received before the
@@ -39,7 +39,7 @@ export default function TradeBasis({ ticker, years }) {
     };
   }), [rows, flat, restructureDate]);
 
-  if (loading) return <Loading />;
+  if (loading) return <Skeleton rows={3} />;
   if (error) return <div className="text-xs text-rose-300">{error}</div>;
   if (!rows.length)
     return <div className="text-xs text-slate-500">

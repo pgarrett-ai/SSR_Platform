@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { fetchOptions } from "../api.js";
 import { useAsync } from "../cache.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Loading, Td, Th } from "../ui/index.jsx";
+import { Badge, EmptyState, Skeleton, Td, Th } from "../ui/index.jsx";
 
 // Company options (Moyer ch. 11): with the clock running, what can the company still
 // do — buy in debt below par, exchange it, or sell assets? The server payload is the
@@ -45,10 +45,10 @@ export default function OptionsCard({ ticker, years }) {
     };
   }, [E, F, M, qmin, soldE, mult, atMarket]);
 
-  if (loading) return <Loading />;
+  if (loading) return <Skeleton rows={3} />;
   if (error) return <div className="text-xs text-rose-300">{error}</div>;
-  if (!data) return null;
-  if (!data.available) return <div className="text-xs text-slate-500">{data.note}</div>;
+  if (!data) return <EmptyState>No options read — needs a cached overview for this issuer.</EmptyState>;
+  if (!data.available) return <EmptyState>{data.note}</EmptyState>;
 
   const clock = data.clock || {};
   const buyback = data.buyback || {};

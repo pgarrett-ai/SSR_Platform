@@ -1,16 +1,15 @@
-import React, { useState } from "react";
-import { Badge, Card, Section } from "../../ui/index.jsx";
+import React from "react";
+import { Badge, Card, Section, useShowMore } from "../../ui/index.jsx";
 
 const FORM_TONE = { "10-K": "info", "10-Q": "accent", "8-K": "watch" };
 
 export default function EventTimeline({ data }) {
   const filings = data.filings || [];
-  const [showAll, setShowAll] = useState(false);
+  const { shown, control } = useShowMore(filings, 12, "filings");
   if (filings.length === 0) return null;
-  const shown = showAll ? filings : filings.slice(0, 12);
   return (
     <Section flush title="SEC filing timeline" subtitle="10-K / 10-Q / 8-K">
-      <Card className="max-h-72 overflow-y-auto">
+      <Card>
         <ul className="space-y-1">
           {shown.map((f) => (
             <li key={f.accession_no} className="flex items-center gap-3 text-sm py-1 border-b border-ink-700/40">
@@ -26,14 +25,7 @@ export default function EventTimeline({ data }) {
             </li>
           ))}
         </ul>
-        {filings.length > 12 && (
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="mt-2 text-[11px] text-slate-500 hover:text-slate-300"
-          >
-            {showAll ? "show fewer" : `show all ${filings.length}`}
-          </button>
-        )}
+        {control}
       </Card>
     </Section>
   );
