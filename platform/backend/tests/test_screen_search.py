@@ -114,7 +114,7 @@ def test_snapshot_runway_months_none_without_liquidity():
 def test_distress_badge_predicate(monkeypatch):
     """stock < $1 AND an unsecured quote < 60 -> badge; either leg failing -> off/None."""
     import app.hazard.trace as trace
-    from app.main import _distress_badge
+    from app.store import distress_badge
 
     quotes = {"ZZTEST": [{"coupon": 8.0, "maturity": "2030-06-15", "last_price": 55.0,
                           "as_of": "2026-07-01"}]}
@@ -124,9 +124,9 @@ def test_distress_badge_predicate(monkeypatch):
         s.add(models.DebtInstrumentRow(ticker="ZZTEST", instrument="8% Notes 2030",
                                        coupon_pct=8.0, maturity="2030", secured=False))
         s.flush()
-        assert _distress_badge(s, "ZZTEST", 0.5) is True
-        assert _distress_badge(s, "ZZTEST", 2.0) is False   # equity leg fails
-        assert _distress_badge(s, "ZZTEST", None) is None
+        assert distress_badge(s, "ZZTEST", 0.5) is True
+        assert distress_badge(s, "ZZTEST", 2.0) is False   # equity leg fails
+        assert distress_badge(s, "ZZTEST", None) is None
         for r in s.query(models.DebtInstrumentRow).filter_by(ticker="ZZTEST").all():
             s.delete(r)
     _cleanup()

@@ -1,12 +1,12 @@
 """FastAPI app: the unified distressed-credit platform API (one process, three modules).
 
-Endpoints
+Key endpoints
   GET  /api/health                      — liveness + module configuration
-  GET  /api/company/{ticker}            — canonical snapshot: capstack + hazard sections
-  POST /api/company/{ticker}/recovery/simulate — fulcrum Monte Carlo on the extracted cap table
-  GET  /api/overview?ticker=&years=     — capstack Overview (JSON) [legacy route, kept]
+  GET  /api/screen                      — the screening index (front door of the funnel)
+  GET  /api/overview?ticker=&years=     — capstack Overview (JSON, + last recovery summary)
   GET  /api/overview/stream?ticker=...  — SSE: progress events, then the final overview
-  GET  /api/filings?ticker=&years=      — just the filing/exhibit list
+  GET  /api/company/{ticker}            — hazard snapshot (sections=hazard)
+  POST /api/company/{ticker}/recovery/simulate — fulcrum Monte Carlo on the extracted cap table
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ import re
 import secrets
 import threading
 from contextlib import asynccontextmanager
-from typing import Optional
+from typing import NamedTuple, Optional
 
 import numpy as np
 from fastapi import FastAPI, HTTPException, Query
@@ -40,8 +40,9 @@ from .fulcrum.adapter import overview_to_structure
 from .fulcrum.waterfall import run_waterfall
 from .hazard.pipeline import analyze as hazard_analyze
 from .pipeline import run_overview
-from .store import update_snapshot_risk
-from .events.heartbeat import worker_status
+from .store import distress_badge, update_snapshot_recovery, update_snapshot_risk
+from .events.heartbeat import worker_status, zero_ingest_alarm
+from .events.store import DOCKET_SUBTYPES, docket_event
 from .core.progress import ProgressEvent, ProgressLog
 
 
@@ -103,33 +104,12 @@ def root():
     return RedirectResponse("/docs")
 
 
-_QUIET_AFTER_H = 6.0
-
-
-def _zero_ingest_alarm(worker: dict, now: dt.datetime) -> bool:
-    """Poller silent-death alarm (plan §10), from PR-2b's raw worker_status() gauges.
-    True when: the heartbeat exists but is dead, OR the worker is alive yet detected
-    nothing for 6h inside weekday filing hours (EDGAR runs 3-6k filings/business day —
-    a quiet afternoon means a broken poller, not a quiet market). Never alarms before
-    the first beat: not-deployed != dead.
-    ponytail: fixed 13-23 UTC weekday window ≈ EDGAR filing hours; add a holiday
-    calendar only if false alarms actually annoy."""
-    if worker.get("heartbeat_age_s") is None:
-        return False                       # never deployed
-    if not worker.get("alive"):
-        return True
-    if now.weekday() >= 5 or not 13 <= now.hour < 23:
-        return False
-    last = worker.get("last_event_hours")
-    return last is None or last > _QUIET_AFTER_H
-
-
 @app.get("/api/health")
 def health() -> dict:
     s = get_settings()
     try:   # worker gauges are read once and must never take health down (uptime probe)
         w = worker_status()
-        alarm = _zero_ingest_alarm(w, dt.datetime.utcnow())
+        alarm = zero_ingest_alarm(w, dt.datetime.utcnow())
     except Exception:
         w, alarm = {"alive": False}, False
     return {
@@ -177,7 +157,14 @@ def overview(
 ):
     def _run():
         ov = run_overview(ticker, years, live=live)
-        return JSONResponse(content=json.loads(ov.model_dump_json()))
+        content = json.loads(ov.model_dump_json())
+        try:   # last simulate run's summary (Overview recovery card); never fails the request
+            with session_scope() as session:
+                snap = session.get(models.Snapshot, ticker.strip().upper())
+                content["recovery_summary"] = snap.recovery_summary if snap else None
+        except Exception:
+            content["recovery_summary"] = None
+        return JSONResponse(content=content)
 
     return _handle_pipeline_errors(_run)
 
@@ -232,24 +219,15 @@ def company(
     ticker: str,
     years: int = Query(3, ge=1, le=10),
     live: bool = Query(False),
-    sections: str = Query("capstack,hazard"),
+    sections: str = Query("hazard"),
 ):
-    """The canonical company snapshot: each requested module contributes a section.
+    """The hazard snapshot endpoint (capstack is served by /api/overview — one door each).
 
     A section failure degrades to {"error": ...} instead of failing the whole payload
     (the same graceful-degradation pattern the capstack pipeline uses internally).
     """
     requested = {s.strip() for s in sections.split(",") if s.strip()}
     out: dict = {"ticker": ticker.strip().upper(), "years": years, "sections": {}}
-
-    if "capstack" in requested:
-        try:
-            ov = run_overview(ticker, years, live=live)
-            out["sections"]["capstack"] = json.loads(ov.model_dump_json())
-        except (TickerNotFoundError, NoFilingsError) as exc:
-            return JSONResponse(status_code=404, content={"error": str(exc)})
-        except Exception as exc:
-            out["sections"]["capstack"] = {"error": str(exc)}
 
     if "hazard" in requested:
         try:
@@ -268,28 +246,6 @@ def company(
     return JSONResponse(content=jsonable(out))
 
 
-def _distress_badge(session, ticker: str, last_price: Optional[float]) -> Optional[bool]:
-    """Moyer fact pattern (ch. 1): equity de minimis (< $1) AND any unsecured quote < 60
-    (> 40% discount). Live against the drop-file; None when either input is missing."""
-    from .capstack.quotes import match_quotes
-    from .hazard.trace import get_issuer_bonds
-
-    if last_price is None:
-        return None
-    bonds = get_issuer_bonds(ticker).get("bonds") or []
-    if not bonds:
-        return None
-    rows = (session.query(models.DebtInstrumentRow)
-            .filter(models.DebtInstrumentRow.ticker == ticker).all())
-    sched = [{"instrument": r.instrument, "coupon_pct": r.coupon_pct,
-              "maturity": r.maturity} for r in rows if r.secured is False]
-    matches, _ = match_quotes(sched, bonds)
-    prices = [q.get("last_price") for q in matches.values() if q.get("last_price") is not None]
-    if not prices:
-        return None
-    return bool(last_price < 1.0 and min(prices) < 60.0)
-
-
 @app.get("/api/screen")
 def screen() -> JSONResponse:
     """Every analyzed company's headline metrics — filtering happens client-side."""
@@ -301,7 +257,7 @@ def screen() -> JSONResponse:
         out = []
         for r in rows:
             try:
-                badge = _distress_badge(session, r.ticker, r.last_price)
+                badge = distress_badge(session, r.ticker, r.last_price)
             except Exception:
                 badge = None
             out.append({
@@ -755,31 +711,68 @@ def _structure_dict(structure: CapitalStructure) -> dict:
     }
 
 
-def _derive_structure(ticker: str, years: int) -> tuple[CapitalStructure, Optional[float], str, dict, list, dict]:
-    """Cap table from the capstack overview (cache-first). If no debt schedule was extracted,
-    seed one editable tranche from the forensic table's latest cited total debt. Also returns the
-    Exhibit 21 subsidiary list (Recovery editor entity seed) and the raw overview dict."""
-    ov = json.loads(run_overview(ticker, years).model_dump_json())
-    structure, ebitda, citations = overview_to_structure(ov)
-    subsidiaries = ov.get("subsidiaries") or []
-    source = "filed debt schedule"
-    if not structure.tranches:
-        total_debt, citations = None, {}
-        for row in reversed(ov.get("forensic_table") or []):
-            cv = row.get("total_debt")
-            if cv and cv.get("value"):
-                total_debt = float(cv["value"]) / 1e6
-                if cv.get("citation"):
-                    citations["Total debt (XBRL seed)"] = cv["citation"]
-                break
-        structure = CapitalStructure(
-            name=structure.name,
-            entities=[Entity("OpCo", ev_share=1.0, parent=None)],
-            tranches=[Tranche("Total debt (XBRL seed)", "OpCo",
-                              face=total_debt or 100.0, lien_rank=1, secured=True)],
-        )
-        source = "XBRL total-debt seed" if total_debt else "manual seed"
-    return structure, ebitda, source, citations, subsidiaries, ov
+class RecoveryCtx(NamedTuple):
+    """Everything the recovery routes share: the cap table (from the request body or
+    derived), EBITDA, provenance, and the petition-tolled accrual."""
+    structure: CapitalStructure
+    ebitda: Optional[float]
+    source: str
+    citations: dict
+    subsidiaries: list
+    ov: dict
+    accrual_years: float
+
+
+def recovery_context(ticker: str, years: int, sim: dict,
+                     structure: Optional[dict] = None,
+                     petition_date: Optional[str] = None,
+                     need_ov: bool = True) -> RecoveryCtx:
+    """THE shared preamble of every recovery route (simulate/explore/exchange/plan/
+    liquidation/structure — previously five copy-pasted shells). Cap table from the
+    request body if given, else derived from the capstack overview (cache-first) with
+    an XBRL total-debt seed fallback; EBITDA defaulting; petition date -> accrual toll.
+    need_ov=False skips the overview load on the body-structure path (offline callers)."""
+    citations: dict = {}
+    subsidiaries: list = []
+    ebitda = sim.get("base_ebitda")
+    if structure is not None:
+        st = _structure_from_body(ticker, structure)
+        source = "request body"
+        ov: dict = {}
+        if need_ov:
+            try:   # cache-first; only needed for petition accrual / quotes / assets
+                ov = json.loads(run_overview(ticker, years).model_dump_json())
+            except Exception:
+                ov = {}
+    else:
+        ov = json.loads(run_overview(ticker, years).model_dump_json())
+        st, derived_ebitda, citations = overview_to_structure(ov)
+        subsidiaries = ov.get("subsidiaries") or []
+        source = "filed debt schedule"
+        if not st.tranches:
+            # no debt schedule extracted: seed one editable tranche from the forensic
+            # table's latest cited total debt
+            total_debt, citations = None, {}
+            for row in reversed(ov.get("forensic_table") or []):
+                cv = row.get("total_debt")
+                if cv and cv.get("value"):
+                    total_debt = float(cv["value"]) / 1e6
+                    if cv.get("citation"):
+                        citations["Total debt (XBRL seed)"] = cv["citation"]
+                    break
+            st = CapitalStructure(
+                name=st.name,
+                entities=[Entity("OpCo", ev_share=1.0, parent=None)],
+                tranches=[Tranche("Total debt (XBRL seed)", "OpCo",
+                                  face=total_debt or 100.0, lien_rank=1, secured=True)],
+            )
+            source = "XBRL total-debt seed" if total_debt else "manual seed"
+        if ebitda is None:
+            ebitda = derived_ebitda
+    accrual = float(sim.get("accrual_years") or 0.0)
+    if petition_date and "accrual_years" not in sim:
+        accrual = _accrual_from_petition(petition_date, ov)
+    return RecoveryCtx(st, ebitda, source, citations, subsidiaries, ov, accrual)
 
 
 def _structure_from_body(ticker: str, s: dict) -> CapitalStructure:
@@ -848,41 +841,82 @@ def _suggested_other_claims(ov: dict) -> Optional[dict]:
 def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
     """The editable cap table for the Recovery page — derived, never re-entered."""
     try:
-        structure, ebitda, source, citations, subsidiaries, ov = _derive_structure(ticker, years)
+        ctx = recovery_context(ticker, years, {})
     except (TickerNotFoundError, NoFilingsError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     available_entities = [{"name": s.get("name"), "jurisdiction": s.get("jurisdiction")}
-                          for s in subsidiaries if s.get("name")]
+                          for s in ctx.subsidiaries if s.get("name")]
     return JSONResponse(content=jsonable({
-        "structure": _structure_dict(structure), "base_ebitda": ebitda, "source": source,
-        "citations": citations, "available_entities": available_entities,
-        "suggested_other_claims": _suggested_other_claims(ov),
-        "suggested_mezzanine": _suggested_mezzanine(ov),
-        "asset_snapshot": ov.get("asset_snapshot"),
+        "structure": _structure_dict(ctx.structure), "base_ebitda": ctx.ebitda,
+        "source": ctx.source,
+        "citations": ctx.citations, "available_entities": available_entities,
+        "suggested_other_claims": _suggested_other_claims(ctx.ov),
+        "suggested_mezzanine": _suggested_mezzanine(ctx.ov),
+        "asset_snapshot": ctx.ov.get("asset_snapshot"),
         # priming pre-seed: the covenant-dollars liens read (suggested_priming inside)
-        "liens_headroom": ov.get("liens_headroom"),
+        "liens_headroom": ctx.ov.get("liens_headroom"),
     }))
 
 
-def _liquidation_response(ticker: str, structure: CapitalStructure, ov: dict,
-                          accrual_years: float, note: str, body_rates=None,
-                          body_admin=None, body_assets=None) -> JSONResponse:
+def _liquidation_payload(structure: CapitalStructure, ov: dict,
+                         accrual_years: float, note: str, body_rates=None,
+                         body_admin=None, body_assets=None) -> dict:
     """Asset-based waterfall payload (Moyer: cash-flow metrics are irrelevant when positive
     EBITDA is unattainable). Degrades with a note when no asset snapshot was extracted."""
     from .fulcrum.liquidation import assets_from_snapshot, liquidate
 
     assets = body_assets or assets_from_snapshot(ov.get("asset_snapshot"))
     if assets is None:
-        return JSONResponse(content=jsonable({
+        return {
             "mode": "liquidation", "available": False,
             "structure": _structure_dict(structure), "note": note,
             "detail": "no balance-sheet asset snapshot in this cached overview — "
-                      "re-run the pipeline (Run live) to extract asset categories"}))
+                      "re-run the pipeline (Run live) to extract asset categories"}
     out = liquidate(assets, structure, rates=body_rates, admin_pct=body_admin,
                     accrual_years=accrual_years)
     out.update({"available": True, "structure": _structure_dict(structure), "note": note,
                 "asset_snapshot": ov.get("asset_snapshot")})
-    return JSONResponse(content=jsonable(out))
+    return out
+
+
+def _save_recovery_summary(ticker: str, payload: dict) -> None:
+    """Persist the run's headline numbers on the snapshot row (Overview recovery card).
+    Best-effort — never fails a simulate over a summary write."""
+    try:
+        saved_at = dt.datetime.utcnow().isoformat()
+        if payload.get("mode") == "liquidation":
+            if not payload.get("available"):
+                return
+            sc = payload.get("scenario") or {}
+            summary = {
+                "mode": "liquidation", "saved_at": saved_at,
+                "fulcrum": sc.get("fulcrum"),
+                "net_proceeds": sc.get("net_proceeds"),
+                "total_face": round(sum(float(t.get("face") or 0.0)
+                                        for t in sc.get("tranches") or []), 1),
+                "tranches": [{"tranche": t.get("tranche"),
+                              "mean_recovery_pct": t.get("recovery_pct"),
+                              "is_fulcrum": bool(t.get("is_fulcrum"))}
+                             for t in sc.get("tranches") or []],
+            }
+        else:
+            ev = payload.get("ev") or {}
+            summary = {
+                "mode": "simulation", "saved_at": saved_at,
+                "fulcrum": payload.get("fulcrum"),
+                "ev_median": ev.get("median"), "ev_p10": ev.get("p10"),
+                "ev_p90": ev.get("p90"),
+                "total_face": payload.get("total_face"),
+                "n_draws": (payload.get("sim") or {}).get("n_draws"),
+                "tranches": [{"tranche": t.get("tranche"),
+                              "mean_recovery_pct": t.get("mean_recovery_%"),
+                              "is_fulcrum": t.get("tranche") == payload.get("fulcrum")}
+                             for t in payload.get("tranches") or []],
+            }
+        with session_scope() as session:
+            update_snapshot_recovery(session, ticker.strip().upper(), jsonable(summary))
+    except Exception:
+        pass
 
 
 @app.post("/api/company/{ticker}/recovery/simulate")
@@ -894,29 +928,25 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
     instead of failing: a going-concern EV simulation is meaningless below zero EBITDA."""
     sim_kwargs = dict(body.sim)
     try:
-        ov: dict = {}
-        if body.structure is not None:
-            structure = _structure_from_body(ticker, body.structure)
-            source = "request body"
-            if body.petition_date or body.mode == "liquidation" or not sim_kwargs.get("base_ebitda"):
-                try:   # cache-first; only needed for petition accrual / liquidation assets
-                    ov = json.loads(run_overview(ticker, years).model_dump_json())
-                except Exception:
-                    ov = {}
-        else:
-            structure, ebitda, source, _, _, ov = _derive_structure(ticker, years)
-            sim_kwargs.setdefault("base_ebitda", ebitda)
+        need_ov = bool(body.structure is None or body.petition_date
+                       or body.mode == "liquidation" or not sim_kwargs.get("base_ebitda"))
+        ctx = recovery_context(ticker, years, sim_kwargs, structure=body.structure,
+                               petition_date=body.petition_date, need_ov=need_ov)
+        structure, source, ov = ctx.structure, ctx.source, ctx.ov
+        sim_kwargs.setdefault("base_ebitda", ctx.ebitda)
 
         if body.petition_date and "accrual_years" not in body.sim:
-            sim_kwargs["accrual_years"] = _accrual_from_petition(body.petition_date, ov)
+            sim_kwargs["accrual_years"] = ctx.accrual_years
 
         base_ebitda = sim_kwargs.get("base_ebitda")
         if body.mode == "liquidation" or base_ebitda is None or base_ebitda <= 0:
             note = ("forced liquidation mode" if body.mode == "liquidation" else
                     "EBITDA ≤ 0 — going-concern EV simulation replaced by asset-based "
                     "liquidation (Moyer ch. 5)")
-            return _liquidation_response(ticker, structure, ov,
-                                         float(sim_kwargs.get("accrual_years") or 0.0), note)
+            payload = _liquidation_payload(structure, ov,
+                                           float(sim_kwargs.get("accrual_years") or 0.0), note)
+            _save_recovery_summary(ticker, payload)
+            return JSONResponse(content=jsonable(payload))
 
         cfg = SimConfig(**sim_kwargs)
         # bound the PRODUCT, not just each factor: run_waterfall allocates one (n_draws,) array
@@ -984,7 +1014,7 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         t.name: round(max(t.collateral_value - t.claim(ay), 0.0), 1)
         for t in structure.tranches if t.secured and t.collateral_value is not None}
 
-    return JSONResponse(content=jsonable({
+    payload = {
         "source": source,
         "structure": _structure_dict(structure),
         "sim": sim_kwargs,
@@ -1004,7 +1034,9 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         "attack_tranches": attack_rows,
         "priming_tranches": priming_rows,
         "primed_structure": primed_dict,
-    }))
+    }
+    _save_recovery_summary(ticker, payload)
+    return JSONResponse(content=jsonable(payload))
 
 
 @app.post("/api/company/{ticker}/recovery/explore")
@@ -1016,20 +1048,9 @@ def recovery_explore(ticker: str, body: SimulateBody, years: int = Query(3, ge=1
     from .hazard.trace import get_issuer_bonds
 
     try:
-        ov: dict = {}
-        ebitda = body.sim.get("base_ebitda")
-        if body.structure is not None:
-            structure = _structure_from_body(ticker, body.structure)
-            try:
-                ov = json.loads(run_overview(ticker, years).model_dump_json())
-            except Exception:
-                ov = {}
-        else:
-            structure, derived_ebitda, _, _, _, ov = _derive_structure(ticker, years)
-            ebitda = ebitda if ebitda is not None else derived_ebitda
-        accrual = float(body.sim.get("accrual_years") or 0.0)
-        if body.petition_date and "accrual_years" not in body.sim:
-            accrual = _accrual_from_petition(body.petition_date, ov)
+        ctx = recovery_context(ticker, years, body.sim, structure=body.structure,
+                               petition_date=body.petition_date)
+        structure, ebitda, ov, accrual = ctx.structure, ctx.ebitda, ctx.ov, ctx.accrual_years
         matches, _ = match_quotes(ov.get("debt_schedule") or [],
                                   get_issuer_bonds(ticker).get("bonds") or [])
         prices = [q["last_price"] for q in matches.values() if q.get("last_price") is not None]
@@ -1073,20 +1094,9 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
     from .hazard.trace import get_issuer_bonds
 
     try:
-        ov: dict = {}
-        ebitda = body.sim.get("base_ebitda")
-        if body.structure is not None:
-            structure = _structure_from_body(ticker, body.structure)
-            try:
-                ov = json.loads(run_overview(ticker, years).model_dump_json())
-            except Exception:
-                ov = {}
-        else:
-            structure, derived_ebitda, _, _, _, ov = _derive_structure(ticker, years)
-            ebitda = ebitda if ebitda is not None else derived_ebitda
-        accrual = float(body.sim.get("accrual_years") or 0.0)
-        if body.petition_date and "accrual_years" not in body.sim:
-            accrual = _accrual_from_petition(body.petition_date, ov)
+        ctx = recovery_context(ticker, years, body.sim, structure=body.structure,
+                               petition_date=body.petition_date)
+        structure, ebitda, ov, accrual = ctx.structure, ctx.ebitda, ctx.ov, ctx.accrual_years
 
         tmap = {t.name: t for t in structure.tranches}
         if body.target not in tmap:
@@ -1234,18 +1244,9 @@ def recovery_plan(ticker: str, body: PlanBody, years: int = Query(3, ge=1, le=10
     from .hazard.trace import get_issuer_bonds
 
     try:
-        ov: dict = {}
-        if body.structure is not None:
-            structure = _structure_from_body(ticker, body.structure)
-            try:
-                ov = json.loads(run_overview(ticker, years).model_dump_json())
-            except Exception:
-                ov = {}
-        else:
-            structure, _, _, _, _, ov = _derive_structure(ticker, years)
-        accrual = float(body.sim.get("accrual_years") or 0.0)
-        if body.petition_date and "accrual_years" not in body.sim:
-            accrual = _accrual_from_petition(body.petition_date, ov)
+        ctx = recovery_context(ticker, years, body.sim, structure=body.structure,
+                               petition_date=body.petition_date)
+        structure, ov, accrual = ctx.structure, ctx.ov, ctx.accrual_years
 
         # entry price per tranche (per 100 of face), unquoted-degrading — prefix-match
         # the drop-file quotes to tranche names (same n[:80] convention as the exchange shell)
@@ -1327,12 +1328,6 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
     }))
 
 
-DOCKET_SUBTYPES = {   # Moyer ch.12 milestones -> severity 1-5
-    "petition": 5, "first_day": 3, "dip": 4, "363_sale": 4,
-    "disclosure_statement": 3, "plan": 4, "confirmation": 5,
-    "effective": 4, "exclusivity_extension": 2}
-
-
 class DocketBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
     subtype: str = Field(pattern=r"^[a-z0-9_]{1,32}$")
@@ -1340,17 +1335,6 @@ class DocketBody(BaseModel):
     title: str = Field(min_length=1, max_length=300)
     docket_no: Optional[str] = Field(None, max_length=32, pattern=r"^[A-Za-z0-9.\-]*$")
     source_url: Optional[str] = Field(None, max_length=500)
-
-
-def _docket_event(cik, b: DocketBody):   # pure -> unit-testable, mirrors events_from_sd_rows
-    from .events.types import Event
-
-    # cik in synthetic accession because make_dedupe_key omits cik (models_events.py:~146)
-    acc = f"manual:docket:{cik}:{b.occurred_at}:{b.subtype}" + (f":{b.docket_no}" if b.docket_no else "")
-    return Event(cik=cik, event_type="docket", subtype=b.subtype,
-                 severity=DOCKET_SUBTYPES[b.subtype], confidence=1.0,
-                 occurred_at=b.occurred_at, source="manual", source_form="docket",
-                 accession_no=acc, source_url=b.source_url, title=b.title, payload={})
 
 
 @app.post("/api/company/{ticker}/recovery/docket")
@@ -1376,7 +1360,7 @@ def add_docket_event(ticker: str, body: DocketBody):
         cik = _resolve_cik(session, ticker)
         if cik is None:
             return JSONResponse(status_code=404, content={"error": "ticker_not_found"})
-        ev = _docket_event(cik, body)
+        ev = docket_event(cik, body)
         # ponytail: manual rows must be filtered source!='manual' at backtest time — not enforced here
         n = insert_events(session, [ev], detected_at=dt.datetime.utcnow())
     return JSONResponse(content={"inserted": n, "dedupe_key": ev.dedupe_key,
@@ -1522,16 +1506,12 @@ def recovery_liquidation(ticker: str, body: LiquidationBody, years: int = Query(
     """Asset-based liquidation waterfall with editable advance rates and the
     ch11-orderly vs ch7-fire-sale comparison."""
     try:
-        if body.structure is not None:
-            structure = _structure_from_body(ticker, body.structure)
-            ov = {}
-            if body.assets is None:
-                ov = json.loads(run_overview(ticker, years).model_dump_json())
-        else:
-            structure, _, _, _, _, ov = _derive_structure(ticker, years)
-        return _liquidation_response(ticker, structure, ov, body.accrual_years,
-                                     "liquidation analysis", body.rates, body.admin_pct,
-                                     body.assets)
+        ctx = recovery_context(ticker, years, {"accrual_years": body.accrual_years},
+                               structure=body.structure, need_ov=body.assets is None)
+        payload = _liquidation_payload(ctx.structure, ctx.ov, body.accrual_years,
+                                       "liquidation analysis", body.rates, body.admin_pct,
+                                       body.assets)
+        return JSONResponse(content=jsonable(payload))
     except (TickerNotFoundError, NoFilingsError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except (ValueError, TypeError) as exc:

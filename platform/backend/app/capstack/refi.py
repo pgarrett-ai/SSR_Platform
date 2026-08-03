@@ -13,7 +13,7 @@ import json
 from typing import Optional
 
 from ..core.cache import safe_ticker
-from ..core.config import CACHE_DIR, get_settings
+from ..core.config import CACHE_DIR
 from ..edgar.facts import derived_value
 from ..hazard.merton import merton
 from ..hazard.score import implied_rating
@@ -36,7 +36,9 @@ def hazard_inputs(ticker: str) -> Optional[dict]:
     """Merton inputs from the newest cached hazard payload for the ticker — glob
     {TICKER}_*y.json and take the newest (NOT years-keyed: only *_10y.json typically
     exists). Any age (calculator, not monitor); file + as_of surfaced in the payload.
-    None when no usable cache."""
+    Reads the EXACT inputs MertonScorer solved with (scores["Merton DD"]["inputs"]) —
+    one input-assembly path platform-wide. None when no usable cache (a pre-inputs
+    cache self-heals on the next Default Risk run)."""
     try:
         t = safe_ticker(ticker)   # trust boundary: keep request-derived ticker out of the glob
     except ValueError:
@@ -47,14 +49,11 @@ def hazard_inputs(ticker: str) -> Optional[dict]:
         try:
             blob = json.loads(p.read_text(encoding="utf-8"))
             data = blob.get("data") or {}
-            market = data.get("market") or {}
-            ft = data.get("features_timeline") or []
-            E = market.get("market_cap")
-            sigma_E = market.get("equity_vol")
-            D = (ft[-1] or {}).get("total_debt") if ft else None
-            if E and sigma_E and D and E > 0 and sigma_E > 0 and D > 0:
-                return {"E": float(E), "sigma_E": float(sigma_E), "D": float(D),
-                        "r": get_settings().risk_free_rate,
+            merton_score = (data.get("scores") or {}).get("Merton DD") or {}
+            inp = merton_score.get("inputs") or {}
+            if all(inp.get(k) for k in ("E", "sigma_E", "D")) and inp.get("r") is not None:
+                return {"E": float(inp["E"]), "sigma_E": float(inp["sigma_E"]),
+                        "D": float(inp["D"]), "r": float(inp["r"]),
                         "as_of": blob.get("as_of"), "file": p.name}
         except Exception:
             continue

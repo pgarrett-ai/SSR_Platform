@@ -288,3 +288,6 @@ class Snapshot(Base):
     interest_coverage: Mapped[Optional[float]] = mapped_column(Float)       # EBITDA/interest
     last_price: Mapped[Optional[float]] = mapped_column(Float)              # equity, from hazard run
     runway_months: Mapped[Optional[float]] = mapped_column(Float)   # overview.liquidity.runway_months
+    # last simulate run's headline numbers (fulcrum, EV band, per-tranche means) — the
+    # Overview recovery card reads this instead of re-running a Monte Carlo per page view
+    recovery_summary: Mapped[Optional[dict]] = mapped_column(JSON)

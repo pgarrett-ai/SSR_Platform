@@ -11,6 +11,10 @@ Reused by F1 (petition date, `petition_filing`) and F3 (crisis triggers,
 `crisis_triggers`). `_http_get_submissions` is the raw network seam; `_fetch_submissions`
 wraps it with a 1h per-CIK disk cache + retry. Tests monkeypatch either. All bytes leave
 through the one paced EDGAR transport (`edgar.http.paced_get`).
+
+ponytail: case/crisis still enumerate 8-K items live per page mount (1h cache); point
+them at the event store (which already carries 1.03/4.01/4.02 rows) once the worker +
+backfill have populated it, keeping this module as the cold-start fallback.
 """
 from __future__ import annotations
 

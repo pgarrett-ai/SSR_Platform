@@ -104,6 +104,10 @@ class MertonScorer(Scorer):
             "asset_vol": round(res.asset_vol, 3),
             "converged": res.converged,
             "pd": {f"{int(h*12)}m": res.pd_by_horizon[h] for h in (0.25, 0.5, 1.0)},
+            # the exact solved inputs, so cached payloads carry them (refi's conditional
+            # PDs re-solve from these instead of reassembling from market/features)
+            "inputs": {"E": float(market.market_cap), "sigma_E": float(market.equity_vol),
+                       "D": float(D), "r": float(r)},
         }
 
 

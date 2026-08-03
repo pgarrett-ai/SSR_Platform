@@ -6,7 +6,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.db import session_scope
-from app.main import app, _docket_event, DocketBody
+from app.events.store import docket_event
+from app.main import app, DocketBody
 
 # Context-managed so the lifespan handler runs (init_db creates the events table).
 client = TestClient(app).__enter__()
@@ -84,12 +85,12 @@ def test_empty_title_422():
 
 
 def test_dedupe_key_distinct_across_ciks():
-    """Pure unit assert on _docket_event: proves the cik-in-accession fix — make_dedupe_key
+    """Pure unit assert on docket_event: proves the cik-in-accession fix — make_dedupe_key
     itself omits cik, so without the synthetic-accession embedding, two issuers filing the
     same milestone on the same date would collide (models_events.py make_dedupe_key)."""
     b = DocketBody(subtype="petition", occurred_at="2026-05-01", title="Voluntary petition filed")
-    ev1 = _docket_event("0000000001", b)
-    ev2 = _docket_event("0000000002", b)
+    ev1 = docket_event("0000000001", b)
+    ev2 = docket_event("0000000002", b)
     assert ev1.dedupe_key != ev2.dedupe_key
 
 
