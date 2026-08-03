@@ -282,6 +282,11 @@ export async function addDocketEvent(ticker, body) {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
 }
 
+// Undo for manual docket rows only — the server refuses detector-sourced ids.
+export async function deleteEvent(eventId) {
+  return jsonOrThrow(await apiFetch(`/api/events/${eventId}`, { method: "DELETE" }));
+}
+
 export async function fetchCh11Case(ticker, years = 3) {
   return jsonOrThrow(
     await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/case?years=${years}`)

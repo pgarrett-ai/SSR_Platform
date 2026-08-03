@@ -957,15 +957,9 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
     face = {n: tmap[n].face for n in order}
     claim = {n: tmap[n].claim(ay) for n in order}   # recovery % is against the allowed claim
 
-    # Chart payloads, computed server-side so the response stays small (no raw draws).
-    pct_grid = np.linspace(0, 100, 51)
-    histograms, cdf = {}, {}
-    for name in order:
-        c = claim[name]
-        pct = 100 * result.recoveries[name] / c if c > 0 else np.zeros_like(result.recoveries[name])
-        counts, edges = np.histogram(pct, bins=20, range=(0.0, 100.0000001))
-        histograms[name] = {"edges": edges.round(1).tolist(), "counts": counts.tolist()}
-        cdf[name] = (pct[:, None] <= pct_grid[None, :]).mean(axis=0).round(4).tolist()
+    # Chart payload, computed server-side so the response stays small (no raw draws).
+    # Per-tranche histograms/CDF were cut with their charts — the table's mean/P10/P90/
+    # P(zero) already carries the distribution.
     ev_counts, ev_edges = np.histogram(ev, bins=40)
     med_wf = run_waterfall(result.structure, np.array([float(np.median(ev))]), accrual_years=ay)
     waterfall_at_median = [
@@ -991,8 +985,6 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         "accrual_years": ay,
         "fulcrum": result.fulcrum,
         "tranches": _native(result.table().to_dict("records")),
-        "cdf": {"grid": pct_grid.tolist(), "series": cdf},
-        "histograms": histograms,
         "waterfall_at_median": waterfall_at_median,
         "headroom_506": headroom_506,
         "attack": body.attack,

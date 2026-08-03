@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { addDocketEvent, fetchCh11Case, fetchEvents } from "../api.js";
+import { addDocketEvent, deleteEvent, fetchCh11Case, fetchEvents } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
 import { Badge, Button, Input, Section } from "../ui/index.jsx";
 
@@ -74,6 +74,12 @@ function DocketSurface({ ticker }) {
             <span className="font-mono text-slate-500">{ev.occurred_at?.slice(0, 10)}</span>
             <Badge tone="info" mono>{ev.subtype}</Badge>
             <span className="truncate">{ev.title}</span>
+            {ev.source === "manual" && (
+              <button onClick={() => deleteEvent(ev.id).then(refetch).catch(() => {})}
+                className="text-slate-600 hover:text-rose-400" title="delete this manual entry">
+                ✕
+              </button>
+            )}
           </li>
         ))}
         {!events.length && <li className="text-[11px] text-slate-500">no docket entries yet</li>}

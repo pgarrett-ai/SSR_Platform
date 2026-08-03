@@ -46,7 +46,10 @@ export default function EvExplorer({ ticker, years, structure, baseEbitda, accru
       covered: t.ev_covered,
     }));
   }, [data, idx]);
-  const fulcrumAt = atSlider.find((t) => t.pct > 0.05 && t.pct < 99.9)?.tranche;
+  // fulcrum at the slider's EV from the server's own breakpoints (entered, not covered)
+  // — no client-side threshold heuristic
+  const fulcrumAt = atSlider.find((t) =>
+    t.enters != null && ev >= t.enters && (t.covered == null || ev < t.covered))?.tranche;
 
   // Inverse solver: tranche price % of claim -> EV (monotone curve, linear interpolation).
   const implied = useMemo(() => {

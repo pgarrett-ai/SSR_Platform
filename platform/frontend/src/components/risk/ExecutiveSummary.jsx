@@ -16,12 +16,10 @@ export default function ExecutiveSummary({ data }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
       <Card className="flex flex-wrap items-center gap-3">
+        {/* the Gauge renders the number itself — no second numeric copy beside it */}
         <div className="shrink-0"><Gauge value={es.overall_risk} size={110} /></div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">Overall risk</div>
-          <div className="text-2xl font-semibold" style={{ color: riskColor(es.overall_risk) }}>
-            {es.overall_risk == null ? "—" : `${Math.round(es.overall_risk)}/100`}
-          </div>
+          <div className="text-xs uppercase tracking-wide text-slate-500">Overall risk / 100</div>
           <div className="text-xs text-slate-400">
             composite ({(es.composite_of || ["Altman", "Merton"]).join(" + ")})
           </div>

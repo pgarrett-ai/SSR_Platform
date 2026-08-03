@@ -60,5 +60,7 @@ platform/backend/app/hazard/data/lopucki_brd_cases.csv
 
 # hazard day-cache: derived, valid one day — never committed (hero overview caches ARE committed)
 platform/backend/app/cache/hazard/
+# 8-K submissions cache: derived, 1h TTL
+platform/backend/app/cache/eightk/
 route_audit.csv
 .superpowers/

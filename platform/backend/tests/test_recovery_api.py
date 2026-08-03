@@ -44,8 +44,7 @@ def test_project_apex_via_api():
     # HoldCo paper is structurally subordinated below OpCo unsecured.
     assert by_name["HoldCo Unsecured"]["prob_zero_%"] > by_name["OpCo Unsecured"]["prob_zero_%"]
     # Chart payloads present and shaped for the UI.
-    assert set(d["histograms"]) == {t["name"] for t in APEX_STRUCTURE["tranches"]}
-    assert len(d["cdf"]["grid"]) == 51
+    assert len(d["ev"]["histogram"]["counts"]) == 40
     assert len(d["waterfall_at_median"]) == 4
 
 
@@ -313,6 +312,24 @@ def test_ticker_charset_rejected_422():
     # query-param ticker pattern rejects path-separator chars before any pipeline work
     assert client.get("/api/overview?ticker=../etc&years=3").status_code == 422
     assert client.get("/api/overview?ticker=..%2f..%2fx&years=3").status_code == 422
+
+
+def test_simulate_persists_recovery_summary():
+    # the Overview recovery card reads Snapshot.recovery_summary instead of re-simulating
+    from app import models
+    from app.core.db import session_scope
+
+    with session_scope() as s:
+        s.merge(models.Snapshot(ticker="APEX", issuer="Project Apex"))
+    r = client.post("/api/company/APEX/recovery/simulate",
+                    json={"structure": APEX_STRUCTURE, "sim": {**APEX_SIM, "n_draws": 5_000}})
+    assert r.status_code == 200, r.text
+    with session_scope() as s:
+        summ = s.get(models.Snapshot, "APEX").recovery_summary
+        s.query(models.Snapshot).filter_by(ticker="APEX").delete()
+    assert summ["mode"] == "simulation" and summ["fulcrum"] == "2L Notes"
+    assert {t["tranche"] for t in summ["tranches"]} == {t["name"] for t in APEX_STRUCTURE["tranches"]}
+    assert any(t["is_fulcrum"] for t in summ["tranches"])
 
 
 def test_case_crisis_are_cache_only(monkeypatch):

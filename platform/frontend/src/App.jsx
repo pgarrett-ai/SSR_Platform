@@ -116,7 +116,13 @@ export default function App() {
       setOvError(null);
       setOverview(getCached(cacheKey) || null);
     }
-    if (onCapitalTab && !getCached(cacheKey) && !ovLoading) runOverview(false);
+    if (onCapitalTab && !overview) {
+      // same session key OverviewPage fetches under — a cache hit hydrates the shell
+      // (pre-existing gap: Overview-first left Capital blank), a miss streams the run
+      const hit = getCached(cacheKey);
+      if (hit) setOverview(hit);
+      else if (!ovLoading) runOverview(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheKey, onCapitalTab]);
 
