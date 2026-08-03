@@ -116,6 +116,10 @@ def main() -> int:
     for j in jobs:
         j.restore(prev_jobs.get(j.name))
     print(f"worker up (pid {os.getpid()}); jobs: {[j.name for j in jobs]}; Ctrl+C stops")
+    # beat once before the first pass: the cold-start tick (form.idx + ratings CSVs)
+    # can run for minutes, and /api/health's alive gauge measures the process, not
+    # first-tick completion
+    _tick_bookkeeping(jobs, 0)
     try:
         while True:
             n = run_due(jobs, time.time())
