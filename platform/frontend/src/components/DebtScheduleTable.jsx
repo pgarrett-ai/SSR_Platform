@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Td, Th, rowClass } from "../ui/index.jsx";
+import { Badge, Td, Th, rowClass, useSort } from "../ui/index.jsx";
 
 // Coupon cell: tagged XBRL rates first (coupon_pct / effective_rate_pct — the same
 // fields the recovery adapter accrues on), regex compaction of the filing prose only
@@ -23,6 +23,14 @@ function couponCell(d) {
 }
 
 export default function DebtScheduleTable({ instruments }) {
+  // Sortable projections; default sort null = server order (assumed seniority).
+  const projected = useMemo(() => (instruments || []).map((d) => ({
+    ...d,
+    _out: d.outstanding?.value ?? d.principal?.value ?? null,
+    _mat: d.maturity || null,
+  })), [instruments]);
+  const { sorted, thProps } = useSort(projected, null);
+
   if (!instruments || instruments.length === 0) {
     return (
       <p className="text-sm text-slate-400">
@@ -37,17 +45,17 @@ export default function DebtScheduleTable({ instruments }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-ink-600">
-            <Th>Instrument</Th>
-            <Th right>Outstanding</Th>
+            <Th {...thProps("instrument")}>Instrument</Th>
+            <Th right {...thProps("_out")}>Outstanding</Th>
             {hasCapacity && <Th right>Undrawn / commitment</Th>}
             <Th>Coupon</Th>
-            <Th>Maturity</Th>
+            <Th {...thProps("_mat")} title="sorts lexicographically — ISO and year-first maturity strings order correctly">Maturity</Th>
             <Th>Lien / seniority</Th>
             {hasObligor && <Th>Obligor</Th>}
           </tr>
         </thead>
         <tbody>
-          {instruments.map((d, i) => (
+          {sorted.map((d, i) => (
             <tr key={i} className={rowClass}>
               <Td className="text-slate-200">
                 {d.instrument}

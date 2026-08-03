@@ -3,7 +3,7 @@ import { fetchTelegraph } from "../api.js";
 import { useAsync } from "../cache.js";
 import CitedNumber from "./CitedNumber.jsx";
 import { markOnly } from "./DocSearch.jsx";
-import { Badge, Loading } from "../ui/index.jsx";
+import { Badge, Skeleton } from "../ui/index.jsx";
 
 // Bank triage + filing telegraph (Moyer ch. 8): where the bank sits when trouble
 // starts, and the five disclosure/behavior tells that a filing is being telegraphed.
@@ -31,7 +31,7 @@ export default function Telegraph({ ticker, years }) {
   const { data, loading, error } = useAsync(
     `telegraph:${ticker}:${years}`, () => fetchTelegraph(ticker, years), [ticker, years]);
 
-  if (loading) return <Loading />;
+  if (loading) return <Skeleton rows={3} />;
   if (error) return <div className="text-xs text-rose-300">{error}</div>;
   if (!data) return null;
   const bank = data.bank || {};

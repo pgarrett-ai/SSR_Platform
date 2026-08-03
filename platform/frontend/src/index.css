@@ -27,6 +27,12 @@ body {
 }
 
 /* Citation underline affordance */
+/* one keyboard-visibility floor for every interactive element */
+:focus-visible {
+  outline: 2px solid rgba(94, 123, 255, 0.6);
+  outline-offset: 2px;
+}
+
 .cite-link {
   text-decoration: underline dotted rgba(148, 163, 184, 0.6);
   text-underline-offset: 3px;

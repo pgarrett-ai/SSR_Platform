@@ -1,7 +1,7 @@
 // The app's single set of presentational primitives: cards, sections, badges,
 // stats, table cells, gauge, formatters. Every page composes these — no page
 // defines its own card/section/badge styles.
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { ACCENT, INK, NEUTRAL, RISK } from "./colors.js";
 
 export { ACCENT, INK, LINE_COLORS, NEUTRAL, RISK } from "./colors.js";
@@ -154,20 +154,116 @@ export function Stat({ label, value, sub, color, bare = false }) {
   return bare ? <div className="flex flex-col">{body}</div> : <Card>{body}</Card>;
 }
 
+/* ---------- disclosure / state primitives ---------- */
+
+// Muted convention: user-excluded = strikethrough; not-quantifiable/not-applicable =
+// dimmed with NO pointer affordance. Bare text-slate-600 is reserved for "—"/zero
+// placeholders — never for interactive or toggled state.
+export const MUTED_EXCLUDED = "line-through text-slate-500";
+export const MUTED_NA = "opacity-60";
+
+// THE canonical rolled-up-list idiom: cap a list at `initial`, one accent control to
+// expand/re-collapse. A hook (not a wrapper) so it composes with <tbody>, lists, grids.
+export function useShowMore(items = [], initial, label = "items") {
+  const [all, setAll] = useState(false);
+  const shown = all ? items : items.slice(0, initial);
+  const control =
+    items.length > initial ? (
+      <button
+        onClick={() => setAll((v) => !v)}
+        className="mt-2 text-[11px] text-accent hover:underline"
+      >
+        {all ? "show fewer" : `show all ${items.length} ${label}`}
+      </button>
+    ) : null;
+  return { shown, control, expanded: all };
+}
+
+// Terse empty state: what's missing, optionally why/what to do about it.
+export function EmptyState({ children, hint, action }) {
+  return (
+    <div className="py-6 text-center">
+      <div className="text-sm text-slate-500">{children}</div>
+      {hint && <div className="mt-1 text-xs text-slate-600">{hint}</div>}
+      {action && (
+        <Button onClick={action.onClick} className="mt-3">
+          {action.label}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+// Table-shaped loading placeholder — replaces stacked bare "Loading…" texts.
+export function Skeleton({ rows = 3, className = "" }) {
+  const widths = ["w-full", "w-11/12", "w-4/5", "w-2/3"];
+  return (
+    <div aria-hidden className={`animate-pulse motion-reduce:animate-none space-y-2 py-2 ${className}`}>
+      {Array.from({ length: rows }, (_, i) => (
+        <div key={i} className={`h-4 rounded bg-ink-700/60 ${widths[i % widths.length]}`} />
+      ))}
+    </div>
+  );
+}
+
 /* ---------- table primitives ---------- */
 
 export const rowClass = "border-b border-ink-700/60 hover:bg-ink-700/30";
 
-export function Th({ right = false, className = "", title, onClick, children }) {
+export function Th({ right = false, className = "", title, onClick, sorted, children }) {
+  // title carries load-bearing methodology in this app — make it visibly hoverable
+  // with the same dotted-underline convention cited numbers use (.cite-link).
+  const label = title ? <span className="cite-link">{children}</span> : children;
+  const arrow = sorted ? (
+    <span className="ml-0.5 text-accent">{sorted === "desc" ? "▼" : "▲"}</span>
+  ) : null;
   return (
     <th
       title={title}
-      onClick={onClick}
+      aria-sort={sorted ? (sorted === "desc" ? "descending" : "ascending") : undefined}
       className={`px-2 py-2 text-[11px] font-medium uppercase tracking-wide text-slate-500 ${right ? "text-right" : "text-left"} ${className}`}
     >
-      {children}
+      {onClick ? (
+        <button
+          onClick={onClick}
+          className="text-[11px] font-medium uppercase tracking-wide hover:text-slate-300"
+        >
+          {label}
+          {arrow}
+        </button>
+      ) : (
+        <>
+          {label}
+          {arrow}
+        </>
+      )}
     </th>
   );
+}
+
+// Shared column-sort state (extracted from ScreenTable): nulls last both directions,
+// numbers numerically, strings lexicographically. defaultKey null = server order
+// until the first click. Spread thProps(key) onto a sortable <Th>.
+export function useSort(rows = [], defaultKey = null, defaultDir = "desc") {
+  const [sort, setSort] = useState({ key: defaultKey, dir: defaultDir });
+  const sorted = useMemo(() => {
+    if (!sort.key) return rows;
+    return [...rows].sort((a, b) => {
+      const av = a[sort.key], bv = b[sort.key];
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      const d = typeof av === "string" || typeof bv === "string"
+        ? String(av).localeCompare(String(bv))
+        : av - bv;
+      return sort.dir === "desc" ? -d : d;
+    });
+  }, [rows, sort]);
+  const thProps = (key) => ({
+    onClick: () =>
+      setSort((s) => ({ key, dir: s.key === key && s.dir === "desc" ? "asc" : "desc" })),
+    sorted: sort.key === key ? sort.dir : null,
+  });
+  return { sorted, thProps, sort };
 }
 
 export function Td({ right = false, mono = false, className = "", children }) {

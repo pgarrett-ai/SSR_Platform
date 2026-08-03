@@ -4,7 +4,7 @@ import {
 } from "recharts";
 import { fetchCapacity } from "../api.js";
 import { useAsync } from "../cache.js";
-import { INK, LINE_COLORS, Loading, Th, chartTooltipStyle, fmt } from "../ui/index.jsx";
+import { INK, LINE_COLORS, Skeleton, Th, chartTooltipStyle, fmt } from "../ui/index.jsx";
 
 // Credit-capacity card (Moyer ch. 6): can this structure repay itself from internal
 // funds? Cash-sweep repayment %, the leverage×growth heatmap with the issuer's own cell
@@ -22,7 +22,7 @@ export default function CapacityCard({ ticker, years }) {
     `capacity:${ticker}:${years}`, () => fetchCapacity(ticker, years), [ticker, years]);
   const [sevIdx, setSevIdx] = useState(2);   // severity slices: 0.5 .. 1.75; default 1.0
 
-  if (loading) return <Loading />;
+  if (loading) return <Skeleton rows={3} />;
   if (error) return <div className="text-xs text-rose-300">{error}</div>;
   if (!data) return null;
   if (!data.available) return <div className="text-xs text-slate-500">{data.note}</div>;
