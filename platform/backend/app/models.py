@@ -96,25 +96,6 @@ class Citation(Base):
         }
 
 
-class ExtractedFact(Base):
-    """A numeric capital-structure fact (from XBRL or a footnote). Cited or derived."""
-
-    __tablename__ = "extracted_facts"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    ticker: Mapped[str] = mapped_column(String(16), index=True)
-    concept: Mapped[str] = mapped_column(String(64), index=True)  # e.g. TotalDebt, CashAndEquiv
-    taxonomy_tag: Mapped[Optional[str]] = mapped_column(String(96))  # us-gaap concept if XBRL
-    period_end: Mapped[Optional[date]] = mapped_column(Date, index=True)
-    fiscal_year: Mapped[Optional[int]] = mapped_column(Integer, index=True)
-    value: Mapped[Optional[float]] = mapped_column(Float)
-    unit: Mapped[Optional[str]] = mapped_column(String(16), default="USD")
-    derived: Mapped[bool] = mapped_column(Boolean, default=False)
-    formula: Mapped[Optional[str]] = mapped_column(Text)  # shown when derived=True
-    citation_id: Mapped[Optional[int]] = mapped_column(ForeignKey("citations.id"))
-    citation: Mapped[Optional["Citation"]] = relationship()
-
-
 class Covenant(Base):
     """An extracted covenant clause from a credit agreement / indenture (brief §5)."""
 
@@ -163,22 +144,6 @@ class ObsItem(Base):
     citation: Mapped[Optional["Citation"]] = relationship()
 
 
-class ForensicFlag(Base):
-    """A quantitative 'where is the cash coming from?' divergence flag (brief §6a)."""
-
-    __tablename__ = "forensic_flags"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    ticker: Mapped[str] = mapped_column(String(16), index=True)
-    # cash_up_no_debt / ap_outrunning_revenue / dpo_climbing / ebitda_vs_ocf_divergence
-    flag_type: Mapped[str] = mapped_column(String(48), index=True)
-    severity: Mapped[Optional[str]] = mapped_column(String(16))  # info / watch / high
-    fiscal_year: Mapped[Optional[int]] = mapped_column(Integer)
-    metrics: Mapped[Optional[dict]] = mapped_column(JSON)  # the numbers that triggered it
-    narrative: Mapped[Optional[str]] = mapped_column(Text)
-    pointer: Mapped[Optional[str]] = mapped_column(Text)  # footnote/MD&A to read next
-
-
 class ExtractionAlias(Base):
     """Learned name mapping: an XBRL dimension member ('lcid:A2030NotesMember') to the
     prose name filings actually use ('5.00% Convertible Senior Notes due 2030'). Written
@@ -223,8 +188,6 @@ class MdnaSection(Base):
     period_end: Mapped[Optional[date]] = mapped_column(Date, index=True)
     section_name: Mapped[Optional[str]] = mapped_column(String(64))
     text: Mapped[Optional[str]] = mapped_column(Text)
-    drift_from_prior: Mapped[Optional[float]] = mapped_column(Float)  # cosine distance
-    liquidity_tone_score: Mapped[Optional[float]] = mapped_column(Float)  # zero-shot Claude score
 
 
 class DebtInstrumentRow(Base):

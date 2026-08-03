@@ -312,7 +312,7 @@ def test_tax382_horizon_bounded_422():
 def test_ticker_charset_rejected_422():
     # query-param ticker pattern rejects path-separator chars before any pipeline work
     assert client.get("/api/overview?ticker=../etc&years=3").status_code == 422
-    assert client.get("/api/filings?ticker=..%2f..%2fx&years=3").status_code == 422
+    assert client.get("/api/overview?ticker=..%2f..%2fx&years=3").status_code == 422
 
 
 def test_case_crisis_are_cache_only(monkeypatch):

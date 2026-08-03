@@ -182,24 +182,6 @@ def overview(
     return _handle_pipeline_errors(_run)
 
 
-@app.get("/api/filings")
-def filings(
-    ticker: str = Query(..., min_length=1, max_length=12, pattern=r"^[A-Za-z0-9.\-]+$"),
-    years: int = Query(3, ge=1, le=10),
-):
-    def _run():
-        ov = run_overview(ticker, years)
-        return JSONResponse(
-            content={
-                "header": json.loads(ov.header.model_dump_json()),
-                "sources": [json.loads(s.model_dump_json()) for s in ov.sources],
-                "warnings": ov.warnings,
-            }
-        )
-
-    return _handle_pipeline_errors(_run)
-
-
 def _native(obj):
     """Recursively convert numpy scalars/arrays (hazard payloads) to JSON-safe types."""
     if isinstance(obj, dict):
@@ -336,14 +318,6 @@ def screen() -> JSONResponse:
                 "distress_badge": badge,
             })
         return JSONResponse(content=jsonable(out))
-
-
-@app.get("/api/company/{ticker}/bonds")
-def issuer_bonds(ticker: str) -> JSONResponse:
-    """Per-issuer TRACE quotes from the manual drop-file (graceful when absent)."""
-    from .hazard.trace import get_issuer_bonds
-
-    return JSONResponse(content=jsonable(get_issuer_bonds(ticker)))
 
 
 @app.get("/api/company/{ticker}/capacity")

@@ -182,11 +182,7 @@ export async function fetchMdnaText(ticker, accessionNo) {
   );
 }
 
-// ---- Bonds + creation ladder (Moyer market layer) ------------------------------
-
-export async function fetchBonds(ticker) {
-  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/bonds`));
-}
+// ---- Creation ladder (Moyer market layer) ------------------------------
 
 export async function fetchLadder(ticker, years = 3, recast = false) {
   return jsonOrThrow(
