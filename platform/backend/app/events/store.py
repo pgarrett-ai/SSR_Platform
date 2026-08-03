@@ -35,6 +35,24 @@ def insert_events(session: Session, events: list[Event],
     return me.insert_events(session, [_to_row(e, detected_at) for e in events])
 
 
+DOCKET_SUBTYPES = {   # Moyer ch.12 milestones -> severity 1-5
+    "petition": 5, "first_day": 3, "dip": 4, "363_sale": 4,
+    "disclosure_statement": 3, "plan": 4, "confirmation": 5,
+    "effective": 4, "exclusivity_extension": 2}
+
+
+def docket_event(cik: str, b) -> Event:
+    """Layer A (manual) docket row from an analyst entry (duck-typed body: subtype,
+    occurred_at, title, docket_no, source_url). Pure -> unit-testable, mirrors
+    events_from_sd_rows."""
+    # cik in synthetic accession because make_dedupe_key omits cik (models_events.py:~146)
+    acc = f"manual:docket:{cik}:{b.occurred_at}:{b.subtype}" + (f":{b.docket_no}" if b.docket_no else "")
+    return Event(cik=cik, event_type="docket", subtype=b.subtype,
+                 severity=DOCKET_SUBTYPES[b.subtype], confidence=1.0,
+                 occurred_at=b.occurred_at, source="manual", source_form="docket",
+                 accession_no=acc, source_url=b.source_url, title=b.title, payload={})
+
+
 def has_event(session: Session, cik: str, occurred_on: str,
               event_types: Iterable[str]) -> bool:
     """Cheap pre-resolution check: any of these event types for this CIK on this date?

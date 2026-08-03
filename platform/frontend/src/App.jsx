@@ -67,6 +67,7 @@ export default function App() {
 
   const activeTicker = location.pathname.match(/^\/company\/([^/]+)/)?.[1] || null;
   const onCapitalTab = /^\/company\/[^/]+\/capital/.test(location.pathname);
+  const onRiskTab = /^\/company\/[^/]+\/risk/.test(location.pathname);
 
   // Overview pipeline state lives in the shell so Run Live (sidebar) and the progress
   // log (top of main) work from any tab; CapitalPage is purely presentational.
@@ -115,7 +116,13 @@ export default function App() {
       setOvError(null);
       setOverview(getCached(cacheKey) || null);
     }
-    if (onCapitalTab && !getCached(cacheKey) && !ovLoading) runOverview(false);
+    if (onCapitalTab && !overview) {
+      // same session key OverviewPage fetches under — a cache hit hydrates the shell
+      // (pre-existing gap: Overview-first left Capital blank), a miss streams the run
+      const hit = getCached(cacheKey);
+      if (hit) setOverview(hit);
+      else if (!ovLoading) runOverview(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheKey, onCapitalTab]);
 
@@ -321,7 +328,8 @@ export default function App() {
         </header>
 
         <main className="mx-auto max-w-6xl px-5 py-6">
-          {(ovLoading || ovEvents.length > 0) && <ProgressLog events={ovEvents} done={!!overview} />}
+          {/* Risk has its own hazard ProgressLog — never render two logs at once */}
+          {!onRiskTab && (ovLoading || ovEvents.length > 0) && <ProgressLog events={ovEvents} done={!!overview} />}
           {ovError && (
             <ErrorCard className="mb-8">
               <span className="font-semibold">Could not complete:</span> {ovError}

@@ -1,24 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { exchangeRecovery } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Button, Section, Th, fmt } from "../ui/index.jsx";
+import { Badge, Button, Field, NUM_CLS, Section, Th, fmt } from "../ui/index.jsx";
 
 // Exchange-offer analyzer (Moyer ch. 11): a calculator over typed offer terms — the
 // SC TO-I/S-4 parser is Phase-6 backlog. Server returns holdout/tender payoff curves
 // per participation level over the base structure's EV grid; the slider and matrix
 // read the curves client-side. Runs on the edited structure (EvExplorer convention).
-
-function TermField({ label, title, children }) {
-  return (
-    <label className="flex flex-col gap-1" title={title}>
-      <span className="text-[10px] uppercase tracking-wide text-slate-500">{label}</span>
-      {children}
-    </label>
-  );
-}
-
-const numCls =
-  "w-24 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent";
 
 export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda, accrualYears }) {
   const tranches = structure?.tranches || [];
@@ -92,21 +80,21 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
   return (
     <Section
       title="Exchange analyzer"
-      subtitle="holdout vs tender payoff per participation level — offer terms are your input (Moyer ch. 11)"
+      subtitle="holdout vs tender payoff per participation level — offer terms are your input"
     >
       <div className="flex flex-wrap items-end gap-x-5 gap-y-4">
-        <TermField label="Target tranche">
+        <Field label="Target tranche">
           <select value={effTarget} onChange={(e) => setTarget(e.target.value)}
             className="max-w-[240px] rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-accent">
             {tranches.map((t) => (
               <option key={t.name} value={t.name}>{t.name}</option>
             ))}
           </select>
-        </TermField>
-        <TermField label="Ratio (new per 100)" title="new face issued per 100 of old face tendered">
-          <input type="number" step={5} value={ratio} onChange={(e) => setRatio(Number(e.target.value))} className={numCls} />
-        </TermField>
-        <TermField label="New-paper seniority"
+        </Field>
+        <Field label="Ratio (new per 100)" title="new face issued per 100 of old face tendered">
+          <input type="number" step={5} value={ratio} onChange={(e) => setRatio(Number(e.target.value))} className={NUM_CLS} />
+        </Field>
+        <Field label="New-paper seniority"
           title="priming = rank ahead of every lien; second lien = behind existing secured; maturity-based seniority not modeled">
           <select value={seniority} onChange={(e) => setSeniority(e.target.value)}
             className="rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-accent">
@@ -114,22 +102,22 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
             <option value="second_lien">second lien</option>
             <option value="unsecured">unsecured</option>
           </select>
-        </TermField>
-        <TermField label="Coupon %">
-          <input type="number" step={0.25} value={couponPct} onChange={(e) => setCouponPct(Number(e.target.value))} className={numCls} />
-        </TermField>
-        <TermField label="Cash / 100" title="cash consideration per 100 tendered — valued at face, does not deplete waterfall EV">
-          <input type="number" step={1} value={cash100} onChange={(e) => setCash100(Number(e.target.value))} className={numCls} />
-        </TermField>
-        <TermField label="Equity % at full" title="share of the equity residual to tendering holders at 100% participation; partial participation scales as p/(p+(1−e)/e)">
-          <input type="number" step={1} value={equityPct} onChange={(e) => setEquityPct(Number(e.target.value))} className={numCls} />
-        </TermField>
-        <TermField label="Min tender %" title="offer fails below this participation — failed rows show base-structure values">
-          <input type="number" step={5} value={minTender} onChange={(e) => setMinTender(Number(e.target.value))} className={numCls} />
-        </TermField>
-        <TermField label="Your participation %">
-          <input type="number" step={5} value={userP} onChange={(e) => setUserP(Number(e.target.value))} className={numCls} />
-        </TermField>
+        </Field>
+        <Field label="Coupon %">
+          <input type="number" step={0.25} value={couponPct} onChange={(e) => setCouponPct(Number(e.target.value))} className={NUM_CLS} />
+        </Field>
+        <Field label="Cash / 100" title="cash consideration per 100 tendered — valued at face, does not deplete waterfall EV">
+          <input type="number" step={1} value={cash100} onChange={(e) => setCash100(Number(e.target.value))} className={NUM_CLS} />
+        </Field>
+        <Field label="Equity % at full" title="share of the equity residual to tendering holders at 100% participation; partial participation scales as p/(p+(1−e)/e)">
+          <input type="number" step={1} value={equityPct} onChange={(e) => setEquityPct(Number(e.target.value))} className={NUM_CLS} />
+        </Field>
+        <Field label="Min tender %" title="offer fails below this participation — failed rows show base-structure values">
+          <input type="number" step={5} value={minTender} onChange={(e) => setMinTender(Number(e.target.value))} className={NUM_CLS} />
+        </Field>
+        <Field label="Your participation %">
+          <input type="number" step={5} value={userP} onChange={(e) => setUserP(Number(e.target.value))} className={NUM_CLS} />
+        </Field>
         <label className="flex items-center gap-1.5 pb-1.5 text-xs text-slate-400"
           title="exit consent: the stub is contractually subordinated to the new paper (single-hop) — the coercion mechanic">
           <input type="checkbox" checked={exitConsent}

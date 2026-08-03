@@ -31,8 +31,8 @@ export default function ScreenTable({ onPick }) {
                   <Th right onClick={() => clickSort("reported_leverage")} className="cursor-pointer">Reported lev</Th>
                   <Th right onClick={() => clickSort("economic_leverage")} className="cursor-pointer">Economic lev</Th>
                   <Th right onClick={() => clickSort("net_market_leverage")} className="cursor-pointer" title="(Σ debt at market − cash) ÷ EBITDA — TRACE drop-file quotes; computed at snapshot time, so it lags a quotes refresh until the next run">Net@mkt lev</Th>
-                  <Th right onClick={() => clickSort("creation_multiple_fulcrum")} className="cursor-pointer" title="creation multiple through the fulcrum class at market (Moyer) — computed at snapshot time">Creation x</Th>
-                  <Th right onClick={() => clickSort("ebitda_capex_leverage")} className="cursor-pointer" title="Debt/(EBITDA−capex) — true leverage when capex is heavy (Moyer ch. 6)">Lev ex-capex</Th>
+                  <Th right onClick={() => clickSort("creation_multiple_fulcrum")} className="cursor-pointer" title="creation multiple through the fulcrum class at market — computed at snapshot time">Creation x</Th>
+                  <Th right onClick={() => clickSort("ebitda_capex_leverage")} className="cursor-pointer" title="Debt/(EBITDA−capex) — true leverage when capex is heavy">Lev ex-capex</Th>
                   <Th right onClick={() => clickSort("runway_months")} className="cursor-pointer" title="months of liquidity ÷ burn — cash-burners; from Overview liquidity">Runway (mo)</Th>
                   <Th right onClick={() => clickSort("flag_count")} className="cursor-pointer">Flags</Th>
                   <Th right onClick={() => clickSort("overall_risk")} className="cursor-pointer" title="composite risk 0-100 · trained PD implied rating — fills in after a Default Risk run">Risk</Th>

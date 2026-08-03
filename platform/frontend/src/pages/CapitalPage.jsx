@@ -1,7 +1,6 @@
 import React from "react";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import Header from "../components/Header.jsx";
-import { ACCENT, INK, Section, chartTooltipStyle } from "../ui/index.jsx";
+import { Section } from "../ui/index.jsx";
 import ForensicTable from "../components/ForensicTable.jsx";
 import FlagCard from "../components/FlagCard.jsx";
 import SourcesPanel from "../components/SourcesPanel.jsx";
@@ -17,38 +16,9 @@ import TradeBasis from "../components/TradeBasis.jsx";
 import RefiWall from "../components/RefiWall.jsx";
 import Telegraph from "../components/Telegraph.jsx";
 import OptionsCard from "../components/OptionsCard.jsx";
-import CovenantDollars from "../components/CovenantDollars.jsx";
 import LiquidityCalendar from "../components/LiquidityCalendar.jsx";
 import DocSearch from "../components/DocSearch.jsx";
 import HoldersPanel from "../components/HoldersPanel.jsx";
-import MdnaReader from "../components/MdnaReader.jsx";
-
-// Phase 4.6: face due per calendar year, parsed from footnote maturity strings
-// (ranges like "2026 to 2038" are spread evenly — hover shows the instruments).
-function MaturityWall({ wall }) {
-  const data = wall.map((b) => ({
-    year: b.year,
-    face: +(b.face / 1e9).toFixed(2),
-    instruments: b.instruments.join(", "),
-  }));
-  return (
-    <div className="mt-5">
-      <div className="mb-1 text-xs text-slate-500">Maturity wall — face due per year ($B)</div>
-      <ResponsiveContainer width="100%" height={160}>
-        <BarChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -18 }}>
-          <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
-          <XAxis dataKey="year" tick={{ fill: "#94a3b8", fontSize: 10 }} />
-          <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} />
-          <Tooltip
-            contentStyle={chartTooltipStyle}
-            formatter={(v, _n, p) => [`$${v}B — ${p.payload.instruments}`, null]}
-          />
-          <Bar dataKey="face" fill={ACCENT} />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
 
 // Overview data + Run Live + progress log live in the shell (App.jsx) — this page renders
 // whatever snapshot the shell holds for the routed ticker.
@@ -105,57 +75,49 @@ export default function CapitalPage({ ticker, health, overview }) {
             } · amounts from XBRL dimensions`}
           >
             <DebtScheduleTable instruments={overview.debt_schedule} />
-            {overview.maturity_wall?.length > 0 && <MaturityWall wall={overview.maturity_wall} />}
             <RefiWall ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section
             title="Creation-multiple ladder"
-            subtitle="cumulative claims through each class ÷ EBITDA, at face and at market (Moyer)"
+            subtitle="cumulative claims through each class ÷ EBITDA, at face and at market"
           >
             <CreationLadder ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section
             title="Trade basis"
-            subtitle="effective cost basis per matched quote — accrued, trading flat, claim per 100, cash-at-risk (Moyer ch. 5)"
+            subtitle="effective cost basis per matched quote — accrued, trading flat, claim per 100, cash-at-risk"
           >
             <TradeBasis ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section
             title="Liquidity event calendar"
-            subtitle="coupons and maturities over the next 24 months vs cash + undrawn credit (Moyer ch. 8)"
+            subtitle="coupons and maturities over the next 24 months vs cash + undrawn credit"
           >
             <LiquidityCalendar events={overview.liquidity_events} note={overview.liquidity_events_note} />
           </Section>
 
           <Section
             title="Credit capacity"
-            subtitle="can the structure repay itself internally? cash-sweep model, leverage × growth grid, cycle stress (Moyer ch. 6)"
+            subtitle="can the structure repay itself internally? cash-sweep model, leverage × growth grid, cycle stress"
           >
             <CapacityCard ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section
             title="Bank position & filing telegraph"
-            subtitle="where the bank sits when trouble starts, and the five tells a filing is being telegraphed (Moyer ch. 8)"
+            subtitle="where the bank sits when trouble starts, and the five tells a filing is being telegraphed"
           >
             <Telegraph ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
           <Section
             title="Company options"
-            subtitle="buy back debt, exchange it, or sell assets — what the clock, cash, and covenants allow (Moyer ch. 11)"
+            subtitle="buy back debt, exchange it, or sell assets — what the clock, cash, and covenants allow"
           >
             <OptionsCard ticker={ticker} years={overview.header?.years || 3} />
-          </Section>
-
-          <Section
-            title="Covenant dollars"
-            subtitle="RP-basket capacity build + permitted-liens headroom — what can leak out, what can prime you (Moyer ch. 7/9)"
-          >
-            <CovenantDollars overview={overview} />
           </Section>
 
           <Section title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">
@@ -199,20 +161,17 @@ export default function CapitalPage({ ticker, health, overview }) {
             title="Covenants & creditors"
             subtitle={`${overview.covenants?.length || 0} agreement famil${
               (overview.covenants?.length || 0) === 1 ? "y" : "ies"
-            } from EX-10.x / EX-4.x`}
+            } from EX-10.x / EX-4.x · RP-basket build + liens headroom at the end`}
             badge={llmBadge}
           >
             <CovenantPackages
               covenants={overview.covenants}
               instruments={overview.debt_schedule}
+              overview={overview}
             />
           </Section>
 
           <HoldersPanel ticker={ticker} />
-
-          <Section id="mdna" title="MD&A" subtitle="management's discussion, per filing period">
-            <MdnaReader ticker={ticker} />
-          </Section>
 
           <Section title="Sources" subtitle={`${overview.sources.length} filings analyzed`}>
             <SourcesPanel sources={overview.sources} />

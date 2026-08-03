@@ -34,7 +34,6 @@ scipy>=1.11
 scikit-learn>=1.5             # MD&A TF-IDF drift + hazard gradient boosting
 scikit-survival>=0.22         # survival model panel (Cox/RSF/GBS)
 lifelines>=0.27               # Weibull AFT
-matplotlib>=3.8               # report figures (fulcrum histograms, survival report)
 
 # --- Market data (hazard) ---
 yfinance>=0.2.40

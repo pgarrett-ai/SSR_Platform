@@ -6,7 +6,8 @@ import datetime as dt
 from fastapi.testclient import TestClient
 
 import app.main as main
-from app.main import _zero_ingest_alarm, app
+from app.events.heartbeat import zero_ingest_alarm
+from app.main import app
 
 client = TestClient(app).__enter__()
 
@@ -20,16 +21,16 @@ def _w(alive=True, age=60, last_hours=1.0, count=5):
 
 
 def test_zero_ingest_alarm_states():
-    assert _zero_ingest_alarm({"alive": False, "heartbeat_age_s": None,
+    assert zero_ingest_alarm({"alive": False, "heartbeat_age_s": None,
                                "events_ingested_today": 0,
                                "last_event_hours": None}, WED) is False  # never deployed ≠ dead
-    assert _zero_ingest_alarm(_w(alive=False, age=7200), WED) is True    # worker died
-    assert _zero_ingest_alarm(_w(), WED) is False                        # healthy
-    assert _zero_ingest_alarm(_w(last_hours=12.0), WED) is True          # alive, ingesting nothing
-    assert _zero_ingest_alarm(_w(last_hours=None), WED) is True          # alive, never ingested
-    assert _zero_ingest_alarm(_w(last_hours=12.0), SUN) is False         # weekend quiet OK
+    assert zero_ingest_alarm(_w(alive=False, age=7200), WED) is True    # worker died
+    assert zero_ingest_alarm(_w(), WED) is False                        # healthy
+    assert zero_ingest_alarm(_w(last_hours=12.0), WED) is True          # alive, ingesting nothing
+    assert zero_ingest_alarm(_w(last_hours=None), WED) is True          # alive, never ingested
+    assert zero_ingest_alarm(_w(last_hours=12.0), SUN) is False         # weekend quiet OK
     night = dt.datetime(2026, 7, 15, 3, 0)
-    assert _zero_ingest_alarm(_w(last_hours=12.0), night) is False       # off-hours OK
+    assert zero_ingest_alarm(_w(last_hours=12.0), night) is False       # off-hours OK
 
 
 def test_health_carries_alarm_field(monkeypatch):

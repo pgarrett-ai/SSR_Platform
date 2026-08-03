@@ -42,7 +42,7 @@ export default function RestatementScreen({ ticker, years }) {
   if (error)
     return (
       <Section title="Crisis of confidence"
-        subtitle="restatement/fraud trigger vs the four liquidity factors (Moyer ch. 8)">
+        subtitle="restatement/fraud trigger vs the four liquidity factors">
         <ErrorCard>Crisis screen unavailable for this issuer.</ErrorCard>
       </Section>
     );
@@ -57,7 +57,7 @@ export default function RestatementScreen({ ticker, years }) {
   return (
     <Section
       title="Crisis of confidence"
-      subtitle="restatement/fraud trigger vs the four liquidity factors (Moyer ch. 8)"
+      subtitle="restatement/fraud trigger vs the four liquidity factors"
       right={hl && <Badge tone={hl[0]}>{hl[1]}</Badge>}
     >
       {!data ? (

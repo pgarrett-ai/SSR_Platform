@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer,
-  Tooltip, XAxis, YAxis,
+  Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import CitedNumber from "../components/CitedNumber.jsx";
 import {
-  ACCENT, Button, ErrorCard, INK, Input, LINE_COLORS, Loading, RISK, Section, Th,
-  chartTooltipStyle, fmt,
+  ACCENT, Button, ErrorCard, Field, INK, Input, Loading, NumCell, NumField, Section,
+  TextCell, Th, chartTooltipStyle, fmt,
 } from "../ui/index.jsx";
 import {
   deleteScenario, fetchLadder, fetchRecoveryStructure, listScenarios, saveScenario,
@@ -18,7 +17,6 @@ import ExchangeAnalyzer from "../components/ExchangeAnalyzer.jsx";
 import IrrMatrix from "../components/IrrMatrix.jsx";
 import LiquidationPanel from "../components/LiquidationPanel.jsx";
 import PlanRecovery from "../components/PlanRecovery.jsx";
-import PostReorgTechnicals from "../components/PostReorgTechnicals.jsx";
 import TaxAssetCard from "../components/TaxAssetCard.jsx";
 
 // Provenance marker: § next to a tranche pops the filing citation behind its face amount.
@@ -37,53 +35,6 @@ const SIM_DEFAULTS = {
   accrual_years: null,   // empty = derived from the petition date; a number overrides
   n_draws: 50000, seed: 42,
 };
-
-// ponytail: dense table-cell inputs stay local — kit Input's px-3 py-1.5 text-sm can't be
-// reliably overridden with conflicting utilities. Backgrounds track the kit (bg-ink-800).
-function NumCell({ value, onChange, step = 1, className = "" }) {
-  return (
-    <input
-      type="number"
-      step={step}
-      value={value ?? ""}
-      onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
-      className={`w-24 rounded border border-ink-600 bg-ink-800 px-2 py-1 font-mono text-xs text-slate-100 outline-none focus:border-accent ${className}`}
-    />
-  );
-}
-
-function TextCell({ value, onChange, className = "" }) {
-  return (
-    <input
-      value={value ?? ""}
-      onChange={(e) => onChange(e.target.value)}
-      className={`w-full rounded border border-ink-600 bg-ink-800 px-2 py-1 text-xs text-slate-100 outline-none focus:border-accent ${className}`}
-    />
-  );
-}
-
-function Field({ label, children }) {
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-[10px] uppercase tracking-wide text-slate-500">{label}</span>
-      {children}
-    </label>
-  );
-}
-
-function NumField({ label, value, onChange, step }) {
-  return (
-    <Field label={label}>
-      <input
-        type="number"
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-28 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent"
-      />
-    </Field>
-  );
-}
 
 export default function RecoveryPage({ ticker, years }) {
   const [structure, setStructure] = useState(null); // {name, entities, tranches, admin_fees}
@@ -109,6 +60,7 @@ export default function RecoveryPage({ ticker, years }) {
   const [reorgEv, setReorgEv] = useState("");
   const [reorgDebt, setReorgDebt] = useState("");
   const [reorgShares, setReorgShares] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);   // endgame bench collapse
 
   useEffect(() => {
     if (!ticker) return;
@@ -292,7 +244,7 @@ export default function RecoveryPage({ ticker, years }) {
                     <Th>Tranche</Th><Th>Entity</Th><Th right>Face $mm</Th><Th>Secured</Th>
                     <Th right>Lien</Th>
                     <Th right title="caps the secured claim (§506); the shortfall becomes an unsecured deficiency. Empty = all-asset pledge">Collateral $mm</Th>
-                    <Th title="contractual subordination: this tranche's recovery redirects to the named tranche until it is paid in full (Moyer ch. 7)">Sub. to</Th>
+                    <Th title="contractual subordination: this tranche's recovery redirects to the named tranche until it is paid in full">Sub. to</Th>
                     <Th>Preferred</Th><Th right>Coupon %</Th><Th right>Make-whole $mm</Th><Th>Maturity</Th><Th />
                   </tr>
                 </thead>
@@ -336,7 +288,7 @@ export default function RecoveryPage({ ticker, years }) {
                 + Add tranche
               </Button>
               <Button onClick={addOtherClaimsRow}
-                title={suggestedClaims?.formula || "rejection damages / pension / lease claims dilute the unsecured pool in chapter 11 (Moyer ch. 12)"}>
+                title={suggestedClaims?.formula || "rejection damages / pension / lease claims dilute the unsecured pool in chapter 11"}>
                 + Other unsecured claims{suggestedClaims?.value ? ` (suggested ${Math.round(suggestedClaims.value).toLocaleString()} $mm)` : ""}
               </Button>
               {suggestedMezz && (
@@ -434,13 +386,9 @@ export default function RecoveryPage({ ticker, years }) {
               <NumField label="Multiple (stress)" value={sim.distress_multiple} step={0.25} onChange={(v) => setSim({ ...sim, distress_multiple: v })} />
               <NumField label="Multiple vol" value={sim.multiple_vol} step={0.01} onChange={(v) => setSim({ ...sim, multiple_vol: v })} />
               <NumField label="EBITDA×mult corr" value={sim.corr} step={0.05} onChange={(v) => setSim({ ...sim, corr: v })} />
-              <Field label="Petition date (tolls accrual)">
-                <input type="date" value={petitionDate}
-                  onChange={(e) => setPetitionDate(e.target.value)}
-                  title="unsecured interest accrues only to the petition date (Moyer); derives the accrual unless set explicitly below"
-                  className="w-36 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent" />
-              </Field>
-              <Field label="Accrued (yrs, explicit)">
+              {/* petition date lives on the Case card above — one input, one state */}
+              <Field label="Accrued (yrs, explicit)"
+                title="unsecured interest accrues only to the petition date (Case card); a number here overrides the derived accrual">
                 <NumCell value={sim.accrual_years} step={0.05}
                   onChange={(v) => setSim({ ...sim, accrual_years: v })} className="w-28 py-1.5" />
               </Field>
@@ -454,7 +402,7 @@ export default function RecoveryPage({ ticker, years }) {
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
               <span className="text-[10px] uppercase tracking-wide text-slate-500"
-                title="never take the stated priority stack as fixed (Moyer ch. 12) — re-runs the waterfall on the same EV draws">
+                title="never take the stated priority stack as fixed — re-runs the waterfall on the same EV draws">
                 Priority attacks:
               </span>
               {[["lien_avoidance", "lien avoidance"], ["equitable_subordination", "equitable subordination"],
@@ -467,7 +415,7 @@ export default function RecoveryPage({ ticker, years }) {
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
               <span className="text-[10px] uppercase tracking-wide text-slate-500"
-                title="a new rank-0 secured layer under permitted-lien capacity (or a covenant-lite gap) — re-runs the waterfall on the same EV draws (Moyer ch. 9)">
+                title="a new rank-0 secured layer under permitted-lien capacity (or a covenant-lite gap) — re-runs the waterfall on the same EV draws">
                 Priming scenario:
               </span>
               <NumCell value={primingFace} step={100} onChange={setPrimingFace} className="w-28" />
@@ -486,18 +434,31 @@ export default function RecoveryPage({ ticker, years }) {
           <EvExplorer ticker={ticker} years={years} structure={structure}
             baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0} />
 
-          <ExchangeAnalyzer ticker={ticker} years={years} structure={structure}
-            baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0} />
+          {/* endgame bench — collapsed off the main scroll; nothing mounts (or fetches)
+              until opened */}
+          <div className="mb-8">
+            <Button onClick={() => setShowAdvanced((v) => !v)}>
+              {showAdvanced ? "▾" : "▸"} Advanced: exchange offer · plan ROI · §382 tax · IRR matrix
+            </Button>
+          </div>
+          {showAdvanced && (
+            <>
+              <ExchangeAnalyzer ticker={ticker} years={years} structure={structure}
+                baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0} />
 
-          <PlanRecovery ticker={ticker} years={years} structure={structure}
-            baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0}
-            petitionDate={petitionDate}
-            reorgEv={reorgEv} setReorgEv={setReorgEv} reorgDebt={reorgDebt}
-            setReorgDebt={setReorgDebt} reorgShares={reorgShares} setReorgShares={setReorgShares} />
+              <PlanRecovery ticker={ticker} years={years} structure={structure}
+                baseEbitda={sim.base_ebitda} accrualYears={sim.accrual_years ?? 0}
+                petitionDate={petitionDate}
+                reorgEv={reorgEv} setReorgEv={setReorgEv} reorgDebt={reorgDebt}
+                setReorgDebt={setReorgDebt} reorgShares={reorgShares} setReorgShares={setReorgShares} />
 
-          <PostReorgTechnicals reorgEv={reorgEv} reorgDebt={reorgDebt} />
+              <TaxAssetCard ticker={ticker} years={years} reorgEv={reorgEv} reorgDebt={reorgDebt} />
 
-          <TaxAssetCard ticker={ticker} years={years} reorgEv={reorgEv} reorgDebt={reorgDebt} />
+              {result && !result.mode && (
+                <IrrMatrix tranches={result.tranches} quotedByName={quotedByName} />
+              )}
+            </>
+          )}
         </>
       )}
 
@@ -559,13 +520,6 @@ export default function RecoveryPage({ ticker, years }) {
 }
 
 function Results({ result, citations = {}, quotedByName = {} }) {
-  const order = result.tranches.map((t) => t.tranche);
-  const histTranches = order.slice(0, 8);
-  const cdfData = result.cdf.grid.map((g, i) => {
-    const row = { pct: g };
-    for (const name of histTranches) row[name] = 100 * result.cdf.series[name][i];
-    return row;
-  });
   const evHist = result.ev.histogram.counts.map((c, i) => ({
     ev: Math.round((result.ev.histogram.edges[i] + result.ev.histogram.edges[i + 1]) / 2),
     n: c,
@@ -597,7 +551,7 @@ function Results({ result, citations = {}, quotedByName = {} }) {
 
       {result.attack_tranches && (
         <Section title={`Priority attack: ${result.attack.replace(/_/g, " ")}`}
-          subtitle="same EV draws, transformed structure — mean recovery vs base (Moyer ch. 12)">
+          subtitle="same EV draws, transformed structure — mean recovery vs base">
           <table className="w-full max-w-xl border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
@@ -627,7 +581,7 @@ function Results({ result, citations = {}, quotedByName = {} }) {
 
       {result.priming_tranches && (
         <Section title="Priming scenario"
-          subtitle="same EV draws, new rank-0 secured layer ahead of every lien — mean recovery vs base (Moyer ch. 9)">
+          subtitle="same EV draws, new rank-0 secured layer ahead of every lien — mean recovery vs base">
           <table className="w-full max-w-xl border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
@@ -664,12 +618,11 @@ function Results({ result, citations = {}, quotedByName = {} }) {
         </Section>
       )}
 
-      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="mb-6 grid grid-cols-3 gap-3">
         {[
           ["EV median $mm", fmt(result.ev.median, 0)],
           ["EV P10 / P90", `${fmt(result.ev.p10, 0)} / ${fmt(result.ev.p90, 0)}`],
           ["Total face $mm", fmt(result.total_face, 0)],
-          ["Fulcrum", result.fulcrum || "none"],
         ].map(([label, value]) => (
           <div key={label} className="rounded-xl border border-ink-700 bg-ink-800/50 p-3">
             <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
@@ -683,8 +636,8 @@ function Results({ result, citations = {}, quotedByName = {} }) {
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
-                <Th>Tranche</Th><Th>Entity</Th><Th right>Face</Th><Th right>Claim</Th><Th right>Mean %</Th><Th right>Mean $</Th>
-                <Th right>Median %</Th><Th right>P10 %</Th><Th right>P90 %</Th><Th right>LGD %</Th>
+                <Th>Tranche</Th><Th>Entity</Th><Th right>Face</Th><Th right>Claim</Th><Th right>Mean %</Th>
+                <Th right>P10 %</Th><Th right>P90 %</Th>
                 <Th right>P(impaired)</Th><Th right>P(zero)</Th>
                 <Th right title="33.4% of class face blocks plan acceptance (66.7%-in-amount vote test) · cost at the drop-file quote when matched">Block 33.4%</Th>
               </tr>
@@ -700,11 +653,8 @@ function Results({ result, citations = {}, quotedByName = {} }) {
                   <td className="px-2 py-1.5 text-right">{fmt(t.face, 0)}</td>
                   <td className="px-2 py-1.5 text-right" title={t["accrued_$"] || t["make_whole_$"] ? `+ accrued ${fmt(t["accrued_$"], 0)} + make-whole ${fmt(t["make_whole_$"], 0)}` : ""}>{fmt(t.claim, 0)}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(t["mean_recovery_%"])}</td>
-                  <td className="px-2 py-1.5 text-right">{fmt(t["mean_recovery_$"], 0)}</td>
-                  <td className="px-2 py-1.5 text-right">{fmt(t["median_recovery_%"])}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(t["p10_%"])}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(t["p90_%"])}</td>
-                  <td className="px-2 py-1.5 text-right">{fmt(t["lgd_%"])}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(t["prob_impaired_%"])}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(t["prob_zero_%"])}</td>
                   <td className="px-2 py-1.5 text-right">
@@ -733,48 +683,6 @@ function Results({ result, citations = {}, quotedByName = {} }) {
           </BarChart>
         </ResponsiveContainer>
       </Section>
-
-      <Section title="Recovery distributions" subtitle="% of allowed claim · per tranche">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {histTranches.map((name, idx) => {
-            const h = result.histograms[name];
-            const data = h.counts.map((c, i) => ({ pct: Math.round((h.edges[i] + h.edges[i + 1]) / 2), n: c }));
-            const isFulcrum = name === result.fulcrum;
-            return (
-              <div key={name}>
-                <div className={`mb-1 truncate text-xs ${isFulcrum ? "font-semibold text-rose-300" : "text-slate-400"}`} title={name}>
-                  {name}{isFulcrum ? " ← fulcrum" : ""}
-                </div>
-                <ResponsiveContainer width="100%" height={110}>
-                  <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: -18 }}>
-                    <XAxis dataKey="pct" tick={{ fill: "#64748b", fontSize: 9 }} />
-                    <YAxis tick={{ fill: "#64748b", fontSize: 9 }} />
-                    <Tooltip contentStyle={chartTooltipStyle} labelFormatter={(v) => `${v}% of claim`} />
-                    <Bar dataKey="n" fill={isFulcrum ? RISK.high : LINE_COLORS[idx % LINE_COLORS.length]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            );
-          })}
-        </div>
-      </Section>
-
-      <Section title="Recovery CDF" subtitle="P(recovery ≤ x% of allowed claim)">
-        <ResponsiveContainer width="100%" height={260}>
-          <LineChart data={cdfData} margin={{ top: 4, right: 8, bottom: 4, left: 8 }}>
-            <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
-            <XAxis dataKey="pct" tick={{ fill: "#94a3b8", fontSize: 10 }} unit="%" />
-            <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} unit="%" />
-            <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${fmt(v, 1)}%`} />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
-            {histTranches.map((name, i) => (
-              <Line key={name} dataKey={name} stroke={LINE_COLORS[i % LINE_COLORS.length]} dot={false} strokeWidth={name === result.fulcrum ? 2.5 : 1.5} />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </Section>
-
-      <IrrMatrix tranches={result.tranches} quotedByName={quotedByName} />
 
       <Section title="Waterfall at median EV" subtitle="single-path allocation at the median draw · recovery % of allowed claim">
         <table className="w-full border-collapse text-xs">

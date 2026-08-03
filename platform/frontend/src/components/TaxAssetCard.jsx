@@ -1,25 +1,13 @@
 import React, { useState } from "react";
 import { computeTax382 } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Button, Section, fmt } from "../ui/index.jsx";
+import { Button, Field, NUM_CLS, Section, fmt } from "../ui/index.jsx";
 
 // NOL / §382 tax-asset card (Moyer ch. 11, F6): an ownership change on emergence limits how
 // much of the pre-emergence NOL can shield future income (annual limit ≈ equity FMV × the
 // long-term tax-exempt rate). Analyst sets the §382 knobs; equity FMV is derived from the
 // shared plan assumptions. Server extracts the gross NOL from the filing (cited) and values
 // the shield; the analyst can override the NOL when nothing is extracted.
-
-const numCls =
-  "w-24 rounded-md border border-ink-600 bg-ink-800 px-2 py-1 font-mono text-xs text-slate-100 outline-none focus:border-accent";
-
-function TermField({ label, title, children }) {
-  return (
-    <label className="flex flex-col gap-1" title={title}>
-      <span className="text-[10px] uppercase tracking-wide text-slate-500">{label}</span>
-      {children}
-    </label>
-  );
-}
 
 export default function TaxAssetCard({ ticker, years, reorgEv, reorgDebt }) {
   const [nolOverride, setNolOverride] = useState("");   // $mm, optional
@@ -70,29 +58,29 @@ export default function TaxAssetCard({ ticker, years, reorgEv, reorgDebt }) {
   return (
     <Section
       title="NOL / §382 tax asset"
-      subtitle="value the NOL shield after the emergence ownership change (Moyer ch. 11)"
+      subtitle="value the NOL shield after the emergence ownership change"
     >
       <div className="mb-4 flex flex-wrap items-end gap-x-5 gap-y-3">
-        <TermField label="NOL override $mm" title="override the filing-extracted gross NOL; leave blank to use the value tagged from the filing">
+        <Field label="NOL override $mm" title="override the filing-extracted gross NOL; leave blank to use the value tagged from the filing">
           <input type="number" step={10} value={nolOverride} onChange={(e) => setNolOverride(e.target.value)}
-            className={numCls} placeholder="auto from filing" />
-        </TermField>
-        <TermField label="§382 rate %" title="long-term tax-exempt rate — annual limit = equity FMV × this rate">
-          <input type="number" step={0.1} value={rate} onChange={(e) => setRate(e.target.value)} className={numCls} />
-        </TermField>
-        <TermField label="Tax rate %" title="marginal corporate tax rate applied to the usable NOL to size the cash shield">
-          <input type="number" step={1} value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className={numCls} />
-        </TermField>
-        <TermField label="Horizon yrs" title="years over which the NOL can be absorbed at the annual limit">
-          <input type="number" step={1} value={horizon} onChange={(e) => setHorizon(e.target.value)} className={numCls} />
-        </TermField>
-        <TermField label="Discount %" title="rate used to present-value the tax shield">
-          <input type="number" step={1} value={discRate} onChange={(e) => setDiscRate(e.target.value)} className={numCls} />
-        </TermField>
-        <TermField label="Equity FMV $mm" title="from plan assumptions: max(reorg EV − post-reorg debt, 0); drives the annual §382 limit">
+            className={NUM_CLS} placeholder="auto from filing" />
+        </Field>
+        <Field label="§382 rate %" title="long-term tax-exempt rate — annual limit = equity FMV × this rate">
+          <input type="number" step={0.1} value={rate} onChange={(e) => setRate(e.target.value)} className={NUM_CLS} />
+        </Field>
+        <Field label="Tax rate %" title="marginal corporate tax rate applied to the usable NOL to size the cash shield">
+          <input type="number" step={1} value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className={NUM_CLS} />
+        </Field>
+        <Field label="Horizon yrs" title="years over which the NOL can be absorbed at the annual limit">
+          <input type="number" step={1} value={horizon} onChange={(e) => setHorizon(e.target.value)} className={NUM_CLS} />
+        </Field>
+        <Field label="Discount %" title="rate used to present-value the tax shield">
+          <input type="number" step={1} value={discRate} onChange={(e) => setDiscRate(e.target.value)} className={NUM_CLS} />
+        </Field>
+        <Field label="Equity FMV $mm" title="from plan assumptions: max(reorg EV − post-reorg debt, 0); drives the annual §382 limit">
           <input type="text" value={`${fmt(equityFmv, 0)}`} readOnly disabled
-            className={`${numCls} opacity-70`} title="from plan assumptions (read-only)" />
-        </TermField>
+            className={`${NUM_CLS} opacity-70`} title="from plan assumptions (read-only)" />
+        </Field>
         <div className="pb-0.5">
           <Button variant="primary" onClick={run} disabled={running || equityFmv <= 0}>
             {running ? "Computing…" : "Run §382"}

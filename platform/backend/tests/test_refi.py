@@ -142,8 +142,8 @@ def test_hazard_inputs_globs_newest(tmp_path, monkeypatch):
     hzdir = tmp_path / "hazard"
     hzdir.mkdir()
     blob = {"as_of": "2026-07-01", "data": {
-        "market": {"market_cap": 2.5e9, "equity_vol": 0.85},
-        "features_timeline": [{"total_debt": 2.7e9}]}}
+        "scores": {"Merton DD": {"inputs": {
+            "E": 2.5e9, "sigma_E": 0.85, "D": 2.7e9, "r": 0.043}}}}}
     old = hzdir / "ZZREFI_3y.json"
     old.write_text(json.dumps({**blob, "as_of": "2025-01-01"}), encoding="utf-8")
     new = hzdir / "ZZREFI_10y.json"          # glob, NOT years-keyed (the design bug)

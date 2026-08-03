@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { planRecovery } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Button, Section, Th, fmt } from "../ui/index.jsx";
+import { Badge, Button, Field, NUM_CLS, Section, Th, fmt } from "../ui/index.jsx";
 
 // Plan-of-reorganization recovery & ROI (Moyer ch. 12-13): the analyst types what each
 // class receives (cash + discounted new debt + equity % + warrants/rights); the server
@@ -9,18 +9,6 @@ import { Badge, Button, Section, Th, fmt } from "../ui/index.jsx";
 // with a delta vs the absolute-priority recovery at the same reorg EV. Clones the
 // ExchangeAnalyzer typed-terms → POST → client-read pattern.
 // PR3: lift reorgEv/reorgDebt to shared RecoveryPage state so F5/F6 use the same figure.
-
-const numCls =
-  "w-20 rounded-md border border-ink-600 bg-ink-800 px-2 py-1 font-mono text-xs text-slate-100 outline-none focus:border-accent";
-
-function TermField({ label, title, children }) {
-  return (
-    <label className="flex flex-col gap-1" title={title}>
-      <span className="text-[10px] uppercase tracking-wide text-slate-500">{label}</span>
-      {children}
-    </label>
-  );
-}
 
 const EMPTY = { cash: 0, new_debt_face: 0, new_debt_mkt_pct: 70, new_equity_pct: 0,
                 warrant_value: 0, rights_shares: 0, rights_strike: 0 };
@@ -96,22 +84,22 @@ export default function PlanRecovery({ ticker, years, structure, baseEbitda, acc
   return (
     <Section
       title="Plan recovery & ROI"
-      subtitle="value the plan package per class → recovery % of claim → annualized ROI vs market (Moyer ch. 12-13)"
+      subtitle="value the plan package per class → recovery % of claim → annualized ROI vs market"
     >
       <div className="mb-4 flex flex-wrap items-end gap-x-5 gap-y-3">
-        <TermField label="Reorg EV $mm" title="plan enterprise value">
-          <input type="number" step={50} value={reorgEv} onChange={(e) => setReorgEv(e.target.value)} className={numCls} />
-        </TermField>
-        <TermField label="Post-reorg debt $mm" title="debt remaining after the plan — reorg equity = EV − this">
-          <input type="number" step={50} value={reorgDebt} onChange={(e) => setReorgDebt(e.target.value)} className={numCls} />
-        </TermField>
-        <TermField label="Reorg shares (mm)" title="post-reorg share count — needed to value subscription rights">
-          <input type="number" step={1} value={reorgShares} onChange={(e) => setReorgShares(e.target.value)} className={numCls} />
-        </TermField>
-        <TermField label="Duration (yrs)" title="time to emergence for the ROI annualization; defaults to the ~14-month ch.12 benchmark">
-          <input type="number" step={0.25} value={duration} onChange={(e) => setDuration(e.target.value)} className={numCls}
+        <Field label="Reorg EV $mm" title="plan enterprise value">
+          <input type="number" step={50} value={reorgEv} onChange={(e) => setReorgEv(e.target.value)} className={NUM_CLS} />
+        </Field>
+        <Field label="Post-reorg debt $mm" title="debt remaining after the plan — reorg equity = EV − this">
+          <input type="number" step={50} value={reorgDebt} onChange={(e) => setReorgDebt(e.target.value)} className={NUM_CLS} />
+        </Field>
+        <Field label="Reorg shares (mm)" title="post-reorg share count — needed to value subscription rights">
+          <input type="number" step={1} value={reorgShares} onChange={(e) => setReorgShares(e.target.value)} className={NUM_CLS} />
+        </Field>
+        <Field label="Duration (yrs)" title="time to emergence for the ROI annualization; defaults to the ~14-month ch.12 benchmark">
+          <input type="number" step={0.25} value={duration} onChange={(e) => setDuration(e.target.value)} className={NUM_CLS}
             placeholder="1.17" />
-        </TermField>
+        </Field>
         <div className="pb-0.5">
           <Button variant="primary" onClick={run} disabled={running || !tranches.length}>
             {running ? "Computing…" : "Value plan"}
@@ -136,7 +124,7 @@ export default function PlanRecovery({ ticker, years, structure, baseEbitda, acc
                   <td className="px-2 py-1.5 text-slate-300">{t.name}</td>
                   {cols.map(([k]) => (
                     <td key={k} className="px-1 py-1 text-right">
-                      <input type="number" value={c[k]} onChange={(e) => patch(t.name, k, e.target.value)} className={numCls} />
+                      <input type="number" value={c[k]} onChange={(e) => patch(t.name, k, e.target.value)} className={NUM_CLS} />
                     </td>
                   ))}
                 </tr>

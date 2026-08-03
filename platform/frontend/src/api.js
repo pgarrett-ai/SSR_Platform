@@ -170,23 +170,7 @@ export async function fetchSponsor(ticker, years = 3) {
   );
 }
 
-// ---- MD&A reader ---------------------------------------------------------------
-
-export async function fetchMdnaPeriods(ticker) {
-  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/mdna`));
-}
-
-export async function fetchMdnaText(ticker, accessionNo) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/mdna/${encodeURIComponent(accessionNo)}`)
-  );
-}
-
-// ---- Bonds + creation ladder (Moyer market layer) ------------------------------
-
-export async function fetchBonds(ticker) {
-  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/bonds`));
-}
+// ---- Creation ladder (Moyer market layer) ------------------------------
 
 export async function fetchLadder(ticker, years = 3, recast = false) {
   return jsonOrThrow(
@@ -296,6 +280,11 @@ export async function planRecovery(ticker, body, years = 3) {
 export async function addDocketEvent(ticker, body) {
   return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/docket`, {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
+}
+
+// Undo for manual docket rows only — the server refuses detector-sourced ids.
+export async function deleteEvent(eventId) {
+  return jsonOrThrow(await apiFetch(`/api/events/${eventId}`, { method: "DELETE" }));
 }
 
 export async function fetchCh11Case(ticker, years = 3) {

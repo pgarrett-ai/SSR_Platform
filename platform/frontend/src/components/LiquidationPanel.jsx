@@ -65,7 +65,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
   if (!data) return null;
   if (data.available === false) {
     return (
-      <Section title="Liquidation waterfall" subtitle="asset-based recovery — EBITDA ≤ 0 (Moyer)">
+      <Section title="Liquidation waterfall" subtitle="asset-based recovery — EBITDA ≤ 0">
         <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-[13px] text-amber-200/90">
           ⚠ {data.detail || data.note}
         </div>

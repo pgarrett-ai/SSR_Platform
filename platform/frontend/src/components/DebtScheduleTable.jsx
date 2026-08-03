@@ -2,10 +2,9 @@ import React from "react";
 import CitedNumber from "./CitedNumber.jsx";
 import { Badge, Td, Th, rowClass } from "../ui/index.jsx";
 
-// Filing text is formulaic: "variable interest rate of 6.00%" → "6.00% var.",
-// "fixed interest rates ranging from 2.88% to 7.15%, averaging 3.95%" → "2.88–7.15% avg 3.95%".
-// ponytail: regex heuristic — unparseable strings return null and the cell falls back to
-// the full text; the exact filing wording is always in the title tooltip.
+// Coupon cell: tagged XBRL rates first (coupon_pct / effective_rate_pct — the same
+// fields the recovery adapter accrues on), regex compaction of the filing prose only
+// as the untagged fallback; the exact filing wording is always in the title tooltip.
 function compactCoupon(s) {
   if (!s || s.length <= 14) return s;
   const pcts = [...s.matchAll(/(\d+(?:\.\d+)?)\s*%/g)].map((m) => m[1]);
@@ -14,6 +13,13 @@ function compactCoupon(s) {
   if (pcts.length >= 3 && /rang/i.test(s)) return `${pcts[0]}–${pcts[1]}% avg ${pcts[2]}%`;
   if (pcts.length === 2 && /rang|\bto\b/i.test(s)) return `${pcts[0]}–${pcts[1]}%`;
   return `${pcts[0]}%${varMark}`;
+}
+
+function couponCell(d) {
+  if (d.coupon_pct != null)
+    return d.coupon_pct_max != null ? `${d.coupon_pct}–${d.coupon_pct_max}%` : `${d.coupon_pct}%`;
+  if (d.effective_rate_pct != null) return `${d.effective_rate_pct}% eff.`;
+  return compactCoupon(d.coupon) || d.coupon || "—";
 }
 
 export default function DebtScheduleTable({ instruments }) {
@@ -72,7 +78,7 @@ export default function DebtScheduleTable({ instruments }) {
                 </Td>
               )}
               <Td mono className="text-[12px] text-slate-300">
-                <span title={d.coupon || undefined}>{compactCoupon(d.coupon) || d.coupon || "—"}</span>
+                <span title={d.coupon || undefined}>{couponCell(d)}</span>
               </Td>
               <Td mono className="text-[12px] text-slate-300">{d.maturity || "—"}</Td>
               <Td className="text-[12px]">

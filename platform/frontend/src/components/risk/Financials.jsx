@@ -1,31 +1,6 @@
 import React from "react";
-import { LineChart, Line, YAxis, ResponsiveContainer, Tooltip } from "recharts";
-import { ACCENT, Card, Section, chartTooltipStyle, fmtX, fmtPct, fmtMoney } from "../../ui/index.jsx";
+import { Card, Section, fmtX, fmtPct, fmtMoney } from "../../ui/index.jsx";
 import CitedNumber from "../CitedNumber.jsx";
-
-function Sparkline({ label, rows, dataKey, fmt }) {
-  const series = rows.filter((r) => r[dataKey] != null);
-  const last = series.length ? series[series.length - 1][dataKey] : null;
-  return (
-    <Card pad="p-3">
-      <div className="flex items-baseline justify-between">
-        <span className="text-xs text-slate-400">{label}</span>
-        <span className="text-sm font-semibold text-slate-100">{fmt(last)}</span>
-      </div>
-      <ResponsiveContainer width="100%" height={44}>
-        <LineChart data={series}>
-          <YAxis hide domain={["auto", "auto"]} />
-          <Tooltip
-            contentStyle={chartTooltipStyle}
-            formatter={(v) => [fmt(v), label]}
-            labelFormatter={(_, p) => `FY${p?.[0]?.payload?.fiscal_year ?? ""}`}
-          />
-          <Line type="monotone" dataKey={dataKey} stroke={ACCENT} strokeWidth={2} dot={false} />
-        </LineChart>
-      </ResponsiveContainer>
-    </Card>
-  );
-}
 
 const RATIO_COLS = [
   ["leverage", "Debt/Assets", fmtPct],
@@ -51,7 +26,7 @@ const RAW_COLS = [
 // than the kit cells, and header/body padding must match for the sticky FY column.
 function Table({ rows, cols }) {
   // Newest FY on top. Spread before reversing — `rows` is the shared features_timeline
-  // array that the sparklines (and HealthRadar) read with last-element-is-latest.
+  // array that other consumers read with last-element-is-latest.
   const ordered = [...rows].reverse();
   return (
     <div className="overflow-x-auto">
@@ -86,12 +61,6 @@ export default function Financials({ data }) {
   if (rows.length === 0) return null;
   return (
     <Section flush title="Financials" subtitle="history from EDGAR XBRL (10-K)">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-        <Sparkline label="NetDebt/EBITDA" rows={rows} dataKey="net_debt_to_ebitda" fmt={fmtX} />
-        <Sparkline label="Interest coverage" rows={rows} dataKey="interest_coverage" fmt={fmtX} />
-        <Sparkline label="Free cash flow" rows={rows} dataKey="fcf" fmt={fmtMoney} />
-        <Sparkline label="Debt / assets" rows={rows} dataKey="leverage" fmt={fmtPct} />
-      </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         <Card><div className="text-xs text-slate-500 mb-1">Ratios</div><Table rows={rows} cols={RATIO_COLS} /></Card>
         <Card><div className="text-xs text-slate-500 mb-1">Raw figures</div><Table rows={rows} cols={RAW_COLS} /></Card>

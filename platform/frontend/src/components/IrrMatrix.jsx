@@ -33,7 +33,7 @@ export default function IrrMatrix({ tranches, quotedByName }) {
   return (
     <Section
       title="Duration-sensitive IRR"
-      subtitle="annualized return by entry price × case duration · 15–25% hurdle band shaded (Moyer)"
+      subtitle="annualized return by entry price × case duration · 15–25% hurdle band shaded"
     >
       <div className="mb-3 flex flex-wrap items-end gap-4 text-xs">
         <label className="flex flex-col gap-1">

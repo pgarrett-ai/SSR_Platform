@@ -6,7 +6,6 @@ import ProgressLog from "../components/ProgressLog.jsx";
 import ExecutiveSummary from "../components/risk/ExecutiveSummary.jsx";
 import RiskTimeline from "../components/risk/RiskTimeline.jsx";
 import Contributions from "../components/risk/Contributions.jsx";
-import HealthRadar from "../components/risk/HealthRadar.jsx";
 import Financials from "../components/risk/Financials.jsx";
 import MarketPanel from "../components/risk/MarketPanel.jsx";
 import EventTimeline from "../components/risk/EventTimeline.jsx";
@@ -24,8 +23,6 @@ function ScoreChip({ name, sc }) {
   let body;
   if (name.startsWith("Altman")) {
     body = <span style={{ color: ZONE_COLOR[sc.zone] }}>{fmtNum(sc.value)} · {sc.zone}</span>;
-  } else if (name.startsWith("Merton")) {
-    body = <span className="text-slate-100">{fmtNum(sc.value)}σ DD</span>;
   } else {
     body = (
       <span className="text-slate-100">
@@ -80,33 +77,26 @@ export default function RiskPage({ ticker, years }) {
       </div>
       <ExecutiveSummary data={data} />
       <div className="my-4 flex flex-wrap gap-2">
-        {Object.entries(data.scores || {}).map(([name, sc]) => (
-          <ScoreChip key={name} name={name} sc={sc} />
-        ))}
-        {Object.entries(data.cross_signals || {}).map(([key, cs]) => (
-          <div key={key} className="rounded-lg bg-ink-700 px-3 py-2 text-xs" title={cs.source}>
-            <span className="text-slate-500">{key === "hidden_leverage" ? "Hidden leverage" : "MD&A tone"}: </span>
-            <span className="text-slate-100">{fmtNum(cs.raw)}{key === "hidden_leverage" ? "x" : ""}</span>
-            <span className="text-slate-500"> → risk {Math.round(cs.risk)}</span>
+        {Object.entries(data.scores || {})
+          .filter(([name]) => !name.startsWith("Merton"))   // DD/PD already in the summary tiles
+          .map(([name, sc]) => (
+            <ScoreChip key={name} name={name} sc={sc} />
+          ))}
+        {data.cross_signals?.hidden_leverage && (
+          <div className="rounded-lg bg-ink-700 px-3 py-2 text-xs" title={data.cross_signals.hidden_leverage.source}>
+            <span className="text-slate-500">Hidden leverage: </span>
+            <span className="text-slate-100">{fmtNum(data.cross_signals.hidden_leverage.raw)}x</span>
+            <span className="text-slate-500"> → risk {Math.round(data.cross_signals.hidden_leverage.risk)}</span>
           </div>
-        ))}
+        )}
       </div>
       <RiskTimeline data={data} />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Contributions data={data} />
-        <HealthRadar data={data} />
-      </div>
+      <Contributions data={data} />
       <Financials data={data} />
       <MarketPanel data={data} />
       <EventTimeline data={data} />
       {data.survival?.available && <SurvivalPanel data={data.survival} />}
       <RestatementScreen ticker={ticker} years={years} />
-      <p className="mt-6 text-xs text-slate-600">
-        Altman Z″, Merton, CHS — published coefficients. * CHS is a point-in-time approximation.
-        {data.scores?.["Trained hazard"]?.real_labels && (
-          <> Trained hazard fitted on EDGAR 8-K Item 1.03 bankruptcy labels, walk-forward validated.</>
-        )}
-      </p>
     </div>
   );
 }

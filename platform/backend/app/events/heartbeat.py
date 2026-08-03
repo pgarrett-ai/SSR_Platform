@@ -2,8 +2,7 @@
 shares nothing with the worker beyond the events table. The silent-death failure mode
 of every poller (plan §10) is covered by two independent RAW gauges — heartbeat age
 (is the process looping?) and hours since the last detected event (is it ingesting?).
-The filing-hours-aware alarm itself is computed in main.py (PR-6) from these gauges —
-exactly one alarm implementation."""
+zero_ingest_alarm below turns those gauges into the one filing-hours-aware alarm."""
 from __future__ import annotations
 
 import datetime as dt
@@ -37,6 +36,27 @@ def beat(events_ingested: int, jobs: dict, stopping: bool = False) -> None:
         "ts": time.time(), "day": today, "pid": os.getpid(),
         "events_ingested_today": count, "jobs": jobs, "stopping": stopping}),
         encoding="utf-8")
+
+
+_QUIET_AFTER_H = 6.0
+
+
+def zero_ingest_alarm(worker: dict, now: dt.datetime) -> bool:
+    """Poller silent-death alarm (plan §10), from the raw worker_status() gauges.
+    True when: the heartbeat exists but is dead, OR the worker is alive yet detected
+    nothing for 6h inside weekday filing hours (EDGAR runs 3-6k filings/business day —
+    a quiet afternoon means a broken poller, not a quiet market). Never alarms before
+    the first beat: not-deployed != dead.
+    ponytail: fixed 13-23 UTC weekday window ≈ EDGAR filing hours; add a holiday
+    calendar only if false alarms actually annoy."""
+    if worker.get("heartbeat_age_s") is None:
+        return False                       # never deployed
+    if not worker.get("alive"):
+        return True
+    if now.weekday() >= 5 or not 13 <= now.hour < 23:
+        return False
+    last = worker.get("last_event_hours")
+    return last is None or last > _QUIET_AFTER_H
 
 
 def worker_status() -> dict:

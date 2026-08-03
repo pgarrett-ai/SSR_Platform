@@ -46,7 +46,10 @@ export default function EvExplorer({ ticker, years, structure, baseEbitda, accru
       covered: t.ev_covered,
     }));
   }, [data, idx]);
-  const fulcrumAt = atSlider.find((t) => t.pct > 0.05 && t.pct < 99.9)?.tranche;
+  // fulcrum at the slider's EV from the server's own breakpoints (entered, not covered)
+  // — no client-side threshold heuristic
+  const fulcrumAt = atSlider.find((t) =>
+    t.enters != null && ev >= t.enters && (t.covered == null || ev < t.covered))?.tranche;
 
   // Inverse solver: tranche price % of claim -> EV (monotone curve, linear interpolation).
   const implied = useMemo(() => {
@@ -77,7 +80,7 @@ export default function EvExplorer({ ticker, years, structure, baseEbitda, accru
   return (
     <Section
       title="EV explorer"
-      subtitle="deterministic: who is in the money at EV = X · breakpoints per class · market-implied EV (Moyer)"
+      subtitle="deterministic: who is in the money at EV = X · breakpoints per class · market-implied EV"
     >
       {!data && (
         <div className="flex items-center gap-3">
@@ -170,7 +173,7 @@ export default function EvExplorer({ ticker, years, structure, baseEbitda, accru
           {covChart && (
             <div className="mt-5">
               <div className="mb-1 text-xs text-slate-500" title={data.coverage_note}>
-                Asset coverage vs EV multiple (Moyer ch. 6) — breakevens:{" "}
+                Asset coverage vs EV multiple — breakevens:{" "}
                 {Object.entries(data.breakeven_multiples).map(([k, v]) => `${k} ${v}x`).join(" · ")}
               </div>
               <ResponsiveContainer width="100%" height={200}>

@@ -291,6 +291,38 @@ def update_snapshot_risk(session: Session, ticker: str, hz: dict) -> None:
     row.last_price = (hz.get("market") or {}).get("price")   # feeds the distress badge
 
 
+def update_snapshot_recovery(session: Session, ticker: str, summary: dict) -> None:
+    """Persist the last simulate run's headline numbers on the snapshot row — the
+    Overview recovery card reads this instead of re-running a Monte Carlo per view.
+    No snapshot row yet (never capstack-analyzed) -> no-op."""
+    row = session.get(models.Snapshot, ticker)
+    if row is None:
+        return
+    row.recovery_summary = summary
+
+
+def distress_badge(session: Session, ticker: str, last_price) -> bool | None:
+    """Moyer fact pattern (ch. 1): equity de minimis (< $1) AND any unsecured quote < 60
+    (> 40% discount). Live against the drop-file; None when either input is missing."""
+    from .capstack.quotes import match_quotes
+    from .hazard.trace import get_issuer_bonds
+
+    if last_price is None:
+        return None
+    bonds = get_issuer_bonds(ticker).get("bonds") or []
+    if not bonds:
+        return None
+    rows = (session.query(models.DebtInstrumentRow)
+            .filter(models.DebtInstrumentRow.ticker == ticker).all())
+    sched = [{"instrument": r.instrument, "coupon_pct": r.coupon_pct,
+              "maturity": r.maturity} for r in rows if r.secured is False]
+    matches, _ = match_quotes(sched, bonds)
+    prices = [q.get("last_price") for q in matches.values() if q.get("last_price") is not None]
+    if not prices:
+        return None
+    return bool(last_price < 1.0 and min(prices) < 60.0)
+
+
 def rebuild_fts(session: Session, ticker: str) -> None:
     """Re-sync the ticker's rows in the FTS5 `search` table from the source tables.
     Runs inside the caller's transaction right after a persist_* delete-then-insert, so

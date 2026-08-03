@@ -1,33 +1,41 @@
 # SSR Platform — Special Situations Research Platform
 
-Distressed-credit research: enter a ticker, get an integrated view of
-**capital structure**, **default risk**, and **recovery** — built on primary sources
-(SEC EDGAR/XBRL), with every headline number citable back to the filing it came from.
+**A screen → dossier funnel for distressed credit.** The universe screener and events
+feed are the front door: they surface names going distressed — leverage, runway, risk
+score, distress fact pattern, 8-K/docket events. Clicking a name opens the single-name
+dossier (Capital Structure → Default Risk → Recovery → Timeline), which answers three
+questions with every number cited to a primary SEC source: **what does it really owe**,
+**when does it default**, and **what does each tranche recover**. Anything that doesn't
+help find a name or answer those three questions doesn't belong in the app.
 
 ## What it does
 
+- **Screen & detect** — a cross-company screening index (reported/economic/at-market
+  leverage, runway, composite risk, distress badge) plus an always-on EDGAR event
+  daemon: 8-K item detectors, structural form detectors (NT 10-K, 25, 15, 13D/G),
+  monthly 17g-7 rating-default events, manual docket milestones — every event stamped
+  with both `occurred_at` and `detected_at`.
 - **Capital structure & hidden leverage** — XBRL fundamentals plus LLM extraction of
   debt-schedule, lease, pension, and off-balance-sheet footnotes; reported → economic
-  leverage bridge (EBITDAR-consistent, net-of-cash lines, tax-effected OBS items);
-  XBRL tie-out warnings when footnote readings disagree with tagged facts; Exhibit 21
-  legal-entity trees; quarterly TTM timelines and maturity walls.
+  leverage bridge; XBRL tie-out warnings when footnote readings disagree with tagged
+  facts; covenant packages with LME vectors and dollar builds; refi-wall sequencing;
+  Exhibit 21 legal-entity trees; quarterly TTM timelines.
 - **Default risk** — scorecards (Altman Z″, Merton distance-to-default with a real PD
   term structure, CHS hazard) alongside a gradient-boosted hazard model trained on real
   default events (2010–2026): 8-K Item 1.03 bankruptcies plus Fitch 17g-7 D/RD rating
-  actions (distressed exchanges), walk-forward validated with precision/lift and
-  calibration reporting, survivorship-bias-free point-in-time controls, competing-risks
-  censoring, point-in-time market features (trailing vol/drawdown/excess return per
-  fiscal year end), and PDs calibrated to a measured base rate and mapped to an implied
-  agency rating band. Cross-module signals (hidden leverage, MD&A tone) blend into the
-  composite.
+  actions (distressed exchanges), walk-forward validated, survivorship-bias-free
+  point-in-time controls, PDs calibrated to a measured base rate and mapped to an
+  implied agency rating band. Hidden leverage blends into the composite.
 - **Recovery** — editable capital-structure waterfall with Monte Carlo simulation over
   enterprise value: allowed claims (principal + accrued + make-wholes), structural
-  subordination across entities, fulcrum-security identification, per-tranche recovery
-  distributions, and PD × LGD expected loss.
+  subordination across entities, fulcrum-security identification, priority attacks and
+  priming scenarios, liquidation mode. The last run's summary feeds the Overview card
+  and the screener — simulate once, read everywhere.
 
 ## Stack
 
-FastAPI + SQLite backend (`:8001`) · React/Vite/Tailwind frontend (`:5173`) · one process each.
+FastAPI + SQLite backend (`:8001`) · events worker (`python -m app.worker`) ·
+React/Vite/Tailwind frontend (`:5173`).
 
 ## Quickstart
 
@@ -35,17 +43,17 @@ FastAPI + SQLite backend (`:8001`) · React/Vite/Tailwind frontend (`:5173`) · 
 :: 1. configure (SEC_USER_AGENT is the only required setting)
 copy platform\.env.example 
 
-:: 2. backend
+:: 2. install
 cd platform\backend
 python -m venv .venv && .venv\Scripts\pip install -r requirements.txt
-cd .. && platform_launch.bat
+cd ..\frontend && npm install
 
-:: 3. frontend
-cd platform\frontend
-npm install && npm run dev
+:: 3. launch API + events worker + frontend
+cd .. && platform_launch.bat
 ```
 
-Open http://localhost:5173 and pick a company.
+(Or `./platform/launch.sh` from WSL/Git Bash; `./platform/stop.sh` stops all three.)
+Open http://localhost:5173 and pick a company. `/api/health` reports `worker.alive`.
 
 ## Tests
 

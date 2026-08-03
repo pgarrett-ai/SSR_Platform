@@ -183,6 +183,52 @@ export function Td({ right = false, mono = false, className = "", children }) {
 /* ---------- gauge ---------- */
 
 // Semicircular gauge for the 0-100 overall risk score.
+// ---- dense form primitives shared by the Recovery tool cards ----------------------
+// (one definition — these were copy-pasted per component before the consolidation)
+
+export const NUM_CLS =
+  "w-28 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent";
+
+export function Field({ label, title, children }) {
+  return (
+    <label className="flex flex-col gap-1" title={title}>
+      <span className="text-[10px] uppercase tracking-wide text-slate-500">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+export function NumField({ label, title, value, onChange, step }) {
+  return (
+    <Field label={label} title={title}>
+      <input type="number" step={step} value={value}
+        onChange={(e) => onChange(Number(e.target.value))} className={NUM_CLS} />
+    </Field>
+  );
+}
+
+export function NumCell({ value, onChange, step = 1, className = "" }) {
+  return (
+    <input
+      type="number"
+      step={step}
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
+      className={`w-24 rounded border border-ink-600 bg-ink-800 px-2 py-1 font-mono text-xs text-slate-100 outline-none focus:border-accent ${className}`}
+    />
+  );
+}
+
+export function TextCell({ value, onChange, className = "" }) {
+  return (
+    <input
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+      className={`w-full rounded border border-ink-600 bg-ink-800 px-2 py-1 text-xs text-slate-100 outline-none focus:border-accent ${className}`}
+    />
+  );
+}
+
 export function Gauge({ value, size = 150 }) {
   const v = value == null ? null : Math.max(0, Math.min(100, value));
   const r = size / 2 - 12;

@@ -30,4 +30,10 @@ else
   echo "frontend starting on :5173  (log: platform/.logs/frontend.log)"
 fi
 
+# events worker: no port — its own worker.lock freshness guard makes a duplicate
+# start exit cleanly, so an unconditional start is safe
+(cd "$DIR/backend" && nohup ./.venv/Scripts/python.exe -m app.worker \
+  >"$DIR/.logs/worker.log" 2>&1 &)
+echo "events worker starting  (log: platform/.logs/worker.log; /api/health shows worker.alive)"
+
 echo "open http://localhost:5173 in your Windows browser"
