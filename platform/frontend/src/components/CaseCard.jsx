@@ -145,7 +145,7 @@ export default function CaseCard({ ticker, years, petitionDate, setPetitionDate 
   return (
     <Section
       title="Chapter 11 case"
-      subtitle="statutory clocks off the petition date · case type is your call (Moyer ch. 12)"
+      subtitle="statutory clocks off the petition date · case type is your call"
     >
       <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
         <div className="flex flex-col gap-1">

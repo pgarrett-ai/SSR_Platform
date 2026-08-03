@@ -14,10 +14,6 @@ export function setCached(key, value) {
   return value;
 }
 
-export function clearCached(key) {
-  delete store[key];
-}
-
 // Cache-first async loader shared by the data pages (CapitalPage keeps its own
 // SSE streaming flow).
 export function useAsync(key, loader, deps) {

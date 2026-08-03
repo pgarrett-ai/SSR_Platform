@@ -292,7 +292,7 @@ export default function RecoveryPage({ ticker, years }) {
                     <Th>Tranche</Th><Th>Entity</Th><Th right>Face $mm</Th><Th>Secured</Th>
                     <Th right>Lien</Th>
                     <Th right title="caps the secured claim (§506); the shortfall becomes an unsecured deficiency. Empty = all-asset pledge">Collateral $mm</Th>
-                    <Th title="contractual subordination: this tranche's recovery redirects to the named tranche until it is paid in full (Moyer ch. 7)">Sub. to</Th>
+                    <Th title="contractual subordination: this tranche's recovery redirects to the named tranche until it is paid in full">Sub. to</Th>
                     <Th>Preferred</Th><Th right>Coupon %</Th><Th right>Make-whole $mm</Th><Th>Maturity</Th><Th />
                   </tr>
                 </thead>
@@ -336,7 +336,7 @@ export default function RecoveryPage({ ticker, years }) {
                 + Add tranche
               </Button>
               <Button onClick={addOtherClaimsRow}
-                title={suggestedClaims?.formula || "rejection damages / pension / lease claims dilute the unsecured pool in chapter 11 (Moyer ch. 12)"}>
+                title={suggestedClaims?.formula || "rejection damages / pension / lease claims dilute the unsecured pool in chapter 11"}>
                 + Other unsecured claims{suggestedClaims?.value ? ` (suggested ${Math.round(suggestedClaims.value).toLocaleString()} $mm)` : ""}
               </Button>
               {suggestedMezz && (
@@ -437,7 +437,7 @@ export default function RecoveryPage({ ticker, years }) {
               <Field label="Petition date (tolls accrual)">
                 <input type="date" value={petitionDate}
                   onChange={(e) => setPetitionDate(e.target.value)}
-                  title="unsecured interest accrues only to the petition date (Moyer); derives the accrual unless set explicitly below"
+                  title="unsecured interest accrues only to the petition date; derives the accrual unless set explicitly below"
                   className="w-36 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent" />
               </Field>
               <Field label="Accrued (yrs, explicit)">
@@ -454,7 +454,7 @@ export default function RecoveryPage({ ticker, years }) {
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
               <span className="text-[10px] uppercase tracking-wide text-slate-500"
-                title="never take the stated priority stack as fixed (Moyer ch. 12) — re-runs the waterfall on the same EV draws">
+                title="never take the stated priority stack as fixed — re-runs the waterfall on the same EV draws">
                 Priority attacks:
               </span>
               {[["lien_avoidance", "lien avoidance"], ["equitable_subordination", "equitable subordination"],
@@ -467,7 +467,7 @@ export default function RecoveryPage({ ticker, years }) {
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
               <span className="text-[10px] uppercase tracking-wide text-slate-500"
-                title="a new rank-0 secured layer under permitted-lien capacity (or a covenant-lite gap) — re-runs the waterfall on the same EV draws (Moyer ch. 9)">
+                title="a new rank-0 secured layer under permitted-lien capacity (or a covenant-lite gap) — re-runs the waterfall on the same EV draws">
                 Priming scenario:
               </span>
               <NumCell value={primingFace} step={100} onChange={setPrimingFace} className="w-28" />
@@ -597,7 +597,7 @@ function Results({ result, citations = {}, quotedByName = {} }) {
 
       {result.attack_tranches && (
         <Section title={`Priority attack: ${result.attack.replace(/_/g, " ")}`}
-          subtitle="same EV draws, transformed structure — mean recovery vs base (Moyer ch. 12)">
+          subtitle="same EV draws, transformed structure — mean recovery vs base">
           <table className="w-full max-w-xl border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
@@ -627,7 +627,7 @@ function Results({ result, citations = {}, quotedByName = {} }) {
 
       {result.priming_tranches && (
         <Section title="Priming scenario"
-          subtitle="same EV draws, new rank-0 secured layer ahead of every lien — mean recovery vs base (Moyer ch. 9)">
+          subtitle="same EV draws, new rank-0 secured layer ahead of every lien — mean recovery vs base">
           <table className="w-full max-w-xl border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">

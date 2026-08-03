@@ -96,7 +96,7 @@ export default function PlanRecovery({ ticker, years, structure, baseEbitda, acc
   return (
     <Section
       title="Plan recovery & ROI"
-      subtitle="value the plan package per class → recovery % of claim → annualized ROI vs market (Moyer ch. 12-13)"
+      subtitle="value the plan package per class → recovery % of claim → annualized ROI vs market"
     >
       <div className="mb-4 flex flex-wrap items-end gap-x-5 gap-y-3">
         <TermField label="Reorg EV $mm" title="plan enterprise value">

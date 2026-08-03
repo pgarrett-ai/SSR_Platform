@@ -53,7 +53,7 @@ export default function PostReorgTechnicals({ reorgEv, reorgDebt }) {
   return (
     <Section
       title="Post-reorg equity technicals"
-      subtitle="float, cap-tier and forced-seller overhang on the reorg equity (Moyer ch. 13)"
+      subtitle="float, cap-tier and forced-seller overhang on the reorg equity"
     >
       <div className="mb-4 flex flex-wrap items-end gap-x-5 gap-y-3">
         <TermField label="Control %" title="stake held by a control block or plan sponsor — carved out of the investable float">

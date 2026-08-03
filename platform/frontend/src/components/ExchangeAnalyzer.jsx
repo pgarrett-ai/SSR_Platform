@@ -92,7 +92,7 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
   return (
     <Section
       title="Exchange analyzer"
-      subtitle="holdout vs tender payoff per participation level — offer terms are your input (Moyer ch. 11)"
+      subtitle="holdout vs tender payoff per participation level — offer terms are your input"
     >
       <div className="flex flex-wrap items-end gap-x-5 gap-y-4">
         <TermField label="Target tranche">

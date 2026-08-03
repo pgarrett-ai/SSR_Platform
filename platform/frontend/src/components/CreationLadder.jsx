@@ -29,7 +29,9 @@ export default function CreationLadder({ ticker, years }) {
     return <div className="text-xs text-slate-500">No instruments in the debt schedule.</div>;
 
   const e = data.ebitda_mm?.[variant];
-  const mult = (cum) => (e != null && e > 0 ? cum / e : null);
+  // server computes the LTM multiples; only the covenant-adjusted toggle recomputes
+  const mult = (c, kind) =>
+    variant === "ltm" ? c[`multiple_${kind}`] : e != null && e > 0 ? c[`cum_${kind}`] / e : null;
   const hasAdj = data.ebitda_mm?.covenant_adjusted != null;
   const detector = data.detector?.items || [];
   const hasMezz = detector.some((it) => it.kind === "mezzanine");
@@ -61,7 +63,7 @@ export default function CreationLadder({ ticker, years }) {
       {detector.length > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400">
           <span className="text-[10px] uppercase tracking-wide text-slate-500"
-            title="instruments engineered around leverage optics — busted converts, PIK, mezzanine (Moyer ch. 6)">
+            title="instruments engineered around leverage optics — busted converts, PIK, mezzanine">
             Capacity avoidance:
           </span>
           {detector.map((it, i) => (
@@ -89,13 +91,13 @@ export default function CreationLadder({ ticker, years }) {
               <Th right>Face $mm</Th>
               <Th right>Cum face</Th>
               {data.has_oid && (
-                <Th right title="cumulative accreted (carrying) value — the claim; unamortized OID is not a claim (Moyer ch. 5)">
+                <Th right title="cumulative accreted (carrying) value — the claim; unamortized OID is not a claim">
                   Cum @ accreted
                 </Th>
               )}
               <Th right>Cum @ market</Th>
               <Th right title="cumulative face ÷ EBITDA">Creation x (face)</Th>
-              <Th right title="cumulative market value ÷ EBITDA — the Moyer cheapness test">
+              <Th right title="cumulative market value ÷ EBITDA — the cheapness test">
                 Creation x (mkt)
               </Th>
             </tr>
@@ -125,9 +127,9 @@ export default function CreationLadder({ ticker, years }) {
                     </span>
                   )}
                 </Td>
-                <Td right mono className="text-slate-300">{x(mult(c.cum_face))}</Td>
+                <Td right mono className="text-slate-300">{x(mult(c, "face"))}</Td>
                 <Td right mono className={c.is_fulcrum ? "text-rose-300" : "text-slate-100"}>
-                  {x(mult(c.cum_market))}
+                  {x(mult(c, "market"))}
                 </Td>
               </tr>
             ))}

@@ -170,18 +170,6 @@ export async function fetchSponsor(ticker, years = 3) {
   );
 }
 
-// ---- MD&A reader ---------------------------------------------------------------
-
-export async function fetchMdnaPeriods(ticker) {
-  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/mdna`));
-}
-
-export async function fetchMdnaText(ticker, accessionNo) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/mdna/${encodeURIComponent(accessionNo)}`)
-  );
-}
-
 // ---- Creation ladder (Moyer market layer) ------------------------------
 
 export async function fetchLadder(ticker, years = 3, recast = false) {

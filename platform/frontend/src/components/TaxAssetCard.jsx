@@ -70,7 +70,7 @@ export default function TaxAssetCard({ ticker, years, reorgEv, reorgDebt }) {
   return (
     <Section
       title="NOL / §382 tax asset"
-      subtitle="value the NOL shield after the emergence ownership change (Moyer ch. 11)"
+      subtitle="value the NOL shield after the emergence ownership change"
     >
       <div className="mb-4 flex flex-wrap items-end gap-x-5 gap-y-3">
         <TermField label="NOL override $mm" title="override the filing-extracted gross NOL; leave blank to use the value tagged from the filing">

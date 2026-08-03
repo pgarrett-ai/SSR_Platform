@@ -16,8 +16,9 @@ export function markOnly(snippet) {
 // Badge uppercases its label, so raw source kinds need display names ("mdna" → MD&A).
 const KIND_LABELS = { mdna: "MD&A" };
 
-// A hit's source kind → the Capital-page section it lives in.
-const SECTION_IDS = { covenant: "covenants", obs: "obs", mdna: "mdna" };
+// A hit's source kind → the Capital-page section it lives in. MD&A hits have no
+// on-page section (the reader was cut) — the snippet itself is the payoff.
+const SECTION_IDS = { covenant: "covenants", obs: "obs" };
 
 // Full-text search over this issuer's analyzed filings (covenant clauses, OBS findings,
 // MD&A). Lives on the Capital page next to the sections it searches; clicking a hit

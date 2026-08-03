@@ -24,13 +24,16 @@ export default function TradeBasis({ ticker, years }) {
 
   const computed = useMemo(() => rows.map((r) => {
     const isFlat = !!flat[r.instrument];   // hint is the amber dot, not a default
-    const basis = isFlat ? r.quote : +(r.quote + (r.accrued?.value || 0)).toFixed(2);
+    // server sends the not-flat basis + cost %; only a flat toggle recomputes them
     const claim = r.claim_per_100?.value;
+    const basis = isFlat ? r.quote : r.basis;
+    const costPct = isFlat
+      ? (claim > 0 ? +(100 * basis / claim).toFixed(1) : null)
+      : r.cost_pct_of_claim;
     const coupons = (r.coupons || []).filter((c) => restructureDate && c.date < restructureDate);
     const received = coupons.reduce((a, c) => a + c.amount, 0);
     return {
-      ...r, isFlat, effBasis: basis,
-      costPct: claim > 0 ? +(100 * basis / claim).toFixed(1) : null,
+      ...r, isFlat, effBasis: basis, costPct,
       couponsReceived: +received.toFixed(3),
       cashAtRisk: +(basis - received).toFixed(2),
     };
@@ -69,7 +72,7 @@ export default function TradeBasis({ ticker, years }) {
               <Th right title="quote + accrued, or quote alone when trading flat — the real entry price">Effective basis</Th>
               <Th right title="accreted value + accrued — unamortized OID disallowed (§502(b)(2))">Claim/100</Th>
               <Th right title="effective basis ÷ claim — cents on the dollar of claim actually paid">Cost % of claim</Th>
-              <Th right title="quote × face ÷ accreted — the true discount where OID (Moyer ch. 5)">% of accreted</Th>
+              <Th right title="quote × face ÷ accreted — the true discount where OID">% of accreted</Th>
               <Th right title="effective basis − coupons received before the restructuring date">Cash-at-risk</Th>
             </tr>
           </thead>

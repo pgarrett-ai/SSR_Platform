@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { fetchHazard, fetchLadder, fetchOverview, fetchRates, simulateRecovery } from "../api.js";
+import { fetchHazard, fetchOverview, fetchRates } from "../api.js";
 import { useAsync } from "../cache.js";
-import { Badge, Card, Loading, fmt, riskColor } from "../ui/index.jsx";
+import { Badge, Card, Loading, fmt } from "../ui/index.jsx";
 import CitedNumber from "../components/CitedNumber.jsx";
 import SponsorCard from "../components/SponsorCard.jsx";
 
@@ -55,24 +55,13 @@ function OverviewCard({ title, to, children, loading, error }) {
 export default function OverviewPage({ ticker, years }) {
   const ov = useAsync(`overview:${ticker}:${years}`, () => fetchOverview(ticker, years), [ticker, years]);
   const hz = useAsync(`hazard:${ticker}`, () => fetchHazard(ticker, 10), [ticker]);
-  const rec = useAsync(`recovery-quick:${ticker}:${years}`,
-    () => simulateRecovery(ticker, null, { n_draws: 20000 }, years), [ticker, years]);
-  const ladder = useAsync(`ladder:${ticker}:${years}`, () => fetchLadder(ticker, years), [ticker, years]);
 
   const bridge = ov.data?.economic_debt_bridge;
   const liq = ov.data?.liquidity;
   const es = hz.data?.executive_summary;
   const flags = ov.data?.forensic_flags || [];
-  // PD × LGD: both payloads already load on this page, so EL is a cross-multiply here.
-  const pd12 = es?.distress_pd?.["12m"];
-  const elPct = (t) => (pd12 == null ? null : 100 * pd12 * (1 - t["mean_recovery_%"] / 100));
-  const elTotal = pd12 == null || !rec.data ? null
-    : pd12 * (rec.data.tranches || []).reduce((s, t) => s + t.face * (1 - t["mean_recovery_%"] / 100), 0);
+  const rs = ov.data?.recovery_summary;   // last simulate run, persisted server-side
   const issuer = ov.data?.header?.issuer || hz.data?.issuer?.name || ticker;
-  // Moyer distress fact pattern (ch. 1): equity de minimis AND unsecured debt > 40% discount.
-  const eqPrice = hz.data?.market?.price;
-  const minUnsec = ladder.data?.min_unsecured_quote;
-  const moyerBadge = eqPrice != null && minUnsec != null && eqPrice < 1 && minUnsec < 60;
 
   return (
     <div>
@@ -80,11 +69,6 @@ export default function OverviewPage({ ticker, years }) {
         <h1 className="text-xl font-semibold text-slate-100">{issuer}</h1>
         <span className="font-mono text-sm text-slate-500">{ticker}</span>
         {ov.data?.header?.from_cache && <Badge>cached</Badge>}
-        {moyerBadge && (
-          <span title={`stock $${eqPrice.toFixed(2)} < $1 · unsecured quote ${minUnsec} < 60 — balance-sheet restructuring fact pattern (Moyer ch. 1)`}>
-            <Badge tone="high">distressed fact pattern</Badge>
-          </span>
-        )}
       </div>
 
       <KeyRates />
@@ -92,18 +76,10 @@ export default function OverviewPage({ ticker, years }) {
       <div className="grid gap-4 md:grid-cols-2">
         <OverviewCard title="Default risk" to={`/company/${ticker}/risk`}
           loading={hz.loading} error={hz.error}>
-          <div className="flex flex-wrap items-end gap-x-6 gap-y-2">
-            <div>
-              <div className="font-mono text-4xl" style={{ color: riskColor(es?.overall_risk) }}>
-                {fmt(es?.overall_risk, 1)}
-              </div>
-              <div className="text-[10px] uppercase tracking-wide text-slate-500">composite risk / 100</div>
-            </div>
-            <div className="space-y-1 text-xs text-slate-400">
-              <div>distance-to-default: <span className="font-mono text-slate-200">{es?.distance_to_default != null ? `${fmt(es.distance_to_default, 2)}σ` : "—"}</span></div>
-              <div>12m PD (Merton): <span className="font-mono text-slate-200">{es?.distress_pd?.["12m"] != null ? `${fmt(100 * es.distress_pd["12m"], 1)}%` : "—"}</span></div>
-              <div>trend: <span className={`font-semibold ${es?.trend?.direction === "worsening" ? "text-rose-300" : es?.trend?.direction === "improving" ? "text-emerald-300" : "text-slate-200"}`}>{es?.trend?.direction || "—"}</span></div>
-            </div>
+          <div className="space-y-1 text-xs text-slate-400">
+            <div>distance-to-default: <span className="font-mono text-slate-200">{es?.distance_to_default != null ? `${fmt(es.distance_to_default, 2)}σ` : "—"}</span></div>
+            <div>12m PD (Merton): <span className="font-mono text-slate-200">{es?.distress_pd?.["12m"] != null ? `${fmt(100 * es.distress_pd["12m"], 1)}%` : "—"}</span></div>
+            <div>trend: <span className={`font-semibold ${es?.trend?.direction === "worsening" ? "text-rose-300" : es?.trend?.direction === "improving" ? "text-emerald-300" : "text-slate-200"}`}>{es?.trend?.direction || "—"}</span></div>
           </div>
         </OverviewCard>
 
@@ -156,7 +132,7 @@ export default function OverviewPage({ ticker, years }) {
                 <div>economic debt: <span className="font-mono text-slate-200">{bridge?.economic_debt?.display || "—"}</span></div>
                 <div>{(ov.data?.obs_items || []).length} off-balance-sheet findings</div>
                 {ov.data?.coverage_chips?.debt_ebitda_capex && (
-                  <div title="quoted EBITDA leverage understates true leverage when capex is heavy (Moyer ch. 6)">
+                  <div title="quoted EBITDA leverage understates true leverage when capex is heavy">
                     debt/(EBITDA−capex): <CitedNumber cv={ov.data.coverage_chips.debt_ebitda_capex} className="text-slate-200" />
                     {ov.data.coverage_chips.capex_pct_ebitda != null && (
                       <span className="text-slate-600"> (capex {ov.data.coverage_chips.capex_pct_ebitda}% of EBITDA)</span>
@@ -164,17 +140,10 @@ export default function OverviewPage({ ticker, years }) {
                   </div>
                 )}
                 {ov.data?.coverage_chips?.ebitda_interest && (
-                  <div title="paired coverage: 2.0x EBITDA/interest with 1.2x (EBITDA−capex)/interest is already declinable credit (Moyer ch. 6)">
+                  <div title="paired coverage: 2.0x EBITDA/interest with 1.2x (EBITDA−capex)/interest is already declinable credit">
                     coverage: <CitedNumber cv={ov.data.coverage_chips.ebitda_interest} className="text-slate-200" />
                     {ov.data.coverage_chips.ebitda_capex_interest?.display && (
                       <span className="text-slate-500"> / <CitedNumber cv={ov.data.coverage_chips.ebitda_capex_interest} className="text-slate-400" /></span>
-                    )}
-                  </div>
-                )}
-                {ladder.data?.net_market_leverage && (
-                  <div>net-at-mkt lev: <CitedNumber cv={ladder.data.net_market_leverage} className="text-slate-200" />
-                    {ladder.data.creation_multiple_fulcrum != null && (
-                      <span className="text-slate-500"> · creation @ fulcrum <span className="font-mono">{ladder.data.creation_multiple_fulcrum.toFixed(1)}x</span></span>
                     )}
                   </div>
                 )}
@@ -184,64 +153,40 @@ export default function OverviewPage({ ticker, years }) {
         </OverviewCard>
 
         <OverviewCard title="Recovery" to={`/company/${ticker}/recovery`}
-          loading={rec.loading} error={rec.error}>
-          {rec.data?.mode === "liquidation" && (
-            <div>
-              <div className="mb-2 text-xs text-amber-200/90">{rec.data.note}</div>
-              {rec.data.available === false ? (
-                <div className="text-xs text-slate-500">{rec.data.detail}</div>
-              ) : (
-                <div className="space-y-1 text-xs">
-                  <div className="text-slate-400">
-                    net liquidation proceeds:{" "}
-                    <span className="font-mono text-slate-200">{fmt(rec.data.scenario?.net_proceeds, 0)} $mm</span>
-                    <span className="ml-2 text-slate-600">orderly, net of {Math.round(100 * (rec.data.scenario?.admin_pct || 0))}% costs</span>
-                  </div>
-                  {(rec.data.scenario?.tranches || []).slice(0, 4).map((t) => (
-                    <div key={t.tranche} className="flex items-center gap-2">
-                      <span className={`w-44 truncate ${t.is_fulcrum ? "text-rose-300" : "text-slate-400"}`} title={t.tranche}>{t.tranche}</span>
-                      <div className="h-1.5 flex-1 rounded bg-ink-700">
-                        <div className="h-1.5 rounded bg-accent" style={{ width: `${Math.min(100, t.recovery_pct || 0)}%` }} />
-                      </div>
-                      <span className="w-12 text-right font-mono text-slate-200">{fmt(t.recovery_pct, 0)}¢</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+          loading={ov.loading} error={ov.error}>
+          {!rs && (
+            <div className="text-xs text-slate-500">
+              no simulation yet — run one on the{" "}
+              <Link to={`/company/${ticker}/recovery`} className="text-accent hover:underline">Recovery tab</Link>
             </div>
           )}
-          {rec.data && !rec.data.mode && (
+          {rs && (
             <>
               <div className="mb-2">
-                <span className="font-mono text-lg text-rose-300">{rec.data.fulcrum || "no fulcrum — all classes covered"}</span>
-                <span className="ml-3 text-xs text-slate-500">EV median {fmt(rec.data.ev?.median, 0)} vs face {fmt(rec.data.total_face, 0)} $mm</span>
+                <span className="font-mono text-lg text-rose-300">{rs.fulcrum || "no fulcrum — all classes covered"}</span>
+                <span className="ml-3 text-xs text-slate-500">
+                  {rs.mode === "liquidation"
+                    ? `net liquidation proceeds ${fmt(rs.net_proceeds, 0)} vs face ${fmt(rs.total_face, 0)} $mm`
+                    : `EV median ${fmt(rs.ev_median, 0)} vs face ${fmt(rs.total_face, 0)} $mm`}
+                </span>
               </div>
               <div className="space-y-1 text-xs">
-                {(rec.data.tranches || []).slice(0, 4).map((t) => (
+                {(rs.tranches || []).slice(0, 4).map((t) => (
                   <div key={t.tranche} className="flex items-center gap-2">
                     <span className={`w-44 truncate ${t.is_fulcrum ? "text-rose-300" : "text-slate-400"}`} title={t.tranche}>{t.tranche}</span>
                     <div className="h-1.5 flex-1 rounded bg-ink-700">
-                      <div className="h-1.5 rounded bg-accent" style={{ width: `${Math.min(100, t["mean_recovery_%"])}%` }} />
+                      <div className="h-1.5 rounded bg-accent" style={{ width: `${Math.min(100, t.mean_recovery_pct || 0)}%` }} />
                     </div>
-                    <span className="w-12 text-right font-mono text-slate-200">{fmt(t["mean_recovery_%"], 0)}¢</span>
-                    {pd12 != null && (
-                      <span className="w-16 text-right font-mono text-slate-500" title="12m PD × (1 − mean recovery)">
-                        EL {fmt(elPct(t), 2)}%
-                      </span>
-                    )}
+                    <span className="w-12 text-right font-mono text-slate-200">{fmt(t.mean_recovery_pct, 0)}¢</span>
                   </div>
                 ))}
-                {(rec.data.tranches || []).length > 4 && (
-                  <div className="text-slate-600">+ {(rec.data.tranches || []).length - 4} more tranches</div>
+                {(rs.tranches || []).length > 4 && (
+                  <div className="text-slate-600">+ {(rs.tranches || []).length - 4} more tranches</div>
                 )}
               </div>
-              {elTotal != null && (
-                <div className="mt-2 text-xs text-slate-400">
-                  12m expected loss: <span className="font-mono text-rose-300">{fmt(elTotal, 0)} $mm</span>
-                  <span className="ml-2 text-slate-600">Merton 12m PD × (1 − mean recovery) × face</span>
-                </div>
-              )}
-              <div className="mt-2 text-[10px] text-slate-600">default assumptions — tune on Recovery</div>
+              <div className="mt-2 text-[10px] text-slate-600">
+                last run {rs.saved_at ? rs.saved_at.slice(0, 10) : "—"}{rs.mode === "liquidation" ? " · liquidation mode" : ""} — tune on Recovery
+              </div>
             </>
           )}
         </OverviewCard>
@@ -255,9 +200,12 @@ export default function OverviewPage({ ticker, years }) {
                 <Badge tone={f.severity === "high" ? "high" : f.severity === "watch" ? "watch" : "neutral"} className="mr-2">
                   {f.severity}
                 </Badge>
-                <span className="text-slate-300">{f.narrative}</span>
+                <span className="text-slate-300">{(f.flag_type || "").replace(/_/g, " ")}</span>
               </div>
             ))}
+            {flags.length > 0 && (
+              <div className="text-[11px] text-slate-600">details on Capital Structure</div>
+            )}
             {(ov.data?.warnings || []).length > 0 && (
               <div className="text-[11px] text-slate-600">{ov.data.warnings.length} pipeline warning{ov.data.warnings.length === 1 ? "" : "s"} — see Capital Structure</div>
             )}
