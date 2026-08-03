@@ -122,18 +122,76 @@ export const Input = React.forwardRef(function Input({ className = "", ...props 
   );
 });
 
-export function Section({ title, subtitle, badge, right, flush = false, id, className = "", children }) {
-  return (
-    <section id={id} className={`mb-6 ${className}`}>
-      <div className="mb-2 flex items-baseline justify-between gap-3">
-        <div className="flex items-baseline gap-2">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</h2>
-          {badge && <Badge tone="watch">{badge}</Badge>}
-          {subtitle && <span className="text-xs text-slate-500">{subtitle}</span>}
-        </div>
-        {right}
+const slugify = (s) =>
+  String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+// Section: every page block. `collapsible` renders a native <details> (keyboard/aria
+// free; fragment navigation auto-opens a collapsed section in Chromium), with the open
+// state persisted globally per section id — collapse "Sources" once, it stays collapsed
+// for every issuer. Anchors always work: id defaults to a slug of the title and
+// scroll-mt clears the sticky header.
+export function Section({
+  title, subtitle, badge, right, flush = false, id, className = "",
+  collapsible = false, defaultOpen = true, children,
+}) {
+  const secId = id || slugify(title);
+  const storeKey = `ui:sec:${secId}`;
+  const [open, setOpen] = useState(() => {
+    if (!collapsible) return true;
+    try {
+      const saved = localStorage.getItem(storeKey);
+      return saved == null ? defaultOpen : saved === "1";
+    } catch {
+      return defaultOpen;
+    }
+  });
+
+  // badge: legacy string (watch tone) or {label, tone, title} for state-specific tones
+  const b = badge ? (typeof badge === "string" ? { label: badge, tone: "watch" } : badge) : null;
+  const header = (
+    <div className="mb-2 flex items-baseline justify-between gap-3">
+      <div className="flex items-baseline gap-2">
+        {collapsible && (
+          <span aria-hidden className="text-[10px] text-slate-500">{open ? "▾" : "▸"}</span>
+        )}
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</h2>
+        {b && (
+          <span title={b.title}>
+            <Badge tone={b.tone || "watch"}>{b.label}</Badge>
+          </span>
+        )}
+        {subtitle && <span className="text-xs text-slate-500">{subtitle}</span>}
       </div>
-      {flush ? children : <Card>{children}</Card>}
+      {/* controls in the right slot must never toggle the disclosure */}
+      {right && <span onClick={(e) => e.stopPropagation()}>{right}</span>}
+    </div>
+  );
+  const body = flush ? children : <Card>{children}</Card>;
+
+  if (!collapsible) {
+    return (
+      <section id={secId} className={`mb-6 scroll-mt-16 ${className}`}>
+        {header}
+        {body}
+      </section>
+    );
+  }
+  return (
+    <section id={secId} className={`mb-6 scroll-mt-16 ${className}`}>
+      <details
+        open={open}
+        onToggle={(e) => {
+          if (e.target !== e.currentTarget) return;   // ignore nested <details>
+          const v = e.target.open;
+          setOpen(v);
+          try { localStorage.setItem(storeKey, v ? "1" : "0"); } catch { /* private mode */ }
+        }}
+      >
+        <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+          {header}
+        </summary>
+        {body}
+      </details>
     </section>
   );
 }

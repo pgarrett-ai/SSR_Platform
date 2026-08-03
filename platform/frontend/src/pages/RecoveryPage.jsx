@@ -5,7 +5,7 @@ import {
 import CitedNumber from "../components/CitedNumber.jsx";
 import {
   ACCENT, Button, ErrorCard, Field, INK, Input, Loading, NumCell, NumField, Section,
-  TextCell, Th, chartTooltipStyle, fmt,
+  TextCell, Th, chartTooltipStyle, fmt, useShowMore,
 } from "../ui/index.jsx";
 import {
   deleteScenario, fetchLadder, fetchRecoveryStructure, listScenarios, saveScenario,
@@ -61,6 +61,7 @@ export default function RecoveryPage({ ticker, years }) {
   const [reorgDebt, setReorgDebt] = useState("");
   const [reorgShares, setReorgShares] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);   // endgame bench collapse
+  const scenarioList = useShowMore(scenarios, 5, "scenarios");
 
   useEffect(() => {
     if (!ticker) return;
@@ -493,7 +494,7 @@ export default function RecoveryPage({ ticker, years }) {
                 </tr>
               </thead>
               <tbody>
-                {scenarios.map((sc) => (
+                {scenarioList.shown.map((sc) => (
                   <tr key={sc.id} className="border-b border-ink-700/60 text-slate-300">
                     <td className="px-2 py-1.5 font-semibold text-slate-100">{sc.name}</td>
                     <td className="px-2 py-1.5">{sc.results?.fulcrum || "—"}</td>
@@ -513,6 +514,7 @@ export default function RecoveryPage({ ticker, years }) {
               </tbody>
             </table>
           )}
+          {scenarioList.control}
         </Section>
       )}
     </div>

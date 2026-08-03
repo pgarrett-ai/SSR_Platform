@@ -1,11 +1,15 @@
-import React, { useState } from "react";
-import { Badge, Td, Th, rowClass } from "../ui/index.jsx";
+import React, { useMemo } from "react";
+import { Badge, Td, Th, rowClass, useShowMore } from "../ui/index.jsx";
 
 // Legal-entity list from Exhibit 21, with the structural-subordination read: entities that
 // obligate debt (matched from XBRL obligor tagging) are flagged, guarantor classes from the
 // credit agreements render above the table, and the list seeds the Recovery entity tree.
 export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
-  const [showAll, setShowAll] = useState(false);
+  // debt obligors first — they're the entities that matter for structural subordination
+  const ordered = useMemo(
+    () => [...(subsidiaries || [])].sort((a, b) => (b.role ? 1 : 0) - (a.role ? 1 : 0)),
+    [subsidiaries]);
+  const { shown, control } = useShowMore(ordered, 24, "entities");
   if (!subsidiaries || subsidiaries.length === 0) {
     return (
       <p className="text-sm text-slate-400">
@@ -14,9 +18,6 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
     );
   }
   const src = subsidiaries.find((s) => s.citation?.source_url)?.citation;
-  // debt obligors first — they're the entities that matter for structural subordination
-  const ordered = [...subsidiaries].sort((a, b) => (b.role ? 1 : 0) - (a.role ? 1 : 0));
-  const shown = showAll ? ordered : ordered.slice(0, 24);
   // hide columns Exhibit 21 didn't populate for any entity — a column of "—" says nothing
   const hasRole = subsidiaries.some((s) => s.role);
   const hasParent = subsidiaries.some((s) => s.parent);
@@ -88,11 +89,7 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
             </>
           )}
         </span>
-        {subsidiaries.length > 24 && (
-          <button onClick={() => setShowAll((v) => !v)} className="text-accent hover:underline">
-            {showAll ? "show fewer" : `show all ${subsidiaries.length}`}
-          </button>
-        )}
+        {control}
       </div>
     </div>
   );

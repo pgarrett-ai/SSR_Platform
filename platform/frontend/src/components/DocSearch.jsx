@@ -45,7 +45,8 @@ export default function DocSearch({ ticker }) {
   }
 
   return (
-    <Section title="Document search" subtitle="covenants · OBS findings · MD&A for this issuer">
+    <Section collapsible defaultOpen={false} title="Document search"
+      subtitle="covenants · OBS findings · MD&A for this issuer">
       <form onSubmit={run} className="flex gap-2">
         <Input
           value={q}

@@ -2,7 +2,7 @@ import React from "react";
 import { fetchRefiWall } from "../api.js";
 import { useAsync } from "../cache.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Skeleton, Td, Th } from "../ui/index.jsx";
+import { Badge, EmptyState, Skeleton, Td, Th } from "../ui/index.jsx";
 
 // Refi-wall sequencing (Moyer ch. 6/10) — the maturity wall's analytical extension:
 // can each bucket be repaid internally, and if not, will anyone refinance it?
@@ -18,7 +18,7 @@ export default function RefiWall({ ticker, years }) {
 
   if (loading) return <Skeleton rows={3} />;
   if (error) return <div className="mt-3 text-xs text-rose-300">{error}</div>;
-  if (!data) return null;
+  if (!data) return <EmptyState>No refi-wall read — needs a cached overview with maturities.</EmptyState>;
   if (!data.available) return <div className="mt-3 text-xs text-slate-500">{data.note}</div>;
 
   return (

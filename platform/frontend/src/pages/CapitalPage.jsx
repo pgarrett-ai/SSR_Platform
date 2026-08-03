@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../components/Header.jsx";
-import { Section } from "../ui/index.jsx";
+import { EmptyState, Section } from "../ui/index.jsx";
 import ForensicTable from "../components/ForensicTable.jsx";
 import FlagCard from "../components/FlagCard.jsx";
 import SourcesPanel from "../components/SourcesPanel.jsx";
@@ -22,20 +22,28 @@ import HoldersPanel from "../components/HoldersPanel.jsx";
 
 // Overview data + Run Live + progress log live in the shell (App.jsx) — this page renders
 // whatever snapshot the shell holds for the routed ticker.
-export default function CapitalPage({ ticker, health, overview }) {
+export default function CapitalPage({ ticker, health, overview, onRunLive }) {
   const flags = overview?.forensic_flags || [];
   // Badge for LLM-derived sections: fresh run → none; spliced prior snapshot → "prior
-  // analysis"; nothing to show → "LLM off". Full note (with date) rides in warnings.
+  // analysis" (info); no key → "needs API key" (high); toggled off → "LLM off" (watch).
   const llmBadge = overview?.header?.llm_enabled
     ? null
     : overview?.llm_fallback_note?.startsWith("Prior")
-      ? "prior analysis"
+      ? { label: "prior analysis", tone: "info", title: overview.llm_fallback_note }
       : health?.llm_key_set === false
-        ? "needs API key"
-        : "LLM off";
+        ? { label: "needs API key", tone: "high", title: "set ANTHROPIC_API_KEY in platform/.env" }
+        : { label: "LLM off", tone: "watch", title: "LLM analysis toggled off — enable it in the sidebar" };
 
   return (
     <div>
+      {!overview && (
+        <EmptyState
+          hint="a live run against EDGAR takes ~3 minutes with the LLM on"
+          action={onRunLive ? { label: "Run live ↻", onClick: onRunLive } : undefined}
+        >
+          No analysis loaded for {ticker} yet.
+        </EmptyState>
+      )}
       {overview && (
         <>
           <Header header={overview.header} />
@@ -49,6 +57,7 @@ export default function CapitalPage({ ticker, health, overview }) {
           )}
 
           <Section
+            collapsible
             title="Economic debt bridge"
             subtitle="reported debt → economic (adjusted) debt"
             badge={llmBadge}
@@ -58,6 +67,7 @@ export default function CapitalPage({ ticker, health, overview }) {
 
           {overview.ebitda_build && (
             <Section
+              collapsible
               title="EBITDA build"
               subtitle="net income → EBITDA, plus the issuer's covenant add-backs"
             >
@@ -69,6 +79,7 @@ export default function CapitalPage({ ticker, health, overview }) {
           )}
 
           <Section
+            collapsible
             title="As-reported debt schedule"
             subtitle={`${overview.debt_schedule?.length || 0} instruments${
               overview.debt_schedule_asof ? ` · as of ${overview.debt_schedule_asof}` : ""
@@ -79,6 +90,7 @@ export default function CapitalPage({ ticker, health, overview }) {
           </Section>
 
           <Section
+            collapsible
             title="Creation-multiple ladder"
             subtitle="cumulative claims through each class ÷ EBITDA, at face and at market"
           >
@@ -86,6 +98,7 @@ export default function CapitalPage({ ticker, health, overview }) {
           </Section>
 
           <Section
+            collapsible
             title="Trade basis"
             subtitle="effective cost basis per matched quote — accrued, trading flat, claim per 100, cash-at-risk"
           >
@@ -93,6 +106,8 @@ export default function CapitalPage({ ticker, health, overview }) {
           </Section>
 
           <Section
+            collapsible
+            defaultOpen={false}
             title="Liquidity event calendar"
             subtitle="coupons and maturities over the next 24 months vs cash + undrawn credit"
           >
@@ -100,6 +115,7 @@ export default function CapitalPage({ ticker, health, overview }) {
           </Section>
 
           <Section
+            collapsible
             title="Credit capacity"
             subtitle="can the structure repay itself internally? cash-sweep model, leverage × growth grid, cycle stress"
           >
@@ -107,6 +123,7 @@ export default function CapitalPage({ ticker, health, overview }) {
           </Section>
 
           <Section
+            collapsible
             title="Bank position & filing telegraph"
             subtitle="where the bank sits when trouble starts, and the five tells a filing is being telegraphed"
           >
@@ -114,13 +131,14 @@ export default function CapitalPage({ ticker, health, overview }) {
           </Section>
 
           <Section
+            collapsible
             title="Company options"
             subtitle="buy back debt, exchange it, or sell assets — what the clock, cash, and covenants allow"
           >
             <OptionsCard ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
-          <Section title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">
+          <Section collapsible title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">
             <ForensicTable rows={overview.forensic_table} />
             {flags.length > 0 && (
               <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -132,6 +150,8 @@ export default function CapitalPage({ ticker, health, overview }) {
           </Section>
 
           <Section
+            collapsible
+            defaultOpen={false}
             id="obs"
             title="Off-balance-sheet findings"
             subtitle={`${overview.obs_items?.length || 0} items extracted from footnotes & MD&A`}
@@ -142,6 +162,8 @@ export default function CapitalPage({ ticker, health, overview }) {
 
           {overview.subsidiaries?.length > 0 && (
             <Section
+              collapsible
+              defaultOpen={false}
               title="Legal entities"
               subtitle={`${overview.subsidiaries.length} entities from Exhibit 21 · obligors matched from XBRL`}
             >
@@ -157,6 +179,7 @@ export default function CapitalPage({ ticker, health, overview }) {
           <DocSearch ticker={ticker} />
 
           <Section
+            collapsible
             id="covenants"
             title="Covenants & creditors"
             subtitle={`${overview.covenants?.length || 0} agreement famil${
@@ -173,7 +196,7 @@ export default function CapitalPage({ ticker, health, overview }) {
 
           <HoldersPanel ticker={ticker} />
 
-          <Section title="Sources" subtitle={`${overview.sources.length} filings analyzed`}>
+          <Section collapsible defaultOpen={false} title="Sources" subtitle={`${overview.sources.length} filings analyzed`}>
             <SourcesPanel sources={overview.sources} />
           </Section>
         </>

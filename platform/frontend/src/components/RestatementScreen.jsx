@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchCrisisScreen } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, ErrorCard, Loading, Section } from "../ui/index.jsx";
+import { Badge, ErrorCard, Loading, Section, useShowMore } from "../ui/index.jsx";
 
 // Crisis of confidence (Moyer ch. 8): a restatement/fraud 8-K (Item 4.01/4.02/5.02) is only
 // the trigger — it becomes a liquidity crisis when it coincides with an immediate cash need
@@ -28,6 +28,7 @@ function Factor({ label, note, children }) {
 export default function RestatementScreen({ ticker, years }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
+  const triggerList = useShowMore(data?.trigger_filings || [], 6, "trigger filings");
 
   useEffect(() => {
     let alive = true;
@@ -76,7 +77,7 @@ export default function RestatementScreen({ ticker, years }) {
                   <Badge key={it} tone="high" mono>{it}</Badge>
                 ))}
               </div>
-              {(data.trigger_filings || []).slice(0, 6).map((fl) => (
+              {triggerList.shown.map((fl) => (
                 <div key={fl.accession} className="text-xs text-slate-400">
                   <a href={fl.source_url} target="_blank" rel="noreferrer"
                     className="font-mono text-accent hover:underline">
@@ -85,10 +86,11 @@ export default function RestatementScreen({ ticker, years }) {
                   {" — "}{Object.values(fl.triggers || {}).join(" · ")}
                 </div>
               ))}
-              {(data.trigger_filings || []).length > 6 && (
+              {triggerList.control}
+              {(data.trigger_filings || []).length > 6 && !triggerList.expanded && (
                 <div className="text-[11px] text-slate-500">
-                  +{data.trigger_filings.length - 6} earlier trigger filing(s) — most 8-K Item 5.02
-                  entries are routine appointments; the 4.01/4.02 flags are the accounting-confidence signal
+                  most 8-K Item 5.02 entries are routine appointments; the 4.01/4.02 flags
+                  are the accounting-confidence signal
                 </div>
               )}
             </div>
