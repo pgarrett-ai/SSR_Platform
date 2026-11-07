@@ -17,7 +17,8 @@ function compactCoupon(s) {
 
 function couponCell(d) {
   if (d.coupon_pct != null)
-    return d.coupon_pct_max != null ? `${d.coupon_pct}–${d.coupon_pct_max}%` : `${d.coupon_pct}%`;
+    return d.coupon_pct_max != null && d.coupon_pct_max !== d.coupon_pct
+      ? `${d.coupon_pct}–${d.coupon_pct_max}%` : `${d.coupon_pct}%`;
   if (d.effective_rate_pct != null) return `${d.effective_rate_pct}% eff.`;
   return compactCoupon(d.coupon) || d.coupon || "—";
 }

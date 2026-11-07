@@ -54,6 +54,9 @@ function PackageCard({ cov }) {
   const raw = cov.family_label || cov.agreement_type || "Credit agreement";
   const title = raw.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()).replace(/^Dip\b/, "DIP");
   const vectors = readVectors(cov);
+  // the summary row carries decided reads only; undetermined ones collapse to one count
+  const decided = vectors.filter((v) => v.risk !== "unclear");
+  const unclear = vectors.filter((v) => v.risk === "unclear");
   const creditors = [
     cov.admin_agent && `Admin agent: ${cov.admin_agent}`,
     cov.trustee && `Trustee: ${cov.trustee}`,
@@ -72,12 +75,17 @@ function PackageCard({ cov }) {
         ))}
         {vectors.length > 0 && (
           <span className="ml-auto flex flex-wrap gap-1">
-            {vectors.map((v) => (
+            {decided.map((v) => (
               <Badge key={v.vector} tone={RISK_TONE[v.risk] || "neutral"}
                 title={[v.rationale, v.basis && `basis: ${v.basis}`].filter(Boolean).join(" — ") || undefined}>
                 {v.short} {v.risk}
               </Badge>
             ))}
+            {unclear.length > 0 && (
+              <Badge title={`not determinable from the extracted text: ${unclear.map((v) => v.short).join(", ")}`}>
+                {unclear.length} unclear
+              </Badge>
+            )}
           </span>
         )}
       </summary>
