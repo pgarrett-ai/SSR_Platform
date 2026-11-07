@@ -69,6 +69,24 @@ def _empty_schedule_warning(debt_schedule: list, series: Optional[FinancialSerie
     )
 
 
+def _chapter11(cik: str, warnings: list[str]) -> Optional[Chapter11]:
+    """The live Chapter 11 case from the issuer's 8-K Item 1.03 filings, cited. A confirmed
+    plan ends the case and the automatic stay with it, so that is reported as a warning
+    instead of a case."""
+    from .capstack.eightk import petition_citation, petition_filing
+
+    pf = petition_filing(cik)
+    if not pf or not pf.get("date"):
+        return None
+    confirmed = pf.get("plan_confirmed")
+    if confirmed:
+        warnings.append(f"Chapter 11 plan confirmed {confirmed['date']} (8-K Item 1.03; "
+                        f"petition {pf['date']}): the case is not treated as live and no "
+                        f"payments are flagged stayed.")
+        return None
+    return Chapter11(petition_date=pf["date"], source=petition_citation(pf))
+
+
 def run_overview(
     ticker: str,
     years: int,
@@ -510,10 +528,7 @@ def run_overview(
     # --- Chapter 11 status: an 8-K Item 1.03 in the last three years, cited ---
     chapter11 = None
     try:
-        from .capstack.eightk import petition_citation, petition_filing
-        pf = petition_filing(cik)
-        if pf and pf.get("date"):
-            chapter11 = Chapter11(petition_date=pf["date"], source=petition_citation(pf))
+        chapter11 = _chapter11(cik, warnings)
     except Exception as exc:
         warnings.append(f"Chapter 11 check (8-K Item 1.03) failed: {exc}")
 

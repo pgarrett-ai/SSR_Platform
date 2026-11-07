@@ -151,16 +151,23 @@ def list_8k_items(cik, since: Optional[str] = None) -> list[dict]:
 
 
 def petition_filing(cik) -> Optional[dict]:
-    """Latest 8-K carrying Item 1.03 (bankruptcy/receivership) filed in the last three
-    years → cited petition-date row {date, accession, source_url}; None when there is none.
-    An older case has been resolved: AAL's CIK still carries AMR's 2011 petition."""
+    """The earliest 8-K carrying Item 1.03 (bankruptcy/receivership) filed in the last three
+    years → cited petition-date row {date, accession, source_url, plan_confirmed}; None when
+    there is none. An older case has been resolved: AAL's CIK still carries AMR's 2011
+    petition. Item 1.03 is filed again when the court confirms a plan, so the latest 1.03
+    after the petition is reported as `plan_confirmed` ({date, accession, source_url}, else
+    None): the case is no longer live from that date."""
     since = (_today() - dt.timedelta(days=3 * 365)).isoformat()
-    rows = [r for r in list_8k_items(cik, since=since) if r["items"] and "1.03" in r["items"]]
+    rows = sorted((r for r in list_8k_items(cik, since=since)
+                   if r["items"] and "1.03" in r["items"]),
+                  key=lambda r: r["filing_date"] or "")
     if not rows:
         return None
-    r = max(rows, key=lambda r: r["filing_date"] or "")
-    return {"date": r["filing_date"], "accession": r["accession"],
-            "source_url": r["source_url"]}
+    # ponytail: a later 1.03 for affiliates joining the case reads as a confirmation too;
+    # read the 8-K body to tell them apart if an issuer files one
+    cite = [{"date": r["filing_date"], "accession": r["accession"],
+             "source_url": r["source_url"]} for r in (rows[0], rows[-1])]
+    return {**cite[0], "plan_confirmed": cite[1] if len(rows) > 1 else None}
 
 
 def petition_citation(pf: dict) -> Citation:
