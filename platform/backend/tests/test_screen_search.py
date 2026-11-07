@@ -58,6 +58,18 @@ def test_snapshot_upsert_and_screen(tmp_path, monkeypatch):
     _cleanup()
 
 
+def test_screen_ranks_not_meaningful_leverage_as_most_distressed():
+    # leverage is n.m. (None) at EBITDA <= 0: those names lead, not trail, the screen
+    with session_scope() as s:
+        s.merge(models.Snapshot(ticker="ZZTEST", issuer="Burner", economic_leverage=None))
+        s.merge(models.Snapshot(ticker="ZZHIGH", issuer="Levered", economic_leverage=50.0))
+    order = [r["ticker"] for r in client.get("/api/screen").json()]
+    with session_scope() as s:
+        s.query(models.Snapshot).filter_by(ticker="ZZHIGH").delete()
+    _cleanup()
+    assert order.index("ZZTEST") < order.index("ZZHIGH")
+
+
 def test_risk_update_survives_resave(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DIR", tmp_path)
     cache.save_overview("ZZTEST", 3, _overview())

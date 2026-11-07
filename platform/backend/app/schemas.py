@@ -92,6 +92,7 @@ class ForensicTableRow(BaseModel):
     period_end: Optional[str] = None
     total_debt: Optional[CitedValue] = None
     cash: Optional[CitedValue] = None
+    short_term_investments: Optional[CitedValue] = None
     free_cash_flow: Optional[CitedValue] = None
     capex: Optional[CitedValue] = None
     accounts_payable: Optional[CitedValue] = None

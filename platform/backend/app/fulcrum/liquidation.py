@@ -8,6 +8,7 @@ All dollar figures $mm.
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Optional
 
 import numpy as np
@@ -44,23 +45,26 @@ def _scenario(assets: dict[str, float], structure: CapitalStructure,
         lines.append({"key": key, "label": label, "book": round(book, 1),
                       "rate": rate, "proceeds": round(proceeds, 1),
                       "formula": f"{label} ${book:,.0f}M × {100 * rate:.0f}%"})
-    net = gross * (1.0 - admin_pct)
-
-    wf = run_waterfall(structure, np.array([net]), accrual_years=accrual_years)
+    # estate costs come off once, here: the waterfall runs with its own cost knobs at zero
+    net = max(gross * (1.0 - admin_pct) - structure.admin_fees, 0.0)
+    wf = run_waterfall(replace(structure, admin_pct=0.0, admin_fees=0.0), np.array([net]),
+                       accrual_years=accrual_years)
     order = structure.priority_order()
     tmap = {t.name: t for t in structure.tranches}
     rows = []
-    fulcrum = None
+    first_short = None
     for n in order:
         c = tmap[n].claim(accrual_years)
         rec = float(wf[n][0])
         pct = 100 * rec / c if c > 0 else None
-        if fulcrum is None and c > 0 and rec < c * 0.999:
-            fulcrum = n
+        if first_short is None and c > 0 and rec < c * 0.999:
+            first_short = n
         rows.append({"tranche": n, "entity": tmap[n].entity, "face": tmap[n].face,
                      "claim": round(c, 1), "recovery": round(rec, 1),
-                     "recovery_pct": round(pct, 1) if pct is not None else None,
-                     "is_fulcrum": n == fulcrum and fulcrum is not None})
+                     "recovery_pct": round(pct, 1) if pct is not None else None})
+    fulcrum, members = structure.priority_class(first_short) if first_short else (None, [])
+    for r in rows:
+        r["is_fulcrum"] = r["tranche"] in members
     return {"lines": lines, "gross_proceeds": round(gross, 1), "admin_pct": admin_pct,
             "net_proceeds": round(net, 1), "tranches": rows, "fulcrum": fulcrum}
 

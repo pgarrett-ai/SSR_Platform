@@ -17,14 +17,15 @@ from .waterfall import run_waterfall
 
 def prime(structure: CapitalStructure, face: float, entity: Optional[str] = None,
           name: str = "Priming loan") -> CapitalStructure:
-    """Prepend a rank-0 secured tranche — new money ahead of every existing lien
-    (waterfall.py sorts plain int ranks, so 0 pays first; zero engine edits).
-    face in $mm; face <= 0 raises ValueError (the API's 400 boundary), as does an
-    unknown entity via CapitalStructure.validate."""
+    """Prepend a secured tranche ranked ahead of every existing lien, a super-priority/DIP
+    rank 0 included (waterfall.py sorts plain int ranks, so the lowest pays first; zero
+    engine edits). face in $mm; face <= 0 raises ValueError (the API's 400 boundary), as
+    does an unknown entity via CapitalStructure.validate."""
     if face is None or face <= 0:
         raise ValueError("priming face must be positive ($mm)")
+    rank = min((t.lien_rank for t in structure.tranches if t.secured), default=1) - 1
     tranches = [Tranche(name=name, entity=entity or structure.entities[0].name,
-                        face=float(face), lien_rank=0, secured=True),
+                        face=float(face), lien_rank=min(rank, 0), secured=True),
                 *(replace(t) for t in structure.tranches)]
     return CapitalStructure(name=f"{structure.name} · primed",
                             entities=[replace(e) for e in structure.entities],

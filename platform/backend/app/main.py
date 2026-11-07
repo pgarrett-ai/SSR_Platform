@@ -248,12 +248,16 @@ def company(
 
 @app.get("/api/screen")
 def screen() -> JSONResponse:
-    """Every analyzed company's headline metrics — filtering happens client-side."""
-    from sqlalchemy import desc, nulls_last
+    """Every analyzed company's headline metrics — filtering happens client-side. Most
+    levered first, and rows without a multiple lead: at EBITDA ≤ 0 leverage is n.m., the
+    most distressed case."""
+    # ponytail: a row with no bridge at all also sorts first; split it out once the
+    # snapshot records why leverage is missing
+    from sqlalchemy import desc, nulls_first
 
     with session_scope() as session:
         rows = (session.query(models.Snapshot)
-                .order_by(nulls_last(desc(models.Snapshot.economic_leverage))).all())
+                .order_by(nulls_first(desc(models.Snapshot.economic_leverage))).all())
         out = []
         for r in rows:
             try:
@@ -875,9 +879,11 @@ def _save_recovery_summary(ticker: str, payload: dict) -> None:
                 "n_draws": (payload.get("sim") or {}).get("n_draws"),
                 "tranches": [{"tranche": t.get("tranche"),
                               "mean_recovery_pct": t.get("mean_recovery_%"),
-                              "is_fulcrum": t.get("tranche") == payload.get("fulcrum")}
+                              "is_fulcrum": bool(t.get("is_fulcrum"))}
                              for t in payload.get("tranches") or []],
             }
+        # a NaN or inf must never reach the snapshot row: it breaks the Overview that reads it
+        json.dumps(summary, allow_nan=False, default=str)
         with session_scope() as session:
             update_snapshot_recovery(session, ticker.strip().upper(), jsonable(summary))
     except Exception:

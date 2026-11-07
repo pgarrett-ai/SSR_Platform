@@ -28,7 +28,16 @@ def test_proceeds_math_exact():
     by = {r["tranche"]: r for r in s["tranches"]}
     assert by["1L"]["recovery"] == pytest.approx(500.0)
     assert by["Unsec"]["recovery"] == pytest.approx(1960.0 * 0.93 - 500.0)  # impaired
-    assert s["fulcrum"] == "Unsec"
+    assert s["fulcrum"] == "Unsecured at OpCo (Unsec)" and by["Unsec"]["is_fulcrum"]
+
+
+def test_estate_costs_come_off_once():
+    # the UI also sets admin_pct on the structure: it must not be deducted a second time
+    s = _structure()
+    s.admin_pct = 0.07
+    sc = liquidate(ASSETS, s)["scenario"]
+    assert sum(r["recovery"] for r in sc["tranches"]) == pytest.approx(sc["net_proceeds"],
+                                                                      abs=0.2)
 
 
 def test_ch7_below_ch11():

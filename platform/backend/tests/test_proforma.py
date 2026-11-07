@@ -30,6 +30,13 @@ def test_priming_shifts_value_from_unsecureds():
     assert wfp["Unsecured Notes"][0] == 0.0           # 0% — the Moyer point
 
 
+def test_priming_goes_ahead_of_an_existing_super_priority_layer():
+    s = _base()
+    s.tranches.insert(0, Tranche("DIP", "OpCo", face=50.0, lien_rank=0, secured=True))
+    p = prime(s, 100.0)
+    assert p.priority_order()[:2] == ["Priming loan", "DIP"]   # not pari with the DIP
+
+
 def test_prime_is_pure_and_forwards_admin():
     s = _base(admin_fees=25.0, admin_pct=0.07)
     p = prime(s, 100.0, name="New money")

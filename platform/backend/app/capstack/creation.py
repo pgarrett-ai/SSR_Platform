@@ -15,22 +15,12 @@ import numpy as np
 
 from ..edgar.facts import derived_value, fmt_ratio
 from ..fulcrum.adapter import ltm_ebitda, overview_to_structure
+from ..fulcrum.structure import class_label
 from ..fulcrum.waterfall import run_waterfall
 from .quotes import match_quotes
 
 # Fulcrum-marker EV assumption; matches SimConfig.base_multiple's default.
 _FULCRUM_MULTIPLE = 6.0
-
-
-def _class_label(secured: bool, preferred: bool, lien_rank: int, entity: str,
-                 multi_entity: bool) -> str:
-    if preferred:
-        base = "Preferred"
-    elif secured:
-        base = {1: "1st lien", 2: "2nd lien", 3: "3rd lien"}.get(lien_rank, f"Lien {lien_rank}")
-    else:
-        base = "Unsecured"
-    return f"{base} @ {entity}" if multi_entity else base
 
 
 def _ebitda_variants(ov: dict) -> dict[str, Optional[float]]:
@@ -96,21 +86,22 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         quote = quotes.get(name)
         info = fa.get(name) or {"face": t.face, "accreted": t.face, "oid": False}
         # $mm market value: quoted price % of PRINCIPAL (face), never carrying — quotes
-        # are % of face (Moyer ch. 5); accreted (= t.face) fallback when unquoted
-        mkt = info["face"] * (quote["last_price"] / 100.0) if quote and quote.get("last_price") is not None else t.face
+        # are % of face (Moyer ch. 5); accreted fallback when unquoted
+        mkt = (info["face"] * (quote["last_price"] / 100.0)
+               if quote and quote.get("last_price") is not None else info["accreted"])
         if classes and classes[-1]["_key"] == key:
             c = classes[-1]
             c["members"].append(name)
             c["face"] += info["face"]
-            c["accreted"] += t.face
+            c["accreted"] += info["accreted"]
             c["market"] += mkt
             c["quoted"] += 1 if quote else 0
         else:
             classes.append({
                 "_key": key,
-                "label": _class_label(t.secured, t.preferred, t.lien_rank, t.entity, multi_entity),
-                "members": [name], "face": info["face"], "accreted": t.face, "market": mkt,
-                "quoted": 1 if quote else 0,
+                "label": class_label(t) + (f" @ {t.entity}" if multi_entity else ""),
+                "members": [name], "face": info["face"], "accreted": info["accreted"],
+                "market": mkt, "quoted": 1 if quote else 0,
             })
         if name == fulcrum_tranche:
             fulcrum_class_idx = len(classes) - 1

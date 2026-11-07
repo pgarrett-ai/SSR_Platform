@@ -138,7 +138,9 @@ def fill_maturity_from_name(instruments: list[DebtInstrument],
                             asof: Optional[str] = None) -> int:
     """Deterministic maturity fallback: '2030 Notes' names its due year; 'Notes due 2028'
     states it outright. Facility vintage years ('2025 GIB Credit Facility') are NOT
-    maturities and are skipped — only notes/bonds carry the year-as-maturity convention.
+    maturities and are skipped — notes carry the year-as-maturity convention, and a term
+    loan only when its year is after the as-of year, which no vintage can be ('2028 Term
+    Loan B' at TSE; '2021 AAdvantage Term Loan Facility' stays unfilled at AAL).
     Returns the number of maturities filled."""
     asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
     filled = 0
@@ -148,9 +150,11 @@ def fill_maturity_from_name(instruments: list[DebtInstrument],
         name = f"{inst.instrument} {inst.xbrl_member or ''}"
         m = re.search(r"(?:due|matur\w*)\s+.{0,12}?((?:19|20)\d{2})", name, re.I)
         year = int(m.group(1)) if m else None
-        if year is None and inst.facility_type == "notes":
+        if year is None and inst.facility_type in ("notes", "term loan"):
             ys = re.findall(r"\b(20[2-6]\d)\b", name)
             year = int(ys[0]) if ys else None
+            if inst.facility_type == "term loan" and not (asof_year and year and year > asof_year):
+                year = None
         if year and (asof_year is None or year >= asof_year):
             inst.maturity = str(year)
             filled += 1

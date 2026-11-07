@@ -62,9 +62,12 @@ def test_lcid_shaped_deployable_floors_at_zero():
     assert row["feasible"] is False
 
 
-def test_gate_60d_at_45_vs_90_days():
+def test_gate_60d_at_45_vs_90_days(monkeypatch):
     # events are month-granular: March 2026 event = 2026-03-01;
     # asof 2026-01-15 -> 45 days (fail), asof 2025-12-01 -> 90 days (pass)
+    import datetime as dt
+    from app.capstack import liquidity
+    monkeypatch.setattr(liquidity, "_today", lambda: dt.date(2025, 11, 1))
     sched = [{"instrument": "9% Notes due 2026", "outstanding": _cv(100e6),
               "coupon_pct": 9.0, "maturity": "March 2026", "secured": False,
               "facility_type": "notes"}]

@@ -73,6 +73,13 @@ def test_simconfig_rejects_nonfinite_base_ebitda():
             SimConfig(base_ebitda=bad, n_draws=1_000)
 
 
+def test_simconfig_rejects_nonpositive_horizon():
+    # a negative horizon took the sqrt of a negative: every EV draw came back NaN
+    for bad in (-1.0, 0.0, float("nan")):
+        with pytest.raises(ValueError):
+            SimConfig(base_ebitda=100.0, horizon_years=bad, n_draws=1_000)
+
+
 def test_body_models_reject_inf_nan():
     from pydantic import ValidationError
 

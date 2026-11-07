@@ -50,12 +50,15 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
                 "DebtCurrent")),
     MetricSpec("short_term_debt", "Short-term borrowings", "BalanceSheet", "instant",
                ("ShortTermBorrowings", "CommercialPaper")),
+    # balance-sheet cash before the cash-flow total that includes restricted cash (AAL tags
+    # only Cash and that total); its short-term investments line is AFS debt securities
     MetricSpec("cash", "Cash & equivalents", "BalanceSheet", "instant",
                ("CashAndCashEquivalentsAtCarryingValue",
                 "CashAndCashEquivalentsAtCarryingValueIncludingDiscontinuedOperations",
-                "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "Cash")),
+                "Cash", "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents")),
     MetricSpec("short_term_investments", "Short-term investments", "BalanceSheet", "instant",
-               ("ShortTermInvestments",)),
+               ("ShortTermInvestments", "AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+                "MarketableSecuritiesCurrent")),
     MetricSpec("restricted_cash", "Restricted cash", "BalanceSheet", "instant",
                ("RestrictedCashAndCashEquivalents", "RestrictedCash",
                 "RestrictedCashAndCashEquivalentsNoncurrent", "RestrictedCashNoncurrent",

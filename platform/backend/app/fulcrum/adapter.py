@@ -13,10 +13,17 @@ from .structure import CapitalStructure, Entity, Tranche
 
 
 def classify_seniority(seniority: Optional[str], secured: Optional[bool], instrument: str) -> tuple[bool, int, bool]:
-    """Map CapStack's free-text seniority to (secured, lien_rank, preferred)."""
+    """Map CapStack's free-text seniority to (secured, lien_rank, preferred). Super-priority
+    and DIP facilities, and receivables securitizations (the receivables sit in a
+    bankruptcy-remote vehicle), rank 0 ahead of every lien. An explicit unsecured flag beats
+    the name patterns: 'Senior unsecured revolving credit facility' is not a first lien."""
     text = f"{seniority or ''} {instrument}".lower()
     if "preferred" in text:
         return False, 99, True
+    if re.search(r"super[- ]?priority|debtor[- ]in[- ]possession|\bdip\b|securiti[sz]ation", text):
+        return True, 0, False
+    if secured is False or "unsecured" in (seniority or "").lower():
+        return False, 99, False
     if re.search(r"third[- ]lien|3l\b", text):
         return True, 3, False
     if re.search(r"second[- ]lien|2l\b|junior[- ]lien", text):
@@ -40,13 +47,7 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
     seen: set[str] = set()
 
     for i, inst in enumerate(overview.get("debt_schedule") or []):
-        amount, citation = None, None
-        for key in ("outstanding", "principal"):
-            cv = inst.get(key)
-            if cv and cv.get("value"):
-                amount = float(cv["value"])
-                citation = cv.get("citation") or inst.get("citation")
-                break
+        amount, citation = _claim_amount(inst)
         if not amount or amount <= 0:
             continue
         secured, lien, preferred = classify_seniority(
@@ -78,6 +79,23 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
         admin_fees=0.0,
     )
     return structure, ltm_ebitda(overview)[0], citations
+
+
+def _claim_amount(inst: dict) -> tuple[Optional[float], Optional[dict]]:
+    """($, citation) a drawn instrument claims. Notes and term loans claim principal — the
+    tagged face less any tagged OID (unmatured interest, not a claim) — because carrying
+    also nets issuance costs, which never reduce a claim (LCID 2030 converts: $1,085M
+    carrying, $1,100M principal). A revolver's face tag is a sub-limit or the facility size
+    (TSE's super-priority revolver: $50M tag, $265M drawn), so its carrying amount stands."""
+    cv = next((inst[k] for k in ("outstanding", "principal")
+               if (inst.get(k) or {}).get("value")), None)
+    if cv is None:
+        return None, None
+    face = inst.get("face_amount") or {}
+    if face.get("value") and inst.get("facility_type") in ("notes", "term loan"):
+        oid = (inst.get("unamortized_discount") or {}).get("value") or 0.0
+        return float(face["value"]) - float(oid), face.get("citation")
+    return float(cv["value"]), cv.get("citation") or inst.get("citation")
 
 
 def ltm_ebitda(overview: dict) -> tuple[Optional[float], Optional[str]]:

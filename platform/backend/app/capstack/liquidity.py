@@ -34,6 +34,7 @@ def build_liquidity(forensic_table: list[ForensicTableRow],
 
     cash = latest.cash
     cash_v = _val(cash)
+    sti_v = _val(latest.short_term_investments) or 0.0   # AAL holds ~5x its cash in these
 
     # Undrawn committed credit = sum of TAGGED remaining-capacity facts only. Issuers tag
     # remaining capacity once per real facility, so this never double-counts the member
@@ -51,14 +52,18 @@ def build_liquidity(forensic_table: list[ForensicTableRow],
                                   "excluded — see the debt schedule for their commitments.")
                if undrawn_parts else None)
 
-    total_v = (cash_v or 0) + undrawn_sum if (cash_v is not None or undrawn_parts) else None
+    total_v = ((cash_v or 0) + sti_v + undrawn_sum
+               if (cash_v is not None or sti_v or undrawn_parts) else None)
     total_liquidity = (
         derived_value(total_v,
                       f"cash {fmt_money_millions(cash_v)}"
+                      + (f" + short-term investments {fmt_money_millions(sti_v)}"
+                         if sti_v else "")
                       + (f" + undrawn credit {fmt_money_millions(undrawn_sum)}"
                          if undrawn_parts else ""),
                       fmt_money_millions(total_v),
-                      note="Cash and equivalents plus tagged undrawn committed credit.")
+                      note="Cash and equivalents, short-term investments and tagged "
+                           "undrawn committed credit.")
         if total_v is not None else None)
 
     # Burn: free cash flow when it's an outflow. In a quarter column FCF is already TTM.
@@ -99,6 +104,7 @@ _MONTHS = {m.lower(): i + 1 for i, m in enumerate(
     ["January", "February", "March", "April", "May", "June", "July",
      "August", "September", "October", "November", "December"])}
 _YEAR_RE = re.compile(r"(19|20)\d{2}")
+_today = dt.date.today   # clock seam: tests pin the date the calendar starts from
 
 
 def _parse_maturity(maturity: Optional[str]) -> tuple[Optional[int], Optional[int]]:
@@ -123,16 +129,18 @@ def build_event_calendar(debt_schedule: list[DebtInstrument],
                          ebitda: Optional[float],
                          asof: Optional[str],
                          window_months: int = 24) -> tuple[list[LiquidityEvent], Optional[str]]:
-    """Every coupon payment and maturity over the next `window_months`, sized against
-    total liquidity. Returns (events, excluded-note). Coupon dates are never tagged in
-    XBRL, so payment months anchor on the maturity-month anniversary (assumption stated
-    per event); frequency: semiannual for notes, quarterly otherwise."""
+    """Every coupon payment and maturity over the `window_months` after the later of the
+    schedule's as-of date and today, sized against total liquidity. Returns (events,
+    excluded-note). Coupon dates are never tagged in XBRL, so payment months anchor on
+    the maturity-month anniversary (assumption stated per event); frequency: semiannual
+    for notes, quarterly otherwise."""
     from ..fulcrum.adapter import _tranche_coupon
 
     try:
-        start = dt.date.fromisoformat(str(asof)[:10]) if asof else dt.date.today()
+        start = dt.date.fromisoformat(str(asof)[:10]) if asof else _today()
     except ValueError:
-        start = dt.date.today()
+        start = _today()
+    start = max(start, _today())   # a snapshot months old must not list past dates
     end = start + dt.timedelta(days=window_months * 30.44)
 
     events: list[LiquidityEvent] = []

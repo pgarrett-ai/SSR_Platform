@@ -2,8 +2,19 @@
 and the liquidity-event calendar (coupons + maturities vs liquidity)."""
 from __future__ import annotations
 
+import datetime as dt
+
+import pytest
+
+from app.capstack import liquidity
 from app.capstack.liquidity import build_event_calendar, build_liquidity
 from app.schemas import (CitedValue, DebtInstrument, ForensicTableRow, MaturityBucket)
+
+
+@pytest.fixture(autouse=True)
+def _calendar_today(monkeypatch):
+    """Pin the clock before every as-of below; the calendar starts at the later of the two."""
+    monkeypatch.setattr(liquidity, "_today", lambda: dt.date(2026, 1, 1))
 
 
 def _cv(v):
@@ -65,6 +76,15 @@ def test_none_without_forensic_rows():
     assert build_liquidity([], [], [], ebitda=-1e9) is None
 
 
+def test_liquidity_counts_short_term_investments():
+    # AAL FY2025: $954M cash beside $4,882M of short-term investments
+    row = _row(cash=954e6, fcf=-1e9, fy=2025)
+    row.short_term_investments = _cv(4882e6)
+    lr = build_liquidity([row], [], [], ebitda=3e9)
+    assert lr.total_liquidity.value == 954e6 + 4882e6
+    assert "short-term investments" in lr.total_liquidity.formula
+
+
 # --------------------------------------------------------------------------- #
 # Event calendar (Moyer ch. 8)
 # --------------------------------------------------------------------------- #
@@ -116,6 +136,14 @@ def test_calendar_excludes_rateless_maturityless():
     events, note = build_event_calendar(sched, None, None, "2026-03-31")
     assert "1 instrument(s) excluded" in note
     assert all("GIB" not in e.instrument for e in events)
+
+
+def test_calendar_never_lists_past_dates(monkeypatch):
+    # a snapshot as of March, opened in November, starts from November
+    monkeypatch.setattr(liquidity, "_today", lambda: dt.date(2026, 11, 6))
+    sched = [_note("A Notes", 100e6, 8.0, "December 2027")]
+    events, _ = build_event_calendar(sched, 1000e6, 100e6, "2026-03-31")
+    assert events and min(e.date for e in events) > "2026-11"
 
 
 def test_next_event_is_earliest():

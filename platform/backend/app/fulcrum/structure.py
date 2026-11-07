@@ -94,6 +94,19 @@ class Tranche:
         return self.face + self.accrued(accrual_years) + self.make_whole
 
 
+_LIEN_NAMES = {1: "1st lien", 2: "2nd lien", 3: "3rd lien"}
+
+
+def class_label(t: Tranche) -> str:
+    """The priority class a tranche sits in, by type and lien rank."""
+    if t.preferred:
+        return "Preferred"
+    if not t.secured:
+        return "Unsecured"
+    return "Super-priority" if t.lien_rank <= 0 else _LIEN_NAMES.get(t.lien_rank,
+                                                                       f"Lien {t.lien_rank}")
+
+
 @dataclass
 class CapitalStructure:
     """A company's full capital structure plus the legal-entity tree.
@@ -176,6 +189,18 @@ class CapitalStructure:
             names.extend(t.name for t in unsecured)
             names.extend(t.name for t in preferred)
         return names
+
+    def priority_class(self, name: str) -> tuple[str, list[str]]:
+        """(label, member names) of the class holding tranche `name`. Tranches at one entity
+        with the same type, lien rank and subordination share pro rata and are impaired
+        together, so the class, not whichever member is listed first, is the fulcrum."""
+        def key(t: Tranche) -> tuple:
+            return t.entity, t.secured, t.preferred, t.lien_rank, t.subordinated_to
+
+        t = next(x for x in self.tranches if x.name == name)
+        members = [x.name for x in self.tranches if key(x) == key(t)]
+        named = ", ".join(members) if len(members) <= 3 else f"{len(members)} tranches"
+        return f"{class_label(t)} at {t.entity} ({named})", members
 
     # -- validation --------------------------------------------------------
     def validate(self) -> None:

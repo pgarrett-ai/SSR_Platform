@@ -125,15 +125,22 @@ def test_no_face_amount_keeps_phase1_behavior():
     assert ladder["quote_by_instrument"]["8.00% Senior Notes due 2030"]["pct_of_accreted"] == 60.0
 
 
-def test_waterfall_claim_convention_is_carrying():
-    # the adapter feeds carrying (accreted), never face, as Tranche.face — the ch. 5
-    # claim convention holds with zero engine change
+def test_waterfall_claim_is_principal_less_oid():
     from app.fulcrum.adapter import overview_to_structure
-    sched = [{"instrument": "OID Notes due 2030", "outstanding": _cv(71.2e6),
-              "face_amount": _cv(100e6), "coupon_pct": 8.0, "maturity": "2030",
-              "secured": False}]
+    sched = [
+        # LCID 2030 converts: carrying nets issuance costs, the claim is the $1,100M principal
+        {"instrument": "2030 Notes", "facility_type": "notes", "outstanding": _cv(1085e6),
+         "face_amount": _cv(1100e6), "secured": False},
+        # deep-discount notes: unamortized OID is unmatured interest, not part of the claim
+        {"instrument": "OID Notes due 2030", "facility_type": "notes",
+         "outstanding": _cv(71.2e6), "face_amount": _cv(100e6),
+         "unamortized_discount": _cv(28.8e6), "secured": False},
+        # TSE revolver: the face tag is a $50M sub-limit, $265M is drawn
+        {"instrument": "Super-Priority Revolver", "facility_type": "revolver",
+         "outstanding": _cv(265e6), "face_amount": _cv(50e6)},
+    ]
     structure, _, _ = overview_to_structure(_ov(schedule=sched))
-    assert structure.tranches[0].face == 71.2
+    assert [round(t.face, 1) for t in structure.tranches] == [1100.0, 71.2, 265.0]
 
 
 def test_spread_bps_interpolation():

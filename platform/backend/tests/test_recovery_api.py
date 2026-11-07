@@ -35,7 +35,7 @@ def test_project_apex_via_api():
     assert r.status_code == 200, r.text
     d = r.json()
     # Canonical numbers from fulcrum's README / examples.project_apex (same seed & draws).
-    assert d["fulcrum"] == "2L Notes"
+    assert d["fulcrum"] == "2nd lien at OpCo (2L Notes)"
     assert abs(d["ev"]["median"] - 625) < 10
     assert d["total_face"] == 1020.0
     by_name = {t["tranche"]: t for t in d["tranches"]}
@@ -327,9 +327,24 @@ def test_simulate_persists_recovery_summary():
     with session_scope() as s:
         summ = s.get(models.Snapshot, "APEX").recovery_summary
         s.query(models.Snapshot).filter_by(ticker="APEX").delete()
-    assert summ["mode"] == "simulation" and summ["fulcrum"] == "2L Notes"
+    assert summ["mode"] == "simulation" and summ["fulcrum"] == "2nd lien at OpCo (2L Notes)"
     assert {t["tranche"] for t in summ["tranches"]} == {t["name"] for t in APEX_STRUCTURE["tranches"]}
-    assert any(t["is_fulcrum"] for t in summ["tranches"])
+    assert [t["tranche"] for t in summ["tranches"] if t["is_fulcrum"]] == ["2L Notes"]
+
+
+def test_nonfinite_recovery_summary_is_not_persisted():
+    from app import models
+    from app.core.db import session_scope
+    from app.main import _save_recovery_summary
+
+    with session_scope() as s:
+        s.merge(models.Snapshot(ticker="ZZNAN", issuer="NaN Co"))
+    _save_recovery_summary("ZZNAN", {"mode": "simulation", "fulcrum": None,
+                                     "ev": {"median": float("nan")}, "tranches": []})
+    with session_scope() as s:
+        summ = s.get(models.Snapshot, "ZZNAN").recovery_summary
+        s.query(models.Snapshot).filter_by(ticker="ZZNAN").delete()
+    assert summ is None
 
 
 def test_case_crisis_are_cache_only(monkeypatch):

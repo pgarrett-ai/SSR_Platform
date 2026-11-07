@@ -130,6 +130,7 @@ def build_forensic_table(series: FinancialSeries) -> list[ForensicTableRow]:
                 period_end=yf.period_end.isoformat(),
                 total_debt=td_cv,
                 cash=cited_metric(yf, "cash", cik),
+                short_term_investments=cited_metric(yf, "short_term_investments", cik),
                 free_cash_flow=fcf_cv,
                 capex=cited_metric(yf, "capex", cik),
                 accounts_payable=cited_metric(yf, "accounts_payable", cik),
@@ -185,6 +186,7 @@ def quarter_forensic_row(qf, cik: str) -> ForensicTableRow:
                                   note="Sum of reported debt components as of the 10-Q date.")
                     if td_val is not None else None),
         cash=cited_metric(view, "cash", cik),
+        short_term_investments=cited_metric(view, "short_term_investments", cik),
         free_cash_flow=(derived_value(fcf_val, f"OCF − capex, {ttm_note}",
                                       fmt_money_millions(fcf_val))
                         if fcf_val is not None else None),
@@ -351,6 +353,10 @@ def build_asset_snapshot(series: FinancialSeries, cik: str):
         return None
 
     cash = cited_metric(yf, "cash", cik)
+    sti = raw_value(yf, "short_term_investments")
+    if cash is not None and sti:   # marketable securities liquidate like cash, not as "other"
+        cash = derived_value(cash.value + sti, f"cash {cash.display} + short-term investments "
+                             f"{fmt_money_millions(sti)}", fmt_money_millions(cash.value + sti))
     ar = cited_metric(yf, "accounts_receivable", cik)
     inv = cited_metric(yf, "inventory", cik)
     ppe = cited_metric(yf, "ppe_net", cik)

@@ -38,6 +38,14 @@ def test_classify_seniority():
     assert classify_seniority("second lien", None, "Notes") == (True, 2, False)
     assert classify_seniority(None, None, "Convertible Preferred") == (False, 99, True)
     assert classify_seniority(None, None, "Senior Unsecured Notes") == (False, 99, False)
+    # an explicit unsecured flag beats the facility-name patterns
+    assert classify_seniority("senior unsecured", False,
+                              "Senior unsecured revolving credit facility") == (False, 99, False)
+    assert classify_seniority("subordinated", False, "Subordinated term loan") == (False, 99, False)
+    # super-priority / DIP and receivables securitizations rank ahead of every lien (TSE)
+    assert classify_seniority(None, None, "Super-Priority Revolver") == (True, 0, False)
+    assert classify_seniority(None, None, "Accounts Receivable Securitization Facility") == \
+        (True, 0, False)
 
 
 def test_aal_snapshot_to_recovery():
