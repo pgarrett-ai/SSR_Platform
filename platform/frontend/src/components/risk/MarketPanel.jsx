@@ -23,8 +23,10 @@ export default function MarketPanel({ data }) {
           <div className="text-xs text-slate-500 mb-2">Equity</div>
           {m.ok ? (
             <>
-              <Indicator label="Price" value={m.price != null ? `$${fmtNum(m.price)}` : "—"} />
-              <Indicator label="Market cap" value={fmtMoney(m.market_cap)} />
+              <Indicator label="Price" value={m.price != null
+                ? `$${m.price < 1 ? m.price.toPrecision(2) : fmtNum(m.price)}` : "—"} />
+              <Indicator label="Market cap"
+                value={fmtMoney(m.market_cap, m.market_cap != null && m.market_cap < 10e6 ? 1 : 0)} />
               <Indicator label="Equity vol (ann.)" value={fmtPct(m.equity_vol)} />
               <Indicator label="Drawdown vs 52w high" value={fmtPct(m.drawdown_52w)} />
               <Indicator label="Excess return (1y)" value={fmtPct(m.excess_return_1y)} />

@@ -8,7 +8,7 @@ import EightKEvents from "../components/risk/EightKEvents.jsx";
 import RestatementScreen from "../components/RestatementScreen.jsx";
 
 // Renders the hazard stream CompanyLayout owns; the 12m PD headline sits in the strip.
-export default function RiskPage({ ticker, hazard }) {
+export default function RiskPage({ ticker, hazard, chapter11 }) {
   const { data, loading, error, events } = hazard;
   if (loading)
     return events.length > 0
@@ -19,6 +19,12 @@ export default function RiskPage({ ticker, hazard }) {
 
   return (
     <div>
+      {chapter11 && !chapter11.confirmed_at && (
+        <p className="mb-4 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+          Filed Chapter 11 on {chapter11.petition_date}. Default has occurred; the models below
+          describe the credit as of its last filings.
+        </p>
+      )}
       {data.stale_as_of && (
         <p className="mb-4 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
           Showing the last saved analysis from {String(data.stale_as_of).slice(0, 10)}: the live

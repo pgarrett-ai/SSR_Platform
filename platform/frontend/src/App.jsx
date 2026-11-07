@@ -56,7 +56,7 @@ function CompanyLayout() {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="capital" element={<CapitalPage ticker={t} overview={overview} />} />
-          <Route path="risk" element={<RiskPage ticker={t} hazard={hazard} />} />
+          <Route path="risk" element={<RiskPage ticker={t} hazard={hazard} chapter11={overview.data?.chapter11} />} />
           {/* keyed by ticker: a switch remounts it, so no stale run lands on the new issuer */}
           <Route path="recovery" element={
             <RecoveryPage key={t} ticker={t} years={OVERVIEW_YEARS} onRecoveryResult={onRecoveryResult} />} />

@@ -127,7 +127,12 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
         </Cell>
 
         <Cell to={`${base}/risk`} label="Default" active={tab === "risk"}>
-          {es?.distress_pd?.["12m"] == null ? (
+          {ch11 && !ch11.confirmed_at ? (
+            <>
+              <div className="font-mono text-amber-300">defaulted</div>
+              <div className="truncate text-xs text-slate-400">Chapter 11 petition {ch11.petition_date}</div>
+            </>
+          ) : es?.distress_pd?.["12m"] == null ? (
             hazard.data?.merton && !hazard.data.merton.available ? (
               <>
                 <div className="font-mono text-slate-100">n.m.</div>
