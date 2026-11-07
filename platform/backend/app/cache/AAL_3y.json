@@ -5190,7 +5190,7 @@
       "assumption": "semiannual assumed; months anchored on the as-of date"
     }
   ],
-  "liquidity_events_note": "3 instrument(s) excluded (no tagged rate or maturity)",
+  "liquidity_events_note": "3 instruments excluded (no tagged rate or maturity)",
   "asset_snapshot": {
     "as_of_fy": 2025,
     "cash": {
@@ -5449,7 +5449,7 @@
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 ($-963M), floored at 0",
+      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 (-$963M), floored at 0",
       "note": "omits junior-debt-issuance proceeds and unrestricted-subsidiary investment returns (not deterministically extractable); cumulation anchors at the lookback-window start — a proxy for the issuance-date build convention; builder negative — cumulative deductions exceed credits, $0 capacity"
     },
     "formula_note": "equity_issuance_proceeds, dividends_paid, stock_repurchases not tagged in XBRL — treated as $0",
@@ -5691,10 +5691,10 @@
     "j_crew_blocker_present": true,
     "suggested_priming": {
       "value": 1451.3,
-      "basis": "largest $-token on a lien fact — 2026 Incremental Revolving Commitments (established via Fourth Amendment) (stated capacity, utilization unknown)",
+      "basis": "2026 Incremental Revolving Commitments (established via Fourth Amendment): the largest stated dollar capacity (utilization unknown)",
       "note": "$1,451,333,333.35"
     },
-    "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom (Moyer ch. 9)"
+    "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom"
   },
   "leverage_timeline": [
     {
@@ -6549,7 +6549,7 @@
     }
   ],
   "warnings": [
-    "Maturity unknown for 1 instrument(s) (2023 Revolving Facility) — they are missing from the maturity wall."
+    "Maturity unknown for 1 instrument (2023 Revolving Facility) — missing from the maturity wall."
   ],
   "llm_fallback_note": null
 }

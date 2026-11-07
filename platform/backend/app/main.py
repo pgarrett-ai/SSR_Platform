@@ -619,15 +619,15 @@ def recovery_context(ticker: str, years: int, sim: dict,
                 if cv and cv.get("value"):
                     total_debt = float(cv["value"]) / 1e6
                     if cv.get("citation"):
-                        citations["Total debt (XBRL seed)"] = cv["citation"]
+                        citations["Total debt (no debt schedule extracted)"] = cv["citation"]
                     break
             st = CapitalStructure(
                 name=st.name,
                 entities=[Entity("OpCo", ev_share=1.0, parent=None)],
-                tranches=[Tranche("Total debt (XBRL seed)", "OpCo",
+                tranches=[Tranche("Total debt (no debt schedule extracted)", "OpCo",
                                   face=total_debt or 100.0, lien_rank=1, secured=True)],
             )
-            source = "XBRL total-debt seed" if total_debt else "manual seed"
+            source = "reported total debt" if total_debt else "placeholder face"
         if ebitda is None:
             ebitda = derived_ebitda
     accrual = float(sim.get("accrual_years") or 0.0)
@@ -733,7 +733,7 @@ def _liquidation_payload(structure: CapitalStructure, ov: dict,
         return {
             "mode": "liquidation", "available": False, "accrual_years": accrual_years,
             "structure": _structure_dict(structure), "note": note,
-            "detail": "no balance-sheet asset categories were extracted for this issuer, "
+            "detail": "no balance-sheet asset categories are available for this issuer, "
                       "so there is nothing to liquidate"}
     out = liquidate(assets, structure, rates=body_rates, admin_pct=body_admin,
                     accrual_years=accrual_years)
@@ -946,7 +946,7 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
     typed offer terms — holdout-vs-tender payoff curves per participation level, direct
     run_waterfall per scenario over the BASE structure's EV grid."""
     from .capstack.quotes import match_quotes
-    from .edgar.facts import derived_value
+    from .edgar.facts import derived_value, fmt_money_millions
     from .fulcrum.explore import _cross
     from .fulcrum.proforma import exchange_scenario
     from .hazard.trace import get_issuer_bonds
@@ -1045,9 +1045,10 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
             rq = (cash - spend) / (burn / 4.0)
             runway = derived_value(
                 round(rq, 1),
-                f"(cash ${cash:,.0f}M − tender cash spend ${spend:,.0f}M) ÷ quarterly "
-                f"burn ${burn / 4.0:,.0f}M — quarters the company can carry a holdout "
-                "fight (the book's cash-depletion point)",
+                f"(cash {fmt_money_millions(cash * 1e6)} − tender cash spend "
+                f"{fmt_money_millions(spend * 1e6)}) ÷ quarterly burn "
+                f"{fmt_money_millions(burn / 4.0 * 1e6)} — quarters of burn the remaining "
+                "cash funds, i.e. how long the company can carry a holdout fight",
                 f"{rq:,.1f} qtrs").model_dump()
     except (ValueError, TypeError) as exc:   # engine validators = the 400 boundary
         return JSONResponse(status_code=400, content={"error": str(exc)})

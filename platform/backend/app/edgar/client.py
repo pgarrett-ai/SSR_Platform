@@ -202,7 +202,7 @@ class EdgarClient:
 
         if not results:
             raise NoFilingsError(
-                f"No {'/'.join(forms)} filings for {company.name} in the last {years} year(s)."
+                f"No {'/'.join(forms)} filings for {company.name} in the last {years} year{'' if years == 1 else 's'}."
             )
         return results
 

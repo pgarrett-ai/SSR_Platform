@@ -696,6 +696,11 @@ def fmt_days(value: Optional[float]) -> Optional[str]:
     return None if value is None else f"{value:.0f} days"
 
 
+def fmt_count(n: int, noun: str, plural: Optional[str] = None) -> str:
+    """'1 instrument' / '3 instruments'; `plural` defaults to noun + 's'."""
+    return f"{n} {noun if n == 1 else plural or noun + 's'}"
+
+
 def cited_from_fact(fact, cik: str, kind: str) -> CitedValue:
     """Build a CitedValue from a raw edgartools Fact, pointing at its source filing."""
     val = getattr(fact, "numeric_value", None)

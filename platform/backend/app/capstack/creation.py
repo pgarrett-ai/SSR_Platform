@@ -14,7 +14,7 @@ from typing import Optional
 
 import numpy as np
 
-from ..edgar.facts import derived_value, fmt_ratio
+from ..edgar.facts import derived_value, fmt_money_millions, fmt_ratio
 from ..fulcrum.adapter import ltm_ebitda, overview_to_structure
 from ..fulcrum.structure import class_label
 from ..fulcrum.waterfall import run_waterfall
@@ -142,10 +142,11 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         nml = (cum_market - (cash or 0.0)) / e
         net_market_leverage = derived_value(
             round(nml, 2),
-            f"(Σ debt at market ${cum_market:,.0f}M − cash ${cash or 0:,.0f}M) ÷ EBITDA ${e:,.0f}M"
+            f"(Σ debt at market {fmt_money_millions(cum_market * 1e6)} − cash "
+            f"{fmt_money_millions((cash or 0.0) * 1e6)}) ÷ EBITDA {fmt_money_millions(e * 1e6)}"
             + ("" if quotes else " — no quotes matched; debt at face"),
             fmt_ratio(round(nml, 2)),
-            note="market values from TRACE drop-file where quoted, face otherwise",
+            note="market values from bond marks where quoted, face otherwise",
         ).model_dump()
 
     # % of accreted value, never face, where OID exists (Moyer, Distressed Debt Analysis,
@@ -178,7 +179,7 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
                                 for n, q in quotes.items()},
         "has_oid": has_oid,
         "oid_note": ("quotes are % of principal; % of accreted value shown where OID — "
-                     "unamortized discount is not a claim (Moyer ch. 5)") if has_oid else None,
+                     "unamortized discount is not a claim") if has_oid else None,
         "ebitda_mm": ebitda,
         "fulcrum_class": classes[fulcrum_class_idx]["label"] if fulcrum_class_idx is not None else None,
         "fulcrum_note": f"fulcrum at {_FULCRUM_MULTIPLE:.1f}x EBITDA reference EV",
@@ -187,8 +188,8 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         "n_quoted": len(quotes),
         "n_instruments": len(order),
         "notes": notes,
-        "derivation": "cumulative claims through each class ÷ LTM EBITDA; market = drop-file "
-                      "quote % × face where matched (Moyer creation-value test)",
+        "derivation": "cumulative claims through each class ÷ LTM EBITDA; market = bond "
+                      "mark % × face where matched",
     }
 
 
@@ -214,8 +215,6 @@ def detect_capacity_avoidance(ov: dict, equity_price: Optional[float],
     ch. 6): busted converts (analyze purely as debt), PIK (cash coverage overstated),
     mezzanine preferred (recast as debt). Price-dependent — assembled on demand in the
     ladder endpoint; equity_price = Snapshot.last_price (set by a Default Risk run)."""
-    from ..edgar.facts import fmt_money_millions
-
     quotes, _ = match_quotes(ov.get("debt_schedule") or [], bonds or [])
     items: list[dict] = []
     for inst in ov.get("debt_schedule") or []:
@@ -232,7 +231,7 @@ def detect_capacity_avoidance(ov: dict, equity_price: Optional[float],
                     "tone": "high" if busted else ("watch" if ratio < 1.0 else "neutral"),
                     "note": f"stock ${float(equity_price):,.2f} vs conversion "
                             f"${float(conv):,.2f} ({ratio:.2f}x)"
-                            + (" — deeply busted; analyze purely as debt (Moyer ch. 6)"
+                            + (" — deeply busted; analyze purely as debt"
                                if busted else
                                " — out of the money" if ratio < 1.0 else " — in the money"),
                 })
@@ -259,5 +258,5 @@ def detect_capacity_avoidance(ov: dict, equity_price: Optional[float],
     return {
         "items": items, "equity_price": equity_price,
         "meta_note": ("capacity-avoidance instruments present — effective leverage is "
-                      "already very high (Moyer ch. 6)") if items else None,
+                      "already very high") if items else None,
     }

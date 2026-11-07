@@ -134,7 +134,7 @@ def test_calendar_excludes_rateless_maturityless():
     sched = [DebtInstrument(instrument="GIB facility", outstanding=_cv(1890e6)),
              _note("5% Notes due 2030", 100e6, 5.0, "2030")]
     events, note = build_event_calendar(sched, None, None, "2026-03-31")
-    assert "1 instrument(s) excluded" in note
+    assert "1 instrument excluded" in note
     assert all("GIB" not in e.instrument for e in events)
 
 

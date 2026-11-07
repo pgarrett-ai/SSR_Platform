@@ -13,6 +13,7 @@ from typing import Optional
 
 import numpy as np
 
+from ..edgar.facts import fmt_money_millions
 from .structure import CapitalStructure
 from .waterfall import run_waterfall
 
@@ -44,7 +45,7 @@ def _scenario(assets: dict[str, float], structure: CapitalStructure,
         gross += proceeds
         lines.append({"key": key, "label": label, "book": round(book, 1),
                       "rate": rate, "proceeds": round(proceeds, 1),
-                      "formula": f"{label} ${book:,.0f}M × {100 * rate:.0f}%"})
+                      "formula": f"{label} {fmt_money_millions(book * 1e6)} × {100 * rate:.0f}%"})
     # estate costs come off once, here: the waterfall runs with its own cost knobs at zero
     net = max(gross * (1.0 - admin_pct) - structure.admin_fees, 0.0)
     wf = run_waterfall(replace(structure, admin_pct=0.0, admin_fees=0.0), np.array([net]),
@@ -87,8 +88,8 @@ def liquidate(assets: dict[str, float], structure: CapitalStructure,
         "presets": {"orderly": ORDERLY, "fire_sale": FIRE_SALE,
                     "admin_ch11": ADMIN_CH11, "admin_ch7": ADMIN_CH7},
         "note": "asset-based liquidation: book values × advance/haircut rates, net of "
-                "estate costs, distributed by absolute priority (Moyer ch. 5: when positive "
-                "EBITDA is unattainable, cash-flow metrics are irrelevant)",
+                "estate costs, distributed by absolute priority (when positive EBITDA is "
+                "unattainable, cash-flow metrics are irrelevant)",
     }
 
 

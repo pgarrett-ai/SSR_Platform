@@ -22,7 +22,7 @@ def prime(structure: CapitalStructure, face: float, entity: Optional[str] = None
     engine edits). face in $mm; face <= 0 raises ValueError (the API's 400 boundary), as
     does an unknown entity via CapitalStructure.validate."""
     if face is None or face <= 0:
-        raise ValueError("priming face must be positive ($mm)")
+        raise ValueError("priming face must be positive ($M)")
     rank = min((t.lien_rank for t in structure.tranches if t.secured), default=1) - 1
     tranches = [Tranche(name=name, entity=entity or structure.entities[0].name,
                         face=float(face), lien_rank=min(rank, 0), secured=True),

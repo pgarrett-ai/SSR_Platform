@@ -3034,7 +3034,7 @@
       "assumption": null
     }
   ],
-  "liquidity_events_note": "6 instrument(s) excluded (no tagged rate or maturity)",
+  "liquidity_events_note": "6 instruments excluded (no tagged rate or maturity)",
   "asset_snapshot": {
     "as_of_fy": 2025,
     "cash": {
@@ -3320,7 +3320,7 @@
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 ($-9,013M), floored at 0",
+      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 (-$9,013M), floored at 0",
       "note": "omits junior-debt-issuance proceeds and unrestricted-subsidiary investment returns (not deterministically extractable); cumulation anchors at the lookback-window start — a proxy for the issuance-date build convention; builder negative — cumulative deductions exceed credits, $0 capacity"
     },
     "formula_note": "equity_issuance_proceeds, dividends_paid not tagged in XBRL — treated as $0",
@@ -3328,7 +3328,7 @@
     "covenant_value": null,
     "covenant_quote": null,
     "notes": [
-      "no RP covenant extracted — distributions contractually unrestricted (unbounded leakage, Moyer ch. 9)"
+      "no RP covenant extracted — distributions contractually unrestricted (unbounded leakage)"
     ]
   },
   "liens_headroom": {
@@ -3339,12 +3339,12 @@
       "2031 Notes",
       "2026 Notes"
     ],
-    "unbounded_note": "no lien covenant extracted in the famil(ies) governing 2030 Notes, 2031 Notes, 2026 Notes — unbounded priming risk (covenant-lite; Moyer ch. 9)",
+    "unbounded_note": "no lien covenant found in the agreements governing 2030 Notes, 2031 Notes, 2026 Notes — unbounded priming risk (covenant-lite)",
     "rows": [],
     "uptier_priming": null,
     "j_crew_blocker_present": false,
     "suggested_priming": null,
-    "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom (Moyer ch. 9)"
+    "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom"
   },
   "leverage_timeline": [
     {

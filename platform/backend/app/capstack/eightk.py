@@ -248,21 +248,21 @@ def crisis_screen(triggers, liquidity, liquidity_events, accel=None) -> dict:
         "revolver": {
             "undrawn": undrawn, "reliance_pct": reliance_pct,
             "note": "a restatement/fraud disclosure typically trips a covenant and freezes "
-                    "the revolver — reliance on undrawn capacity is fragile (Moyer ch. 8 factor 2)"},
+                    "the revolver — reliance on undrawn capacity is fragile"},
         "acceleration": {
             "clauses_found": accel_found, "sample": accel.get("sample"),
             "available": bool(accel.get("available", True)),
             "note": "best-effort scan of the indexed covenant/notes corpus for cross-default / "
                     "material-adverse-change language — NOT full indenture text, and depends on "
-                    "the LLM covenant extraction having run (Moyer ch. 8 factor 3)"},
+                    "the LLM covenant extraction having run"},
         "immediate_need": {
             "events": at_risk[:3], "need_total": need_total, "covered_by_cash": covered,
-            "note": "nearest coupon/maturity flagged at-risk or unfundable (Moyer ch. 8 factor 4)"},
+            "note": "nearest coupon/maturity flagged at-risk or unfundable"},
     }
     return {
         "triggered": triggered, "trigger_items": sorted(trig_map),
         "trigger_filings": trigger_filings, "factors": factors, "crisis": crisis,
         "note": "crisis = a restatement/fraud 8-K trigger AND an immediate cash need not covered "
                 "by cash on hand; revolver reliance and acceleration language amplify but are "
-                "best-effort/qualitative (Moyer ch. 8).",
+                "best-effort/qualitative.",
     }

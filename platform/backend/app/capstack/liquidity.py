@@ -12,7 +12,7 @@ import datetime as dt
 import re
 from typing import Optional
 
-from ..edgar.facts import derived_value, fmt_money_millions
+from ..edgar.facts import derived_value, fmt_count, fmt_money_millions
 from ..schemas import (CitedValue, DebtInstrument, ForensicTableRow, LiquidityEvent,
                        LiquidityRunway, MaturityBucket, NextMaturity)
 
@@ -209,7 +209,7 @@ def build_event_calendar(debt_schedule: list[DebtInstrument],
             e.flags.append("coupon_at_risk")
 
     events.sort(key=lambda e: e.date)
-    note = (f"{excluded} instrument(s) excluded (no tagged rate or maturity)"
+    note = (f"{fmt_count(excluded, 'instrument')} excluded (no tagged rate or maturity)"
             if excluded else None)
     return events, note
 

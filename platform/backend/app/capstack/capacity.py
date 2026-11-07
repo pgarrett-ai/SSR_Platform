@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from ..edgar.facts import derived_value, fmt_money_millions, fmt_ratio
+from ..edgar.facts import derived_value, fmt_count, fmt_money_millions, fmt_ratio
 from ..schemas import CoverageChips
 
 
@@ -105,7 +105,7 @@ def capacity_inputs(ov: dict) -> Optional[dict]:
         "capex": (capex or 0.0) / 1e6,
         "rate": rate if rate is not None else 0.08,
         "rate_note": (f"weighted-average tagged rate over {fmt_money_millions(tot)} of debt"
-                      + (f"; {unrated} instrument(s) without a rate excluded" if unrated else ""))
+                      + (f"; {fmt_count(unrated, 'instrument')} without a rate excluded" if unrated else ""))
                      if rate is not None else "no tagged rates — 8% assumed",
         "capex_note": "latest FY capex from the forensic table (run-rate, not a 3y average)",
     }

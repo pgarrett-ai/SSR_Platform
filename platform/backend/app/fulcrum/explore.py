@@ -116,7 +116,7 @@ def explore(structure: CapitalStructure, ebitda: Optional[float],
         out["coverage"] = cov
         out["breakeven_multiples"] = breakeven
         out["coverage_note"] = ("junior coverage = (EV − senior claims) ÷ junior claims — "
-                                "distorted when the junior tranche is small (Moyer ch. 6)")
+                                "distorted when the junior tranche is small")
         # 'market has not repriced' (Moyer, Distressed Debt Analysis, ch. 6): face debt
         # exceeds the reference EV while the quoted paper still trades near par
         if quotes:

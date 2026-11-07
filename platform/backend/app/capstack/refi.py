@@ -11,7 +11,7 @@ import datetime as dt
 import re
 from typing import Optional
 
-from ..edgar.facts import derived_value
+from ..edgar.facts import derived_value, fmt_money_millions
 from .capacity import capacity_inputs, sweep
 from .quotes import _maturity_year, match_quotes
 
@@ -179,22 +179,24 @@ def build_refi_wall(ov: dict, bonds: list[dict]) -> dict:
         r["annotations"] = ann
 
     # displayed dollars → derived CitedValues
+    def m(v: float) -> str:   # $mm -> "-$123M"
+        return fmt_money_millions(v * 1e6)
+
     out_rows = []
     for r in rows:
         insts = ", ".join(r["instruments"])[:120]
         face = derived_value(r["face_mm"], f"Σ face due {r['year']}: {insts}",
-                             f"${r['face_mm']:,.0f}M").model_dump()
+                             m(r["face_mm"])).model_dump()
         repay = derived_value(
             r["repayable_mm"],
-            f"min(face ${r['face_mm']:,.0f}M, max(liquidity ${liquidity_mm:,.0f}M + "
-            f"cumulative sweep ${r['internal_mm']:,.0f}M − earlier walls, 0)) — "
+            f"min(face {m(r['face_mm'])}, max(liquidity {m(liquidity_mm)} + "
+            f"cumulative sweep {m(r['internal_mm'])} − earlier walls, 0)) — "
             f"flat {100 * _GROWTH:.0f}% growth sweep",
-            f"${r['repayable_mm']:,.0f}M").model_dump()
+            m(r["repayable_mm"])).model_dump()
         need = derived_value(
             r["refi_need_mm"],
-            f"face ${r['face_mm']:,.0f}M − repayable internally "
-            f"${r['repayable_mm']:,.0f}M",
-            f"${r['refi_need_mm']:,.0f}M").model_dump()
+            f"face {m(r['face_mm'])} − repayable internally {m(r['repayable_mm'])}",
+            m(r["refi_need_mm"])).model_dump()
         out_rows.append({
             "year": r["year"], "instruments": r["instruments"],
             "face": face, "repayable": repay, "refi_need": need,

@@ -33,7 +33,7 @@ from .edgar.client import (
     TickerNotFoundError,
 )
 from .edgar.documents import get_filing_text
-from .edgar.facts import FinancialSeries, build_financial_series, fmt_money_millions
+from .edgar.facts import FinancialSeries, build_financial_series, fmt_count, fmt_money_millions
 from .core.progress import ProgressLog
 from .schemas import Chapter11, IssuerHeader, Overview
 from .store import (
@@ -143,7 +143,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
     )
 
     progress.emit(
-        f"Fetching 10-K / 10-Q / 8-K / S-1 / S-4 filings for the last {years} year(s)…",
+        f"Fetching 10-K / 10-Q / 8-K / S-1 / S-4 filings for the last {fmt_count(years, 'year')}…",
         step="filings",
         pct=20,
     )
@@ -172,7 +172,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
             forensic_flags = detect_flags(series)
             progress.emit(
                 f"Built forensic table over FY{series.years[0].fiscal_year}-"
-                f"FY{series.years[-1].fiscal_year}; {len(forensic_flags)} divergence flag(s) fired.",
+                f"FY{series.years[-1].fiscal_year}; {fmt_count(len(forensic_flags), 'divergence flag')} fired.",
                 step="xbrl", pct=60,
             )
         else:
@@ -301,9 +301,11 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
                     if ann_err:
                         warnings.append(f"Maturity annotation: {ann_err}")
                     if n_ungrounded:
-                        warnings.append(f"{n_ungrounded} maturity annotation quote(s) not found "
-                                        "verbatim in the debt footnote; those maturities were "
-                                        "not applied.")
+                        warnings.append(
+                            f"{fmt_count(n_ungrounded, 'maturity annotation quote')} not "
+                            "found verbatim in the debt footnote; "
+                            + ("that maturity was" if n_ungrounded == 1
+                               else "those maturities were") + " not applied.")
                     with session_scope() as session:
                         if learned:
                             record_aliases(session, ticker, learned, source="fuzzy")
@@ -314,8 +316,9 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
                             session, ticker, debt_schedule, debt_ft or ft, debt_asof,
                             aliases=known_aliases)
                     if n_filled:
-                        progress.emit(f"Gap-fill re-search recovered {n_filled} "
-                                      "annotation(s) from the persisted corpus.",
+                        progress.emit(f"Gap-fill re-search recovered "
+                                      f"{fmt_count(n_filled, 'annotation')} from the "
+                                      "persisted corpus.",
                                       step="debt", pct=79)
                     if gf_err:
                         warnings.append(f"Gap-fill re-search: {gf_err}")
@@ -337,7 +340,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
     if debt_schedule:
         filled = fill_maturity_from_name(debt_schedule, debt_asof)
         if filled:
-            progress.emit(f"Filled {filled} maturity year(s) from instrument names.",
+            progress.emit(f"Filled {fmt_count(filled, 'maturity year')} from instrument names.",
                           step="debt", pct=81)
         # tie-out: instrument sum vs the reported balance-sheet total. A big gap means
         # double-counted members (facility + its sub-facility) or missing instruments.
@@ -359,8 +362,8 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
                        if not i.maturity and (i.outstanding and (i.outstanding.value or 0) > 0)]
         if missing_mat:
             warnings.append(
-                f"Maturity unknown for {len(missing_mat)} instrument(s) "
-                f"({', '.join(missing_mat[:6])}) — they are missing from the maturity wall."
+                f"Maturity unknown for {fmt_count(len(missing_mat), 'instrument')} "
+                f"({', '.join(missing_mat[:6])}) — missing from the maturity wall."
             )
     else:
         empty_warning = _empty_schedule_warning(debt_schedule, series)
@@ -418,14 +421,17 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
                     covenants.append(pkg)
                     clause_texts.append((pkg, clause))
             if n_cov_dropped:
-                warnings.append(f"{n_cov_dropped} covenant quote(s) not found verbatim in the "
-                                "agreement text; their values are kept, the quotes dropped.")
+                warnings.append(
+                    f"{fmt_count(n_cov_dropped, 'covenant quote')} not found verbatim in the "
+                    "agreement text; "
+                    + ("its value is kept, the quote dropped." if n_cov_dropped == 1
+                       else "their values are kept, the quotes dropped."))
             if clause_texts:
                 with session_scope() as session:
                     persist_covenants(session, ticker, clause_texts)
             progress.emit(
-                f"Extracted {len(covenants)} covenant package(s) from "
-                f"{len(credit_docs)} credit document(s).", step="covenants", pct=92,
+                f"Extracted {fmt_count(len(covenants), 'covenant package')} from "
+                f"{fmt_count(len(credit_docs), 'credit document')}.", step="covenants", pct=92,
             )
         except Exception as exc:
             warnings.append(f"Covenant step failed: {exc}")
@@ -465,7 +471,8 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
         if mdna_periods:
             with session_scope() as session:
                 persist_mdna(session, ticker, mdna_periods)
-        progress.emit(f"Stored MD&A for {len(mdna_periods)} period(s).", step="mdna", pct=98)
+        progress.emit(f"Stored MD&A for {fmt_count(len(mdna_periods), 'period')}.", step="mdna",
+                      pct=98)
     except Exception as exc:
         warnings.append(f"MD&A step failed: {exc}")
         progress.emit(f"MD&A step failed: {exc}", step="mdna", pct=98)
