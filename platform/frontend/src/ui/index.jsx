@@ -1,5 +1,5 @@
 // The app's single set of presentational primitives: cards, sections, badges,
-// stats, table cells, gauge, formatters. Every page composes these — no page
+// stats, table cells, formatters. Every page composes these — no page
 // defines its own card/section/badge styles.
 import React, { useMemo, useState } from "react";
 import { ACCENT, INK, NEUTRAL, RISK } from "./colors.js";
@@ -334,9 +334,6 @@ export function Td({ right = false, mono = false, className = "", children }) {
   );
 }
 
-/* ---------- gauge ---------- */
-
-// Semicircular gauge for the 0-100 overall risk score.
 // ---- dense form primitives shared by the Recovery tool cards ----------------------
 // (one definition — these were copy-pasted per component before the consolidation)
 
@@ -380,49 +377,5 @@ export function TextCell({ value, onChange, className = "" }) {
       onChange={(e) => onChange(e.target.value)}
       className={`w-full rounded border border-ink-600 bg-ink-800 px-2 py-1 text-xs text-slate-100 outline-none focus:border-accent ${className}`}
     />
-  );
-}
-
-export function Gauge({ value, size = 150 }) {
-  const v = value == null ? null : Math.max(0, Math.min(100, value));
-  const r = size / 2 - 12;
-  const cx = size / 2;
-  const cy = size / 2 + 4;
-  const polar = (deg) => {
-    const a = (Math.PI * (180 - deg)) / 180;
-    return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
-  };
-  const arc = (from, to, color, w) => {
-    const [x1, y1] = polar(from);
-    const [x2, y2] = polar(to);
-    const large = to - from > 180 ? 1 : 0;
-    return (
-      <path
-        d={`M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`}
-        fill="none"
-        stroke={color}
-        strokeWidth={w}
-        strokeLinecap="round"
-      />
-    );
-  };
-  const needleDeg = v == null ? 90 : (v / 100) * 180;
-  const [nx, ny] = polar(needleDeg);
-  return (
-    <svg width={size} height={size * 0.62} viewBox={`0 0 ${size} ${size * 0.62}`}>
-      {arc(0, 60, RISK.ok, 10)}
-      {arc(60, 120, RISK.watch, 10)}
-      {arc(120, 180, RISK.high, 10)}
-      {v != null && (
-        <>
-          <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#e5e9f0" strokeWidth={2.5} />
-          <circle cx={cx} cy={cy} r={4} fill="#e5e9f0" />
-        </>
-      )}
-      <text x={cx} y={cy - 6} textAnchor="middle" className="fill-slate-100"
-        style={{ fontSize: 22, fontWeight: 700 }}>
-        {v == null ? "—" : Math.round(v)}
-      </text>
-    </svg>
   );
 }
