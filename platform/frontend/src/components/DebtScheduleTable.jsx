@@ -53,6 +53,7 @@ export default function DebtScheduleTable({ instruments, asOf, reported, reporte
 
   const hasObligor = instruments.some((d) => d.obligor);
   const hasCapacity = instruments.some((d) => d.commitment || d.undrawn);
+  const hasLien = instruments.some((d) => d.secured != null || d.seniority);
   const amounts = projected.filter((d) => d._out != null);
   const total = amounts.reduce((s, d) => s + d._out, 0);
   const totalCv = {
@@ -60,7 +61,7 @@ export default function DebtScheduleTable({ instruments, asOf, reported, reporte
     formula: `Σ outstanding of the ${amounts.length} instruments with a reported amount`,
   };
   const gap = reported?.value != null ? total - reported.value : null;
-  const colSpanRest = 3 + (hasCapacity ? 1 : 0) + (hasObligor ? 1 : 0);
+  const colSpanRest = 2 + (hasLien ? 1 : 0) + (hasCapacity ? 1 : 0) + (hasObligor ? 1 : 0);
 
   return (
     <div>
@@ -73,7 +74,7 @@ export default function DebtScheduleTable({ instruments, asOf, reported, reporte
               {hasCapacity && <Th right>Undrawn / commitment</Th>}
               <Th>Coupon</Th>
               <Th {...thProps("_mat")}>Maturity</Th>
-              <Th>Lien / seniority</Th>
+              {hasLien && <Th>Lien / seniority</Th>}
               {hasObligor && <Th>Obligor</Th>}
             </tr>
           </thead>
@@ -115,14 +116,16 @@ export default function DebtScheduleTable({ instruments, asOf, reported, reporte
                   title={d.maturity ? undefined : "maturity not disclosed in the filing"}>
                   {d.maturity || "n/d"}
                 </Td>
-                <Td className="text-[12px]">
-                  {d.secured != null && (
-                    <Badge tone={d.secured ? "ok" : "neutral"} className="mr-2">
-                      {d.secured ? "secured" : "unsecured"}
-                    </Badge>
-                  )}
-                  <span className="text-slate-400">{d.seniority || ""}</span>
-                </Td>
+                {hasLien && (
+                  <Td className="text-[12px]">
+                    {d.secured != null && (
+                      <Badge tone={d.secured ? "ok" : "neutral"} className="mr-2">
+                        {d.secured ? "secured" : "unsecured"}
+                      </Badge>
+                    )}
+                    <span className="text-slate-400">{d.seniority || ""}</span>
+                  </Td>
+                )}
                 {hasObligor && (
                   <Td className="text-[12px] text-slate-400">{d.obligor || "—"}</Td>
                 )}
