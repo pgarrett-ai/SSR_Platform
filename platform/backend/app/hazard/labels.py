@@ -130,6 +130,16 @@ def harvest_default_events(start_year: int, end_year: int) -> list[dict]:
     return sorted(events.values(), key=lambda e: e["filed"])
 
 
+def all_defaulter_ciks() -> set[str]:
+    """Every CIK in either event file, any date. Controls must exclude all of them: a firm that
+    defaulted before the window would otherwise be sampled as a survivor."""
+    ciks: set[str] = set()
+    for path in (EVENTS_PATH, SD_PATH):
+        if path.exists():
+            ciks |= {e["cik"] for e in json.loads(path.read_text(encoding="utf-8"))}
+    return ciks
+
+
 def load_or_harvest_events(start_year: int = 2015, end_year: Optional[int] = None) -> list[dict]:
     lo, hi = start_year, end_year or dt.date.today().year
     if EVENTS_PATH.exists():
@@ -482,9 +492,9 @@ def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: in
             if used_defaulters % 20 == 0:
                 print(f"  defaulters: {used_defaulters}/{n_defaulters}")
 
-    # every harvested defaulter is in the point-in-time universe by construction — exclude
-    # them ALL from controls (not just the n used), or pre-petition years get labeled 0
-    event_ciks = {e["cik"] for e in events}
+    # every harvested defaulter, in or out of the window, is excluded from controls (not just
+    # the n used), or pre-petition years get labeled 0
+    event_ciks = {e["cik"] for e in events} | all_defaulter_ciks()
     universe = load_or_harvest_universe(start_year, today.year)
     ciks = list(universe)
     random.Random(seed).shuffle(ciks)
@@ -525,7 +535,7 @@ def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: in
 if __name__ == "__main__":
     import argparse
 
-    from .train import train_from_panel
+    from .train import drop_unobserved, train_from_panel
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--defaulters", type=int, default=120)
@@ -549,19 +559,21 @@ if __name__ == "__main__":
                           start_year=args.start_year)
 
     print("3/3 walk-forward training…")
+    observed_through = events[-1]["filed"]
+    df = drop_unobserved(df, observed_through)   # before sample_rate: the prior uses it
     universe = load_or_harvest_universe(args.start_year)
     true_rate = annual_default_rate(events, universe)
     sample_rate = float(df["label"].mean())
     print(f"   base rate: {true_rate:.4%}/yr measured vs {sample_rate:.2%} in-sample "
           f"-> prior correction stored in bundle")
-    label_kind = ("8-K Item 1.03 + 17g-7 rating defaults (Fitch D/RD, Moody's C)"
-                  if SD_PATH.exists() else "8-K Item 1.03 harvest")
+    label_kind = ("8-K Item 1.03 + UCLA-LoPucki BRD + 17g-7 rating defaults "
+                  "(Fitch D/RD, Moody's C)" if SD_PATH.exists() else "8-K Item 1.03 harvest")
     label_source = (f"{label_kind} {args.start_year}–{events[-1]['filed'][:4]} "
                     f"({int(df['label'].sum())} default firm-years / {len(df)} rows; "
                     f"controls from point-in-time 10-K filer universe "
                     f"{args.start_year}–{dt.date.today().year}, non-bankruptcy exits "
                     f"censored; PD prior-corrected to {true_rate:.2%}/yr base rate)")
-    aucs, bundle = train_from_panel(df, save=True, meta={
+    aucs, bundle = train_from_panel(df, save=True, observed_through=observed_through, meta={
         "label_source": label_source,
         "prior": {"sample_rate": sample_rate, "true_rate": true_rate}})
     print("walk-forward AUC by test year:")

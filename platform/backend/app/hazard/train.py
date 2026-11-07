@@ -47,17 +47,19 @@ MONOTONE = {"leverage": 1, "net_debt_to_ebitda": 1, "ebitda_nonpositive": 1,
             "size_log_assets": -1, "runway_years": -1}
 
 # Debt/EBITDA is undefined (NaN) at EBITDA <= 0, and a tree may route NaN to the safe side of
-# a split. Pinning those rows at a ceiling no real ratio exceeds (ratios are clipped to it)
-# puts them under the +1 constraint.
+# a split. Pinning those rows at a ceiling no real ratio exceeds puts them under the +1
+# constraint. Net cash (a negative ratio) reads as zero leverage: otherwise the ratio heads to
+# -inf as EBITDA falls toward zero and the constraint would lower PD as the firm weakens.
 ND_EBITDA_CEILING = 1e3
-_ND = TRAIN_FEATURES.index("net_debt_to_ebitda")
-_FLAG = TRAIN_FEATURES.index("ebitda_nonpositive")
+# a default with no 10-K for 90 days after FYE drops the row; the horizon then runs a year
+LABEL_WINDOW_DAYS = 90 + 365
+MIN_TEST_DEFAULTS = 5           # fewer defaults than this in a test year: no AUC reported
 
 
-def _pin_nonpositive_ebitda(X: np.ndarray) -> np.ndarray:
+def _pin_nonpositive_ebitda(X: np.ndarray, nd: int, flag: int) -> np.ndarray:
     X = np.array(X, dtype=float)
-    X[:, _ND] = np.where(X[:, _FLAG] == 1, ND_EBITDA_CEILING,
-                         np.minimum(X[:, _ND], ND_EBITDA_CEILING))
+    X[:, nd] = np.where(X[:, flag] == 1, ND_EBITDA_CEILING,
+                        np.clip(X[:, nd], 0.0, ND_EBITDA_CEILING))
     return X
 
 
@@ -82,7 +84,20 @@ def _fit(X: np.ndarray, y: np.ndarray):
     hgb = HistGradientBoostingClassifier(
         monotonic_cst=[MONOTONE[f] for f in TRAIN_FEATURES],   # native NaN handling, scale-free
         learning_rate=0.05, max_depth=3, max_iter=300, l2_regularization=1.0, random_state=0)
-    return make_pipeline(FunctionTransformer(_pin_nonpositive_ebitda), hgb).fit(X, y)
+    # column indices travel with the pickled bundle, not module globals
+    pin = FunctionTransformer(_pin_nonpositive_ebitda, kw_args={
+        "nd": TRAIN_FEATURES.index("net_debt_to_ebitda"),
+        "flag": TRAIN_FEATURES.index("ebitda_nonpositive")})
+    return make_pipeline(pin, hgb).fit(X, y)
+
+
+def drop_unobserved(df: pd.DataFrame, observed_through) -> pd.DataFrame:
+    """Survivor rows whose label window ends after the last date the event sources cover
+    were never observed surviving; training them as 0 teaches the model a false negative."""
+    if observed_through is None:
+        return df
+    window_end = pd.to_datetime(df["date"]) + dt.timedelta(days=LABEL_WINDOW_DAYS)
+    return df[~((df["label"] == 0) & (window_end > pd.Timestamp(observed_through)))]
 
 
 def walk_forward_eval(df: pd.DataFrame) -> dict:
@@ -99,7 +114,7 @@ def walk_forward_eval(df: pd.DataFrame) -> dict:
         # within a year of the test year would train on test-period defaults
         cutoff = pd.Timestamp(int(split), 1, 1) - dt.timedelta(days=365)
         tr, te = df[dates < cutoff], df[yr == split]
-        if te["label"].nunique() < 2 or len(tr) < 50:
+        if te["label"].sum() < MIN_TEST_DEFAULTS or te["label"].nunique() < 2 or len(tr) < 50:
             continue
         model = _fit(_matrix(tr), tr["label"].to_numpy())
         p = model.predict_proba(_matrix(te))[:, 1]
@@ -134,15 +149,20 @@ def walk_forward_eval(df: pd.DataFrame) -> dict:
     return out
 
 
-def train_from_panel(df: pd.DataFrame, save: bool = True, meta: dict | None = None):
+def train_from_panel(df: pd.DataFrame, save: bool = True, meta: dict | None = None,
+                     observed_through=None):
     """Walk-forward evaluate, then fit a final model on all rows for serving. Returns (aucs, bundle).
-    `meta` (e.g. label_source provenance) is merged into the bundle for the UI to display."""
+    `meta` (e.g. label_source provenance) is merged into the bundle for the UI to display;
+    `observed_through` (last date the default sources cover) drops unobserved survivor rows."""
+    df = drop_unobserved(df, observed_through)
     evaluation = walk_forward_eval(df)
     aucs = evaluation["auc_by_year"]
     model = _fit(_matrix(df), df["label"].to_numpy())
     bundle = {"model": model, "features": TRAIN_FEATURES, "monotone": MONOTONE,
               "trained_at": dt.datetime.now().isoformat(), "n_rows": int(len(df)),
-              "walk_forward_auc": aucs, "eval": evaluation, **(meta or {})}
+              "walk_forward_auc": aucs, "eval": evaluation,
+              "observed_through": str(observed_through) if observed_through else None,
+              **(meta or {})}
     if save:
         MODEL_DIR.mkdir(parents=True, exist_ok=True)
         import joblib

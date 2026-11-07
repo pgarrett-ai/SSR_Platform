@@ -5,6 +5,7 @@ from functools import lru_cache
 from types import SimpleNamespace
 
 import numpy as np
+import pandas as pd
 
 from app.hazard import train
 from app.hazard.score import TrainedHazardScorer
@@ -66,3 +67,24 @@ def test_walk_forward_embargo_drops_the_year_before_each_test_year(monkeypatch):
     # 2017 has no fiscal year a full year back; 2018 trains on FY2016 alone, 2019 on FY2016-17
     assert sorted(ev["auc_by_year"]) == [2018, 2019]
     assert fits == [200, 400]
+
+
+def test_net_cash_reads_as_zero_leverage_and_nonpositive_ebitda_as_the_ceiling():
+    # net cash against shrinking EBITDA sends debt/EBITDA to -inf, which the +1 constraint
+    # would read as ever-safer; it is pinned at 0, and EBITDA <= 0 above every real ratio
+    nd, flag = (train.TRAIN_FEATURES.index(c) for c in ("net_debt_to_ebitda", "ebitda_nonpositive"))
+    X = np.full((4, len(train.TRAIN_FEATURES)), np.nan)
+    X[:, nd] = [-100.0, 4.0, np.nan, np.nan]
+    X[:, flag] = [0.0, 0.0, 1.0, np.nan]
+    out = train._pin_nonpositive_ebitda(X, nd, flag)[:, nd]
+    assert out[0] == 0.0 and out[1] == 4.0 and out[2] == train.ND_EBITDA_CEILING
+    assert np.isnan(out[3])                           # missing stays missing
+
+
+def test_unobserved_survivor_rows_are_dropped():
+    df = pd.DataFrame({"date": ["2023-12-31", "2025-12-31", "2025-12-31"],
+                       "label": [0, 0, 1]})
+    kept = train.drop_unobserved(df, "2026-06-30")
+    # FY2025's window runs to 2027-03; a survivor there was never observed, a default was
+    assert kept["date"].tolist() == ["2023-12-31", "2025-12-31"]
+    assert kept["label"].tolist() == [0, 1]

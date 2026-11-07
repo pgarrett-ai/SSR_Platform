@@ -325,3 +325,29 @@ def test_fts_429_truncates_without_outer_retries(monkeypatch, capsys):
     assert len(calls) == 4          # ONE attempt per quarter window, no outer retries
     assert sleeps == []             # zero outer backoff sleeps stacked on paced_get's
     assert "window truncated" in capsys.readouterr().out
+
+
+def test_pre_window_defaulter_is_never_a_control(tmp_path, monkeypatch):
+    # CIK 5 defaulted in 2005 (LoPucki): outside the 2015+ label window, but its later
+    # survivor-looking years must not enter the panel as controls
+    ev_path, sd_path = tmp_path / "ev.json", tmp_path / "sd.json"
+    ev_path.write_text(json.dumps([{"cik": "1", "name": "A", "filed": "2020-06-01"}]))
+    sd_path.write_text(json.dumps([{"cik": "5", "name": "E", "filed": "2005-03-01",
+                                    "source": "lopucki_brd"}]))
+    monkeypatch.setattr(labels, "EVENTS_PATH", ev_path)
+    monkeypatch.setattr(labels, "SD_PATH", sd_path)
+    monkeypatch.setattr(labels, "PANEL_DB", tmp_path / "panel.db")
+    fetched = []
+
+    def fake_fetch(cik, event_date, lookback, horizon_days):
+        fetched.append(cik)
+        return [{"firm_id": cik, "date": "2019-12-31", "label": 1 if event_date else 0},
+                {"firm_id": cik, "date": "2018-12-31", "label": 0}]
+
+    monkeypatch.setattr(labels, "_fetch_firm_rows", fake_fetch)
+    monkeypatch.setattr(labels, "load_or_harvest_universe",
+                        lambda *a, **k: {"5": [2015, 2026], "2": [2015, 2026]})
+    events = labels.load_or_harvest_events(2015)
+    assert [e["cik"] for e in events] == ["1"]          # the 2005 case is out of window
+    labels.build_real_panel(events, n_defaulters=1, n_controls=2, start_year=2015)
+    assert "5" not in fetched and "2" in fetched
