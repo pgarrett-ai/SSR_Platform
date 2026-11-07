@@ -138,3 +138,24 @@ def test_shouting_cover_page_date_reads_in_title_case():
     shouting = BASE_CA.replace("June 27, 2013", "JULY 6, 2026")
     fam = group_families([_doc(shouting)])[0]
     assert fam.label == "Credit agreement dated July 6, 2026"
+
+
+def test_commentary_strip_keeps_the_facts_that_share_its_sentence():
+    from app.capstack.covenants import _party, _strip_commentary as strip
+    # statements about the agreement itself are facts, not narration
+    for fact in ("The indenture does not include a lien covenant or a debt-incurrence covenant.",
+                 "Leverage not to exceed 4.50:1.00, not included in the calculation are "
+                 "Unrestricted Subsidiaries.",
+                 "The indenture permits Additional Notes but contains no debt-incurrence "
+                 "covenant or ratio test."):
+        assert strip(fact) == fact
+    assert strip("4.50:1.00 — the definitions are not reproduced in the excerpt") == "4.50:1.00"
+    assert strip("Quarterly, but the test date is not in the provided text") == "Quarterly"
+    assert strip("Not addressed.") is None
+    # real agent strings from the hero filings keep the institution
+    assert _party("Lenders party thereto from time to time, JPMorgan Chase Bank, N.A.") ==         "JPMorgan Chase Bank, N.A."
+    assert _party("Lenders from time to time party thereto, Goldman Sachs Bank USA") ==         "Goldman Sachs Bank USA"
+    assert _party("THE GUARANTORS PARTY HERETO, as Guarantors, THE BANK OF NEW YORK MELLON") ==         "THE BANK OF NEW YORK MELLON"
+    assert _party("Lenders party hereto. RECITALS A. , DEUTSCHE BANK AG NEW YORK BRANCH") ==         "DEUTSCHE BANK AG NEW YORK BRANCH"
+    assert _party("JPMorgan Chase Bank, N.A., as administrative agent for the lenders party "
+                  "hereto") == "JPMorgan Chase Bank, N.A."

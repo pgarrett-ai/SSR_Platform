@@ -288,26 +288,33 @@ def _as_list(v) -> list:
 
 
 # The extractor sometimes narrates its input ("not stated in the provided text") instead of
-# returning null. That is not a covenant fact, so such clauses are dropped when a package is
-# built — cached extractions included, without re-calling the model.
+# returning null. Only text that refers to the source document is removed, so a covenant fact
+# that shares a sentence with the narration survives; cached extractions are cleaned the same
+# way when a package is built, without re-calling the model.
 _COMMENTARY_RE = re.compile(
-    r"\bprovided (?:text|excerpts?)\b|\bexcerpt(?:s|ed)?\b|\bin this text\b"
-    r"|\bnot (?:stated|specified|included|reproduced|named|identified|quoted|set out|"
-    r"determinable)\b|\bdoes not (?:set out|reproduce|include|state|specify|enumerate)\b",
-    re.IGNORECASE)
+    r"\b(?:provided|supplied) (?:text|excerpts?|clauses|language|sections?)\b"
+    r"|\bexcerpt(?:s|ed)?\b|\bin (?:the|this) text(?: provided)?\b|\bprovided in the text\b"
+    r"|\bnot reproduced\b", re.IGNORECASE)
+_EMPTY_VALUE_RE = re.compile(
+    r"^\s*(?:not (?:stated|specified|quantified|addressed|identified|determinable)"
+    r"|none (?:stated|specified))\.?\s*$", re.IGNORECASE)
 _PAREN_RE = re.compile(r"\s*\(([^()]*)\)")
-# Party "names" that are boilerplate, not an institution: a bare entity suffix, a role or a
-# class of parties ("the Guarantors", "Lenders party thereto from time to time").
+# Party names arrive wrapped in boilerplate ("Lenders party thereto from time to time,
+# JPMorgan Chase Bank, N.A."): keep the institution after the last boilerplate marker.
+_PARTY_MARKER = r"(?:party (?:hereto|thereto)|from time to time|recitals|as guarantors?)"
+_PARTY_LEAD_RE = re.compile(rf"^.*\b{_PARTY_MARKER}\b[^,]*,\s*", re.IGNORECASE)
+_PARTY_ROLE_RE = re.compile(r",?\s+as (?:the )?(?:administrative |collateral |security )?"
+                            r"(?:agent|trustee)\b.*$", re.IGNORECASE)
 _BOILERPLATE_PARTY_RE = re.compile(
     r"^(?:the\s+)?(?:llc|inc|n\.?a|ltd|l\.?p|plc|corp|company|guarantors?|lenders?|borrowers?"
-    r"|(?:administrative |collateral |security )?(?:agent|trustee)s?)\.?$"
-    r"|\bparty (?:hereto|thereto)\b|\bfrom time to time\b", re.IGNORECASE)
+    rf"|(?:administrative |collateral |security )?(?:agent|trustee)s?)\.?$|\b{_PARTY_MARKER}\b",
+    re.IGNORECASE)
 
 
 def _clauses(v: str) -> list[str]:
     """Split after '.' or ';' (a closing quote may follow) outside parentheses, never after
-    an initial ("J. Crew", "N.A."), and before ', but' / ', though' — "X is defined, but
-    the baskets are not in the excerpt" keeps X."""
+    an initial ("J. Crew", "N.A."), at a dash, and before 'but' / 'though' / 'although' —
+    "X is defined, but the baskets are not in the excerpt" keeps X."""
     parts, start, depth = [], 0, 0
     for i, ch in enumerate(v):
         depth += (ch == "(") - (ch == ")")
@@ -318,28 +325,37 @@ def _clauses(v: str) -> list[str]:
             start = j
     parts.append(v[start:])
     return [c.strip() for p in parts
-            for c in re.split(r"(?<=,)\s+(?=(?:but|though|although)\b)", p) if c.strip()]
+            for c in re.split(r"\s+[—–]\s+|,?\s+(?=(?:but|though|although)\b)", p)
+            if c.strip()]
 
 
 def _strip_commentary(v):
-    """A string value minus every parenthetical and clause that comments on the source
-    text; None when nothing factual is left. Other values pass through untouched."""
-    if not isinstance(v, str) or not _COMMENTARY_RE.search(v):
+    """A string value minus the parentheticals and clauses that comment on the source text;
+    None when it is only that (or a bare "Not stated"). Other values pass through."""
+    if not isinstance(v, str):
+        return v
+    if _EMPTY_VALUE_RE.match(_PAREN_RE.sub("", v)):
+        return None
+    if not _COMMENTARY_RE.search(v):
         return v
     v = _PAREN_RE.sub(lambda m: "" if _COMMENTARY_RE.search(m.group(1)) else m.group(0), v)
     kept = " ".join(c for c in _clauses(v) if not _COMMENTARY_RE.search(c))
-    kept = re.sub(r"^(?:however|instead|but),?\s+", "", kept.strip(" ;,—"), flags=re.I)
-    if kept and v.rstrip().endswith(".") and kept[-1] not in ".\"'”":
+    kept = re.sub(r"^(?:however|instead|but|though|although),?\s+", "", kept.strip(" ;,—–"),
+                  flags=re.I)
+    if not kept or _EMPTY_VALUE_RE.match(kept):
+        return None
+    if v.rstrip().endswith(".") and kept[-1] not in ".\"'”":
         kept += "."   # a sentence cut short keeps its full stop
-    return kept[:1].upper() + kept[1:] or None
+    return kept[:1].upper() + kept[1:]
 
 
 def _party(v) -> Optional[str]:
-    """An agent/trustee name, or None when it is commentary or boilerplate."""
-    if not isinstance(v, str) or _COMMENTARY_RE.search(v):
+    """An agent/trustee name with boilerplate stripped, or None when no institution is named."""
+    if not isinstance(v, str):
         return None
-    v = v.strip(" ,;")
-    return None if not v or _BOILERPLATE_PARTY_RE.search(v) else v
+    v = _PAREN_RE.sub(lambda m: "" if _COMMENTARY_RE.search(m.group(1)) else m.group(0), v)
+    v = _PARTY_ROLE_RE.sub("", _PARTY_LEAD_RE.sub("", v)).strip(" ,;")
+    return None if not v or _COMMENTARY_RE.search(v) or _BOILERPLATE_PARTY_RE.search(v) else v
 
 
 def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optional[str],
