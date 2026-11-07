@@ -68,6 +68,17 @@ def _classify(head: str) -> Optional[str]:
     return None
 
 
+def _exhibit_text(attachment) -> Optional[str]:
+    """The exhibit as text. Agreements underline their defined terms and cross-references,
+    and the HTML parser drops text inside <u>, so underline is rendered as a plain span."""
+    content = attachment.content
+    if isinstance(content, str) and "<" in content:
+        from edgar import Document
+        from edgar.richtools import rich_to_text
+        return rich_to_text(Document.parse(re.sub(r"<(/?)u\b", r"<\1span", content, flags=re.I)))
+    return attachment.text()
+
+
 def find_credit_documents(company, years: int, max_check: int = 40,
                           max_keep: int = 24) -> list[CreditDoc]:
     """Fetch + content-classify candidate EX-10.x/EX-4.x exhibits; keep the best credit docs."""
@@ -107,7 +118,7 @@ def find_credit_documents(company, years: int, max_check: int = 40,
             break
         checked += 1
         try:
-            text = a.text()
+            text = _exhibit_text(a)
         except Exception:
             continue
         if not isinstance(text, str) or len(text) < 4000:
@@ -132,7 +143,7 @@ def find_credit_documents(company, years: int, max_check: int = 40,
 # --- LLM extraction ----------------------------------------------------------
 
 # bump to re-extract every doc; _strip_commentary already cleans cached results on read
-_PROMPT_VERSION = "v2"
+_PROMPT_VERSION = "v3"
 
 _SYSTEM = (
     "You are a distressed-credit lawyer-analyst reading a credit agreement or indenture. You extract "
@@ -372,7 +383,7 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
     def verbatim(quote: Optional[str]) -> Optional[str]:
         """Checked against the agreement itself, so cached extractions are checked too: a
         quote the text does not contain is dropped, never shown as verbatim; its fact stays."""
-        if quote and not quote_in_text(quote, doc.text):
+        if quote and not quote_in_text(quote, doc.text, list_labels=True):
             dropped[0] += 1
             return None
         return quote

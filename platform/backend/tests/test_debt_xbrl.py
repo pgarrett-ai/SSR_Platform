@@ -341,3 +341,14 @@ def test_zero_carrying_column_does_not_beat_a_compromise_amount():
     carrying = {"concept": "us-gaap:LongTermDebt", "numeric_value": 440.2e6}
     assert max([zero, lstc], key=_pick_key) is lstc
     assert max([lstc, carrying], key=_pick_key) is carrying
+
+
+def test_caption_rule_keeps_instruments_that_mention_current_portion():
+    from app.capstack.debt_schedule import is_caption
+    assert is_caption("Total debt") and is_caption("Less: current maturities")
+    assert is_caption("Long-term debt, net of current maturities")
+    assert is_caption("Debt (current portion, aggregate balance-sheet line)")
+    # real instruments carry a coupon or a maturity even when their name has the hint words
+    assert not is_caption("Term Loan B, including current portion", maturity="2027")
+    assert not is_caption("6.00% Senior Notes due 2030 ($500 million aggregate principal)",
+                          coupon="6.00%", maturity="2030")

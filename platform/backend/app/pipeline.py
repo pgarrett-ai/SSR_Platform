@@ -18,7 +18,7 @@ from .capstack.covenants import extract_covenant_package, find_credit_documents
 from .core.cache import (is_hero, load_latest_overview, load_overview, save_overview,
                          single_flight)
 from .capstack.debt_schedule import (annotate_maturities, drop_retired,
-                                     extract_debt_schedule, fill_maturity_from_name)
+                                     extract_debt_schedule, fill_maturity_from_name, is_caption)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
 from .capstack.forensic import (build_asset_snapshot, build_forensic_table, detect_flags,
                                 ltm_ebitda, quarter_forensic_row, total_debt, ttm_view)
@@ -510,7 +510,9 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
             obs_items = obs_items or prior.obs_items
             covenants = covenants or prior.covenants
             subsidiaries = subsidiaries or prior.subsidiaries
-            debt_schedule = debt_schedule or prior.debt_schedule
+            debt_schedule = debt_schedule or [
+                d for d in prior.debt_schedule
+                if d.xbrl_member or not is_caption(d.instrument, d.coupon, d.maturity)]
         else:
             llm_fallback_note = "LLM analysis is off — re-enable to analyze."
         warnings.append(llm_fallback_note)

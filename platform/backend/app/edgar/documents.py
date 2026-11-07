@@ -21,11 +21,16 @@ _QUOTE_FOLD = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "�
 _QUOTE_DROP = re.compile(r"\"|(?<!\w)'|'(?!\w)|[\s|\u2500-\u257f\xad\u200b]+")
 # Hanging-indent list items render as two columns, so a clause label can land mid-sentence
 # ("excluded\n  (h)  from the definition"); the label is the line's first token, then a gap.
-_COLUMN_LABEL = re.compile(r"^[ \t]*(?:\(\w{1,5}\)|\w{1,5}\.)(?=[ \t]{2,}\S)", re.M)
+_COLUMN_LABEL = re.compile(
+    r"^[ \t]*(?:\((?:[a-z]{1,4}|[ivxlc]{1,6}|[A-Z]|\d{1,2})\)"
+    r"|(?:[a-z]{1,2}|[ivxlc]{1,6}|[A-Z]{1,4}|\d{1,2})\.)(?=[ \t]{2,}\S)", re.M)
+# Whitespace between two digits separates two numbers ("2.2 4" is not "2.24"): keep a marker.
+_DIGIT_GAP = re.compile(r"(?<=\d)[\s|\u2500-\u257f\xad\u200b]+(?=\d)")
 
 
 def _fold(s: str) -> str:
-    return _QUOTE_DROP.sub("", s.translate(_QUOTE_FOLD)).lower()
+    s = _DIGIT_GAP.sub("\x00", s.translate(_QUOTE_FOLD))
+    return _QUOTE_DROP.sub("", s).lower()
 
 
 def _in_order(frags: list[str], t: str) -> bool:
@@ -38,17 +43,18 @@ def _in_order(frags: list[str], t: str) -> bool:
     return True
 
 
-def quote_in_text(quote: Optional[str], text: Optional[str]) -> bool:
+def quote_in_text(quote: Optional[str], text: Optional[str], list_labels: bool = False) -> bool:
     """Is an LLM's 'verbatim' quote really in the text it read? Case, curly quotes/dashes,
     quotation marks, whitespace and table rules are folded away, so the words, digits and
-    other punctuation must match exactly; a clause label the text renders mid-sentence may be
-    read through; a spliced quote ('A ... B') must match as fragments in order. An empty
+    other punctuation must match exactly; with list_labels (legal agreements), a clause label
+    the text renders mid-sentence may be read through; a spliced quote ('A ... B') must match as fragments in order. An empty
     quote is never found."""
     frags = [f.strip(".,;:") for f in re.split(r"\.\.\.|…", _fold(quote or ""))]
     frags = [f for f in frags if f]
     text = text or ""
     return bool(frags) and (_in_order(frags, _fold(text))
-                            or _in_order(frags, _fold(_COLUMN_LABEL.sub("", text))))
+                            or (list_labels
+                                and _in_order(frags, _fold(_COLUMN_LABEL.sub("", text)))))
 
 
 # Topic keywords used to route footnote text to the OBS extractor.

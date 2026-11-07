@@ -8,6 +8,7 @@ debt, with deterministic post-filters (`drop_retired`) on top.
 """
 from __future__ import annotations
 
+import logging
 import re
 from typing import Optional
 
@@ -28,9 +29,24 @@ _SYSTEM = (
 
 # Balance-sheet captions and subtotals that are never instruments: 'Total debt', 'Debt
 # (current portion)', 'Long-term debt, net of current maturities', 'Less: current maturities'.
-_AGGREGATE_RE = re.compile(
-    r"^\s*(?:less\b|total\b|(?:long|short)[- ]term debt\b|debt\b)"
-    r"|\baggregate\b|\bcurrent (?:portion|maturities)\b|\bnet of current\b", re.I)
+log = logging.getLogger(__name__)
+
+_CAPTION_RE = re.compile(
+    r"^\s*(?:less\b|total\b|sub-?totals?\b|(?:long|short)[- ]term debt\b|debt\b"
+    r"|current (?:portion|maturities)\b)", re.I)
+# Words that also appear in real instrument names ("Term Loan B, including current portion",
+# "6.00% Notes ($500 million aggregate principal)"): only a row without a coupon or a
+# maturity, which a caption never carries, is treated as an aggregate.
+_AGGREGATE_HINT_RE = re.compile(
+    r"\baggregate\b|\bcurrent (?:portion|maturities)\b|\bnet of current\b|\bsub-?totals?\b",
+    re.I)
+
+
+def is_caption(name: str, coupon=None, maturity=None) -> bool:
+    """A balance-sheet caption or subtotal, not an instrument."""
+    name = name or ""
+    return bool(_CAPTION_RE.search(name)
+                or (_AGGREGATE_HINT_RE.search(name) and not coupon and not maturity))
 
 _TOOL_DESCRIPTION = (
     "Record each debt instrument / facility in the issuer's capital structure. Convert amounts to "
@@ -92,8 +108,10 @@ def extract_debt_schedule(ft: FilingText) -> tuple[list[DebtInstrument], Optiona
 
     out: list[DebtInstrument] = []
     for raw in result.get("instruments", []):
-        if _AGGREGATE_RE.search(raw.get("instrument") or ""):
-            continue   # an aggregate line as a cap-table row would hide the missing detail
+        if is_caption(raw.get("instrument"), raw.get("coupon"), raw.get("maturity")):
+            # an aggregate line as a cap-table row would hide the missing detail
+            log.warning("debt schedule: dropped caption row %r", raw.get("instrument"))
+            continue
         citation = Citation(
             accession_no=ft.accession_no,
             form_type=ft.form_type,

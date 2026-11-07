@@ -117,10 +117,20 @@ def test_quote_in_text_reads_through_a_clause_label_set_in_the_hanging_indent_co
             "  (h)  from the definition                                                     \n"
             "       of Restricted Payment and the making of any Permitted Payment")
     assert quote_in_text("to be made under Section 6.05, any transaction specifically excluded "
-                         "from the definition of Restricted Payment", text)
+                         "from the definition of Restricted Payment", text, list_labels=True)
     assert quote_in_text("consenting to this Amendment in accordance with Section 9(b)",
                          "         the written consent of Alter Domus (US) LLC consenting to this  \n"
-                         "  ii.    Amendment in accordance with Section 9(b) of the 2023 Incremental\n")
+                         "  ii.    Amendment in accordance with Section 9(b) of the 2023 Incremental\n",
+                         list_labels=True)
     # a label inside running text is the agreement's own wording
     assert not quote_in_text("specifically excluded from the definition",
                              "specifically excluded (h) from the definition")
+
+
+def test_quote_check_keeps_separate_numbers_separate():
+    from app.edgar.documents import quote_in_text
+    assert not quote_in_text("Section 2.24", "pursuant to Section 2.2 4 hereof")
+    assert not quote_in_text("$15 million", "a fee of $1 5 million")
+    assert quote_in_text("Section 2.24", "pursuant to Section\n2.24 hereof")
+    # a number in a table's first column is not a clause label to read through
+    assert not quote_in_text("discount (50)", "discount\n   (45)   (50)")
