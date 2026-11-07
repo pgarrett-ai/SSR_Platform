@@ -4,20 +4,31 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 
 from .config import get_settings
 
 _settings = get_settings()
 
-# check_same_thread=False so FastAPI's threadpool can share the engine; SQLite is fine for MVP.
+_SQLITE = _settings.database_url.startswith("sqlite")
+
+# check_same_thread=False so FastAPI's threadpool can share the engine.
 engine = create_engine(
     _settings.database_url,
-    connect_args=({"check_same_thread": False}
-                  if _settings.database_url.startswith("sqlite") else {}),
+    connect_args={"check_same_thread": False} if _SQLITE else {},
     future=True,
 )
+
+if _SQLITE:
+    @event.listens_for(engine, "connect")
+    def _sqlite_pragmas(dbapi_conn, _record):
+        # the API (request + SSE threads) and the events worker process write the same
+        # file: WAL lets readers proceed during a write, busy_timeout waits out a lock
+        cur = dbapi_conn.cursor()
+        cur.execute("PRAGMA journal_mode=WAL")
+        cur.execute("PRAGMA busy_timeout=30000")
+        cur.close()
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False, future=True)
 
 

@@ -9,6 +9,7 @@ overlap free. CIKs are canonical 10-digit padded throughout."""
 from __future__ import annotations
 
 import datetime as dt
+import logging
 from pathlib import PurePosixPath
 
 from sqlalchemy import select
@@ -46,6 +47,20 @@ def _hit_cik_date(hit: dict):
     return feed.pad_cik(raw), filed
 
 
+log = logging.getLogger(__name__)
+
+
+def _ingest_all(ciks: list[str], since: str) -> int:
+    """One CIK whose submissions doc fails (404, transient 5xx) must not stall the pass."""
+    n = 0
+    for cik in ciks:
+        try:
+            n += resolve_and_ingest(cik, since=since)
+        except Exception:
+            log.warning("ingest failed for CIK %s; continuing", cik, exc_info=True)
+    return n
+
+
 def resolve_and_ingest(cik: str, since: str) -> int:
     """Fresh submissions doc -> tracked (meta, raw) pairs -> detectors -> insert.
     The recent window covers >=1yr (eightk.py:127), so a days-scale `since` never
@@ -76,7 +91,7 @@ def poll_once() -> int:
                 cik, filed = _hit_cik_date(hit)
                 if cik and not has_event(session, cik, filed, (event_type, _UNKNOWN)):
                     todo.add(cik)
-    return sum(resolve_and_ingest(cik, since=start) for cik in sorted(todo))
+    return _ingest_all(sorted(todo), since=start)
 
 
 def _line_form(line: str, prefix: str) -> bool:
@@ -133,4 +148,4 @@ def catchup_form_idx(window_days: int = 7) -> int:
                    >= dt.datetime.fromisoformat(since))).scalars())
     todo = {cik for cik, date, accession in _idx_lines(text, prefixes, since)
             if accession not in known}
-    return sum(resolve_and_ingest(cik, since=since) for cik in sorted(todo))
+    return _ingest_all(sorted(todo), since=since)

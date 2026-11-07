@@ -180,3 +180,9 @@ def test_upgrade_head_safe_on_create_all_db(tmp_path):
         assert version == "0001"
     finally:
         eng.dispose()
+
+
+def test_sqlite_runs_in_wal_with_a_busy_timeout():
+    with engine.connect() as c:
+        assert c.exec_driver_sql("PRAGMA journal_mode").scalar() == "wal"
+        assert c.exec_driver_sql("PRAGMA busy_timeout").scalar() == 30000

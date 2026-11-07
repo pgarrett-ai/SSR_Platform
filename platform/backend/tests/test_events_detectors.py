@@ -76,6 +76,8 @@ def _fmeta(form):
     ("4", "insider_filing", 1), ("4/A", "insider_filing", 1),
     ("SC 13D", "stake_13d", 3), ("SC 13D/A", "stake_13d", 3),
     ("SC 13G", "stake_13g", 2), ("SC 13G/A", "stake_13g", 2),
+    ("SCHEDULE 13D", "stake_13d", 3), ("SCHEDULE 13D/A", "stake_13d", 3),   # EDGAR since 2024-12
+    ("SCHEDULE 13G", "stake_13g", 2), ("SCHEDULE 13G/A", "stake_13g", 2),
 ])
 def test_structural_form_detector(form, event_type, severity):
     meta = _fmeta(form)
@@ -135,3 +137,40 @@ def test_route_audit_rows_pure():
                                      "items", "routed_event_types", "accepted_at"}
     bk = [r for r in rows if "bankruptcy" in r["routed_event_types"]]
     assert bk and "1.03" in bk[0]["items"]
+
+
+def test_old_rating_default_lands_without_a_detection_stamp(monkeypatch):
+    import datetime as dt
+
+    import sqlalchemy as sa
+
+    from app import models_events as me
+    from app.core.db import init_db, session_scope
+    from app.events import detectors_ratings as dr
+    from app.hazard import labels
+
+    init_db()
+    recent = (dt.date.today() - dt.timedelta(days=5)).isoformat()
+    rows = [{"cik": "990000071", "name": "Old Co", "filed": "2019-03-01", "source": "fitch_rd"},
+            {"cik": "990000072", "name": "New Co", "filed": recent, "source": "fitch_rd"}]
+    monkeypatch.setattr(labels, "_cik_by_name", lambda: {})
+    monkeypatch.setattr(labels, "_SD_SOURCES", [("u", None, None, "fitch_rd")])
+    monkeypatch.setattr(labels, "sd_events_from_frame", lambda *a: (rows, []))
+    monkeypatch.setattr(dr.feed, "get_bytes", lambda *a, **k: b"x,1")
+    assert dr.refresh_ratings() == 2
+    with session_scope() as s:
+        got = dict(s.execute(sa.select(me.Event.cik, me.Event.detected_at)
+                             .where(me.Event.cik.in_(["0990000071", "0990000072"]))).all())
+    assert got["0990000071"] is None and got["0990000072"] is not None
+
+
+def test_one_failing_cik_does_not_stop_the_pass(monkeypatch):
+    from app.events import poller
+
+    def ingest(cik, since):
+        if cik == "2":
+            raise ConnectionError("submissions 503")
+        return 1
+
+    monkeypatch.setattr(poller, "resolve_and_ingest", ingest)
+    assert poller._ingest_all(["1", "2", "3"], since="2026-01-01") == 2

@@ -27,7 +27,8 @@ from .store import insert_events
 from .universe import enrich_from_submissions
 
 BACKFILL_DB = DATA_DIR / "backfill.db"
-BACKFILL_FORMS = ("8-K", "NT 10-K", "NT 10-Q", "25", "15", "SC 13D", "SC 13G")
+BACKFILL_FORMS = ("8-K", "NT 10-K", "NT 10-Q", "25", "15", "SC 13D", "SC 13G",
+                  "SCHEDULE 13D", "SCHEDULE 13G")
 
 
 def _backfill_db() -> sqlite3.Connection:
