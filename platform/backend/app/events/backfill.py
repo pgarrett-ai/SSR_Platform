@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import datetime as dt
 import sqlite3
+from contextlib import closing
 
 from ..core.config import DATA_DIR
 from ..core.db import session_scope
@@ -83,24 +84,24 @@ def backfill(start: str = "2020-01-01", include_form4: bool = False,
     for text in _quarter_texts(start):
         ciks |= {c for c, _d, _a in _idx_lines(text, prefixes, since=start)}
         print(f"  index pass: {len(ciks)} cumulative CIKs")
-    con = _backfill_db()
-    done = {row[0] for row in con.execute("SELECT cik FROM ciks_done")}
-    todo = sorted(ciks - done)
-    if limit is not None:
-        todo = todo[:limit]
-    total = 0
-    for i, cik in enumerate(todo, 1):
-        try:
-            n = _resolve_cik_full(cik, since=start, prefixes=prefixes)
-        except Exception as exc:
-            print(f"  WARN CIK {cik}: {type(exc).__name__}: {exc}")   # retried next run
-            continue
-        con.execute("INSERT OR REPLACE INTO ciks_done VALUES (?,?,?)",
-                    (cik, dt.date.today().isoformat(), n))
-        con.commit()                       # per-CIK crash checkpoint (panel.db pattern)
-        total += n
-        if i % 200 == 0:
-            print(f"  {i}/{len(todo)} CIKs, {total} events")
+    with closing(_backfill_db()) as con:
+        done = {row[0] for row in con.execute("SELECT cik FROM ciks_done")}
+        todo = sorted(ciks - done)
+        if limit is not None:
+            todo = todo[:limit]
+        total = 0
+        for i, cik in enumerate(todo, 1):
+            try:
+                n = _resolve_cik_full(cik, since=start, prefixes=prefixes)
+            except Exception as exc:
+                print(f"  WARN CIK {cik}: {type(exc).__name__}: {exc}")   # retried next run
+                continue
+            con.execute("INSERT OR REPLACE INTO ciks_done VALUES (?,?,?)",
+                        (cik, dt.date.today().isoformat(), n))
+            con.commit()                   # per-CIK crash checkpoint (panel.db pattern)
+            total += n
+            if i % 200 == 0:
+                print(f"  {i}/{len(todo)} CIKs, {total} events")
     return {"ciks": len(todo), "events": total}
 
 
@@ -111,8 +112,7 @@ if __name__ == "__main__":
         description="Seed the event store from EDGAR history (detected_at=NULL).")
     ap.add_argument("--start", default="2020-01-01")
     ap.add_argument("--include-form4", action="store_true",
-                    help="~2-4M raw Form 4 rows (plan §5 volume); Phase 8 rebuilds "
-                         "insiders from XML — default off")
+                    help="~2-4M raw Form 4 rows; off by default")
     ap.add_argument("--limit", type=int, default=None, help="max CIKs this run (smoke: 25)")
     args = ap.parse_args()
     out = backfill(args.start, include_form4=args.include_form4, limit=args.limit)

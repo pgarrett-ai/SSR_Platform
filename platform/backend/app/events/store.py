@@ -16,7 +16,7 @@ from .types import Event
 
 def _to_row(e: Event, detected_at: Optional[dt.datetime]) -> dict:
     occurred = (dt.datetime.fromisoformat(e.occurred_at)
-                if e.occurred_at else dt.datetime.utcnow())
+                if e.occurred_at else dt.datetime.now(dt.UTC).replace(tzinfo=None))
     return {
         "cik": e.cik, "event_type": e.event_type, "subtype": e.subtype,
         "severity": e.severity, "confidence": e.confidence,

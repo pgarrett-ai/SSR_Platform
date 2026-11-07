@@ -520,6 +520,7 @@ def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: in
             if used_controls % 20 == 0:
                 print(f"  controls: {used_controls}/{n_controls}")
 
+    con.close()
     df = pd.DataFrame(rows)
     if df.empty:
         raise RuntimeError("panel came back empty — first skip reasons: " + "; ".join(skips))

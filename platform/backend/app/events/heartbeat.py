@@ -74,7 +74,7 @@ def worker_status() -> dict:
         with session_scope() as s:
             last = s.execute(select(func.max(models_events.Event.detected_at))).scalar()
         if last is not None:
-            last_hours = round((dt.datetime.utcnow() - last).total_seconds() / 3600, 1)
+            last_hours = round((dt.datetime.now(dt.UTC).replace(tzinfo=None) - last).total_seconds() / 3600, 1)
     except Exception:
         pass       # events table absent (fresh DB) -> gauge stays None
     return {

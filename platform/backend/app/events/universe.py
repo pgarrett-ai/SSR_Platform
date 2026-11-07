@@ -18,7 +18,7 @@ _TICKERS_JSON = "https://www.sec.gov/files/company_tickers.json"   # UNVERIFIED 
 def refresh_universe() -> int:
     data = feed.get_json(_TICKERS_JSON, timeout=120.0)
     rows = list(data.values()) if isinstance(data, dict) else list(data)
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     seen: set[str] = set()
     with session_scope() as session:
         for r in rows:

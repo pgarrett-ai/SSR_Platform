@@ -68,7 +68,7 @@ def resolve_and_ingest(cik: str, since: str) -> int:
     data = feed.fresh_submissions(cik)
     pairs = feed.tracked_rows((data.get("filings") or {}).get("recent") or {},
                               cik, since=since)
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     with session_scope() as session:
         universe.enrich_from_submissions(session, feed.pad_cik(cik), data)
         row = session.get(models_events.UniverseCompany, feed.pad_cik(cik))
