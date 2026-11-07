@@ -1,16 +1,23 @@
 """EDGAR retrieval: ticker -> CIK, fetch filings + exhibits over an N-year window.
 
-Thin wrapper over `edgartools`. edgartools handles SEC rate-limiting/caching internally;
-we set the required identity (name + email) once at import time.
+Thin wrapper over `edgartools`, which paces and caches its own requests; the first
+EdgarClient sets the required identity (name + email).
 """
 from __future__ import annotations
 
 import datetime as dt
+import os
 import threading
 from dataclasses import dataclass, field
 from typing import Optional
 
-from edgar import Company, CompanyNotFoundError, set_identity
+# edgartools sizes its per-process rate limiter from this variable when first imported.
+# 4 req/s here plus paced_get's 1 req/s (Settings.edgar_max_requests_per_sec) is the API's
+# share of SEC's 10 req/s, leaving room for the worker. A value already set in the
+# environment wins.
+os.environ.setdefault("EDGAR_RATE_LIMIT_PER_SEC", "4")
+
+from edgar import Company, CompanyNotFoundError, set_identity  # noqa: E402  after the default
 
 from ..core.config import get_settings
 

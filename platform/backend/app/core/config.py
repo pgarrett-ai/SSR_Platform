@@ -35,8 +35,11 @@ class Settings(BaseSettings):
     # default) = open — set it the day the app leaves localhost.
     platform_api_token: str = ""
 
-    # Politeness: edgartools/EDGAR allow ~10 req/s; we stay well under.
-    edgar_max_requests_per_sec: float = 8.0
+    # paced_get's rate, per process. SEC allows 10 req/s per client and every process paces
+    # itself: the API runs edgartools at 4 req/s (edgar/client.py) plus this 1. The worker
+    # only uses paced_get, so it can run at EDGAR_MAX_REQUESTS_PER_SEC=3 and keep the two
+    # processes at 8 together.
+    edgar_max_requests_per_sec: float = 1.0
 
     # --- hazard (default-risk) settings ---
     market_index: str = "SPY"        # benchmark for the 1-year excess return

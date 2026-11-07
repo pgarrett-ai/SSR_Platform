@@ -1,4 +1,4 @@
-"""The one paced EDGAR transport (Phase 6 PR-1).
+"""The one paced EDGAR transport.
 
 Every raw outbound EDGAR request (data.sec.gov, www.sec.gov, efts.sec.gov) leaves through
 `paced_get`, which owns the three SEC fair-access concerns in exactly one place:
@@ -7,9 +7,10 @@ Every raw outbound EDGAR request (data.sec.gov, www.sec.gov, efts.sec.gov) leave
     `edgar/client._ensure_identity()` feeds to edgartools. edgartools paces and identifies
     its own internal requests; this module covers everything we fetch ourselves. Stdlib
     only — no edgartools import.
-  * **Global min-interval pacing** — default 8 req/s (`edgar_max_requests_per_sec`), under
-    SEC's 10 req/s fair-access limit. Thread-safe: the Phase-6 poller worker and API
-    request threads share one budget.
+  * **Min-interval pacing** — `edgar_max_requests_per_sec` (default 1 req/s), shared by
+    every thread in the process. The budget is per process: the API and the worker each
+    pace themselves, so their rates, with edgartools' own limiter, are set to sum under
+    SEC's 10 req/s fair-access limit (see `Settings.edgar_max_requests_per_sec`).
   * **429/403 exponential backoff** — Retry-After honored when parseable; after three
     backoffs the error propagates.
 
@@ -45,7 +46,8 @@ def _pace() -> None:
     """Reserve the next global request slot; sleep until it opens. Slots are handed out
     under the lock and slept on outside it, so concurrent threads space out instead of
     stampeding."""
-    # ponytail: one global budget; split per-host only if a second rate-limited host appears
+    # ponytail: one budget per process for every sec.gov host, split across processes by
+    # config; a shared cross-process limiter if more processes than the API and worker call EDGAR
     global _next_slot
     with _lock:
         now = _now()
