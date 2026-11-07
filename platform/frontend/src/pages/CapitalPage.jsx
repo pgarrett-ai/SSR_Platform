@@ -79,7 +79,7 @@ export default function CapitalPage({ ticker, overview: stream }) {
           asOf={asOf}
           reported={reported?.total_debt}
           reportedLabel={reported && (reported.label || `FY${reported.fiscal_year}`)}
-          warnings={ov.warnings}
+          warnings={(ov.warnings || []).filter((w) => !/covenant/i.test(w))}
         />
       </Section>
 
@@ -115,7 +115,8 @@ export default function CapitalPage({ ticker, overview: stream }) {
         title="Covenants & LME"
         subtitle={families > 0 && `${families} agreement famil${families === 1 ? "y" : "ies"}`}
       >
-        <CovenantPackages covenants={ov.covenants} liens={ov.liens_headroom} rp={ov.rp_basket} />
+        <CovenantPackages covenants={ov.covenants} liens={ov.liens_headroom} rp={ov.rp_basket}
+          notes={(ov.warnings || []).filter((w) => /covenant/i.test(w))} />
       </Section>
 
       <Section collapsible title="Forensic flags" subtitle="cash vs debt by filed period">

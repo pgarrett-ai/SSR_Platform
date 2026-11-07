@@ -63,7 +63,7 @@ def main(argv: list[str]) -> int:
                   f"econ leverage {lev}, {len(ov.covenants)} covenant packages  ({secs:.0f}s)\n")
         except Exception as exc:
             print(f"  [FAIL] {tk}: {exc}\n")
-    print("Done. Cached snapshots live in app/cache/ and are served when 'Run live' is off.")
+    print("Done. Snapshots are in app/cache/; the app serves them until a live refresh.")
     return 0
 
 

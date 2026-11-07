@@ -257,7 +257,7 @@ function RpBasket({ rp }) {
   );
 }
 
-export default function CovenantPackages({ covenants, liens, rp }) {
+export default function CovenantPackages({ covenants, liens, rp, notes = [] }) {
   return (
     <div>
       <LiensRead lh={liens} />
@@ -270,6 +270,7 @@ export default function CovenantPackages({ covenants, liens, rp }) {
       )}
       <LiensHeadroom lh={liens} />
       <RpBasket rp={rp} />
+      {notes.map((n, i) => <p key={i} className="mt-2 text-[11px] text-slate-400">{n}</p>)}
     </div>
   );
 }
