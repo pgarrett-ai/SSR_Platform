@@ -5,11 +5,12 @@
     "resolved_ticker": "LCID",
     "cik": "1811210",
     "years": 3,
-    "n_filings": 76,
-    "last_updated": "2026-07-19T20:09:34.255698+00:00",
+    "n_filings": 78,
+    "last_updated": "2026-11-07T06:59:00.229121+00:00",
     "from_cache": false,
     "llm_enabled": true
   },
+  "chapter11": null,
   "economic_debt_bridge": {
     "lines": [
       {
@@ -73,25 +74,48 @@
         "is_total": false
       },
       {
-        "key": "take_or_pay",
-        "label": "Take-or-pay / purchase commitments",
+        "key": "related_party",
+        "label": "Related-party financing",
         "amount": {
-          "value": 3526674000.0,
-          "display": "$3,527M",
+          "value": 2283400000.0,
+          "display": "$2,283M",
           "unit": "USD",
           "citation": {
             "accession_no": "0001628280-26-011053",
             "form_type": "10-K",
             "filing_date": "2026-02-24",
             "exhibit": null,
-            "section": "Note 12 - Commitments and Contingencies",
+            "section": "Note 8 - Redeemable Convertible Preferred Stock",
             "page": null,
             "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-            "quote": "the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion, calculated using the current base prices ... Total $2,626,674"
+            "quote": "The carrying value of the Series A Redeemable Convertible Preferred Stock was $1,339.6 million and $730.0 million as of December 31, 2025 and 2024, respectively."
           },
           "derived": false,
           "formula": null,
-          "note": "Sum of 2 take_or_pay items; largest shown. Debt-like obligation added to reach economic debt."
+          "note": "Sum of 2 related_party items; largest shown. Debt-like obligation added to reach economic debt."
+        },
+        "is_total": false
+      },
+      {
+        "key": "other",
+        "label": "Other off-balance-sheet obligations",
+        "amount": {
+          "value": 29000000.0,
+          "display": "$29M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-011053",
+            "form_type": "10-K",
+            "filing_date": "2026-02-24",
+            "exhibit": null,
+            "section": "Note 6 - Debt",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+            "quote": "Total convertible senior notes $2,279.3 $(29.0)$2,250.3 $1,620.7"
+          },
+          "derived": false,
+          "formula": null,
+          "note": "Debt-like obligation added to reach economic debt."
         },
         "is_total": false
       },
@@ -99,12 +123,12 @@
         "key": "economic_debt",
         "label": "Economic (adjusted) debt",
         "amount": {
-          "value": 6723382000.0,
-          "display": "$6,723M",
+          "value": 5509108000.0,
+          "display": "$5,509M",
           "unit": "USD",
           "citation": null,
           "derived": true,
-          "formula": "reported debt $2,718M + $290M + $189M + $3,527M",
+          "formula": "reported debt $2,718M + $290M + $189M + $2,283M + $29M",
           "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
         },
         "is_total": true
@@ -120,22 +144,22 @@
       "note": "Reported borrowings = long-term debt (noncurrent + current) + short-term borrowings, each component cited from the balance sheet (XBRL). Excludes leases."
     },
     "economic_debt": {
-      "value": 6723382000.0,
-      "display": "$6,723M",
+      "value": 5509108000.0,
+      "display": "$5,509M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "reported debt $2,718M + $290M + $189M + $3,527M",
+      "formula": "reported debt $2,718M + $290M + $189M + $2,283M + $29M",
       "note": "Economic (adjusted) debt = reported borrowings + every debt-like obligation above."
     },
     "ebitda": {
-      "value": -2154083000.0,
-      "display": "-$2,154M",
+      "value": -3597626000.0,
+      "display": "-$3,598M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "net income -$2,698M + interest $95M + taxes -$2M + D&A $451M (FY2025)",
-      "note": null
+      "formula": "operating income -$4,078M + D&A $481M + impairments $0M (TTM through Q2 2026: last annual + YTD − prior-year YTD)",
+      "note": "operating income + D&A + impairments, TTM through Q2 2026"
     },
     "reported_leverage": {
       "value": null,
@@ -143,8 +167,8 @@
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "reported debt $2,718M / EBITDA -$2,154M",
-      "note": "not meaningful — negative EBITDA (-$2,154M)"
+      "formula": "reported debt $2,718M (FY2025) / EBITDA -$3,598M (operating income + D&A + impairments, TTM through Q2 2026)",
+      "note": "not meaningful — negative EBITDA (-$3,598M)"
     },
     "economic_leverage": {
       "value": null,
@@ -152,8 +176,8 @@
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "economic debt $6,723M / EBITDA -$2,154M",
-      "note": "not meaningful — negative EBITDA (-$2,154M)"
+      "formula": "economic debt $5,509M (FY2025) / EBITDA -$3,598M (operating income + D&A + impairments, TTM through Q2 2026)",
+      "note": "not meaningful — negative EBITDA (-$3,598M)"
     }
   },
   "ebitda_build": {
@@ -162,21 +186,12 @@
         "key": "net_income",
         "label": "Net income",
         "amount": {
-          "value": -2698051000.0,
-          "display": "-$2,698M",
+          "value": -3855643000.0,
+          "display": "-$3,856M",
           "unit": "USD",
-          "citation": {
-            "accession_no": "0001628280-26-011053",
-            "form_type": "10-K",
-            "filing_date": "2026-02-24",
-            "exhibit": null,
-            "section": "XBRL concept us-gaap:NetIncomeLoss",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-            "quote": "Net Income (Loss) Attributable to Parent (as of 2025-12-31) [XBRL]"
-          },
-          "derived": false,
-          "formula": null,
+          "citation": null,
+          "derived": true,
+          "formula": "trailing twelve months to 2026-06-30 (last annual + YTD − prior-year YTD)",
           "note": null
         },
         "is_total": false
@@ -185,21 +200,12 @@
         "key": "interest_expense",
         "label": "+ Interest expense",
         "amount": {
-          "value": 95101000.0,
-          "display": "$95M",
+          "value": 148359000.0,
+          "display": "$148M",
           "unit": "USD",
-          "citation": {
-            "accession_no": "0001628280-26-011053",
-            "form_type": "10-K",
-            "filing_date": "2026-02-24",
-            "exhibit": null,
-            "section": "XBRL concept us-gaap:InterestExpenseNonoperating",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-            "quote": " (as of 2025-12-31) [XBRL]"
-          },
-          "derived": false,
-          "formula": null,
+          "citation": null,
+          "derived": true,
+          "formula": "trailing twelve months to 2026-06-30 (last annual + YTD − prior-year YTD)",
           "note": null
         },
         "is_total": false
@@ -208,21 +214,12 @@
         "key": "income_tax_expense",
         "label": "+ Income tax expense",
         "amount": {
-          "value": -2333000.0,
-          "display": "-$2M",
+          "value": 2626000.0,
+          "display": "$3M",
           "unit": "USD",
-          "citation": {
-            "accession_no": "0001628280-26-011053",
-            "form_type": "10-K",
-            "filing_date": "2026-02-24",
-            "exhibit": null,
-            "section": "XBRL concept us-gaap:IncomeTaxExpenseBenefit",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-            "quote": "Income Tax Expense (Benefit) (as of 2025-12-31) [XBRL]"
-          },
-          "derived": false,
-          "formula": null,
+          "citation": null,
+          "derived": true,
+          "formula": "trailing twelve months to 2026-06-30 (last annual + YTD − prior-year YTD)",
           "note": null
         },
         "is_total": false
@@ -231,21 +228,26 @@
         "key": "d_and_a",
         "label": "+ Depreciation & amortization",
         "amount": {
-          "value": 451200000.0,
-          "display": "$451M",
+          "value": 480800000.0,
+          "display": "$481M",
           "unit": "USD",
-          "citation": {
-            "accession_no": "0001628280-26-011053",
-            "form_type": "10-K",
-            "filing_date": "2026-02-24",
-            "exhibit": null,
-            "section": "XBRL concept us-gaap:DepreciationDepletionAndAmortization",
-            "page": null,
-            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-            "quote": "Depreciation, Depletion and Amortization (as of 2025-12-31) [XBRL]"
-          },
-          "derived": false,
-          "formula": null,
+          "citation": null,
+          "derived": true,
+          "formula": "trailing twelve months to 2026-06-30 (last annual + YTD − prior-year YTD)",
+          "note": null
+        },
+        "is_total": false
+      },
+      {
+        "key": "other",
+        "label": "+ Other non-operating items",
+        "amount": {
+          "value": -373768000.0,
+          "display": "-$374M",
+          "unit": "USD",
+          "citation": null,
+          "derived": true,
+          "formula": "EBITDA -$3,598M − the lines above: other income and expense below operating income, plus any line not tagged",
           "note": null
         },
         "is_total": false
@@ -254,149 +256,63 @@
         "key": "ebitda",
         "label": "EBITDA",
         "amount": {
-          "value": -2154083000.0,
-          "display": "-$2,154M",
+          "value": -3597626000.0,
+          "display": "-$3,598M",
           "unit": "USD",
           "citation": null,
           "derived": true,
-          "formula": "net income -$2,698M + interest $95M + taxes -$2M + D&A $451M (FY2025)",
-          "note": null
+          "formula": "operating income -$4,078M + D&A $481M + impairments $0M (TTM through Q2 2026: last annual + YTD − prior-year YTD)",
+          "note": "operating income + D&A + impairments, TTM through Q2 2026"
         },
         "is_total": true
       }
     ],
     "ebitda": {
-      "value": -2154083000.0,
-      "display": "-$2,154M",
+      "value": -3597626000.0,
+      "display": "-$3,598M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "net income -$2,698M + interest $95M + taxes -$2M + D&A $451M (FY2025)",
-      "note": null
+      "formula": "operating income -$4,078M + D&A $481M + impairments $0M (TTM through Q2 2026: last annual + YTD − prior-year YTD)",
+      "note": "operating income + D&A + impairments, TTM through Q2 2026"
     },
     "addbacks": []
   },
   "debt_schedule": [
     {
-      "instrument": "2025 GIB Credit Facility",
-      "principal": null,
-      "outstanding": {
-        "value": 1890000000.0,
-        "display": "$1,890M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-030517",
-          "form_type": "10-Q",
-          "filing_date": "2026-05-05",
-          "exhibit": null,
-          "section": "XBRL us-gaap:ShortTermBorrowings [lcid:A2025GIBCreditFacilityMember]",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2025 GIB Credit Facility: $1,890M as of 2026-03-31 [us-gaap:ShortTermBorrowings, lcid:A2025GIBCreditFacilityMember]"
-        },
-        "derived": false,
-        "formula": null,
-        "note": null
-      },
-      "coupon": "SOFR + 1.40% → 5.02%",
-      "maturity": "February 24, 2028",
-      "secured": null,
-      "seniority": null,
-      "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
-        "exhibit": null,
-        "section": "gap-fill re-search (persisted corpus)",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "On February 24, 2025, Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028"
-      },
-      "coupon_pct": null,
-      "coupon_pct_max": null,
-      "spread_pct": 1.4,
-      "effective_rate_pct": null,
-      "rate_type": "floating",
-      "rate_base": "SAIBOR",
-      "xbrl_member": "lcid:A2025GIBCreditFacilityMember",
-      "obligor": null,
-      "governed_by": "credit agreement dated November 4, 2025",
-      "facility_type": "revolver",
-      "commitment": {
-        "value": 1900000000.0,
-        "display": "$1,900M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-030517",
-          "form_type": "10-Q",
-          "filing_date": "2026-05-05",
-          "exhibit": null,
-          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:A2025GIBCreditFacilityMember]",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2025 GIB Credit Facility: $1,900M as of 2025-02-28 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:A2025GIBCreditFacilityMember]"
-        },
-        "derived": false,
-        "formula": null,
-        "note": null
-      },
-      "undrawn": {
-        "value": 8700000.0,
-        "display": "$9M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-030517",
-          "form_type": "10-Q",
-          "filing_date": "2026-05-05",
-          "exhibit": null,
-          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [lcid:A2025GIBCreditFacilityMember]",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2025 GIB Credit Facility: $9M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, lcid:A2025GIBCreditFacilityMember]"
-        },
-        "derived": false,
-        "formula": null,
-        "note": null
-      },
-      "face_amount": null,
-      "unamortized_discount": null,
-      "conversion_price": null,
-      "pik": null
-    },
-    {
       "instrument": "2030 Notes",
       "principal": null,
       "outstanding": {
-        "value": 1085000000.0,
-        "display": "$1,085M",
+        "value": 1085900000.0,
+        "display": "$1,086M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:LongTermDebt [lcid:A2030NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2030 Notes: $1,085M as of 2026-03-31 [us-gaap:LongTermDebt, lcid:A2030NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2030 Notes: $1,086M as of 2026-06-30 [us-gaap:LongTermDebt, lcid:A2030NotesMember]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
       "coupon": "5.00%",
-      "maturity": "April 2030",
+      "maturity": "April 1, 2030",
       "secured": false,
       "seniority": "convertible",
       "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
+        "accession_no": "0001628280-26-052606",
+        "form_type": "10-Q",
+        "filing_date": "2026-08-04",
         "exhibit": null,
         "section": "Long-term debt footnote",
         "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "The 2030 Notes will mature on April 1, 2030, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+        "quote": "The 2030 Notes will mature on April 1, 2030, unless earlier repurchased, redeemed or converted."
       },
       "coupon_pct": 5.0,
       "coupon_pct_max": 5.0,
@@ -415,14 +331,14 @@
         "display": "$1,100M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:DebtInstrumentFaceAmount [lcid:A2030NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2030 Notes: $1,100M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, lcid:A2030NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2030 Notes: $1,100M as of 2026-06-30 [us-gaap:DebtInstrumentFaceAmount, lcid:A2030NotesMember]"
         },
         "derived": false,
         "formula": null,
@@ -434,14 +350,14 @@
         "display": "$30.00",
         "unit": "USD/share",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:DebtInstrumentConvertibleConversionPrice1 [lcid:A2030NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2030 Notes: conversion price $30.00/share as of 2026-03-31 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2030NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2030 Notes: conversion price $30.00/share as of 2026-06-30 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2030NotesMember]"
         },
         "derived": false,
         "formula": null,
@@ -453,36 +369,36 @@
       "instrument": "2031 Notes",
       "principal": null,
       "outstanding": {
-        "value": 962800000.0,
+        "value": 963300000.0,
         "display": "$963M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:LongTermDebt [lcid:A2031NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2031 Notes: $963M as of 2026-03-31 [us-gaap:LongTermDebt, lcid:A2031NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2031 Notes: $963M as of 2026-06-30 [us-gaap:LongTermDebt, lcid:A2031NotesMember]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
       "coupon": "7.00%",
-      "maturity": "November 2031",
+      "maturity": "November 1, 2031",
       "secured": false,
       "seniority": "convertible",
       "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
+        "accession_no": "0001628280-26-052606",
+        "form_type": "10-Q",
+        "filing_date": "2026-08-04",
         "exhibit": null,
         "section": "Long-term debt footnote",
         "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "The 2031 Notes will mature on November 1, 2031, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+        "quote": "The 2031 Notes will mature on November 1, 2031, unless earlier repurchased, redeemed or converted."
       },
       "coupon_pct": 7.0,
       "coupon_pct_max": 7.0,
@@ -501,14 +417,14 @@
         "display": "$975M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:DebtInstrumentFaceAmount [lcid:A2031NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2031 Notes: $975M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, lcid:A2031NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2031 Notes: $975M as of 2026-06-30 [us-gaap:DebtInstrumentFaceAmount, lcid:A2031NotesMember]"
         },
         "derived": false,
         "formula": null,
@@ -520,14 +436,14 @@
         "display": "$20.81",
         "unit": "USD/share",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:DebtInstrumentConvertibleConversionPrice1 [lcid:A2031NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2031 Notes: conversion price $20.81/share as of 2026-03-31 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2031NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2031 Notes: conversion price $20.81/share as of 2026-06-30 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2031NotesMember]"
         },
         "derived": false,
         "formula": null,
@@ -539,18 +455,18 @@
       "instrument": "GIB credit facility",
       "principal": null,
       "outstanding": {
-        "value": 503500000.0,
-        "display": "$504M",
+        "value": 503100000.0,
+        "display": "$503M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:ShortTermBorrowings [lcid:GIBCreditFacilityMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "GIB credit facility: $504M as of 2026-03-31 [us-gaap:ShortTermBorrowings, lcid:GIBCreditFacilityMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "GIB credit facility: $503M as of 2026-06-30 [us-gaap:ShortTermBorrowings, lcid:GIBCreditFacilityMember]"
         },
         "derived": false,
         "formula": null,
@@ -561,14 +477,14 @@
       "secured": null,
       "seniority": null,
       "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
+        "accession_no": "0001628280-26-052606",
+        "form_type": "10-Q",
+        "filing_date": "2026-08-04",
         "exhibit": null,
-        "section": "gap-fill re-search (persisted corpus)",
+        "section": "Long-term debt footnote",
         "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "On February 24, 2025, Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028 to increase the credit facility committed amount from SAR 1.0 billion (approximately $266.1 million) to SAR 1.9 billion (approximately $506.6 million)"
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+        "quote": "Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028 ... bear interest at a rate of 1.40% per annum over SAIBOR"
       },
       "coupon_pct": null,
       "coupon_pct_max": null,
@@ -588,39 +504,125 @@
       "pik": null
     },
     {
+      "instrument": "DDTL Credit Facility",
+      "principal": null,
+      "outstanding": {
+        "value": 500000000.0,
+        "display": "$500M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-052606",
+          "form_type": "10-Q",
+          "filing_date": "2026-08-04",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LongTermDebt [lcid:DDTLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "DDTL Credit Facility: $500M as of 2026-06-30 [us-gaap:LongTermDebt, lcid:DDTLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "coupon": null,
+      "maturity": "August 4, 2029",
+      "secured": null,
+      "seniority": null,
+      "citation": {
+        "accession_no": "0001628280-26-052606",
+        "form_type": "10-Q",
+        "filing_date": "2026-08-04",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+        "quote": "The DDTL Credit Facility provides for a delayed draw term loan credit facility in an aggregate principal amount of $750.0 million and has a stated maturity date of August 4, 2029."
+      },
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": null,
+      "effective_rate_pct": null,
+      "rate_type": null,
+      "rate_base": null,
+      "xbrl_member": "lcid:DDTLCreditFacilityMember",
+      "obligor": null,
+      "governed_by": null,
+      "facility_type": null,
+      "commitment": {
+        "value": 2480000000.0,
+        "display": "$2,480M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-052606",
+          "form_type": "10-Q",
+          "filing_date": "2026-08-04",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:DDTLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "DDTL Credit Facility: $2,480M as of 2026-04-30 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:DDTLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 1180000000.0,
+        "display": "$1,180M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-052606",
+          "form_type": "10-Q",
+          "filing_date": "2026-08-04",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [lcid:DDTLCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "DDTL Credit Facility: $1,180M as of 2026-07-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, lcid:DDTLCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
       "instrument": "2026 Notes",
       "principal": null,
       "outstanding": {
-        "value": 203900000.0,
+        "value": 204000000.0,
         "display": "$204M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:ShortTermBorrowings [lcid:A2026NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2026 Notes: $204M as of 2026-03-31 [us-gaap:ShortTermBorrowings, lcid:A2026NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2026 Notes: $204M as of 2026-06-30 [us-gaap:ShortTermBorrowings, lcid:A2026NotesMember]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
       "coupon": "1.25%",
-      "maturity": "December 2026",
+      "maturity": "December 15, 2026",
       "secured": false,
       "seniority": "convertible",
       "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
+        "accession_no": "0001628280-26-052606",
+        "form_type": "10-Q",
+        "filing_date": "2026-08-04",
         "exhibit": null,
         "section": "Long-term debt footnote",
         "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-        "quote": "The 2026 Notes will mature on December 15, 2026, unless repurchased, redeemed, or converted in accordance with their terms prior to such date."
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+        "quote": "The 2026 Notes will mature on December 15, 2026, unless earlier repurchased, redeemed or converted."
       },
       "coupon_pct": 1.25,
       "coupon_pct_max": 1.25,
@@ -630,7 +632,7 @@
       "rate_base": null,
       "xbrl_member": "lcid:A2026NotesMember",
       "obligor": null,
-      "governed_by": "credit agreement dated April 14, 2026",
+      "governed_by": "Credit agreement dated April 14, 2026",
       "facility_type": "notes",
       "commitment": null,
       "undrawn": null,
@@ -639,14 +641,14 @@
         "display": "$204M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:DebtInstrumentFaceAmount [lcid:A2026NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2026 Notes: $204M as of 2026-03-31 [us-gaap:DebtInstrumentFaceAmount, lcid:A2026NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2026 Notes: $204M as of 2026-06-30 [us-gaap:DebtInstrumentFaceAmount, lcid:A2026NotesMember]"
         },
         "derived": false,
         "formula": null,
@@ -658,14 +660,14 @@
         "display": "$547.80",
         "unit": "USD/share",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:DebtInstrumentConvertibleConversionPrice1 [lcid:A2026NotesMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2026 Notes: conversion price $547.80/share as of 2026-03-31 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2026NotesMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2026 Notes: conversion price $547.80/share as of 2026-06-30 [us-gaap:DebtInstrumentConvertibleConversionPrice1, lcid:A2026NotesMember]"
         },
         "derived": false,
         "formula": null,
@@ -681,24 +683,33 @@
         "display": "$0M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:LongTermDebt [lcid:ABLCreditFacilityMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "ABL Credit Facility: $0M as of 2026-03-31 [us-gaap:LongTermDebt, lcid:ABLCreditFacilityMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "ABL Credit Facility: $0M as of 2026-06-30 [us-gaap:LongTermDebt, lcid:ABLCreditFacilityMember]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
       "coupon": null,
-      "maturity": null,
+      "maturity": "June 9, 2027",
       "secured": null,
       "seniority": null,
-      "citation": null,
+      "citation": {
+        "accession_no": "0001628280-26-052606",
+        "form_type": "10-Q",
+        "filing_date": "2026-08-04",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+        "quote": "has a stated maturity date of June 9, 2027"
+      },
       "coupon_pct": null,
       "coupon_pct_max": null,
       "spread_pct": null,
@@ -714,13 +725,13 @@
         "display": "$1,000M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:ABLCreditFacilityMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
           "quote": "ABL Credit Facility: $1,000M as of 2022-12-31 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:ABLCreditFacilityMember]"
         },
         "derived": false,
@@ -728,126 +739,23 @@
         "note": null
       },
       "undrawn": {
-        "value": 610000000.0,
-        "display": "$610M",
+        "value": 413300000.0,
+        "display": "$413M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [lcid:ABLCreditFacilityMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "ABL Credit Facility: $610M as of 2026-03-31 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, lcid:ABLCreditFacilityMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "ABL Credit Facility: $413M as of 2026-06-30 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, lcid:ABLCreditFacilityMember]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
-      "face_amount": null,
-      "unamortized_discount": null,
-      "conversion_price": null,
-      "pik": null
-    },
-    {
-      "instrument": "DDTL Credit Facility",
-      "principal": null,
-      "outstanding": {
-        "value": 0.0,
-        "display": "$0M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-030517",
-          "form_type": "10-Q",
-          "filing_date": "2026-05-05",
-          "exhibit": null,
-          "section": "XBRL us-gaap:LongTermDebt [lcid:DDTLCreditFacilityMember]",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "DDTL Credit Facility: $0M as of 2026-03-31 [us-gaap:LongTermDebt, lcid:DDTLCreditFacilityMember]"
-        },
-        "derived": false,
-        "formula": null,
-        "note": null
-      },
-      "coupon": null,
-      "maturity": null,
-      "secured": null,
-      "seniority": null,
-      "citation": null,
-      "coupon_pct": null,
-      "coupon_pct_max": null,
-      "spread_pct": null,
-      "effective_rate_pct": null,
-      "rate_type": null,
-      "rate_base": null,
-      "xbrl_member": "lcid:DDTLCreditFacilityMember",
-      "obligor": null,
-      "governed_by": null,
-      "facility_type": null,
-      "commitment": {
-        "value": 1980000000.0,
-        "display": "$1,980M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-030517",
-          "form_type": "10-Q",
-          "filing_date": "2026-05-05",
-          "exhibit": null,
-          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:DDTLCreditFacilityMember]",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "DDTL Credit Facility: $1,980M as of 2025-11-30 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:DDTLCreditFacilityMember]"
-        },
-        "derived": false,
-        "formula": null,
-        "note": null
-      },
-      "undrawn": null,
-      "face_amount": null,
-      "unamortized_discount": null,
-      "conversion_price": null,
-      "pik": null
-    },
-    {
-      "instrument": "2025 DDTL Credit Facility",
-      "principal": null,
-      "outstanding": null,
-      "coupon": null,
-      "maturity": null,
-      "secured": null,
-      "seniority": null,
-      "citation": null,
-      "coupon_pct": null,
-      "coupon_pct_max": null,
-      "spread_pct": null,
-      "effective_rate_pct": null,
-      "rate_type": null,
-      "rate_base": null,
-      "xbrl_member": "lcid:A2025DDTLCreditFacilityMember",
-      "obligor": null,
-      "governed_by": "credit agreement dated November 4, 2025",
-      "facility_type": null,
-      "commitment": {
-        "value": 1980000000.0,
-        "display": "$1,980M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-030517",
-          "form_type": "10-Q",
-          "filing_date": "2026-05-05",
-          "exhibit": null,
-          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:A2025DDTLCreditFacilityMember]",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2025 DDTL Credit Facility: $1,980M as of 2025-11-04 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:A2025DDTLCreditFacilityMember]"
-        },
-        "derived": false,
-        "formula": null,
-        "note": null
-      },
-      "undrawn": null,
       "face_amount": null,
       "unamortized_discount": null,
       "conversion_price": null,
@@ -873,18 +781,18 @@
       "governed_by": null,
       "facility_type": "revolver",
       "commitment": {
-        "value": 1000000000.0,
-        "display": "$1,000M",
+        "value": 266100000.0,
+        "display": "$266M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:GIBFacilityAgreementMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "GIB Facility Agreement: $1,000M as of 2022-04-29 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:GIBFacilityAgreementMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "GIB Facility Agreement: $266M as of 2022-04-29 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:GIBFacilityAgreementMember]"
         },
         "derived": false,
         "formula": null,
@@ -900,7 +808,7 @@
       "instrument": "2023 Amended GIB Facility Agreement",
       "principal": null,
       "outstanding": null,
-      "coupon": "SOFR + 1.40% → 5.02%",
+      "coupon": "SOFR + 1.40% → 5.32%",
       "maturity": null,
       "secured": null,
       "seniority": null,
@@ -910,30 +818,99 @@
       "spread_pct": 1.4,
       "effective_rate_pct": null,
       "rate_type": "floating",
-      "rate_base": "SOFR",
+      "rate_base": "SAIBOR",
       "xbrl_member": "lcid:A2023AmendedGIBFacilityAgreementMember",
       "obligor": null,
       "governed_by": null,
       "facility_type": "revolver",
       "commitment": {
-        "value": 1000000000.0,
-        "display": "$1,000M",
+        "value": 266100000.0,
+        "display": "$266M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:A2023AmendedGIBFacilityAgreementMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "2023 Amended GIB Facility Agreement: $1,000M as of 2023-03-12 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:A2023AmendedGIBFacilityAgreementMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2023 Amended GIB Facility Agreement: $266M as of 2023-03-12 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:A2023AmendedGIBFacilityAgreementMember]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
       "undrawn": null,
+      "face_amount": null,
+      "unamortized_discount": null,
+      "conversion_price": null,
+      "pik": null
+    },
+    {
+      "instrument": "2025 GIB Credit Facility",
+      "principal": null,
+      "outstanding": null,
+      "coupon": "SOFR + 1.40% → 5.32%",
+      "maturity": "February 24, 2028",
+      "secured": null,
+      "seniority": null,
+      "citation": {
+        "accession_no": "0001628280-26-052606",
+        "form_type": "10-Q",
+        "filing_date": "2026-08-04",
+        "exhibit": null,
+        "section": "Long-term debt footnote",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+        "quote": "Lucid LLC entered into the 2025 GIB Credit Facility maturing on February 24, 2028 ... bear interest at a rate of 1.40% per annum over SAIBOR"
+      },
+      "coupon_pct": null,
+      "coupon_pct_max": null,
+      "spread_pct": 1.4,
+      "effective_rate_pct": null,
+      "rate_type": "floating",
+      "rate_base": "SAIBOR",
+      "xbrl_member": "lcid:A2025GIBCreditFacilityMember",
+      "obligor": null,
+      "governed_by": "Credit agreement dated November 4, 2025",
+      "facility_type": "revolver",
+      "commitment": {
+        "value": 505700000.0,
+        "display": "$506M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-052606",
+          "form_type": "10-Q",
+          "filing_date": "2026-08-04",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:A2025GIBCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2025 GIB Credit Facility: $506M as of 2025-02-28 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:A2025GIBCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "undrawn": {
+        "value": 2300000.0,
+        "display": "$2M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-052606",
+          "form_type": "10-Q",
+          "filing_date": "2026-08-04",
+          "exhibit": null,
+          "section": "XBRL us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity [lcid:A2025GIBCreditFacilityMember]",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "2025 GIB Credit Facility: $2M as of 2026-06-30 [us-gaap:LineOfCreditFacilityRemainingBorrowingCapacity, lcid:A2025GIBCreditFacilityMember]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
       "face_amount": null,
       "unamortized_discount": null,
       "conversion_price": null,
@@ -959,18 +936,18 @@
       "governed_by": null,
       "facility_type": null,
       "commitment": {
-        "value": 2500000000.0,
-        "display": "$2,500M",
+        "value": 2480000000.0,
+        "display": "$2,480M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity [lcid:DDTLAmendmentMember]",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "DDTL Amendment: $2,500M as of 2026-04-30 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:DDTLAmendmentMember]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "DDTL Amendment: $2,480M as of 2026-04-30 [us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity, lcid:DDTLAmendmentMember]"
         },
         "derived": false,
         "formula": null,
@@ -983,7 +960,7 @@
       "pik": null
     }
   ],
-  "debt_schedule_asof": "2026-03-31",
+  "debt_schedule_asof": "2026-06-30",
   "forensic_table": [
     {
       "fiscal_year": 2022,
@@ -1011,6 +988,24 @@
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828024007209/0001628280-24-007209-index.htm",
           "quote": "Cash and Cash Equivalents, at Carrying Value = $1,736M (as of 2022-12-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "short_term_investments": {
+        "value": 2177231000.0,
+        "display": "$2,177M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-24-007209",
+          "form_type": "10-K",
+          "filing_date": "2024-02-27",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:ShortTermInvestments",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828024007209/0001628280-24-007209-index.htm",
+          "quote": "Short-term Investments = $2,177M (as of 2022-12-31) [XBRL]"
         },
         "derived": false,
         "formula": null,
@@ -1121,8 +1116,8 @@
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "operating_income (-$2,594M) + D&A ($187M)",
-        "note": "Proxy EBITDA = operating income + D&A."
+        "formula": "operating income -$2,594M + D&A $187M + impairments $0M (FY2022)",
+        "note": "operating income + D&A + impairments, FY2022"
       },
       "operating_cash_flow": {
         "value": -2226258000.0,
@@ -1178,6 +1173,24 @@
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828025007725/0001628280-25-007725-index.htm",
           "quote": "Cash and Cash Equivalents, at Carrying Value = $1,370M (as of 2023-12-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "short_term_investments": {
+        "value": 2489798000.0,
+        "display": "$2,490M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-25-007725",
+          "form_type": "10-K",
+          "filing_date": "2025-02-25",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:ShortTermInvestments",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828025007725/0001628280-25-007725-index.htm",
+          "quote": "Short-term Investments = $2,490M (as of 2023-12-31) [XBRL]"
         },
         "derived": false,
         "formula": null,
@@ -1283,13 +1296,13 @@
         "note": null
       },
       "ebitda": {
-        "value": -2866088000.0,
-        "display": "-$2,866M",
+        "value": -2850788000.0,
+        "display": "-$2,851M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "operating_income (-$3,100M) + D&A ($234M)",
-        "note": "Proxy EBITDA = operating income + D&A."
+        "formula": "operating income -$3,100M + D&A $234M + impairments $15M (FY2023)",
+        "note": "operating income + D&A + impairments, FY2023"
       },
       "operating_cash_flow": {
         "value": -2489753000.0,
@@ -1324,12 +1337,12 @@
       "label": null,
       "period_end": "2024-12-31",
       "total_debt": {
-        "value": 2254985000.0,
-        "display": "$2,255M",
+        "value": 2128568000.0,
+        "display": "$2,129M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "lt_debt_noncurrent=$2,002M + lt_debt_current=$126M + short_term_debt=$126M",
+        "formula": "lt_debt_noncurrent=$2,002M + lt_debt_current=$126M",
         "note": "Sum of reported debt components (each cited)."
       },
       "cash": {
@@ -1345,6 +1358,24 @@
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
           "quote": "Cash and Cash Equivalents, at Carrying Value = $1,607M (as of 2024-12-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "short_term_investments": {
+        "value": 2424103000.0,
+        "display": "$2,424M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:ShortTermInvestments",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Short-term Investments = $2,424M (as of 2024-12-31) [XBRL]"
         },
         "derived": false,
         "formula": null,
@@ -1455,8 +1486,8 @@
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "operating_income (-$3,021M) + D&A ($295M)",
-        "note": "Proxy EBITDA = operating income + D&A."
+        "formula": "operating income -$3,021M + D&A $295M + impairments $0M (FY2024)",
+        "note": "operating income + D&A + impairments, FY2024"
       },
       "operating_cash_flow": {
         "value": -2019674000.0,
@@ -1512,6 +1543,24 @@
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
           "quote": "Cash and Cash Equivalents, at Carrying Value = $998M (as of 2025-12-31) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "short_term_investments": {
+        "value": 631093000.0,
+        "display": "$631M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:ShortTermInvestments",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Short-term Investments = $631M (as of 2025-12-31) [XBRL]"
         },
         "derived": false,
         "formula": null,
@@ -1622,8 +1671,8 @@
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "operating_income (-$3,502M) + D&A ($451M)",
-        "note": "Proxy EBITDA = operating income + D&A."
+        "formula": "operating income -$3,502M + D&A $451M + impairments $0M (FY2025)",
+        "note": "operating income + D&A + impairments, FY2025"
       },
       "operating_cash_flow": {
         "value": -2931912000.0,
@@ -1655,132 +1704,150 @@
     },
     {
       "fiscal_year": 2026,
-      "label": "Q1 2026",
-      "period_end": "2026-03-31",
+      "label": "Q2 2026",
+      "period_end": "2026-06-30",
       "total_debt": {
-        "value": 2755293000.0,
-        "display": "$2,755M",
+        "value": 3253698000.0,
+        "display": "$3,254M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "lt_debt_noncurrent=$2,048M + lt_debt_current=$707M",
+        "formula": "lt_debt_noncurrent=$2,547M + lt_debt_current=$707M",
         "note": "Sum of reported debt components as of the 10-Q date."
       },
       "cash": {
-        "value": 700356000.0,
-        "display": "$700M",
+        "value": 732601000.0,
+        "display": "$733M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "Cash and Cash Equivalents, at Carrying Value = $700M (as of 2026-03-31) [XBRL]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "Cash and Cash Equivalents, at Carrying Value = $733M (as of 2026-06-30) [XBRL]"
+        },
+        "derived": false,
+        "formula": null,
+        "note": null
+      },
+      "short_term_investments": {
+        "value": 28712000.0,
+        "display": "$29M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-052606",
+          "form_type": "10-Q",
+          "filing_date": "2026-08-04",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:ShortTermInvestments",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "Short-term Investments = $29M (as of 2026-06-30) [XBRL]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
       "free_cash_flow": {
-        "value": -4649042000.0,
-        "display": "-$4,649M",
+        "value": -5112196000.0,
+        "display": "-$5,112M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "OCF − capex, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "formula": "OCF − capex, TTM through Q2 2026 (last annual + YTD − prior-year YTD)",
         "note": null
       },
       "capex": {
-        "value": 960084000.0,
-        "display": "$960M",
+        "value": 1031248000.0,
+        "display": "$1,031M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "formula": "TTM through Q2 2026 (last annual + YTD − prior-year YTD)",
         "note": null
       },
       "accounts_payable": {
-        "value": 484853000.0,
-        "display": "$485M",
+        "value": 366907000.0,
+        "display": "$367M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL concept us-gaap:AccountsPayableCurrent",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "Accounts Payable, Current = $485M (as of 2026-03-31) [XBRL]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "Accounts Payable, Current = $367M (as of 2026-06-30) [XBRL]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
       "inventory": {
-        "value": 1468853000.0,
-        "display": "$1,469M",
+        "value": 1378653000.0,
+        "display": "$1,379M",
         "unit": "USD",
         "citation": {
-          "accession_no": "0001628280-26-030517",
+          "accession_no": "0001628280-26-052606",
           "form_type": "10-Q",
-          "filing_date": "2026-05-05",
+          "filing_date": "2026-08-04",
           "exhibit": null,
           "section": "XBRL concept us-gaap:InventoryNet",
           "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-          "quote": "Inventory, Net = $1,469M (as of 2026-03-31) [XBRL]"
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+          "quote": "Inventory, Net = $1,379M (as of 2026-06-30) [XBRL]"
         },
         "derived": false,
         "formula": null,
         "note": null
       },
       "revenue": {
-        "value": 1401207000.0,
-        "display": "$1,401M",
+        "value": 1547122000.0,
+        "display": "$1,547M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "formula": "TTM through Q2 2026 (last annual + YTD − prior-year YTD)",
         "note": null
       },
       "cogs": {
-        "value": 2740786000.0,
-        "display": "$2,741M",
+        "value": 3041075000.0,
+        "display": "$3,041M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "formula": "TTM through Q2 2026 (last annual + YTD − prior-year YTD)",
         "note": null
       },
       "ebitda": {
-        "value": -3329705000.0,
-        "display": "-$3,330M",
+        "value": -3597626000.0,
+        "display": "-$3,598M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "operating_income + D&A, TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
-        "note": "Proxy EBITDA = operating income + D&A (TTM)."
+        "formula": "operating income -$4,078M + D&A $481M + impairments $0M (TTM through Q2 2026: last annual + YTD − prior-year YTD)",
+        "note": "operating income + D&A + impairments, TTM through Q2 2026"
       },
       "operating_cash_flow": {
-        "value": -3688958000.0,
-        "display": "-$3,689M",
+        "value": -4080948000.0,
+        "display": "-$4,081M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "TTM through Q1 2026 (last annual + YTD − prior-year YTD)",
+        "formula": "TTM through Q2 2026 (last annual + YTD − prior-year YTD)",
         "note": null
       },
       "dpo": {
-        "value": 64.56955960808322,
-        "display": "65 days",
+        "value": 44.037406180380295,
+        "display": "44 days",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "accounts_payable (as of Q1 2026) / COGS (TTM) x 365",
+        "formula": "accounts_payable (as of Q2 2026) / COGS (TTM) x 365",
         "note": "Days payable outstanding (denominator: COGS, TTM)."
       }
     }
@@ -1816,7 +1883,7 @@
   "obs_items": [
     {
       "category": "related_party",
-      "label": "Related-party lease liabilities (KAEC & KAFD, Saudi Arabia)",
+      "label": "Related-party leases with KAEC and KAFD (PIF affiliates)",
       "amount": {
         "value": 8900000.0,
         "display": "$9M",
@@ -1833,7 +1900,7 @@
         },
         "derived": false,
         "formula": null,
-        "note": "Related-party lease liabilities of $6.5M (KAEC) and $2.4M (KAFD) are already recorded as lease liabilities on the balance sheet and are subsumed within the Note 11 total operating/related-party lease figures; flagged as informational to avoid double counting with the operating lease total."
+        "note": "Already counted in the lease liabilities above. Listed only to flag the related party."
       },
       "tax_effect": {
         "value": 8900.0,
@@ -1864,14 +1931,14 @@
       },
       "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "Related-party lease liabilities of $6.5M (KAEC) and $2.4M (KAFD) are already recorded as lease liabilities on the balance sheet and are subsumed within the Note 11 total operating/related-party lease figures; flagged as informational to avoid double counting with the operating lease total."
+      "notes": "Already counted in the lease liabilities above. Listed only to flag the related party."
     },
     {
       "category": "take_or_pay",
       "label": "Lithium-ion battery cell minimum purchase commitments",
       "amount": {
-        "value": 2626674000.0,
-        "display": "$2,627M",
+        "value": 2560000000.0,
+        "display": "$2,560M",
         "unit": "USD",
         "citation": {
           "accession_no": "0001628280-26-011053",
@@ -1881,14 +1948,14 @@
           "section": "Note 12 - Commitments and Contingencies",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion, calculated using the current base prices ... Total $2,626,674"
+          "quote": "the Company had remaining minimum purchase commitments of an aggregate of approximately $2.56 billion, calculated using the current base prices, which could vary period-to-period primarily as a result of changes in raw material indexes."
         },
         "derived": false,
         "formula": null,
-        "note": "Debt-like obligation added to reach economic debt."
+        "note": "These are executory supply commitments in exchange for future goods, so they are not added. Still a material fixed-cash risk in distress. The narrative says ~$2.56B but the table totals $2,626.7M; the text does not explain the gap."
       },
       "tax_effect": {
-        "value": 2626674.0,
+        "value": 2560000.0,
         "display": "$3M",
         "unit": "USD",
         "citation": {
@@ -1902,25 +1969,25 @@
           "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
         },
         "derived": true,
-        "formula": "gross $2,627M × effective tax rate 0.1%",
+        "formula": "gross $2,560M × effective tax rate 0.1%",
         "note": "Uniform tax effect (latest effective tax rate); refine per item later."
       },
       "net": {
-        "value": 2624047326.0,
-        "display": "$2,624M",
+        "value": 2557440000.0,
+        "display": "$2,557M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "gross $2,627M − tax effect $3M",
+        "formula": "gross $2,560M − tax effect $3M",
         "note": null
       },
       "recourse": "recourse",
-      "include_in_bridge": true,
-      "notes": "Debt-like obligation added to reach economic debt."
+      "include_in_bridge": false,
+      "notes": "These are executory supply commitments in exchange for future goods, so they are not added. Still a material fixed-cash risk in distress. The narrative says ~$2.56B but the table totals $2,626.7M; the text does not explain the gap."
     },
     {
-      "category": "take_or_pay",
-      "label": "AMP-1 and AMP-2 plant and equipment purchase commitments",
+      "category": "other",
+      "label": "AMP-1/AMP-2 plant and equipment purchase commitments",
       "amount": {
         "value": 900000000.0,
         "display": "$900M",
@@ -1933,11 +2000,11 @@
           "section": "Note 12 - Commitments and Contingencies",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "As of December 31, 2025 and 2024, the Company had $0.9 billion and $1.0 billion in commitments related to AMP-1 and AMP-2 plant and equipment, respectively. These commitments represent future expected payments on open purchase orders entered into as of December 31, 2025 and 2024."
+          "quote": "As of December 31, 2025 and 2024, the Company had $0.9 billion and $1.0 billion in commitments related to AMP-1 and AMP-2 plant and equipment, respectively."
         },
         "derived": false,
         "formula": null,
-        "note": "Debt-like obligation added to reach economic debt."
+        "note": "Open capex purchase orders. This is not a financing claim."
       },
       "tax_effect": {
         "value": 900000.0,
@@ -1967,12 +2034,12 @@
         "note": null
       },
       "recourse": "recourse",
-      "include_in_bridge": true,
-      "notes": "Debt-like obligation added to reach economic debt."
+      "include_in_bridge": false,
+      "notes": "Open capex purchase orders. This is not a financing claim."
     },
     {
       "category": "guarantee",
-      "label": "Indemnification obligations (letters of credit and surety bonds)",
+      "label": "Indemnification obligations on letters of credit and surety bonds",
       "amount": {
         "value": 130900000.0,
         "display": "$131M",
@@ -1982,14 +2049,14 @@
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 12 - Commitments and Contingencies (Indemnification)",
+          "section": "Note 12 - Indemnification",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
+          "quote": "The Company has indemnification obligations with respect to letters of credit and surety bond primarily used as security against facility leases, utilities infrastructure and other agreements that require securitization. The indemnification obligations were $130.9 million and $72.6 million as of December 31, 2025 and 2024, respectively, for which no liabilities are recorded in the consolidated balance sheets."
         },
         "derived": false,
         "formula": null,
-        "note": "Contingent indemnification obligations backing LCs/surety bonds for which no liability is recorded; contingent and not an unconditional claim, so treated as informational off-balance-sheet exposure rather than a bridge item."
+        "note": "Contingent reimbursement obligation that is not recorded on the balance sheet. It mostly backs leases and other obligations already counted, so adding it risks double counting. Flagged as contingent."
       },
       "tax_effect": {
         "value": 130900.0,
@@ -2020,11 +2087,11 @@
       },
       "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "Contingent indemnification obligations backing LCs/surety bonds for which no liability is recorded; contingent and not an unconditional claim, so treated as informational off-balance-sheet exposure rather than a bridge item."
+      "notes": "Contingent reimbursement obligation that is not recorded on the balance sheet. It mostly backs leases and other obligations already counted, so adding it risks double counting. Flagged as contingent."
     },
     {
       "category": "guarantee",
-      "label": "Outstanding letters of credit under ABL Credit Facility",
+      "label": "Letters of credit outstanding under ABL Credit Facility",
       "amount": {
         "value": 104100000.0,
         "display": "$104M",
@@ -2034,14 +2101,14 @@
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 6 - Debt (ABL Credit Facility)",
+          "section": "Note 6 - Debt",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
           "quote": "Outstanding letters of credit under the ABL Credit Facility were $104.1 million and $56.9 million as of December 31, 2025 and 2024, respectively."
         },
         "derived": false,
         "formula": null,
-        "note": "Outstanding letters of credit reduce facility availability but are contingent instruments (security against leases/utilities); not drawn funded debt, treated as informational."
+        "note": "Undrawn, contingent, and probably part of the $130.9M indemnification figure above."
       },
       "tax_effect": {
         "value": 104100.0,
@@ -2072,103 +2139,51 @@
       },
       "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "Outstanding letters of credit reduce facility availability but are contingent instruments (security against leases/utilities); not drawn funded debt, treated as informational."
+      "notes": "Undrawn, contingent, and probably part of the $130.9M indemnification figure above."
     },
     {
       "category": "guarantee",
-      "label": "Indemnification arrangements (general, uncapped)",
+      "label": "General indemnification to customers, vendors, directors and others",
       "amount": null,
       "tax_effect": null,
       "net": null,
       "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "Maximum potential future payments under general indemnification provisions are stated to be indeterminable; disclosed without a dollar amount so included with null amount as informational only."
+      "notes": "The filing gives no amount and says the maximum exposure cannot be determined."
     },
     {
-      "category": "litigation_env",
-      "label": "Securities class action and derivative litigation",
+      "category": "guarantee",
+      "label": "Residual value guarantee liabilities on delivered vehicles",
       "amount": null,
       "tax_effect": null,
       "net": null,
-      "recourse": "unknown",
+      "recourse": "recourse",
       "include_in_bridge": false,
-      "notes": "Pending securities class action and shareholder derivative suits; the Company does not consider them material and no reserve amount is disclosed, so included with null amount as informational only."
+      "notes": "The filing gives no amount. It is recorded at fair value (Level 3) and is an operating-type contingent guarantee."
     },
     {
       "category": "related_party",
-      "label": "SIDF Loan Agreement service fees (non-interest financing cost)",
+      "label": "Series A Redeemable Convertible Preferred Stock (held by Ayar/PIF; mezzanine)",
       "amount": {
-        "value": 472000000.0,
-        "display": "$472M",
+        "value": 1339600000.0,
+        "display": "$1,340M",
         "unit": "USD",
         "citation": {
           "accession_no": "0001628280-26-011053",
           "form_type": "10-K",
           "filing_date": "2026-02-24",
           "exhibit": null,
-          "section": "Note 6 - Debt (SIDF Loan Agreement)",
+          "section": "Note 8 - Redeemable Convertible Preferred Stock",
           "page": null,
           "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "SIDF has committed to provide the SIDF Loans to Lucid LLC in an aggregate principal amount of up to SAR 5.19 billion (approximately $1.4 billion) ... As of December 31, 2025 and 2024, no amount was outstanding under the SIDF Loan Agreement. ... Obligations under the SIDF Loan Agreement do not extend to the Company or any of its other subsidiaries. ... service fees ... ranging, in aggregate, from SAR 415 million (approximately $110.7 million) to SAR 1.77 billion (approximately $472.0 million)"
+          "quote": "The carrying value of the Series A Redeemable Convertible Preferred Stock was $1,339.6 million and $730.0 million as of December 31, 2025 and 2024, respectively."
         },
         "derived": false,
         "formula": null,
-        "note": "SIDF committed facility of up to ~$1.4 billion is fully undrawn as of 2025-12-31 (no amount outstanding) and obligations do not extend to the Company or its other subsidiaries; a committed but unfunded, non-recourse (to parent) facility, so not added to the bridge. Service fees range disclosed as informational."
+        "note": "Debt-like obligation added to reach economic debt."
       },
       "tax_effect": {
-        "value": 472000.0,
-        "display": "$0M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-011053",
-          "form_type": "10-K",
-          "filing_date": "2026-02-24",
-          "exhibit": null,
-          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
-        },
-        "derived": true,
-        "formula": "gross $472M × effective tax rate 0.1%",
-        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
-      },
-      "net": {
-        "value": 471528000.0,
-        "display": "$472M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "gross $472M − tax effect $0M",
-        "note": null
-      },
-      "recourse": "nonrecourse",
-      "include_in_bridge": false,
-      "notes": "SIDF committed facility of up to ~$1.4 billion is fully undrawn as of 2025-12-31 (no amount outstanding) and obligations do not extend to the Company or its other subsidiaries; a committed but unfunded, non-recourse (to parent) facility, so not added to the bridge. Service fees range disclosed as informational."
-    },
-    {
-      "category": "related_party",
-      "label": "Ayar prepaid forward transactions (2030 & 2031 Notes)",
-      "amount": {
-        "value": 1066700000.0,
-        "display": "$1,067M",
-        "unit": "USD",
-        "citation": {
-          "accession_no": "0001628280-26-011053",
-          "form_type": "10-K",
-          "filing_date": "2026-02-24",
-          "exhibit": null,
-          "section": "Note 6 - Debt (Ayar Prepaid Forward Transactions)",
-          "page": null,
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
-          "quote": "Ayar entered into a privately negotiated prepaid forward transaction ... to purchase approximately $430.0 million of the Company's common stock ... Ayar entered into a privately negotiated prepaid forward transaction ... to purchase approximately $636.7 million of the Company's common stock ... The Company is not a party to the prepaid forward transactions."
-        },
-        "derived": false,
-        "formula": null,
-        "note": "Ayar (a related party), not the Company, is party to the prepaid forward transactions; the Company only pays a small periodic 0.5% fee. Not a debt claim on the enterprise, so treated as informational related-party disclosure."
-      },
-      "tax_effect": {
-        "value": 1066700.0,
+        "value": 1339600.0,
         "display": "$1M",
         "unit": "USD",
         "citation": {
@@ -2182,26 +2197,360 @@
           "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
         },
         "derived": true,
-        "formula": "gross $1,067M × effective tax rate 0.1%",
+        "formula": "gross $1,340M × effective tax rate 0.1%",
         "note": "Uniform tax effect (latest effective tax rate); refine per item later."
       },
       "net": {
-        "value": 1065633300.0,
-        "display": "$1,066M",
+        "value": 1338260400.0,
+        "display": "$1,338M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "gross $1,067M − tax effect $1M",
+        "formula": "gross $1,340M − tax effect $1M",
+        "note": null
+      },
+      "recourse": "recourse",
+      "include_in_bridge": true,
+      "notes": "Debt-like obligation added to reach economic debt."
+    },
+    {
+      "category": "related_party",
+      "label": "Series B Redeemable Convertible Preferred Stock (held by Ayar/PIF; mezzanine)",
+      "amount": {
+        "value": 943800000.0,
+        "display": "$944M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 8 - Redeemable Convertible Preferred Stock",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "The carrying value of the Series B Redeemable Convertible Preferred Stock was $943.8 million and $569.8 million as of December 31, 2025 and 2024, respectively."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Debt-like obligation added to reach economic debt."
+      },
+      "tax_effect": {
+        "value": 943800.0,
+        "display": "$1M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $944M × effective tax rate 0.1%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
+      },
+      "net": {
+        "value": 942856200.0,
+        "display": "$943M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $944M − tax effect $1M",
+        "note": null
+      },
+      "recourse": "recourse",
+      "include_in_bridge": true,
+      "notes": "Debt-like obligation added to reach economic debt."
+    },
+    {
+      "category": "related_party",
+      "label": "Derivative liabilities embedded in redeemable convertible preferred",
+      "amount": {
+        "value": 16200000.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 8 - Redeemable Convertible Preferred Stock",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "As of December 31, 2025 and 2024, the Company remeasured the derivative liabilities for the Redeemable Convertible Preferred Stock to fair value of $16.2 million and $639.4 million"
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Fair value of the conversion option, settled in equity value. Adding it would double count the preferred redemption claim."
+      },
+      "tax_effect": {
+        "value": 16200.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $16M × effective tax rate 0.1%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
+      },
+      "net": {
+        "value": 16183800.0,
+        "display": "$16M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $16M − tax effect $0M",
+        "note": null
+      },
+      "recourse": "recourse",
+      "include_in_bridge": false,
+      "notes": "Fair value of the conversion option, settled in equity value. Adding it would double count the preferred redemption claim."
+    },
+    {
+      "category": "other",
+      "label": "Unamortized discount and issuance costs on convertible notes (principal vs. carrying value)",
+      "amount": {
+        "value": 29000000.0,
+        "display": "$29M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 6 - Debt",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "Total convertible senior notes $2,279.3 $(29.0)$2,250.3 $1,620.7"
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Debt-like obligation added to reach economic debt."
+      },
+      "tax_effect": {
+        "value": 29000.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $29M × effective tax rate 0.1%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
+      },
+      "net": {
+        "value": 28971000.0,
+        "display": "$29M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $29M − tax effect $0M",
+        "note": null
+      },
+      "recourse": "recourse",
+      "include_in_bridge": true,
+      "notes": "Debt-like obligation added to reach economic debt."
+    },
+    {
+      "category": "related_party",
+      "label": "GIB credit facility borrowings (PIF-related bank)",
+      "amount": {
+        "value": 468000000.0,
+        "display": "$468M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 6 - Debt",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "As of December 31, 2025 and 2024, the Company had outstanding borrowings of SAR 1,755.0 million (approximately $468.0 million) and SAR 475.0 million (approximately $126.4 million), respectively. The outstanding borrowings were recorded within current portion of debt"
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Already included in reported total debt. Listed only for related-party visibility."
+      },
+      "tax_effect": {
+        "value": 468000.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $468M × effective tax rate 0.1%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
+      },
+      "net": {
+        "value": 467532000.0,
+        "display": "$468M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $468M − tax effect $0M",
+        "note": null
+      },
+      "recourse": "recourse",
+      "include_in_bridge": false,
+      "notes": "Already included in reported total debt. Listed only for related-party visibility."
+    },
+    {
+      "category": "related_party",
+      "label": "Periodic fee to Ayar on prepaid forward transactions",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "recourse",
+      "include_in_bridge": false,
+      "notes": "An ongoing fee obligation with no principal attached. The filing calls the amount not material and gives no dollar liability."
+    },
+    {
+      "category": "related_party",
+      "label": "SIDF loan commitment (undrawn) and associated service fees",
+      "amount": {
+        "value": 0.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 6 - Debt",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "As of December 31, 2025 and 2024, no amount was outstanding under the SIDF Loan Agreement."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Nothing is drawn. Service fees only arise once the loans are drawn, and the obligations sit at Lucid LLC only. Recorded at $0 outstanding."
+      },
+      "tax_effect": null,
+      "net": null,
+      "recourse": "nonrecourse",
+      "include_in_bridge": false,
+      "notes": "Nothing is drawn. Service fees only arise once the loans are drawn, and the obligations sit at Lucid LLC only. Recorded at $0 outstanding."
+    },
+    {
+      "category": "related_party",
+      "label": "DDTL Credit Facility with Ayar (undrawn)",
+      "amount": {
+        "value": 0.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 6 - Debt",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "As of December 31, 2025 and 2024, the Company had no outstanding borrowings under the DDTL Credit Facility."
+        },
+        "derived": false,
+        "formula": null,
+        "note": "An undrawn commitment, so it adds liquidity rather than debt. Recorded at $0 outstanding."
+      },
+      "tax_effect": null,
+      "net": null,
+      "recourse": "recourse",
+      "include_in_bridge": false,
+      "notes": "An undrawn commitment, so it adds liquidity rather than debt. Recorded at $0 outstanding."
+    },
+    {
+      "category": "litigation_env",
+      "label": "Securities class action and derivative suits",
+      "amount": null,
+      "tax_effect": null,
+      "net": null,
+      "recourse": "unknown",
+      "include_in_bridge": false,
+      "notes": "No amount is disclosed and management does not consider the matters material."
+    },
+    {
+      "category": "other",
+      "label": "Unrecognized tax benefits",
+      "amount": {
+        "value": 55400000.0,
+        "display": "$55M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "Note 13 - Income Taxes",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-011053-index.html",
+          "quote": "As of December 31, 2025, 2024 and 2023, the total amount of unrecognized tax benefits was $55.4 million, $38.5 million, and $140.8 million, respectively"
+        },
+        "derived": false,
+        "formula": null,
+        "note": "Uncertain tax positions under a full valuation allowance, with no audits underway. Unlikely to become a cash claim."
+      },
+      "tax_effect": {
+        "value": 55400.0,
+        "display": "$0M",
+        "unit": "USD",
+        "citation": {
+          "accession_no": "0001628280-26-011053",
+          "form_type": "10-K",
+          "filing_date": "2026-02-24",
+          "exhibit": null,
+          "section": "XBRL concept us-gaap:EffectiveIncomeTaxRateContinuingOperations",
+          "page": null,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+          "quote": "Effective Income Tax Rate Reconciliation, Percent (as of 2025-12-31) [XBRL]"
+        },
+        "derived": true,
+        "formula": "gross $55M × effective tax rate 0.1%",
+        "note": "Uniform tax effect (latest effective tax rate); refine per item later."
+      },
+      "net": {
+        "value": 55344600.0,
+        "display": "$55M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "gross $55M − tax effect $0M",
         "note": null
       },
       "recourse": "unknown",
       "include_in_bridge": false,
-      "notes": "Ayar (a related party), not the Company, is party to the prepaid forward transactions; the Company only pays a small periodic 0.5% fee. Not a debt claim on the enterprise, so treated as informational related-party disclosure."
+      "notes": "Uncertain tax positions under a full valuation allowance, with no audits underway. Unlikely to become a cash claim."
     }
   ],
   "covenants": [
     {
-      "family_label": "credit agreement dated April 14, 2026",
+      "family_label": "Credit agreement dated April 14, 2026",
       "doc_class": "credit_agreement",
       "operative_date": "2026-04-14",
       "amendment_count": 1,
@@ -2215,40 +2564,51 @@
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
       "guarantors": null,
       "financial_covenants": [],
-      "baskets": [],
+      "baskets": [
+        {
+          "name": "Delayed Draw Term Commitment increase (Commitment Increase)",
+          "value": "$500,000,000 increase; sum of outstanding Loans and remaining Delayed Draw Term Commitments of $2,478,787,899.58 after the increase",
+          "quote": "the Borrower desires to increase the Aggregate Delayed Draw Term Commitment by $500,000,000 (the \"Commitment Increase\") such that, after giving effect to such increase, the sum of outstanding Loans and remaining Delayed Draw Term Commitments shall be $2,478,787,899.58"
+        },
+        {
+          "name": "Material Debt threshold (cross-default)",
+          "value": "Money Borrowed in excess of $200,000,000, plus ABL loans; excludes Loan Document Debt, Capital Leases, Permitted Receivables Financing, intercompany Debt and Swap Agreement Debt",
+          "quote": "Money Borrowed of any one or more of the Loan Parties or any of their respective Restricted Subsidiaries in an aggregate principal amount in excess of $200,000,000"
+        }
+      ],
       "ebitda_addback_categories": [],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
       "unrestricted_subsidiary_designation_flexibility": null,
-      "anchor_clause": "\"Material Debt\" shall mean (a) loans outstanding under the ABL Credit Agreement and the Loan Documents (as defined in the ABL Credit Agreement) and (b) Money Borrowed of any one or more of the Loan Parties or any of their respective Restricted Subsidiaries in an aggregate principal amount in excess of $200,000,000; provided that in no event shall any of the following be Material Debt: (i) Debt under a Loan Document, (ii) Capital Leases, (iii) obligations under any Permitted Receivables Financing, (iv) intercompany Debt, and (v) Debt under any Swap Agreements.",
+      "anchor_clause": "\"Material Debt\" shall mean (a) loans outstanding under the ABL Credit Agreement and the Loan Documents (as defined in the ABL Credit Agreement) and (b) Money Borrowed of any one or more of the Loan Parties or any of their respective Restricted Subsidiaries in an aggregate principal amount in excess of $200,000,000; provided that in no event shall any of the following be Material Debt: (i) Debt under a Loan Document, (ii) Capital Leases, (iii) obligations under any Permitted Receivables Financing, (iv) intercompany Debt, and (v) Debt under any Swap Agreements; provided further that in no event shall obligations under the ABL Credit Agreement and the other Loan Documents (as defined in the ABL Credit Agreement) be Material Debt so long as (i) there are no Loans (as defined in the ABL Credit Agreement) outstanding thereunder and (ii) no acceleration of obligations or exercise of remedies under the ABL Credit Agreement has occurred.",
       "lme_vectors": [
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "This Amendment No. 2 only increases the Delayed Draw Term Commitment and amends select definitions; it contains no sacred-rights, voting, or priming provisions.",
+          "rationale": "The amendment text does not cover lien subordination, pro rata sharing or sacred-rights voting provisions.",
           "basis": null,
-          "quote": "the Borrower desires to increase the Aggregate Delayed Draw Term Commitment by $500,000,000"
+          "quote": null
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "not_addressed",
           "rationale": null,
-          "basis": "Only definitional amendments (Material Debt, Aggregate Delayed Draw Term Commitment) and reservation/replacement of certain Section 4.02 conditions are shown.",
-          "quote": "Section 4.02(b) of the Credit Agreement is hereby replaced in its entirety with “[Reserved]”"
+          "basis": null,
+          "quote": null
         },
         {
           "vector": "incremental_debt",
-          "risk": "unclear",
-          "rationale": "The amendment increases the Aggregate Delayed Draw Term Commitment by $500,000,000, expanding funded debt capacity under this facility.",
-          "basis": "Commitment increased such that outstanding Loans plus remaining Delayed Draw Term Commitments equal $2,478,787,899.58; Material Debt threshold set at $200,000,000.",
-          "quote": "such that, after giving effect to such increase, the sum of outstanding Loans and remaining Delayed Draw Term Commitments shall be $2,478,787,899.58"
+          "risk": "not_addressed",
+          "rationale": "It does not address any incremental or ratio debt basket.",
+          "basis": "Commitment Increase made by bilateral amendment between the Borrower and Lender/Administrative Agent",
+          "quote": "increase the Aggregate Delayed Draw Term Commitment by $500,000,000"
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
           "rationale": null,
           "basis": null,
-          "quote": "Section 1.01 of the Credit Agreement is hereby amended by deleting the definitions of “Compliance Certificate” and “Liquidity” in their entirety"
+          "quote": null
         }
       ],
       "citation": {
@@ -2259,7 +2619,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000110465926042847/tm2611666d2_ex10-4.htm",
-        "quote": "\"Material Debt\" shall mean (a) loans outstanding under the ABL Credit Agreement and the Loan Documents (as defined in the ABL Credit Agreement) and (b) Money Borrowed of any one or more of the Loan Parties or any of their respective Restricted Subsidiaries in an aggregate principal amount in excess of $200,000,000; provided that in no event shall any of the following be Material Debt: (i) Debt under a Loan Document, (ii) Capital Leases, (iii) obligations under any Permitted Receivables Financing, (iv) intercompany Debt, and (v) Debt under any Swap Agreements."
+        "quote": "\"Material Debt\" shall mean (a) loans outstanding under the ABL Credit Agreement and the Loan Documents (as defined in the ABL Credit Agreement) and (b) Money Borrowed of any one or more of the Loan Parties or any of their respective Restricted Subsidiaries in an aggregate principal amount in excess of $200,000,000; provided that in no event shall any of the following be Material Debt: (i) Debt under a Loan Document, (ii) Capital Leases, (iii) obligations under any Permitted Receivables Financing, (iv) intercompany Debt, and (v) Debt under any Swap Agreements; provided further that in no event shall obligations under the ABL Credit Agreement and the other Loan Documents (as defined in the ABL Credit Agreement) be Material Debt so long as (i) there are no Loans (as defined in the ABL Credit Agreement) outstanding thereunder and (ii) no acceleration of obligations or exercise of remedies under the ABL Credit Agreement has occurred."
       },
       "agreement_type": "credit_agreement",
       "leverage_covenant_type": null,
@@ -2285,37 +2645,37 @@
       "baskets": [],
       "ebitda_addback_categories": [],
       "mfn_sunset_period": null,
-      "j_crew_blocker_present": false,
-      "unrestricted_subsidiary_designation_flexibility": "Not addressed.",
-      "anchor_clause": "\"7.00% Convertible Senior Notes due 2031\" — This is an unsecured convertible senior note indenture that contains no maintenance financial covenants, no negative covenants restricting debt, liens, restricted payments or asset transfers, and no unrestricted-subsidiary machinery; the operative Holder protections are limited to the conversion mechanics (Article 5) and the optional repurchase right (Section 4.04). A distressed analyst should note the near-total absence of incurrence or lien covenants: the Notes rely on structural/contractual seniority in name only (\"Senior\"), with the amendment provisions in Article 8 governing sacred rights.",
+      "j_crew_blocker_present": null,
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": null,
       "lme_vectors": [
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The Notes are unsecured senior obligations with no anti-priming protection.",
-          "basis": "No negative covenants restricting incurrence of secured or priming debt appear; amendment provisions (Article 8) are the only Holder-protection mechanic shown.",
-          "quote": "designated as its 7.00% Convertible Senior Notes due 2031"
+          "rationale": "It shows only the mechanics for amendment consents and record dates.",
+          "basis": "Article 8 amendment mechanics only (consent revocation, special record dates, binding effect). No lien or payment-subordination provisions appear.",
+          "quote": "no such consent will be valid or effective for more than one hundred and twenty (120) calendar days after such record date"
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "not_addressed",
-          "rationale": "There is no restriction on transferring assets or IP to subsidiaries and no unrestricted-subsidiary concept in the text, so the indenture is silent on asset-drop/J.Crew-style leakage.",
-          "basis": "No investment, asset-transfer, or unrestricted-subsidiary covenant is present in the provided clauses.",
-          "quote": "Capitalized terms used in this Note without definition have the respective meanings ascribed to them in the Indenture."
+          "rationale": "The text contains no unrestricted subsidiary concept, investment covenant or IP-transfer restriction.",
+          "basis": null,
+          "quote": ""
         },
         {
           "vector": "incremental_debt",
           "risk": "not_addressed",
-          "rationale": null,
-          "basis": "Section 2.03 contemplates 'Initial Notes and Additional Notes'; no incurrence covenant or leverage cap appears.",
-          "quote": "Section 2.03. Initial Notes and Additional Notes."
+          "rationale": "The text has no limitation on debt incurrence.",
+          "basis": null,
+          "quote": ""
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
-          "rationale": "No restricted-payments covenant appears.",
-          "basis": "No restricted payment basket or builder-basket provision is present in the covenant clauses supplied.",
-          "quote": "This Note will accrue interest at a rate and in the"
+          "rationale": "The text has no restricted payments covenant. Dividends and distributions come up only as Conversion Rate adjustment events.",
+          "basis": "Section 5.05 conversion rate adjustments address distributions economically, not as a restriction.",
+          "quote": "The Conversion Rate will be adjusted from time to time as follows:"
         }
       ],
       "citation": {
@@ -2326,7 +2686,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828025052593/ex41-convertiblenotesdue20.htm",
-        "quote": "\"7.00% Convertible Senior Notes due 2031\" — This is an unsecured convertible senior note indenture that contains no maintenance financial covenants, no negative covenants restricting debt, liens, restricted payments or asset transfers, and no unrestricted-subsidiary machinery; the operative Holder protections are limited to the conversion mechanics (Article 5) and the optional repurchase right (Section 4.04). A distressed analyst should note the near-total absence of incurrence or lien covenants: the Notes rely on structural/contractual seniority in name only (\"Senior\"), with the amendment provisions in Article 8 governing sacred rights."
+        "quote": null
       },
       "agreement_type": "indenture",
       "leverage_covenant_type": null,
@@ -2335,14 +2695,13 @@
       "lme_risk_notes": null
     },
     {
-      "family_label": "credit agreement dated November 4, 2025",
+      "family_label": "Credit agreement dated November 4, 2025",
       "doc_class": "credit_agreement",
       "operative_date": "2025-11-05",
       "amendment_count": 1,
       "base_missing": true,
       "governs_instruments": [
-        "2025 GIB Credit Facility",
-        "2025 DDTL Credit Facility"
+        "2025 GIB Credit Facility"
       ],
       "admin_agent": "Ayar Third Investment Company",
       "trustee": null,
@@ -2354,36 +2713,36 @@
       "ebitda_addback_categories": [],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "Not addressed in this amendment text.",
-      "anchor_clause": "\"the Borrower desires to increase the Aggregate Delayed Draw Term Commitment by $1,228,787,899.58 (the \"Commitment Increase\") to an aggregate principal amount of $1,978,787,899.58.\"",
+      "unrestricted_subsidiary_designation_flexibility": null,
+      "anchor_clause": "\"Aggregate Delayed Draw Term Commitment\" shall mean, at any time, the aggregate of the Delayed Draw Commitments of all of the Lenders, as increased or reduced from time to time pursuant to the terms and conditions hereof. As of the Effective Date, the Aggregate Delayed Draw Term Commitment is $750,000,000. As of the date of effectiveness of that certain Amendment No. 1 to Credit Agreement, dated as of November 4, 2025, among the Borrower, the Lenders party thereto and the Administrative Agent, the Aggregate Delayed Draw Term Commitment is $1,978,787,899.58.",
       "lme_vectors": [
-        {
-          "vector": "incremental_debt",
-          "risk": "unclear",
-          "rationale": "The Amendment increases the Aggregate Delayed Draw Term Commitment from $750,000,000 to $1,978,787,899.58, but it does not disclose the incremental/ratio debt capacity terms of the underlying Credit Agreement.",
-          "basis": "Amendment No. 1 increases the Aggregate Delayed Draw Term Commitment by $1,228,787,899.58 to $1,978,787,899.58, but this is a bilateral commitment increase between the Borrower and its sole affiliated lender, not a described incremental-facility basket.",
-          "quote": "the Borrower desires to increase the Aggregate Delayed Draw Term Commitment by $1,228,787,899.58 (the \"Commitment Increase\") to an aggregate principal amount of $1,978,787,899.58."
-        },
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The Amendment text is silent on voting/sacred rights or priming mechanics; only Section 9.02 waiver mechanics are referenced without their content.",
-          "basis": "The document is a short commitment-increase amendment that incorporates other sections by reference without reproducing lien-subordination or voting provisions.",
-          "quote": "This Amendment and the Commitment Increase shall become effective upon the date on which each of the following conditions is satisfied (or waived in accordance with Section 9.02 of the Credit Agreement)"
+          "rationale": "The amendment only raises the delayed draw term commitment and changes the commitment termination mechanics; it says nothing about sacred rights, pro rata sharing, or lien subordination.",
+          "basis": "Amendment changes only the definition of Aggregate Delayed Draw Term Commitment, Section 2.09(c) and Schedule 1.01(c).",
+          "quote": "the Borrower desires to increase the Aggregate Delayed Draw Term Commitment by $1,228,787,899.58"
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "not_addressed",
-          "rationale": "No investment, unrestricted-subsidiary, or IP-transfer provisions appear in the amendment text.",
-          "basis": "The amendment only revises the Aggregate Delayed Draw Term Commitment definition and Section 2.09(c); no asset-transfer or unrestricted-subsidiary language is present.",
-          "quote": "the definition of \"Aggregate Delayed Draw Term Commitment\" is hereby amended and restated in its entirety as set forth below"
+          "rationale": "Nothing in the amendment covers unrestricted subsidiaries, investments, or IP transfers.",
+          "basis": "No investment or unrestricted subsidiary provisions are included or amended.",
+          "quote": "The Credit Agreement and each of the other Loan Documents, as specifically amended by this Amendment, are and shall continue to be in full force and effect"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "The amendment raises the existing lender's delayed draw commitment by agreement but contains no incremental facility or ratio debt basket.",
+          "basis": "Commitment raised from $750,000,000 to $1,978,787,899.58 by bilateral amendment; no debt covenant text is provided.",
+          "quote": "the Aggregate Delayed Draw Term Commitment is $1,978,787,899.58"
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
-          "rationale": "The amendment contains no restricted-payments covenant or basket language.",
-          "basis": "The text addresses only commitment sizing, effectiveness conditions, an upfront fee, and boilerplate; no restricted-payment capacity is described.",
-          "quote": "the Borrower shall pay to the Administrative Agent, for the ratable account of each Lender, an upfront fee in an amount equal to 0.75%"
+          "rationale": "Nothing in the amendment covers restricted payments.",
+          "basis": "No restricted payments covenant is included or amended.",
+          "quote": "This Amendment shall not constitute a novation of the Credit Agreement or any other Loan Document."
         }
       ],
       "citation": {
@@ -2394,7 +2753,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828025049553/q3fy258k-ex101.htm",
-        "quote": "\"the Borrower desires to increase the Aggregate Delayed Draw Term Commitment by $1,228,787,899.58 (the \"Commitment Increase\") to an aggregate principal amount of $1,978,787,899.58.\""
+        "quote": "\"Aggregate Delayed Draw Term Commitment\" shall mean, at any time, the aggregate of the Delayed Draw Commitments of all of the Lenders, as increased or reduced from time to time pursuant to the terms and conditions hereof. As of the Effective Date, the Aggregate Delayed Draw Term Commitment is $750,000,000. As of the date of effectiveness of that certain Amendment No. 1 to Credit Agreement, dated as of November 4, 2025, among the Borrower, the Lenders party thereto and the Administrative Agent, the Aggregate Delayed Draw Term Commitment is $1,978,787,899.58."
       },
       "agreement_type": "credit_agreement",
       "leverage_covenant_type": null,
@@ -2422,35 +2781,35 @@
       "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
       "unrestricted_subsidiary_designation_flexibility": null,
-      "anchor_clause": "\"Notwithstanding any other provision in this Confirmation to the contrary requiring or allowing Dealer to purchase, sell, receive or deliver any Shares or other securities, or make or receive any payment in cash... Dealer may designate any of its affiliates to purchase, sell, receive or deliver such Shares...\" (This is a capped call ISDA confirmation, not a credit agreement — it contains no debt covenants.)",
+      "anchor_clause": "Payment by Counterparty. In the event that, following payment of the Premium, (i) an Early Termination Date occurs or is designated with respect to the Transaction as a result of a Termination Event or an Event of Default (other than an Event of Default arising under Section 5(a)(ii) or 5(a)(iv) of the Agreement) and, as a result, Counterparty owes to Dealer an amount calculated under Section 6(e) of the Agreement, or (ii) Counterparty owes to Dealer, pursuant to Section 12.7 or Section 12.9 of the Equity Definitions, an amount calculated under Section 12.8 of the Equity Definitions, such amount shall be deemed to be zero.",
       "lme_vectors": [
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "This document is a capped call ISDA equity-derivatives confirmation, not a credit agreement or indenture; it contains no debt sacred-rights or priming provisions.",
-          "basis": "The text is a 'Form of Capped Call Confirmation' confirming a call option transaction under the 2002 ISDA Equity Derivatives Definitions.",
-          "quote": "The purpose of this letter agreement (this “Confirmation”) is to confirm the terms and conditions of the call option transaction entered into between [Dealer Name] (“Dealer”) and Lucid Group, Inc. (“Counterparty”)."
+          "rationale": "This is a capped call confirmation (an equity derivative) between Lucid and a dealer. It has no lien, priority or sacred-rights provisions.",
+          "basis": "The document is an ISDA call option Confirmation tied to the 5.00% Convertible Senior Notes due 2030. It contains no secured debt terms or lender voting terms.",
+          "quote": null
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "not_addressed",
-          "rationale": "No unrestricted-subsidiary designation or IP/asset-transfer restrictions are present; this instrument governs only option settlement mechanics.",
-          "basis": "Document addresses conversions, early terminations, ownership caps and settlement, not subsidiary or asset covenants.",
-          "quote": "the date on which the “Holder” (as such term is defined in the Indenture) of such Convertible Note satisfies all of the requirements for conversion thereof as set forth in Section 5.02(A) of the Indenture."
+          "rationale": "The text has no restricted/unrestricted subsidiary framework and no limit on transferring assets or IP.",
+          "basis": "The provisions cover option exercise, the calculation agent, early conversion, repayment events, transfer of the options, and termination payments.",
+          "quote": null
         },
         {
           "vector": "incremental_debt",
           "risk": "not_addressed",
-          "rationale": "There is no debt-incurrence covenant or ratio capacity in this confirmation; the referenced Convertible Notes are described only as the transaction reference, not governed here.",
-          "basis": "The Convertible Notes and their $1,000,000,000 initial principal are referenced only to define option terms; no incurrence covenants appear.",
-          "quote": "relating to the 5.00% Convertible Senior Notes due 2030 ... issued by Counterparty in an aggregate initial principal amount of USD [1,000,000,000]."
+          "rationale": "The confirmation does not limit how much debt the Counterparty can incur.",
+          "basis": "The only reference to debt is the Convertible Notes issued under the Indenture: USD [1,000,000,000] plus an option for up to USD [100,000,000] more.",
+          "quote": null
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
-          "rationale": "No restricted-payment covenant or basket exists; payment provisions here relate solely to early-termination and settlement amounts between Dealer and Counterparty.",
-          "basis": "Payment provisions (Sections 9(k), 9(v)) govern ISDA early-termination settlement, not restricted payments to equityholders.",
-          "quote": "such amount shall be deemed to be zero."
+          "rationale": "The confirmation contains no restricted payments covenant or basket.",
+          "basis": "The provisions about payments cover only settlement and termination amounts between Dealer and Counterparty under the Transaction.",
+          "quote": null
         }
       ],
       "citation": {
@@ -2461,7 +2820,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000110465925033017/tm2511638d2_ex10-1.htm",
-        "quote": "\"Notwithstanding any other provision in this Confirmation to the contrary requiring or allowing Dealer to purchase, sell, receive or deliver any Shares or other securities, or make or receive any payment in cash... Dealer may designate any of its affiliates to purchase, sell, receive or deliver such Shares...\" (This is a capped call ISDA confirmation, not a credit agreement — it contains no debt covenants.)"
+        "quote": "Payment by Counterparty. In the event that, following payment of the Premium, (i) an Early Termination Date occurs or is designated with respect to the Transaction as a result of a Termination Event or an Event of Default (other than an Event of Default arising under Section 5(a)(ii) or 5(a)(iv) of the Agreement) and, as a result, Counterparty owes to Dealer an amount calculated under Section 6(e) of the Agreement, or (ii) Counterparty owes to Dealer, pursuant to Section 12.7 or Section 12.9 of the Equity Definitions, an amount calculated under Section 12.8 of the Equity Definitions, such amount shall be deemed to be zero."
       },
       "agreement_type": "indenture",
       "leverage_covenant_type": null,
@@ -2470,7 +2829,7 @@
       "lme_risk_notes": null
     },
     {
-      "family_label": "credit agreement",
+      "family_label": "Credit agreement",
       "doc_class": "credit_agreement",
       "operative_date": "2024-08-05",
       "amendment_count": 0,
@@ -2480,66 +2839,48 @@
       "trustee": null,
       "collateral_agent": null,
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "The Subsidiary Guarantors — being the wholly-owned subsidiaries that are not Excluded Subsidiaries; Foreign Subsidiaries, Foreign Holdcos, Unrestricted Subsidiaries, Limited Purpose Subsidiaries and IP-only subsidiaries are excluded, with the Borrower having discretion to designate any Excluded Subsidiary as a Guarantor (Schedule 1.01(a) lists the Subsidiary Guarantors).",
-      "financial_covenants": [
-        {
-          "kind": "Minimum Liquidity",
-          "threshold": null,
-          "test_frequency": null,
-          "springing_trigger": null,
-          "quote": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries"
-        }
-      ],
+      "guarantors": "Subsidiary Guarantors (Schedule 1.01(a)); Restricted Subsidiaries other than Excluded Subsidiaries (which include Foreign Subsidiaries/CFC subs, Foreign Holdcos, Unrestricted Subsidiaries, and subsidiaries owning only Intellectual Property not obligated on Permitted Additional Indebtedness)",
+      "financial_covenants": [],
       "baskets": [
         {
-          "name": "Material Debt threshold (cross-default reference, not a basket per se)",
-          "value": "$200,000,000 aggregate principal amount of Money Borrowed",
-          "quote": "Money Borrowed of any one or more of the Loan Parties or any of their respective Restricted Subsidiaries in an aggregate principal amount in excess of $200,000,000"
-        },
-        {
-          "name": "Immaterial Subsidiary threshold (assets / revenues)",
-          "value": "5.0% of Consolidated Total Assets (assets) and 5.0% of consolidated total revenues",
-          "quote": "did not, as of the most recently ended Test Period, have total assets with a value in excess of 5.0% of Consolidated Total Assets and (ii) did not, during the most recently ended Test Period, have revenues in excess of 5.0% of the consolidated total revenues"
-        },
-        {
-          "name": "Aggregate Delayed Draw Term Commitment (facility size)",
-          "value": "$750,000,000 as of the Effective Date",
-          "quote": "As of the Effective Date, the Aggregate Delayed Draw Commitment is $750,000,000."
+          "name": "Permitted Refinancing (debt refinancing)",
+          "value": "Principal not greater than refinanced Debt plus accrued interest, premium, fees and expenses",
+          "quote": "has an aggregate outstanding principal amount not greater than the aggregate principal amount of the Debt being refinanced or extended plus an amount equal to accrued and unpaid interest and any premium thereon paid in connection with such refinancing or extension and other reasonable amounts paid and fees and expenses reasonably incurred"
         }
       ],
       "ebitda_addback_categories": [],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "The agreement contemplates Unrestricted Subsidiaries (Schedule 1.01(b) lists them; designation feeds into the Investments definition, which values the net assets contributed on designation and values property transferred to/from an Unrestricted Subsidiary at fair market value).",
-      "anchor_clause": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries ... provided that the aggregate amount of unrestricted cash and unrestricted Permitted Investments of Foreign Subsidiaries shall not at any time exceed 25% of all Liquidity.",
+      "unrestricted_subsidiary_designation_flexibility": "Unrestricted Subsidiaries scheduled on Schedule 1.01(b); designation counts as an Investment equal to the Borrower's proportionate share of the fair market value of the subsidiary's net assets, with transfers valued at fair market value as determined in good faith by the Borrower.",
+      "anchor_clause": "(x) that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness;",
       "lme_vectors": [
-        {
-          "vector": "dropdown_jcrew",
-          "risk": "unclear",
-          "rationale": null,
-          "basis": "'Material IP' and 'Material IP Subsidiary' are defined; the Excluded Subsidiary definition includes a subsidiary that 'does not own any assets ... that are not Intellectual Property'; Investments definition values property transferred to/from an Unrestricted Subsidiary at fair market value.",
-          "quote": "that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness"
-        },
-        {
-          "vector": "incremental_debt",
-          "risk": "unclear",
-          "rationale": null,
-          "basis": "Permitted Refinancing capped at refinanced principal plus accrued interest/premium/fees; Permitted Convertible Notes tied to Section 6.01(s)/(t); 'Permitted Additional Indebtedness' referenced in the Excluded Subsidiary IP limb.",
-          "quote": "has an aggregate outstanding principal amount not greater than the aggregate principal amount of the Debt being refinanced or extended plus an amount equal to accrued and unpaid interest and any premium thereon"
-        },
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
           "rationale": null,
-          "basis": "Only definitions and Permitted Encumbrances/Liens definitions are present.",
-          "quote": "Section 9.24. Release of Liens and Guarantees"
+          "basis": null,
+          "quote": ""
+        },
+        {
+          "vector": "dropdown_jcrew",
+          "risk": "unclear",
+          "rationale": "Material IP and Material IP Subsidiary are defined, implying an IP protection, but the guarantee carve-out lets IP-only subsidiaries sit outside the guarantor group unless they back Permitted Additional Indebtedness.",
+          "basis": "Excluded Subsidiary clause (x); Material IP definitions; Unrestricted Subsidiaries excluded from guarantee.",
+          "quote": "that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness"
+        },
+        {
+          "vector": "incremental_debt",
+          "risk": "not_addressed",
+          "rationale": "Only the delayed draw commitment that may be increased or reduced is referenced.",
+          "basis": "Aggregate Delayed Draw Term Commitment of $750,000,000.",
+          "quote": "As of the Effective Date, the Aggregate Delayed Draw Commitment is $750,000,000."
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
-          "rationale": "Only definitional building blocks (Permitted Payee, Permitted Party, Disqualified Equity Interests) appear, so RP capacity cannot be assessed.",
-          "basis": "'Permitted Payee' and 'Permitted Party' are defined but no restricted-payment basket or builder-basket text is included.",
-          "quote": "\"Permitted Payee\" means, collectively (i) any future, current or former officer, director, manager, member ... of the Borrower, any Subsidiary or any direct or indirect parent company thereof"
+          "rationale": null,
+          "basis": null,
+          "quote": ""
         }
       ],
       "citation": {
@@ -2550,10 +2891,10 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828024034724/q2fy24form8-kxex102.htm",
-        "quote": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries ... provided that the aggregate amount of unrestricted cash and unrestricted Permitted Investments of Foreign Subsidiaries shall not at any time exceed 25% of all Liquidity."
+        "quote": "(x) that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness;"
       },
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "Minimum Liquidity",
+      "leverage_covenant_type": null,
       "leverage_ratio_threshold": null,
       "restricted_payments_basket_size": null,
       "lme_risk_notes": null
@@ -2635,187 +2976,85 @@
   ],
   "liquidity": {
     "is_distressed": true,
-    "as_of_label": "Q1 2026",
+    "as_of_label": "Q2 2026",
     "cash": {
-      "value": 700356000.0,
-      "display": "$700M",
+      "value": 732601000.0,
+      "display": "$733M",
       "unit": "USD",
       "citation": {
-        "accession_no": "0001628280-26-030517",
+        "accession_no": "0001628280-26-052606",
         "form_type": "10-Q",
-        "filing_date": "2026-05-05",
+        "filing_date": "2026-08-04",
         "exhibit": null,
         "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
         "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026030517/0001628280-26-030517-index.htm",
-        "quote": "Cash and Cash Equivalents, at Carrying Value = $700M (as of 2026-03-31) [XBRL]"
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026052606/0001628280-26-052606-index.htm",
+        "quote": "Cash and Cash Equivalents, at Carrying Value = $733M (as of 2026-06-30) [XBRL]"
       },
       "derived": false,
       "formula": null,
       "note": null
     },
     "undrawn_committed": {
-      "value": 618700000.0,
-      "display": "$619M",
+      "value": 1595600000.0,
+      "display": "$1,596M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "2025 GIB Credit Facility $9M + ABL Credit Facility $610M",
+      "formula": "DDTL Credit Facility $1,180M + ABL Credit Facility $413M + 2025 GIB Credit Facility $2M",
       "note": "Sum of tagged undrawn revolver / facility capacity. Facilities without a separately tagged headroom are excluded — see the debt schedule for their commitments."
     },
     "total_liquidity": {
-      "value": 1319056000.0,
-      "display": "$1,319M",
+      "value": 2356913000.0,
+      "display": "$2,357M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "cash $700M + undrawn credit $619M",
-      "note": "Cash and equivalents plus tagged undrawn committed credit."
+      "formula": "cash $733M + short-term investments $29M + undrawn credit $1,596M",
+      "note": "Cash and equivalents, short-term investments and tagged undrawn committed credit."
     },
     "annual_burn": {
-      "value": 4649042000.0,
-      "display": "$4,649M",
+      "value": 5112196000.0,
+      "display": "$5,112M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "|free cash flow| (Q1 2026)",
+      "formula": "|free cash flow| (Q2 2026)",
       "note": "Annual cash burn = negative free cash flow (OCF − capex)."
     },
-    "runway_months": 3.4,
+    "runway_months": 5.5,
     "next_maturity": {
       "year": 2026,
-      "face": 203900000.0,
+      "face": 204000000.0,
       "instruments": [
         "2026 Notes"
       ]
     },
     "next_event": {
-      "date": "2026-04",
+      "date": "2026-12",
       "kind": "coupon",
-      "instrument": "2030 Notes",
+      "instrument": "2026 Notes",
       "amount": {
-        "value": 27125000.0,
-        "display": "$27M",
+        "value": 1275000.0,
+        "display": "$1M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "$1,085M face × 5.00% ÷ 2",
+        "formula": "$204M face × 1.25% ÷ 2",
         "note": null
       },
-      "pct_of_liquidity": 2.1,
+      "pct_of_liquidity": 0.1,
       "flags": [],
       "assumption": "semiannual assumed"
     }
   },
   "liquidity_events": [
     {
-      "date": "2026-04",
-      "kind": "coupon",
-      "instrument": "2030 Notes",
-      "amount": {
-        "value": 27125000.0,
-        "display": "$27M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,085M face × 5.00% ÷ 2",
-        "note": null
-      },
-      "pct_of_liquidity": 2.1,
-      "flags": [],
-      "assumption": "semiannual assumed"
-    },
-    {
-      "date": "2026-05",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23719499.999999996,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.02% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed"
-    },
-    {
-      "date": "2026-08",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23719499.999999996,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.02% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed"
-    },
-    {
-      "date": "2026-10",
-      "kind": "coupon",
-      "instrument": "2030 Notes",
-      "amount": {
-        "value": 27125000.0,
-        "display": "$27M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,085M face × 5.00% ÷ 2",
-        "note": null
-      },
-      "pct_of_liquidity": 2.1,
-      "flags": [],
-      "assumption": "semiannual assumed"
-    },
-    {
-      "date": "2026-11",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23719499.999999996,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.02% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed"
-    },
-    {
-      "date": "2026-11",
-      "kind": "coupon",
-      "instrument": "2031 Notes",
-      "amount": {
-        "value": 33698000.0,
-        "display": "$34M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$963M face × 7.00% ÷ 2",
-        "note": null
-      },
-      "pct_of_liquidity": 2.6,
-      "flags": [],
-      "assumption": "semiannual assumed"
-    },
-    {
       "date": "2026-12",
       "kind": "coupon",
       "instrument": "2026 Notes",
       "amount": {
-        "value": 1274375.0,
+        "value": 1275000.0,
         "display": "$1M",
         "unit": "USD",
         "citation": null,
@@ -2832,75 +3071,41 @@
       "kind": "maturity",
       "instrument": "2026 Notes",
       "amount": {
-        "value": 203900000.0,
+        "value": 204000000.0,
         "display": "$204M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "face due at maturity (December 2026)",
+        "formula": "face due at maturity (December 15, 2026)",
         "note": null
       },
-      "pct_of_liquidity": 15.5,
+      "pct_of_liquidity": 8.7,
       "flags": [],
       "assumption": null
-    },
-    {
-      "date": "2027-02",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23719499.999999996,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.02% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed"
     },
     {
       "date": "2027-04",
       "kind": "coupon",
       "instrument": "2030 Notes",
       "amount": {
-        "value": 27125000.0,
+        "value": 27147500.0,
         "display": "$27M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "$1,085M face × 5.00% ÷ 2",
+        "formula": "$1,086M face × 5.00% ÷ 2",
         "note": null
       },
-      "pct_of_liquidity": 2.1,
+      "pct_of_liquidity": 1.2,
       "flags": [],
       "assumption": "semiannual assumed"
     },
     {
       "date": "2027-05",
       "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23719499.999999996,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.02% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed"
-    },
-    {
-      "date": "2027-05",
-      "kind": "coupon",
       "instrument": "2031 Notes",
       "amount": {
-        "value": 33698000.0,
+        "value": 33715500.0,
         "display": "$34M",
         "unit": "USD",
         "citation": null,
@@ -2908,67 +3113,33 @@
         "formula": "$963M face × 7.00% ÷ 2",
         "note": null
       },
-      "pct_of_liquidity": 2.6,
+      "pct_of_liquidity": 1.4,
       "flags": [],
       "assumption": "semiannual assumed"
-    },
-    {
-      "date": "2027-08",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23719499.999999996,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.02% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed"
     },
     {
       "date": "2027-10",
       "kind": "coupon",
       "instrument": "2030 Notes",
       "amount": {
-        "value": 27125000.0,
+        "value": 27147500.0,
         "display": "$27M",
         "unit": "USD",
         "citation": null,
         "derived": true,
-        "formula": "$1,085M face × 5.00% ÷ 2",
+        "formula": "$1,086M face × 5.00% ÷ 2",
         "note": null
       },
-      "pct_of_liquidity": 2.1,
+      "pct_of_liquidity": 1.2,
       "flags": [],
       "assumption": "semiannual assumed"
     },
     {
       "date": "2027-11",
       "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23719499.999999996,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.02% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed"
-    },
-    {
-      "date": "2027-11",
-      "kind": "coupon",
       "instrument": "2031 Notes",
       "amount": {
-        "value": 33698000.0,
+        "value": 33715500.0,
         "display": "$34M",
         "unit": "USD",
         "citation": null,
@@ -2976,83 +3147,106 @@
         "formula": "$963M face × 7.00% ÷ 2",
         "note": null
       },
-      "pct_of_liquidity": 2.6,
+      "pct_of_liquidity": 1.4,
       "flags": [],
       "assumption": "semiannual assumed"
-    },
-    {
-      "date": "2028-02",
-      "kind": "coupon",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 23719499.999999996,
-        "display": "$24M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "$1,890M face × 5.02% ÷ 4",
-        "note": null
-      },
-      "pct_of_liquidity": 1.8,
-      "flags": [],
-      "assumption": "quarterly assumed"
-    },
-    {
-      "date": "2028-02",
-      "kind": "maturity",
-      "instrument": "2025 GIB Credit Facility",
-      "amount": {
-        "value": 1890000000.0,
-        "display": "$1,890M",
-        "unit": "USD",
-        "citation": null,
-        "derived": true,
-        "formula": "face due at maturity (February 24, 2028)",
-        "note": null
-      },
-      "pct_of_liquidity": 143.3,
-      "flags": [
-        "maturity_unfundable"
-      ],
-      "assumption": null
     },
     {
       "date": "2028-02",
       "kind": "maturity",
       "instrument": "GIB credit facility",
       "amount": {
-        "value": 503500000.0,
-        "display": "$504M",
+        "value": 503100000.0,
+        "display": "$503M",
         "unit": "USD",
         "citation": null,
         "derived": true,
         "formula": "face due at maturity (February 24, 2028)",
         "note": null
       },
-      "pct_of_liquidity": 38.2,
+      "pct_of_liquidity": 21.3,
       "flags": [],
       "assumption": null
+    },
+    {
+      "date": "2028-04",
+      "kind": "coupon",
+      "instrument": "2030 Notes",
+      "amount": {
+        "value": 27147500.0,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,086M face × 5.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.2,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2028-05",
+      "kind": "coupon",
+      "instrument": "2031 Notes",
+      "amount": {
+        "value": 33715500.0,
+        "display": "$34M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$963M face × 7.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.4,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2028-10",
+      "kind": "coupon",
+      "instrument": "2030 Notes",
+      "amount": {
+        "value": 27147500.0,
+        "display": "$27M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$1,086M face × 5.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.2,
+      "flags": [],
+      "assumption": "semiannual assumed"
+    },
+    {
+      "date": "2028-11",
+      "kind": "coupon",
+      "instrument": "2031 Notes",
+      "amount": {
+        "value": 33715500.0,
+        "display": "$34M",
+        "unit": "USD",
+        "citation": null,
+        "derived": true,
+        "formula": "$963M face × 7.00% ÷ 2",
+        "note": null
+      },
+      "pct_of_liquidity": 1.4,
+      "flags": [],
+      "assumption": "semiannual assumed"
     }
   ],
-  "liquidity_events_note": "6 instruments excluded (no tagged rate or maturity)",
+  "liquidity_events_note": "5 instruments excluded (no tagged rate or maturity)",
   "asset_snapshot": {
     "as_of_fy": 2025,
     "cash": {
-      "value": 997827000.0,
-      "display": "$998M",
+      "value": 1628920000.0,
+      "display": "$1,629M",
       "unit": "USD",
-      "citation": {
-        "accession_no": "0001628280-26-011053",
-        "form_type": "10-K",
-        "filing_date": "2026-02-24",
-        "exhibit": null,
-        "section": "XBRL concept us-gaap:CashAndCashEquivalentsAtCarryingValue",
-        "page": null,
-        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
-        "quote": "Cash and Cash Equivalents, at Carrying Value = $998M (as of 2025-12-31) [XBRL]"
-      },
-      "derived": false,
-      "formula": null,
+      "citation": null,
+      "derived": true,
+      "formula": "cash $998M + short-term investments $631M",
       "note": null
     },
     "accounts_receivable": {
@@ -3091,15 +3285,32 @@
       "formula": null,
       "note": null
     },
-    "ppe": null,
+    "ppe": {
+      "value": 3978132000.0,
+      "display": "$3,978M",
+      "unit": "USD",
+      "citation": {
+        "accession_no": "0001628280-26-011053",
+        "form_type": "10-K",
+        "filing_date": "2026-02-24",
+        "exhibit": null,
+        "section": "XBRL concept us-gaap:PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/000162828026011053/0001628280-26-011053-index.htm",
+        "quote": "Property, Plant, and Equipment and Finance Lease Right-of-Use Asset, after Accumulated Depreciation and Amortization = $3,978M (as of 2025-12-31) [XBRL]"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
     "intangibles": null,
     "other": {
-      "value": 6102463000.0,
-      "display": "$6,102M",
+      "value": 1493238000.0,
+      "display": "$1,493M",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "total assets ($8,387M) − categorized ($2,285M)",
+      "formula": "total assets ($8,387M) − categorized ($6,894M)",
       "note": "uncategorized residual — lease ROU assets, deferred taxes, investments, etc."
     },
     "total_assets": {
@@ -3128,7 +3339,7 @@
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "debt $2,718M ÷ EBITDA -$2,154M",
+      "formula": "debt $2,718M ÷ EBITDA -$3,598M",
       "note": "n.m. — non-positive denominator"
     },
     "debt_ebitda_capex": {
@@ -3137,21 +3348,21 @@
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "debt ÷ (EBITDA − capex $868M)",
+      "formula": "debt ÷ (EBITDA − capex $1,031M)",
       "note": "n.m. — non-positive denominator"
     },
     "ebitda_interest": {
-      "value": -22.65,
-      "display": "-22.6x",
+      "value": -24.25,
+      "display": "-24.2x",
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "EBITDA ÷ interest $95M",
+      "formula": "EBITDA ÷ interest $148M",
       "note": null
     },
     "ebitda_capex_interest": {
-      "value": -31.78,
-      "display": "-31.8x",
+      "value": -31.2,
+      "display": "-31.2x",
       "unit": "USD",
       "citation": null,
       "derived": true,
@@ -3179,6 +3390,720 @@
     "note": null
   },
   "nol_carryforward": null,
+  "sponsor": {
+    "has_sponsor": true,
+    "sponsor_name": "The Public Investment Fund (incl. Ayar Third Investment Company)",
+    "ownership_pct": {
+      "value": 60.0,
+      "display": "60.0%",
+      "unit": "%",
+      "citation": {
+        "accession_no": "0001628280-26-026842",
+        "form_type": "DEF 14A",
+        "filing_date": "2026-04-23",
+        "exhibit": null,
+        "section": "Beneficial ownership / related person transactions",
+        "page": null,
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+        "quote": "The Public Investment Fund (3)                           229,947,163       60%      175,000              100%      60%"
+      },
+      "derived": false,
+      "formula": null,
+      "note": null
+    },
+    "related_party_lender": "Gulf International Bank Saudi Arabia (GIB) — ~98% owned by PIF",
+    "lender_source": "related-party-transactions footnote",
+    "support_items": [
+      {
+        "kind": "related-party lender",
+        "counterparty": "Gulf International Bank Saudi Arabia (GIB) — ~98% owned by PIF",
+        "amount": {
+          "value": 506600000.0,
+          "display": "$507M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "On February 24, 2025, Lucid LLC entered into an agreement with GIB to renew the 2023 GIB Credit Facility (the “2025 GIB Credit Facility Agreement,” and together with the 2023 GIB Facility Agreement, the “Amended GIB Facility Agreement”), maturing on February 24, 2028, to increase the credit facility committed amount from SAR 1.0 billion (approximately $266.1 million) to SAR 1.9 billion (approximately $506.6 million) (the “2025 GIB Credit Facility”)."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "Revolving credit facility to Lucid LLC, renewed Feb 2025 and increased to SAR 1.9bn (~$506.6M), maturing Feb 24, 2028; peak 2025 principal outstanding SAR 1,785.0M (~$476.0M); SAR 1,755.0M (~$468.0M) outstanding at 12/31/2025."
+      },
+      {
+        "kind": "related-party lender",
+        "counterparty": "Ayar Third Investment Company (PIF subsidiary)",
+        "amount": {
+          "value": 1980000000.0,
+          "display": "$1,980M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "In November 2025, the Company increased the aggregate principal amount of the DDTL Credit Facility from $750.0 million to $1.98 billion."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "Unsecured delayed draw term loan credit facility, increased to $1.98bn in Nov 2025 and to ~$2.5bn (drawn + undrawn) via April 14, 2026 amendment; $500.0M drawn April 1, 2026; maturity Aug 4, 2029; minimum liquidity covenant eliminated."
+      },
+      {
+        "kind": "related-party lender",
+        "counterparty": "Ayar Third Investment Company (PIF subsidiary)",
+        "amount": {
+          "value": 430000000.0,
+          "display": "$430M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "In connection with the pricing of the 5.00% Convertible Senior Notes due in April 2030 (the \"2030 Notes\"), Ayar entered into a privately negotiated prepaid forward transaction on April 2, 2025 with a forward counterparty that is an affiliate of one of the initial purchasers of the 2030 Notes, pursuant to which Ayar will purchase approximately $430.0 million of the Company’s common stock with delivery expected to occur on or about the maturity date for the 2030 Notes, subject to the ability of the forward counterparty to elect to settle all or a portion of the prepaid forward transaction early."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "Prepaid forward transaction tied to 2030 Notes; Ayar to purchase ~$430.0M of common stock; Company pays Ayar periodic fee of 0.5% per annum."
+      },
+      {
+        "kind": "related-party lender",
+        "counterparty": "Ayar Third Investment Company (PIF subsidiary)",
+        "amount": {
+          "value": 636700000.0,
+          "display": "$637M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "In connection with the pricing of the 7.00% Convertible Senior Notes due in November 2031 (the \"2031 Notes\"), Ayar entered into a privately negotiated prepaid forward transaction on November 11, 2025 with a forward counterparty that is an affiliate of one of the initial purchasers of the 2031 Notes, pursuant to which Ayar will purchase approximately $636.7 million of the Company’s common stock with delivery expected to occur on or about the maturity date for the 2031 Notes, subject to the ability of the forward counterparty to elect to settle all or a portion of the prepaid forward transaction early."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "Prepaid forward transaction tied to 2031 Notes; Ayar to purchase ~$636.7M of common stock; Company pays Ayar periodic fee (2025 fee incurred $2.0M, $1.1M paid)."
+      },
+      {
+        "kind": "related-party lender",
+        "counterparty": "Ayar Third Investment Company (PIF subsidiary)",
+        "amount": {
+          "value": 550000000.0,
+          "display": "$550M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "On April 14, 2026, we entered into a subscription agreement (the “April 2026 Subscription Agreement”) with Ayar, pursuant to which Ayar agreed to purchase 55,000 shares of our Series C Convertible Preferred Stock, par value $0.0001 per share (“Series C Convertible Preferred Stock”), for an aggregate purchase price of  $550.0 million in a private placement."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "April 2026 Subscription Agreement: Ayar purchases 55,000 shares of Series C Convertible Preferred Stock for $550.0M."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "Ayar Third Investment Company (PIF subsidiary)",
+        "amount": null,
+        "description": "Sixth IRA Amendment granting registration rights for shares purchased under prepaid forwards."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "Ayar Third Investment Company (PIF subsidiary)",
+        "amount": null,
+        "description": "Seventh IRA Amendment granting registration rights for Series C preferred and underlying common."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "Emaar, The Economic City (~55% owned by PIF)",
+        "amount": {
+          "value": 16600000.0,
+          "display": "$17M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "We expect to make payments under the agreement in the aggregate amount of approximately SAR 62 million (approximately $16.6 million)."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "Development lease for KAEC manufacturing plant in Saudi Arabia; expected aggregate payments ~SAR 62M (~$16.6M)."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "Al Bawani Company Limited (~33% owned by PIF)",
+        "amount": {
+          "value": 572700000.0,
+          "display": "$573M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "The capital expenditures incurred to date under these agreements were SAR 2,147.8 million (approximately $572.7 million) as of December 31, 2025."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "Design and construction services for AMP-2; capex to date SAR 2,147.8M (~$572.7M); SAR 306.0M (~$81.6M) due at 12/31/2025."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "Aston Martin (~14% owned by PIF)",
+        "amount": {
+          "value": 99000000.0,
+          "display": "$99M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "We expect to receive the remaining cash payments of  $99 million in technology access fees, along with an additional $4.2 million in integration service fees."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "Strategic technology and supply arrangement; $99M remaining technology access fees, $4.2M integration fees, $225M minimum powertrain spend."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "King Abdullah Financial District Development and Management Company (wholly-owned by PIF)",
+        "amount": {
+          "value": 2000000.0,
+          "display": "$2M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "We expect to make payments under the agreement in the aggregate amount of approximately SAR 7.6 million (approximately $2.0 million) (exclusive of VAT and service charges)."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "Saudi corporate office lease; expected aggregate payments ~SAR 7.6M (~$2.0M)."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "Government of Saudi Arabia (Ministry of Finance)",
+        "amount": {
+          "value": 144000000.0,
+          "display": "$144M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "The Company recognized net vehicle sales amount of SAR 540.2 million (approximately $144.0 million) during the year ended December 31, 2025."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "EV Purchase Agreement for up to 100,000 vehicles; 2025 net vehicle sales SAR 540.2M (~$144.0M)."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "Uber Technologies, Inc.",
+        "amount": null,
+        "description": "First Vehicle Production Agreement: minimum commitment of 20,000 Lucid Gravity Plus vehicles."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "Uber Technologies, Inc.",
+        "amount": null,
+        "description": "Second Vehicle Production Agreement: minimum commitment of 25,000 Lucid Midsize Plus vehicles."
+      },
+      {
+        "kind": "related-party transaction",
+        "counterparty": "SMB Holding Corporation (Uber subsidiary)",
+        "amount": {
+          "value": 200000000.0,
+          "display": "$200M",
+          "unit": "USD",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "On April 14, 2026, we entered into a subscription agreement with a subsidiary of Uber, SMB Holding Corporation (“SMB”), under which we agreed to issue and SMB agreed to purchase $200.0 million of our Common Stock in a private placement (the “2026 Uber Private Placement”)."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "description": "2026 Uber Private Placement: $200.0M purchase of Common Stock (common equity, not credit) with 18-month lockup."
+      }
+    ],
+    "owners": [
+      {
+        "name": "The Public Investment Fund (incl. Ayar Third Investment Company)",
+        "pct": {
+          "value": 60.0,
+          "display": "60.0%",
+          "unit": "%",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "The Public Investment Fund (3)                           229,947,163       60%      175,000              100%      60%"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "shares": {
+          "value": 229947163.0,
+          "display": "229,947,163",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "The Public Investment Fund (3)                           229,947,163       60%      175,000              100%      60%"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Uber Technologies, Inc. (via SMB Holding Corporation)",
+        "pct": {
+          "value": 11.0,
+          "display": "11.0%",
+          "unit": "%",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Uber has sole voting and dispositive power over 37,753,583 shares of Common Stock and no shared voting or dispositive power over our Common Stock, resulting in approximately 11% beneficial ownership based on the shares outstanding as of March 15, 2026."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "shares": {
+          "value": 37753583.0,
+          "display": "37,753,583",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Uber has sole voting and dispositive power over 37,753,583 shares of Common Stock and no shared voting or dispositive power over our Common Stock, resulting in approximately 11% beneficial ownership based on the shares outstanding as of March 15, 2026."
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Turqi Alnowaiser",
+        "pct": {
+          "value": 60.0,
+          "display": "60.0%",
+          "unit": "%",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Turqi Alnowaiser (9)                                     229,364,580       60%      175,000              100%      60%"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "shares": {
+          "value": 229364580.0,
+          "display": "229,364,580",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Turqi Alnowaiser (9)                                     229,364,580       60%      175,000              100%      60%"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Marc Winterhoff",
+        "pct": null,
+        "shares": {
+          "value": 179486.0,
+          "display": "179,486",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Marc Winterhoff (4)                                      179,486           *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Taoufiq Boussaid",
+        "pct": null,
+        "shares": {
+          "value": 55655.0,
+          "display": "55,655",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Taoufiq Boussaid (5)                                     55,655            *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Gagan Dhingra",
+        "pct": null,
+        "shares": {
+          "value": 67235.0,
+          "display": "67,235",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Gagan Dhingra (6)                                        67,235            *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Eric Bach",
+        "pct": null,
+        "shares": {
+          "value": 97761.0,
+          "display": "97,761",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Eric Bach (7)                                            97,761            *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Peter Rawlinson",
+        "pct": null,
+        "shares": {
+          "value": 2379445.0,
+          "display": "2,379,445",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Peter Rawlinson (8)                                      2,379,445         *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Silvio Napoli",
+        "pct": null,
+        "shares": null
+      },
+      {
+        "name": "Douglas Grimm",
+        "pct": null,
+        "shares": null
+      },
+      {
+        "name": "Lisa M. Lambert",
+        "pct": null,
+        "shares": {
+          "value": 5289.0,
+          "display": "5,289",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Lisa M. Lambert (10)                                     5,289             *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Andrew Liveris",
+        "pct": null,
+        "shares": {
+          "value": 145357.0,
+          "display": "145,357",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Andrew Liveris (11)                                      145,357           *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Nichelle Maynard-Elliott",
+        "pct": null,
+        "shares": {
+          "value": 15012.0,
+          "display": "15,012",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Nichelle Maynard-Elliott (12)                            15,012            *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Chabi Nouri",
+        "pct": null,
+        "shares": {
+          "value": 13494.0,
+          "display": "13,494",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Chabi Nouri (13)                                         13,494            *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Ori Winitzer",
+        "pct": null,
+        "shares": {
+          "value": 14521.0,
+          "display": "14,521",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Ori Winitzer (14)                                        14,521            *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "Janet S. Wong",
+        "pct": null,
+        "shares": {
+          "value": 15816.0,
+          "display": "15,816",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "Janet S. Wong (15)                                       15,816            *        —                    —         *"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      },
+      {
+        "name": "All executive officers and directors as a group",
+        "pct": {
+          "value": 60.0,
+          "display": "60.0%",
+          "unit": "%",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "All executive officers and directors as a group (11      229,809,210       60%      175,000              100%      60%"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        },
+        "shares": {
+          "value": 229809210.0,
+          "display": "229,809,210",
+          "unit": "shares",
+          "citation": {
+            "accession_no": "0001628280-26-026842",
+            "form_type": "DEF 14A",
+            "filing_date": "2026-04-23",
+            "exhibit": null,
+            "section": "Beneficial ownership / related person transactions",
+            "page": null,
+            "source_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-026842-index.html",
+            "quote": "All executive officers and directors as a group (11      229,809,210       60%      175,000              100%      60%"
+          },
+          "derived": false,
+          "formula": null,
+          "note": null
+        }
+      }
+    ],
+    "note": null
+  },
   "rp_basket": {
     "available": true,
     "covenant_status": "none",
@@ -3193,17 +4118,6 @@
     },
     "points": [
       {
-        "label": "Q3 2023",
-        "period_end": "2023-09-30",
-        "net_income": -630.9,
-        "ni_credit": -630.9,
-        "equity_proceeds": 0.0,
-        "dividends": 0.0,
-        "buybacks": 0.0,
-        "contribution": -630.9,
-        "cumulative": -630.9
-      },
-      {
         "label": "Q4 2023",
         "period_end": "2023-12-31",
         "net_income": -653.8,
@@ -3212,7 +4126,7 @@
         "dividends": 0.0,
         "buybacks": 0.0,
         "contribution": -653.8,
-        "cumulative": -1284.7
+        "cumulative": -653.8
       },
       {
         "label": "Q1 2024",
@@ -3223,7 +4137,7 @@
         "dividends": 0.0,
         "buybacks": 0.0,
         "contribution": -680.9,
-        "cumulative": -1965.5
+        "cumulative": -1334.6
       },
       {
         "label": "Q2 2024",
@@ -3234,29 +4148,29 @@
         "dividends": 0.0,
         "buybacks": 0.0,
         "contribution": -643.4,
-        "cumulative": -2608.9
+        "cumulative": -1978.0
       },
       {
         "label": "Q3 2024",
         "period_end": "2024-09-30",
-        "net_income": -949.6,
-        "ni_credit": -949.6,
+        "net_income": -992.5,
+        "ni_credit": -992.5,
         "equity_proceeds": 0.0,
         "dividends": 0.0,
         "buybacks": 0.0,
-        "contribution": -949.6,
-        "cumulative": -3558.5
+        "contribution": -992.5,
+        "cumulative": -2970.5
       },
       {
         "label": "Q4 2024",
         "period_end": "2024-12-31",
-        "net_income": -744.8,
-        "ni_credit": -744.8,
+        "net_income": -397.2,
+        "ni_credit": -397.2,
         "equity_proceeds": 0.0,
         "dividends": 0.0,
         "buybacks": 0.0,
-        "contribution": -744.8,
-        "cumulative": -4303.4
+        "contribution": -397.2,
+        "cumulative": -3367.7
       },
       {
         "label": "Q1 2025",
@@ -3267,7 +4181,7 @@
         "dividends": 0.0,
         "buybacks": 0.0,
         "contribution": -366.2,
-        "cumulative": -4669.5
+        "cumulative": -3733.9
       },
       {
         "label": "Q2 2025",
@@ -3278,7 +4192,7 @@
         "dividends": 0.0,
         "buybacks": 0.0,
         "contribution": -539.4,
-        "cumulative": -5209.0
+        "cumulative": -4273.3
       },
       {
         "label": "Q3 2025",
@@ -3289,18 +4203,18 @@
         "dividends": 0.0,
         "buybacks": 0.0,
         "contribution": -978.4,
-        "cumulative": -6187.4
+        "cumulative": -5251.7
       },
       {
         "label": "Q4 2025",
         "period_end": "2025-12-31",
-        "net_income": -1797.7,
-        "ni_credit": -1797.7,
+        "net_income": -814.0,
+        "ni_credit": -814.0,
         "equity_proceeds": 0.0,
         "dividends": 0.0,
         "buybacks": 0.0,
-        "contribution": -1797.7,
-        "cumulative": -7985.1
+        "contribution": -814.0,
+        "cumulative": -6065.8
       },
       {
         "label": "Q1 2026",
@@ -3311,7 +4225,18 @@
         "dividends": 0.0,
         "buybacks": 0.0,
         "contribution": -1028.3,
-        "cumulative": -9013.4
+        "cumulative": -7094.1
+      },
+      {
+        "label": "Q2 2026",
+        "period_end": "2026-06-30",
+        "net_income": -1034.9,
+        "ni_credit": -1034.9,
+        "equity_proceeds": 0.0,
+        "dividends": 0.0,
+        "buybacks": 0.0,
+        "contribution": -1034.9,
+        "cumulative": -8129.0
       }
     ],
     "capacity": {
@@ -3320,7 +4245,7 @@
       "unit": "USD",
       "citation": null,
       "derived": true,
-      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q3 2023→Q1 2026 (-$9,013M), floored at 0",
+      "formula": "starter $0M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI + equity issuance − dividends − buybacks] over Q4 2023→Q2 2026 (-$8,129M), floored at 0",
       "note": "omits junior-debt-issuance proceeds and unrestricted-subsidiary investment returns (not deterministically extractable); cumulation anchors at the lookback-window start — a proxy for the issuance-date build convention; builder negative — cumulative deductions exceed credits, $0 capacity"
     },
     "formula_note": "equity_issuance_proceeds, dividends_paid not tagged in XBRL — treated as $0",
@@ -3342,7 +4267,7 @@
     "unbounded_note": "no lien covenant found in the agreements governing 2030 Notes, 2031 Notes, 2026 Notes — unbounded priming risk (covenant-lite)",
     "rows": [],
     "uptier_priming": null,
-    "j_crew_blocker_present": false,
+    "j_crew_blocker_present": null,
     "suggested_priming": null,
     "derivation": "deterministic $ / % / ratio tokens over cached covenant extractions; NTA headroom = pct × (total assets − intangibles incl. goodwill) from the asset snapshot; absolute-$ baskets are stated capacity, never headroom"
   },
@@ -3352,7 +4277,7 @@
       "label": "Q4 2023",
       "period_end": "2023-12-31",
       "reported_debt": 2069493000.0,
-      "ebitda": -2866088000.0,
+      "ebitda": -2850788000.0,
       "leverage": null
     },
     {
@@ -3360,7 +4285,7 @@
       "label": "Q1 2024",
       "period_end": "2024-03-31",
       "reported_debt": 2070775000.0,
-      "ebitda": -3057342000.0,
+      "ebitda": null,
       "leverage": null
     },
     {
@@ -3368,7 +4293,7 @@
       "label": "Q2 2024",
       "period_end": "2024-06-30",
       "reported_debt": 2067785000.0,
-      "ebitda": -3007074000.0,
+      "ebitda": null,
       "leverage": null
     },
     {
@@ -3376,14 +4301,14 @@
       "label": "Q3 2024",
       "period_end": "2024-09-30",
       "reported_debt": 2047496000.0,
-      "ebitda": -3024737000.0,
+      "ebitda": null,
       "leverage": null
     },
     {
       "fiscal_year": 2024,
       "label": "Q4 2024",
       "period_end": "2024-12-31",
-      "reported_debt": 2254985000.0,
+      "reported_debt": 2128568000.0,
       "ebitda": -2725520000.0,
       "leverage": null
     },
@@ -3426,34 +4351,48 @@
       "reported_debt": 2755293000.0,
       "ebitda": -3329705000.0,
       "leverage": null
+    },
+    {
+      "fiscal_year": 2026,
+      "label": "Q2 2026",
+      "period_end": "2026-06-30",
+      "reported_debt": 3253698000.0,
+      "ebitda": -3597626000.0,
+      "leverage": null
     }
   ],
   "maturity_wall": [
     {
       "year": 2026,
-      "face": 203900000.0,
+      "face": 204000000.0,
       "instruments": [
         "2026 Notes"
       ]
     },
     {
       "year": 2028,
-      "face": 2393500000.0,
+      "face": 503100000.0,
       "instruments": [
-        "2025 GIB Credit Facility",
         "GIB credit facility"
       ]
     },
     {
+      "year": 2029,
+      "face": 500000000.0,
+      "instruments": [
+        "DDTL Credit Facility"
+      ]
+    },
+    {
       "year": 2030,
-      "face": 1085000000.0,
+      "face": 1085900000.0,
       "instruments": [
         "2030 Notes"
       ]
     },
     {
       "year": 2031,
-      "face": 962800000.0,
+      "face": 963300000.0,
       "instruments": [
         "2031 Notes"
       ]
@@ -3461,55 +4400,137 @@
   ],
   "what_changed": [
     {
-      "metric": "Cash & equivalents",
+      "metric": "Total reported debt",
       "unit": "USD",
-      "prior": 997827000.0,
-      "latest": 700356000.0,
-      "delta_pct": -29.8,
+      "prior": 2755293000.0,
+      "latest": 3253698000.0,
+      "delta_pct": 18.1,
       "direction": "worse",
-      "prior_fy": 2025,
+      "prior_fy": 2026,
       "latest_fy": 2026,
-      "prior_label": "Q4 2025",
-      "latest_label": "Q1 2026"
-    },
-    {
-      "metric": "Free cash flow (TTM)",
-      "unit": "USD",
-      "prior": -3800070000.0,
-      "latest": -4649042000.0,
-      "delta_pct": -22.3,
-      "direction": "worse",
-      "prior_fy": 2025,
-      "latest_fy": 2026,
-      "prior_label": "Q4 2025",
-      "latest_label": "Q1 2026"
-    },
-    {
-      "metric": "EBITDA (TTM)",
-      "unit": "USD",
-      "prior": -3050553000.0,
-      "latest": -3329705000.0,
-      "delta_pct": -9.2,
-      "direction": "worse",
-      "prior_fy": 2025,
-      "latest_fy": 2026,
-      "prior_label": "Q4 2025",
-      "latest_label": "Q1 2026"
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
     },
     {
       "metric": "Revenue (TTM)",
       "unit": "USD",
-      "prior": 1353790000.0,
-      "latest": 1401207000.0,
-      "delta_pct": 3.5,
+      "prior": 1401207000.0,
+      "latest": 1547122000.0,
+      "delta_pct": 10.4,
       "direction": "better",
-      "prior_fy": 2025,
+      "prior_fy": 2026,
       "latest_fy": 2026,
-      "prior_label": "Q4 2025",
-      "latest_label": "Q1 2026"
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
+    },
+    {
+      "metric": "Free cash flow (TTM)",
+      "unit": "USD",
+      "prior": -4649042000.0,
+      "latest": -5112196000.0,
+      "delta_pct": -10.0,
+      "direction": "worse",
+      "prior_fy": 2026,
+      "latest_fy": 2026,
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
+    },
+    {
+      "metric": "EBITDA (TTM)",
+      "unit": "USD",
+      "prior": -3329705000.0,
+      "latest": -3597626000.0,
+      "delta_pct": -8.0,
+      "direction": "worse",
+      "prior_fy": 2026,
+      "latest_fy": 2026,
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
+    },
+    {
+      "metric": "Cash & equivalents",
+      "unit": "USD",
+      "prior": 700356000.0,
+      "latest": 732601000.0,
+      "delta_pct": 4.6,
+      "direction": "better",
+      "prior_fy": 2026,
+      "latest_fy": 2026,
+      "prior_label": "Q1 2026",
+      "latest_label": "Q2 2026"
     }
   ],
   "sources": [
+    {
+      "accession_no": "0001628280-26-065525",
+      "form_type": "8-K",
+      "filing_date": "2026-10-09",
+      "period_of_report": "2026-10-06",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-065525-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-065525-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-26-064910",
+      "form_type": "8-K",
+      "filing_date": "2026-10-05",
+      "period_of_report": "2026-10-05",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-064910-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-064910-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-26-061541",
+      "form_type": "8-K",
+      "filing_date": "2026-09-11",
+      "period_of_report": "2026-09-04",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-061541-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-061541-index.html",
+      "n_exhibits": 6,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-26-059385",
+      "form_type": "8-K",
+      "filing_date": "2026-08-28",
+      "period_of_report": "2026-08-24",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-059385-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-059385-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001104659-26-094879",
+      "form_type": "8-K",
+      "filing_date": "2026-08-12",
+      "period_of_report": "2026-08-12",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001104659-26-094879-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001104659-26-094879-index.html",
+      "n_exhibits": 8,
+      "n_credit_docs": 0
+    },
+    {
+      "accession_no": "0001628280-26-052606",
+      "form_type": "10-Q",
+      "filing_date": "2026-08-04",
+      "period_of_report": "2026-06-30",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052606-index.html",
+      "n_exhibits": 119,
+      "n_credit_docs": 3
+    },
+    {
+      "accession_no": "0001628280-26-052548",
+      "form_type": "8-K",
+      "filing_date": "2026-08-04",
+      "period_of_report": "2026-08-04",
+      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052548-index.html",
+      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-26-052548-index.html",
+      "n_exhibits": 7,
+      "n_credit_docs": 0
+    },
     {
       "accession_no": "0001628280-26-048119",
       "form_type": "8-K",
@@ -4219,60 +5240,11 @@
       "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-23-037347-index.html",
       "n_exhibits": 8,
       "n_credit_docs": 0
-    },
-    {
-      "accession_no": "0001104659-23-109509",
-      "form_type": "8-K",
-      "filing_date": "2023-10-17",
-      "period_of_report": "2023-10-17",
-      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001104659-23-109509-index.html",
-      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001104659-23-109509-index.html",
-      "n_exhibits": 8,
-      "n_credit_docs": 0
-    },
-    {
-      "accession_no": "0001104659-23-100823",
-      "form_type": "8-K",
-      "filing_date": "2023-09-14",
-      "period_of_report": "2023-09-10",
-      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001104659-23-100823-index.html",
-      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001104659-23-100823-index.html",
-      "n_exhibits": 7,
-      "n_credit_docs": 0
-    },
-    {
-      "accession_no": "0001628280-23-027785",
-      "form_type": "10-Q",
-      "filing_date": "2023-08-07",
-      "period_of_report": "2023-06-30",
-      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-23-027785-index.html",
-      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-23-027785-index.html",
-      "n_exhibits": 91,
-      "n_credit_docs": 1
-    },
-    {
-      "accession_no": "0001628280-23-027783",
-      "form_type": "8-K",
-      "filing_date": "2023-08-07",
-      "period_of_report": "2023-08-07",
-      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-23-027783-index.html",
-      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001628280-23-027783-index.html",
-      "n_exhibits": 8,
-      "n_credit_docs": 0
-    },
-    {
-      "accession_no": "0001104659-23-088343",
-      "form_type": "8-K",
-      "filing_date": "2023-08-07",
-      "period_of_report": "2023-08-07",
-      "primary_doc_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001104659-23-088343-index.html",
-      "filing_index_url": "https://www.sec.gov/Archives/edgar/data/1811210/0001104659-23-088343-index.html",
-      "n_exhibits": 7,
-      "n_credit_docs": 0
     }
   ],
   "warnings": [
-    "Debt schedule sums to $4,645M vs $2,718M reported total debt (latest FY) — instruments may overlap (a facility and its sub-facility) or be missing; review the schedule citations."
+    "Non-USD debt facts left out of the schedule: 2023 Amended GIB Facility Agreement (SAR), 2025 GIB Credit Facility (SAR), GIB Facility Agreement (SAR), Saudi Industrial Development Fund Loan Agreement (SAR). A facility shows only where the filing also tags its USD amount.",
+    "1 covenant quote not found verbatim in the agreement text; its value is kept, the quote dropped."
   ],
   "llm_fallback_note": null
 }

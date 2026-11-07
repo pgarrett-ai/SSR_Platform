@@ -13,13 +13,38 @@ def _aal_overview() -> dict:
     return json.loads((CACHE / "AAL_3y.json").read_text(encoding="utf-8"))
 
 
+HEROES = sorted(p.stem.split("_")[0] for p in CACHE.glob("*_3y.json"))
+
+
 def test_hero_snapshots_validate_through_merged_schema():
     from app.core.cache import load_overview
 
-    for ticker in ("AAL", "ATUS", "TSE"):
+    assert {"AAL", "ATUS", "TSE", "LCID"} <= set(HEROES)
+    for ticker in HEROES:
         ov = load_overview(ticker, 3)
         assert ov is not None, f"{ticker} hero snapshot failed to load/validate"
         assert ov.header.from_cache is True
+
+
+def test_hero_snapshots_carry_a_cap_table_when_debt_is_material():
+    # a shipped snapshot with billions of reported debt and no instruments is a broken demo
+    import re
+
+    from app.pipeline import _MATERIAL_DEBT_FLOOR
+
+    for ticker in HEROES:
+        ov = json.loads((CACHE / f"{ticker}_3y.json").read_text(encoding="utf-8"))
+        latest = (ov.get("forensic_table") or [{}])[-1]
+        debt = (latest.get("total_debt") or {}).get("value") or 0
+        if debt <= _MATERIAL_DEBT_FLOOR:
+            continue
+        assert ov.get("debt_schedule"), f"{ticker}: ${debt / 1e6:,.0f}M debt, no schedule"
+        assert ov.get("maturity_wall"), f"{ticker}: no maturity wall"
+        # a year in the name should become a maturity; "2019-1" is an EETC series, not a date
+        dated = [d for d in ov["debt_schedule"]
+                 if re.search(r"\b20\d\d\b(?!-\d)", d.get("instrument") or "") and not d.get("maturity")
+                 and "facilit" not in (d.get("instrument") or "").lower()]
+        assert not dated, f"{ticker}: year in name but no maturity: {[d['instrument'] for d in dated]}"
 
 
 def test_hero_snapshots_seed_a_labelled_ebitda():
