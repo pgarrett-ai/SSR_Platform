@@ -121,7 +121,7 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
           <input type="number" step={5} value={userP} onChange={(e) => setUserP(Number(e.target.value))} className={NUM_CLS} />
         </Field>
         <label className="flex items-center gap-1.5 pb-1.5 text-xs text-slate-400"
-          title="exit consent: the stub is contractually subordinated to the new paper (single-hop) — the coercion mechanic">
+          title="exit consent: the stub is contractually subordinated to the new paper — the coercion mechanic">
           <input type="checkbox" checked={exitConsent}
             onChange={(e) => setExitConsent(e.target.checked)} className="accent-accent" />
           exit consent

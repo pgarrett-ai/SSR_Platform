@@ -199,6 +199,7 @@ export function useShowMore(items = [], initial, label = "items") {
   const control =
     items.length > initial ? (
       <button
+        aria-expanded={all}
         onClick={() => setAll((v) => !v)}
         className="mt-2 text-[11px] text-accent hover:underline"
       >

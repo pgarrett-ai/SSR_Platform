@@ -20,7 +20,7 @@ function CiteMark({ citation }) {
   return <CitedNumber cv={{ display: "§", citation }} className="text-accent" />;
 }
 
-// The seed is fixed so the strip, this page and every rehearsal show the same numbers.
+// The seed is fixed so the strip, this page and every re-run show the same numbers.
 // base_ebitda null = not extracted: the server then values the estate in liquidation.
 const SIM_DEFAULTS = {
   base_ebitda: null, horizon_years: 1.5, ebitda_vol: 0.28, mean_reversion: 0.6,
@@ -153,7 +153,7 @@ export default function RecoveryPage({ ticker, years, onRecoveryResult }) {
             <div className="flex flex-wrap items-center gap-2">
               {ATTACKS.filter(([k]) => k !== "substantive_consolidation"
                 || result.structure.entities.length > 1).map(([k, label, tip]) => (
-                <Button key={k} title={tip} disabled={!!running}
+                <Button key={k} title={tip} disabled={!!running} aria-pressed={stress?.key === k}
                   onClick={() => runStress(k, label, { attack: k })}
                   className={stress?.key === k ? "border-accent text-white" : ""}>
                   {label}
@@ -161,9 +161,9 @@ export default function RecoveryPage({ ticker, years, onRecoveryResult }) {
               ))}
               <span className="ml-3 text-[11px] uppercase tracking-wide text-slate-400">Priming $M</span>
               <NumCell value={primingFace} step={100} onChange={setPrimingFace} className="w-24" />
-              <Button disabled={!!running || !(primingFace > 0)}
+              <Button disabled={!!running || !(primingFace > 0)} aria-pressed={stress?.key === "priming"}
                 title={ctx.liens_headroom?.suggested_priming?.basis
-                  ? `pre-seeded from the liens covenant: ${ctx.liens_headroom.suggested_priming.basis}`
+                  ? `suggested by the liens covenant: ${ctx.liens_headroom.suggested_priming.basis}`
                   : "a new secured layer ranked ahead of every existing lien"}
                 onClick={() => runStress("priming", `Primed by ${mm(primingFace)}`,
                   { priming: { face: primingFace } })}
@@ -333,7 +333,7 @@ function Assumptions({ ctx, structure, setStructure, sim, setSim, accrualUsed, r
   const n = structure.entities.length;
   const costs = `${Math.round(100 * (structure.admin_pct || 0))}%${structure.admin_fees ? ` + ${mm(structure.admin_fees)}` : ""}`;
   const summary = [
-    `base EBITDA ${sim.base_ebitda == null ? "not extracted" : mm(sim.base_ebitda)}${label ? ` (${label})` : ""}`,
+    `base EBITDA ${sim.base_ebitda == null ? "not available" : mm(sim.base_ebitda)}${label ? ` (${label})` : ""}`,
     `normal/stress multiple ${fmtX(sim.base_multiple)}/${fmtX(sim.distress_multiple)}`,
     `estate costs ${costs}`,
     `accrual ${fmt(accrualUsed ?? sim.accrual_years ?? 0, 2)} yrs`,

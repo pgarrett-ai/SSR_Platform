@@ -43,7 +43,7 @@ export default function MarketPanel({ data }) {
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">
                     {b.coupon}% {b.maturity?.slice(0, 4)}
-                    {b.convertible && <Badge className="ml-1.5">convert</Badge>}
+                    {b.convertible && <Badge className="ml-1.5">convertible</Badge>}
                   </span>
                   <span className="font-mono text-slate-100">
                     {fmtNum(b.last_price)} · {fmtNum(b.last_yield)}%

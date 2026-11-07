@@ -57,7 +57,7 @@ export default function DebtScheduleTable({ instruments, asOf, reported, reporte
   const total = amounts.reduce((s, d) => s + d._out, 0);
   const totalCv = {
     value: total, display: fmtMoney(total), derived: true,
-    formula: `Σ outstanding of the ${amounts.length} instruments with a tagged amount`,
+    formula: `Σ outstanding of the ${amounts.length} instruments with a reported amount`,
   };
   const gap = reported?.value != null ? total - reported.value : null;
   const colSpanRest = 3 + (hasCapacity ? 1 : 0) + (hasObligor ? 1 : 0);
@@ -147,7 +147,7 @@ export default function DebtScheduleTable({ instruments, asOf, reported, reporte
             )}
           </>
         ) : (
-          `No reported debt figure tagged for ${asOf || "the schedule's period"} to reconcile against.`
+          `No reported debt figure for ${asOf || "the schedule's period"} to reconcile against.`
         )}
       </p>
       {notes}

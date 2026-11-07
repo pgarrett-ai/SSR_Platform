@@ -61,7 +61,7 @@ export default function RefiWall({ ticker, years }) {
                   </Td>
                   <Td>
                     <Badge tone={v.tone} title={[
-                      r.quote?.ytm != null && `bucket paper yields ${r.quote.ytm.toFixed(1)}%${r.markets_closed ? " (≥ 40%: market closed)" : ""}`,
+                      r.quote?.ytm != null && `bonds due this year yield ${r.quote.ytm.toFixed(1)}%${r.markets_closed ? " (≥ 40%: market closed)" : ""}`,
                       r.verdict === "unrefinanceable" && !r.markets_closed && "a later wall cannot be refinanced",
                       ...(r.annotations || []),
                     ].filter(Boolean).join(" · ") || undefined}>

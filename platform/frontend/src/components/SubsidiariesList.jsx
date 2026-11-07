@@ -73,7 +73,7 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
       <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
         <span>
           {subsidiaries.length} legal entities · debt at an entity is served by that entity's
-          value first (structural subordination) · seeds the Recovery entity tree
+          value first (structural subordination) · the Recovery tab can add these entities to its structure
           {src?.source_url && (
             <>
               {" · "}

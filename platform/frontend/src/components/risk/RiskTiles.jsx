@@ -28,7 +28,7 @@ export default function RiskTiles({ data }) {
       <Stat
         label="Asset vol"
         value={m.available ? fmtPct(m.asset_vol) : "—"}
-        sub={m.available && (m.converged ? "Merton solve, 1-year" : "naive assets: solve did not converge")}
+        sub={m.available && (m.converged ? "Merton model, 1-year horizon" : "assets approximated as equity + debt (Merton did not converge)")}
       />
       <Stat
         label="Altman Z''"
@@ -39,7 +39,7 @@ export default function RiskTiles({ data }) {
       {tr?.available && tr.real_labels && (
         <div title={tr.note}>
           <Stat
-            label="Trained 12m PD"
+            label="Hazard model 12m PD"
             value={`${pd(tr.value)}${tr.implied_rating ? ` ≈ ${tr.implied_rating}` : ""}`}
             sub="calibrated to the observed default rate"
           />

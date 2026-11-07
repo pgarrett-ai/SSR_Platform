@@ -78,7 +78,7 @@ function streamSse(url, doneEvent, onProgress) {
         es.close();
         let body = null;
         try { body = JSON.parse(e.data); } catch (_) {}
-        reject(new Error(body?.detail || body?.error || "pipeline error"));
+        reject(new Error(body?.detail || body?.error || "the analysis could not be completed"));
       } else if (!settled) {
         es.close();
         reject(new Error("connection to server lost"));

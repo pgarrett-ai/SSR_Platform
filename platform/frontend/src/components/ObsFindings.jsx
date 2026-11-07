@@ -13,7 +13,7 @@ const CAT_LABELS = {
   vie: "Variable interest entity",
   related_party: "Related party",
   litigation_env: "Environmental / litigation",
-  other: "Other OBS",
+  other: "Other off-balance-sheet",
 };
 
 // Footnote disclosures that are not in the economic debt bridge (litigation, related

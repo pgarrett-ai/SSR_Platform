@@ -29,7 +29,7 @@ export default function EightKEvents({ ticker }) {
               <Badge tone={SEV_TONE[e.severity] || "neutral"} mono>S{e.severity}</Badge>
             </span>
             <Badge tone="accent" mono>
-              {e.source_form || e.event_type}{e.subtype ? ` ${e.subtype}` : ""}
+              {e.source_form || e.event_type}{e.subtype ? ` ${e.subtype.replace(/_/g, " ")}` : ""}
             </Badge>
             {e.source_url ? (
               <a href={e.source_url} target="_blank" rel="noreferrer"

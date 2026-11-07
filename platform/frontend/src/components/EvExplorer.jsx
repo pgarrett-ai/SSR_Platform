@@ -135,7 +135,7 @@ export default function EvExplorer({ ticker, years, result }) {
 
           <div className="mt-4 flex flex-wrap items-end gap-3 text-xs">
             <span className="text-[11px] uppercase tracking-wide text-slate-400">
-              Inverse: what EV do the bonds price?
+              What EV does a price imply?
             </span>
             <select value={invTranche || ""} onChange={(e) => setInvTranche(e.target.value)}
               aria-label="Tranche to price"

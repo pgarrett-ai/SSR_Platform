@@ -82,7 +82,7 @@ function PackageCard({ cov }) {
               </Badge>
             ))}
             {unclear.length > 0 && (
-              <Badge title={`not determinable from the extracted text: ${unclear.map((v) => v.short).join(", ")}`}>
+              <Badge title={`not determinable from the documents on file: ${unclear.map((v) => v.short).join(", ")}`}>
                 {unclear.length} unclear
               </Badge>
             )}
@@ -180,7 +180,7 @@ const LIENS_READ = {
   stated_capacity: "Lien capacity is stated as dollar baskets; utilization is not disclosed.",
   computed: "Lien headroom is computed from the covenant tests below.",
   present_unquantified: "Lien covenants are present but not quantified.",
-  none_extracted: "No lien terms extracted.",
+  none_extracted: "No lien terms found in the documents on file.",
 };
 
 function LiensRead({ lh }) {
@@ -203,7 +203,7 @@ function LiensHeadroom({ lh }) {
       <table className="w-full text-xs">
         <thead>
           <tr className="border-b border-ink-600">
-            <Th>Family</Th><Th>Lien fact</Th><Th>Extracted value</Th><Th right>Headroom</Th>
+            <Th>Family</Th><Th>Lien term</Th><Th>As written</Th><Th right>Headroom</Th>
           </tr>
         </thead>
         <tbody>
@@ -266,7 +266,7 @@ export default function CovenantPackages({ covenants, liens, rp }) {
           {covenants.map((c, i) => <PackageCard key={i} cov={c} />)}
         </div>
       ) : (
-        <p className="text-sm text-slate-400">No covenant terms extracted from the filed credit documents.</p>
+        <p className="text-sm text-slate-400">No covenant terms found in the filed credit documents.</p>
       )}
       <LiensHeadroom lh={liens} />
       <RpBasket rp={rp} />
