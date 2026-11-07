@@ -2,9 +2,9 @@ import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 
 import {
   Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
-import { fetchHealth, getToken, setToken, streamHazard, streamOverview } from "./api.js";
-import { useStreamed } from "./cache.js";
-import { Input, Loading } from "./ui/index.jsx";
+import { fetchEvents, fetchHealth, getToken, setToken, streamHazard, streamOverview } from "./api.js";
+import { useAsync, useStreamed } from "./cache.js";
+import { Input, Loading, Section } from "./ui/index.jsx";
 import IssuerStrip from "./components/IssuerStrip.jsx";
 import ScreenTable from "./components/ScreenTable.jsx";
 
@@ -13,12 +13,6 @@ import ScreenTable from "./components/ScreenTable.jsx";
 const CapitalPage = lazy(() => import("./pages/CapitalPage.jsx"));
 const RiskPage = lazy(() => import("./pages/RiskPage.jsx"));
 const RecoveryPage = lazy(() => import("./pages/RecoveryPage.jsx"));
-
-const HEROES = [
-  { t: "AAL", note: "airline · leases + pension" },
-  { t: "ATUS", note: "cable · LME / structural" },
-  { t: "TSE", note: "chemicals · restructuring" },
-];
 
 // Company tabs; the id doubles as the route segment.
 const TABS = [
@@ -152,7 +146,7 @@ export default function App() {
 
       <main className="mx-auto max-w-6xl px-5 py-6">
         <Routes>
-          <Route path="/" element={<Landing onPick={go} />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/company/:ticker/*" element={<CompanyLayout />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -161,30 +155,54 @@ export default function App() {
   );
 }
 
-function Landing({ onPick }) {
+function Landing() {
   return (
-    <div className="mx-auto max-w-4xl py-12">
-      <div className="mx-auto mb-4 max-w-2xl text-center">
-        <h1 className="mb-2 text-2xl font-semibold text-slate-100">
-          Default risk · capital structure · recovery
-        </h1>
-        <p className="mb-8 text-sm text-slate-500">
-          Search any SEC issuer. Every number traces to an EDGAR filing.
-        </p>
-        <div className="flex justify-center gap-3">
-          {HEROES.map((h) => (
-            <button
-              key={h.t}
-              onClick={() => onPick(h.t)}
-              className="rounded-full border border-ink-600 px-4 py-2 text-sm text-slate-300 hover:border-accent hover:text-white"
-            >
-              <span className="font-mono">{h.t}</span>
-              <span className="ml-2 text-slate-500">{h.note}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-      <ScreenTable onPick={onPick} />
-    </div>
+    <>
+      <Section title="Analyzed issuers" subtitle="Every number traces to an EDGAR filing.">
+        <ScreenTable />
+      </Section>
+      <RecentEvents />
+    </>
+  );
+}
+
+// Severe events across every issuer in the event store; absent when there are none.
+function RecentEvents() {
+  const since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+  const { data } = useAsync(`events:recent:${since}`,
+    () => fetchEvents({ min_severity: 4, since, limit: 15 }), [since]);
+  const rows = [...(data?.events || [])]
+    .sort((a, b) => (b.occurred_at || "").localeCompare(a.occurred_at || ""));
+  if (!rows.length) return null;
+
+  return (
+    <Section title="Recent distress events" subtitle="severity 4–5 · last 30 days">
+      <ul>
+        {rows.map((e) => (
+          <li key={e.id} className="flex items-baseline gap-3 border-b border-ink-700/40 py-1.5 text-sm last:border-0">
+            <span className="w-24 shrink-0 font-mono text-xs text-slate-400">
+              {e.occurred_at?.slice(0, 10) || "—"}
+            </span>
+            <span className="w-20 shrink-0 font-mono text-xs">
+              {e.ticker ? (
+                <Link to={`/company/${e.ticker}/capital`} className="text-slate-200 hover:text-accent">
+                  {e.ticker}
+                </Link>
+              ) : (
+                <span className="text-slate-500">CIK {Number(e.cik)}</span>
+              )}
+            </span>
+            {e.source_url ? (
+              <a href={e.source_url} target="_blank" rel="noreferrer"
+                className="truncate text-slate-300 hover:text-accent">
+                {e.title || e.event_type}
+              </a>
+            ) : (
+              <span className="truncate text-slate-300">{e.title || e.event_type}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }

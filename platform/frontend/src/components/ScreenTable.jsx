@@ -1,67 +1,82 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchScreen } from "../api.js";
-import { Td, Th, fmtLev, rowClass, useSort } from "../ui/index.jsx";
+import { EmptyState, Skeleton, Td, Th, fmtLev, rowClass, useSort } from "../ui/index.jsx";
 
-export default function ScreenTable({ onPick }) {
-  const [rows, setRows] = useState([]);
-  const { sorted, thProps } = useSort(rows, "economic_leverage");
+// One-line thesis per showcase name, shown under the issuer.
+const NOTES = {
+  AAL: "airline · leases + pension",
+  ATUS: "cable · LME / structural",
+  TSE: "chemicals · Chapter 11 + DIP",
+  LCID: "EV maker · cash burn, PIF-backed",
+};
 
+const NM = <span className="text-slate-500" title="not meaningful — EBITDA ≤ 0">n.m.</span>;
+const runwayTone = (m) => (m < 6 ? "text-rose-300" : m < 12 ? "text-amber-300" : "text-slate-300");
+
+export default function ScreenTable() {
+  const navigate = useNavigate();
+  const [state, setState] = useState({ rows: null, error: null });
   useEffect(() => {
-    fetchScreen().then(setRows).catch(() => {});
+    fetchScreen().then(
+      (rows) => setState({ rows, error: null }),
+      (e) => setState({ rows: [], error: e.message }),
+    );
   }, []);
 
+  // Leverage is null both when EBITDA ≤ 0 and when nothing was extracted; n.m. sorts as
+  // the most levered so the distressed names lead the default sort.
+  const rows = useMemo(() => (state.rows || []).map((r) => ({
+    ...r,
+    _lev: r.economic_leverage ?? (r.ebitda != null && r.ebitda <= 0 ? Infinity : null),
+  })), [state.rows]);
+  const { sorted, thProps } = useSort(rows, "_lev");
+
+  if (!state.rows) return <Skeleton rows={4} />;
+  if (state.error) return <EmptyState hint={state.error}>The screen could not be loaded.</EmptyState>;
+  if (!rows.length)
+    return <EmptyState hint="Search a ticker above to run the first analysis.">No issuers analyzed yet.</EmptyState>;
+
   return (
-    <div className="mt-12 text-left">
-      {rows.length > 0 && (
-        <>
-          <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">Analyzed companies</div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-ink-600">
-                  <Th>Ticker</Th>
-                  <Th>Issuer</Th>
-                  <Th right {...thProps("reported_leverage")}>Reported lev</Th>
-                  <Th right {...thProps("economic_leverage")}>Economic lev</Th>
-                  <Th right {...thProps("net_market_leverage")} title="(Σ debt at market − cash) ÷ EBITDA — TRACE drop-file quotes; computed at snapshot time, so it lags a quotes refresh until the next run">Net@mkt lev</Th>
-                  <Th right {...thProps("creation_multiple_fulcrum")} title="creation multiple through the fulcrum class at market — computed at snapshot time">Creation x</Th>
-                  <Th right {...thProps("ebitda_capex_leverage")} title="Debt/(EBITDA−capex) — true leverage when capex is heavy">Lev ex-capex</Th>
-                  <Th right {...thProps("runway_months")} title="months of liquidity ÷ burn — cash-burners; from Overview liquidity">Runway (mo)</Th>
-                  <Th right {...thProps("flag_count")}>Flags</Th>
-                  <Th right {...thProps("overall_risk")} title="composite risk 0-100 · trained PD implied rating — fills in after a Default Risk run">Risk</Th>
-                  <Th right title="Moyer distressed fact pattern: stock < $1 and an unsecured quote < 60">⚑</Th>
-                </tr>
-              </thead>
-              <tbody>
-                {sorted.map((r) => (
-                  <tr
-                    key={r.ticker}
-                    onClick={() => onPick(r.ticker)}
-                    className={`cursor-pointer ${rowClass}`}
-                  >
-                    <Td mono className="text-slate-200">{r.ticker}</Td>
-                    <Td className="text-slate-400">{r.issuer || "—"}</Td>
-                    <Td right mono className="text-slate-300">{fmtLev(r.reported_leverage)}</Td>
-                    <Td right mono className="text-slate-300">{fmtLev(r.economic_leverage)}</Td>
-                    <Td right mono className="text-slate-300">{fmtLev(r.net_market_leverage)}</Td>
-                    <Td right mono className="text-slate-300">{fmtLev(r.creation_multiple_fulcrum)}</Td>
-                    <Td right mono className="text-slate-300">{fmtLev(r.ebitda_capex_leverage)}</Td>
-                    <Td right mono className="text-slate-300">{r.runway_months == null ? "—" : r.runway_months.toFixed(0)}</Td>
-                    <Td right mono className="text-slate-400">{r.flag_count ?? "—"}</Td>
-                    <Td right mono className="text-slate-300">
-                      {r.overall_risk == null ? "—" : `${r.overall_risk.toFixed(1)}${r.implied_rating ? ` · ${r.implied_rating}` : ""}`}
-                    </Td>
-                    <Td right className="text-rose-300">{r.distress_badge ? "⚑" : ""}</Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-2 text-[11px] text-slate-500">
-            one row per issuer · latest snapshot
-          </div>
-        </>
-      )}
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-ink-600">
+            <Th {...thProps("ticker")}>Ticker</Th>
+            <Th {...thProps("issuer")}>Issuer</Th>
+            <Th right {...thProps("_lev")} title="economic debt ÷ EBITDA">Economic lev</Th>
+            <Th right {...thProps("runway_months")} title="months of cash + undrawn credit at the current burn">Runway (mo)</Th>
+            <Th right {...thProps("flag_count")}>Flags</Th>
+            <Th right {...thProps("last_updated")}>As of</Th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((r) => (
+            <tr
+              key={r.ticker}
+              // the ticker cell is a real link (cmd-click opens a tab); the rest of the row follows it
+              onClick={(e) => !e.target.closest("a") && navigate(`/company/${r.ticker}/capital`)}
+              className={`cursor-pointer ${rowClass}`}
+            >
+              <Td mono>
+                <Link to={`/company/${r.ticker}/capital`} className="text-slate-100 hover:text-accent">
+                  {r.ticker}
+                </Link>
+              </Td>
+              <Td>
+                <div className="text-slate-300">{r.issuer || "—"}</div>
+                {NOTES[r.ticker] && <div className="text-[11px] text-slate-500">{NOTES[r.ticker]}</div>}
+              </Td>
+              <Td right mono className="text-slate-300">{r._lev === Infinity ? NM : fmtLev(r._lev)}</Td>
+              <Td right mono className={r.runway_months == null ? "text-slate-500" : runwayTone(r.runway_months)}>
+                {r.runway_months == null ? "—" : r.runway_months.toFixed(0)}
+              </Td>
+              <Td right mono className="text-slate-400">{r.flag_count ?? "—"}</Td>
+              <Td right mono className="text-[12px] text-slate-400">{r.last_updated?.slice(0, 10) || "—"}</Td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
