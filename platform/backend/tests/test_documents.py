@@ -69,3 +69,58 @@ def test_quote_in_text_folds_formatting_and_follows_splices():
     assert not quote_in_text("Plan assets totaled ... underfunded by", text)
     assert not quote_in_text("underfunded by $2.4 billion", text)
     assert not quote_in_text("", text) and not quote_in_text(None, text)
+
+
+def test_quote_in_text_folds_how_exhibits_render_but_not_their_wording():
+    from app.edgar.documents import quote_in_text
+
+    # (covenant quote the model returned, the AAL/ATUS/TSE/LCID exhibit text it was checked on)
+    rendered = [
+        ('Incremental Revolving Commitments (the "New Revolving Commitments") to be made available',
+         "Incremental Revolving Commitments (the \x93New Revolving Commitments\x94) to be made\n"
+         "available"),
+        ("2024 Incremental Revolving Commitments shall mean the commitment of each applicable",
+         "\x932024 Incremental Revolving Commitments\x94 shall mean the commitment of each\n"
+         "applicable"),
+        ('(the "Commitment Increase") to an aggregate principal amount',
+         "(the “ Commitment Increase ”) to an aggregate\nprincipal amount"),
+        ("identified as 'Potential Defaults' on Exhibit A hereto",
+         "identified as\n“Potential Defaults” on Exhibit Ahereto"),
+        ('"Amortization Period" shall mean each period', '" Amortization Period"shall mean each period'),
+        ("Incremental Lender desire to establish Incremental Term Loan Commitments",
+         "Incremental Lender desire to\nestablishIncremental Term Loan Commitments"),
+        ("Incremental Term Loans; provided, that if the All-In Yield",
+         "Incremental Term Loans; provided , that    \n  if the All-In Yield"),
+        ("any transfer or exchange (or de-registration) of this Note",
+         "any transfer or exchange (or de-\nregistration) of this Note"),
+        ("Section 6.08 | Liquidity | 157161",
+         "  Section 6.08                      Liquidity                          157161  \n"),
+        ("the Lien or priority of any Security Document",
+         "the Lien or priority of any Security     │\n│  Document or any other security"),
+        ("(ii) [reserved];", "as follows:\n\n“(ii) [reserved]”\n\n(f)Sections"),
+    ]
+    for quote, text in rendered:
+        assert quote_in_text(quote, text), quote
+    # a moved apostrophe, a renamed defined term and an edited ending are wording, not rendering
+    assert not quote_in_text("an Officers' Certificate certifying",
+                             "an\nOfficer\x92s Certificate certifying")
+    assert not quote_in_text("Collateral Coverage Deficiency means, as of any date",
+                             "\x93Collateral Coverage Ratio Failure\x94 means, as of any date")
+    assert not quote_in_text("as modified hereby, if any Default o[ccurred]",
+                             "as modified hereby, if any Default or Event of Default had occurred")
+
+
+def test_quote_in_text_reads_through_a_clause_label_set_in_the_hanging_indent_column():
+    from app.edgar.documents import quote_in_text
+
+    text = ("       to be made under Section\xa06.05, any transaction specifically excluded    \n"
+            "  (h)  from the definition                                                     \n"
+            "       of Restricted Payment and the making of any Permitted Payment")
+    assert quote_in_text("to be made under Section 6.05, any transaction specifically excluded "
+                         "from the definition of Restricted Payment", text)
+    assert quote_in_text("consenting to this Amendment in accordance with Section 9(b)",
+                         "         the written consent of Alter Domus (US) LLC consenting to this  \n"
+                         "  ii.    Amendment in accordance with Section 9(b) of the 2023 Incremental\n")
+    # a label inside running text is the agreement's own wording
+    assert not quote_in_text("specifically excluded from the definition",
+                             "specifically excluded (h) from the definition")

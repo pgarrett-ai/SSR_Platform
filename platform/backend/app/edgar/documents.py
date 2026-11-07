@@ -12,27 +12,43 @@ from typing import Optional
 from .client import index_url_for
 
 QUOTE_NOT_FOUND = "quote not found verbatim in source"
-_QUOTE_FOLD = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "–": "-", "—": "-"})
+# Curly quotes/dashes, and the cp1252 bytes older exhibits decode to C1 controls ("\x93Lender\x94").
+_QUOTE_FOLD = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "–": "-", "—": "-",
+                             "\x91": "'", "\x92": "'", "\x93": '"', "\x94": '"',
+                             "\x96": "-", "\x97": "-"})
+# Quotation marks (an apostrophe inside a word stays), whitespace, soft hyphens and table
+# rules ('|', box drawing): HTML-to-text rendering adds, drops or moves all of these.
+_QUOTE_DROP = re.compile(r"\"|(?<!\w)'|'(?!\w)|[\s|\u2500-\u257f\xad\u200b]+")
+# Hanging-indent list items render as two columns, so a clause label can land mid-sentence
+# ("excluded\n  (h)  from the definition"); the label is the line's first token, then a gap.
+_COLUMN_LABEL = re.compile(r"^[ \t]*(?:\(\w{1,5}\)|\w{1,5}\.)(?=[ \t]{2,}\S)", re.M)
 
 
 def _fold(s: str) -> str:
-    return re.sub(r"\s+", " ", s.translate(_QUOTE_FOLD).lower())
+    return _QUOTE_DROP.sub("", s.translate(_QUOTE_FOLD)).lower()
 
 
-def quote_in_text(quote: Optional[str], text: Optional[str]) -> bool:
-    """Is an LLM's 'verbatim' quote really in the text it read? Case, whitespace runs and
-    curly quotes/dashes are folded; a spliced quote ('A ... B') must match as fragments in
-    order. An empty quote is never found."""
-    t = _fold(text or "")
+def _in_order(frags: list[str], t: str) -> bool:
     pos = 0
-    frags = [f.strip(" .\"'") for f in re.split(r"\.\.\.|…", _fold(quote or ""))]
-    frags = [f for f in frags if f]
     for f in frags:
         pos = t.find(f, pos)
         if pos < 0:
             return False
         pos += len(f)
-    return bool(frags)
+    return True
+
+
+def quote_in_text(quote: Optional[str], text: Optional[str]) -> bool:
+    """Is an LLM's 'verbatim' quote really in the text it read? Case, curly quotes/dashes,
+    quotation marks, whitespace and table rules are folded away, so the words, digits and
+    other punctuation must match exactly; a clause label the text renders mid-sentence may be
+    read through; a spliced quote ('A ... B') must match as fragments in order. An empty
+    quote is never found."""
+    frags = [f.strip(".,;:") for f in re.split(r"\.\.\.|…", _fold(quote or ""))]
+    frags = [f for f in frags if f]
+    text = text or ""
+    return bool(frags) and (_in_order(frags, _fold(text))
+                            or _in_order(frags, _fold(_COLUMN_LABEL.sub("", text))))
 
 
 # Topic keywords used to route footnote text to the OBS extractor.
