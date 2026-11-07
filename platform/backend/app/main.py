@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import queue
 import re
 import secrets
@@ -45,18 +46,35 @@ from .events.heartbeat import worker_status, zero_ingest_alarm
 from .events.store import DOCKET_SUBTYPES, docket_event
 from .core.progress import ProgressEvent, ProgressLog
 
+log = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # a no-op when the server already configured the root logger
+    logging.basicConfig(level=logging.INFO,
+                        format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     init_db()
     yield
 
 
 app = FastAPI(
-    title="Capital Structure & Hidden-Leverage Analyzer",
+    title="Distressed Credit API",
     version="0.1.0",
     lifespan=lifespan,
 )
+
+
+# Every route reports an unknown ticker, or one with nothing filed, the same way.
+@app.exception_handler(TickerNotFoundError)
+async def _ticker_not_found(request, exc):
+    return JSONResponse(status_code=404, content={"error": "ticker_not_found", "detail": str(exc)})
+
+
+@app.exception_handler(NoFilingsError)
+async def _no_filings(request, exc):
+    return JSONResponse(status_code=404, content={"error": "no_filings", "detail": str(exc)})
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -109,8 +127,9 @@ def health() -> dict:
     s = get_settings()
     try:   # worker gauges are read once and must never take health down (uptime probe)
         w = worker_status()
-        alarm = zero_ingest_alarm(w, dt.datetime.utcnow())
+        alarm = zero_ingest_alarm(w, dt.datetime.now(dt.UTC).replace(tzinfo=None))
     except Exception:
+        log.exception("worker gauges unreadable")
         w, alarm = {"alive": False}, False
     return {
         "status": "ok",
@@ -135,16 +154,30 @@ def set_llm(body: LlmToggleBody) -> dict:
 
 
 def _handle_pipeline_errors(fn):
+    """A pipeline failure answers 500 with its reason and the app stays up; not-found
+    errors pass through to the 404 handlers."""
     try:
         return fn()
-    except TickerNotFoundError as exc:
-        return JSONResponse(status_code=404, content={"error": "ticker_not_found", "detail": str(exc)})
-    except NoFilingsError as exc:
-        return JSONResponse(status_code=404, content={"error": "no_filings", "detail": str(exc)})
-    except Exception as exc:  # graceful failure — app stays up (brief §9)
+    except (TickerNotFoundError, NoFilingsError):
+        raise
+    except Exception as exc:
+        log.exception("pipeline request failed")
         return JSONResponse(
             status_code=500, content={"error": "pipeline_error", "detail": str(exc)}
         )
+
+
+def _with_recovery_summary(ticker: str, content: dict) -> dict:
+    """Attach the last simulate run's summary (the strip's RECOVER cell) to a serialized
+    overview. A failed read leaves it None and never fails the overview."""
+    content["recovery_summary"] = None
+    try:
+        with session_scope() as session:
+            snap = session.get(models.Snapshot, ticker.strip().upper())
+            content["recovery_summary"] = snap.recovery_summary if snap else None
+    except Exception:
+        log.exception("recovery summary unreadable for %s", ticker)
+    return content
 
 
 @app.get("/api/overview")
@@ -154,15 +187,8 @@ def overview(
     live: bool = Query(False),
 ):
     def _run():
-        ov = run_overview(ticker, years, live=live)
-        content = json.loads(ov.model_dump_json())
-        try:   # last simulate run's summary (Overview recovery card); never fails the request
-            with session_scope() as session:
-                snap = session.get(models.Snapshot, ticker.strip().upper())
-                content["recovery_summary"] = snap.recovery_summary if snap else None
-        except Exception:
-            content["recovery_summary"] = None
-        return JSONResponse(content=content)
+        ov = json.loads(run_overview(ticker, years, live=live).model_dump_json())
+        return JSONResponse(content=_with_recovery_summary(ticker, ov))
 
     return _handle_pipeline_errors(_run)
 
@@ -201,39 +227,40 @@ def _hazard_section(ticker: str, years: int, live: bool, progress: ProgressLog |
                 if progress:
                     progress.emit("Served from today's hazard cache.", step="cache", pct=100)
                 return blob["data"]
-        except Exception:
-            pass
+        except Exception:   # an unreadable cache file means a fresh run, not a failure
+            log.exception("hazard cache unreadable: %s", p)
     data = jsonable(_native(hazard_analyze(ticker, years, progress=progress)))
     try:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps({"as_of": today, "data": data}), encoding="utf-8")
-    except Exception:
-        pass  # caching is best-effort; never fail a request over it
+    except Exception:   # caching is best-effort; never fail a request over it
+        log.exception("hazard cache not written: %s", p)
     return data
 
 
 @app.get("/api/screen")
 def screen() -> JSONResponse:
     """Every analyzed company's headline metrics — filtering happens client-side. Most
-    levered first, and rows without a multiple lead: at EBITDA ≤ 0 leverage is n.m., the
-    most distressed case."""
-    # ponytail: a row with no bridge at all also sorts first; split it out once the
-    # snapshot records why leverage is missing
-    from sqlalchemy import desc, nulls_first
+    levered first: n.m. leverage (EBITDA ≤ 0, the most distressed case) leads, and rows
+    whose leverage was never extracted trail."""
+    from sqlalchemy import case, desc, nulls_last
 
     with session_scope() as session:
         rows = (session.query(models.Snapshot)
-                .order_by(nulls_first(desc(models.Snapshot.economic_leverage))).all())
+                .order_by(case((models.Snapshot.ebitda <= 0, 0), else_=1),
+                          nulls_last(desc(models.Snapshot.economic_leverage))).all())
         out = []
         for r in rows:
             try:
                 badge = distress_badge(session, r.ticker, r.last_price)
             except Exception:
+                log.exception("distress badge failed for %s", r.ticker)
                 badge = None
             out.append({
                 "ticker": r.ticker, "issuer": r.issuer, "last_updated": r.last_updated,
                 "reported_leverage": r.reported_leverage,
                 "economic_leverage": r.economic_leverage,
+                "ebitda": r.ebitda,
                 "net_market_leverage": r.net_market_leverage,
                 "creation_multiple_fulcrum": r.creation_multiple_fulcrum,
                 "ebitda_capex_leverage": r.ebitda_capex_leverage,
@@ -281,8 +308,8 @@ def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
                     treasuries[row["series"]] = row["value"]
                 snap = session.get(models.Snapshot, ticker.strip().upper())
                 equity_price = snap.last_price if snap else None
-        except Exception:
-            pass
+        except Exception:   # quotes still list, without spreads or the equity leg
+            log.exception("treasury curve or equity price unavailable for %s", ticker)
         quotes_out = []
         for b in bonds:
             spr = spread_bps(b, treasuries) if treasuries else None
@@ -315,20 +342,24 @@ def capital_refi(ticker: str, years: int = Query(3, ge=1, le=10)):
 
 @app.get("/api/company/{ticker}/holders")
 def known_holders(ticker: str) -> JSONResponse:
-    """Registered-fund holders of the issuer's debt (N-PORT data set, when ingested),
-    grouped by matched instrument, largest positions first."""
-    from sqlalchemy import desc, nulls_last
+    """Registered-fund holders of the issuer's debt (N-PORT data set, when ingested) in the
+    latest reported quarter, largest positions first. One quarter only: a position carried
+    across quarters would otherwise count once per filing."""
+    from sqlalchemy import desc, func, nulls_last
 
     from .nport import COVERAGE_NOTE
 
+    h = models.NportHolding
     with session_scope() as session:
-        rows = (session.query(models.NportHolding)
-                .filter(models.NportHolding.ticker == ticker.upper())
-                .order_by(nulls_last(desc(models.NportHolding.value_usd)))
+        quarter = (session.query(func.max(h.report_quarter))
+                   .filter(h.ticker == ticker.upper()).scalar())
+        rows = (session.query(h)
+                .filter(h.ticker == ticker.upper(), h.report_quarter == quarter)
+                .order_by(nulls_last(desc(h.value_usd)))
                 .limit(500).all())
         return JSONResponse(content=jsonable({
             "note": COVERAGE_NOTE,
-            "quarter": rows[0].report_quarter if rows else None,
+            "quarter": quarter,
             "holdings": [{
                 "fund_name": r.fund_name, "title": r.title, "instrument": r.instrument,
                 "value_usd": r.value_usd, "pct_of_fund": r.pct_of_fund, "cusip": r.cusip,
@@ -529,7 +560,8 @@ def recovery_context(ticker: str, years: int, sim: dict,
         if need_ov:
             try:   # cache-first; only needed for petition accrual / quotes / assets
                 ov = json.loads(run_overview(ticker, years).model_dump_json())
-            except Exception:
+            except Exception:   # the body's cap table still runs, without those legs
+                log.exception("overview unavailable for %s; running the request body alone", ticker)
                 ov = {}
     else:
         ov = json.loads(run_overview(ticker, years).model_dump_json())
@@ -627,10 +659,7 @@ def _suggested_other_claims(ov: dict) -> Optional[dict]:
 @app.get("/api/company/{ticker}/recovery/structure")
 def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
     """The editable cap table for the Recovery page — derived, never re-entered."""
-    try:
-        ctx = recovery_context(ticker, years, {})
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
+    ctx = recovery_context(ticker, years, {})
     available_entities = [{"name": s.get("name"), "jurisdiction": s.get("jurisdiction")}
                           for s in ctx.subsidiaries if s.get("name")]
     return JSONResponse(content=jsonable({
@@ -674,7 +703,7 @@ def _save_recovery_summary(ticker: str, payload: dict) -> Optional[dict]:
     return them, so the response carries the same shape. None when nothing was saved.
     Best-effort — never fails a simulate over a summary write."""
     try:
-        saved_at = dt.datetime.utcnow().isoformat()
+        saved_at = dt.datetime.now(dt.UTC).replace(tzinfo=None).isoformat()
         if payload.get("mode") == "liquidation":
             if not payload.get("available"):
                 return
@@ -711,6 +740,7 @@ def _save_recovery_summary(ticker: str, payload: dict) -> Optional[dict]:
             update_snapshot_recovery(session, ticker.strip().upper(), summary)
         return summary
     except Exception:
+        log.exception("recovery summary not saved for %s", ticker)
         return None
 
 
@@ -775,8 +805,6 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
                     if pmap[n].claim(result.accrual_years) > 0 else None}
                 for n in primed.priority_order()]
             primed_dict = _structure_dict(primed)
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
     except (ValueError, TypeError) as exc:   # engine validators = the input trust boundary
         return JSONResponse(status_code=400, content={"error": str(exc)})
 
@@ -842,8 +870,6 @@ def recovery_explore(ticker: str, body: SimulateBody, years: int = Query(3, ge=1
                                   get_issuer_bonds(ticker).get("bonds") or [])
         prices = [q["last_price"] for q in matches.values() if q.get("last_price") is not None]
         out = explore(structure, ebitda, accrual, quotes=prices or None)
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
     except (ValueError, TypeError) as exc:
         return JSONResponse(status_code=400, content={"error": str(exc)})
     out["structure"] = _structure_dict(structure)
@@ -978,8 +1004,6 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
                 f"burn ${burn / 4.0:,.0f}M — quarters the company can carry a holdout "
                 "fight (the book's cash-depletion point)",
                 f"{rq:,.1f} qtrs").model_dump()
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
     except (ValueError, TypeError) as exc:   # engine validators = the 400 boundary
         return JSONResponse(status_code=400, content={"error": str(exc)})
 
@@ -1024,6 +1048,7 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
         try:
             pf = petition_filing(cik)
         except Exception:
+            log.exception("8-K petition lookup failed for %s", ticker)
             pf, petition_error = None, True
         if pf and pf.get("date"):
             petition = {"value": pf["date"], "display": pf["date"], "derived": False,
@@ -1076,7 +1101,7 @@ def add_docket_event(ticker: str, body: DocketBody):
             return JSONResponse(status_code=404, content={"error": "ticker_not_found"})
         ev = docket_event(cik, body)
         # ponytail: manual rows must be filtered source!='manual' at backtest time — not enforced here
-        n = insert_events(session, [ev], detected_at=dt.datetime.utcnow())
+        n = insert_events(session, [ev], detected_at=dt.datetime.now(dt.UTC).replace(tzinfo=None))
     return JSONResponse(content={"inserted": n, "dedupe_key": ev.dedupe_key,
                                  "note": None if n else "already recorded (idempotent)"})
 
@@ -1094,9 +1119,10 @@ def delete_docket_event(event_id: int):
 @app.get("/api/company/{ticker}/recovery/crisis")
 def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
     """Crisis-of-confidence four-factor screen (Moyer ch. 8): a restatement/fraud 8-K
-    trigger (Items 4.01/4.02/5.02) assessed against the four liquidity factors — cash,
-    revolver reliance, acceleration/MAC language, and the immediate cash need. On-demand:
-    an 8-K fetch must not gate every overview build or screener row."""
+    trigger (Items 4.01/4.02/5.02) filed in the last three years, assessed against the four
+    liquidity factors — cash, revolver reliance, acceleration/MAC language, and the
+    immediate cash need. An older 8-K is history, not a live trigger. On-demand: an 8-K
+    fetch must not gate every overview build or screener row."""
     from sqlalchemy import text as sql
 
     from .capstack.eightk import crisis_screen, crisis_triggers
@@ -1107,10 +1133,12 @@ def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
     triggers, trigger_error = [], False
     cik = _ov_cik(ov)
     if cik:
+        since = (dt.date.today() - dt.timedelta(days=3 * 365)).isoformat()
         try:
-            triggers = crisis_triggers(cik)
-        except Exception:
-            trigger_error = True   # EDGAR lookup failed — NOT "no trigger"
+            triggers = crisis_triggers(cik, since=since)
+        except Exception:   # EDGAR lookup failed — reported as unknown, NOT "no trigger"
+            log.exception("8-K crisis-trigger lookup failed for %s", ticker)
+            trigger_error = True
 
     # factor 3: best-effort cross-default / MAC scan over the indexed covenant/notes corpus
     accel = {"clauses_found": 0, "sample": None, "available": FTS_AVAILABLE}
@@ -1127,7 +1155,8 @@ def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
                     {"q": match, "t": ticker.strip().upper()}).all()
             accel = {"clauses_found": len(rows), "sample": rows[0][0] if rows else None,
                      "available": True}
-        except Exception:
+        except Exception:   # the factor then reads unknown
+            log.exception("acceleration-clause scan failed for %s", ticker)
             accel = {"clauses_found": 0, "sample": None, "available": False}
 
     screen = crisis_screen(triggers, ov.get("liquidity"), ov.get("liquidity_events"), accel)
@@ -1155,8 +1184,6 @@ def recovery_liquidation(ticker: str, body: LiquidationBody, years: int = Query(
                                        "liquidation analysis", body.rates, body.admin_pct,
                                        body.assets)
         return JSONResponse(content=jsonable(payload))
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
     except (ValueError, TypeError) as exc:
         return JSONResponse(status_code=400, content={"error": str(exc)})
 
@@ -1207,22 +1234,25 @@ async def overview_stream(
     years: int = Query(3, ge=1, le=10),
     live: bool = Query(False),
 ):
-    """Stream progress events as SSE, then a final `overview` (or `error`) event."""
+    """Stream progress events as SSE, then a final `overview` (or `error`) event. The
+    overview carries the last recovery summary, as GET /api/overview does."""
     event_q: "queue.Queue[dict]" = queue.Queue()
 
     def sink(evt: ProgressEvent) -> None:
         event_q.put({"event": "progress", "data": evt.to_dict()})
 
     def worker() -> None:
-        log = ProgressLog(sink=sink)
+        progress = ProgressLog(sink=sink)
         try:
-            ov = run_overview(ticker, years, progress=log, live=live)
-            event_q.put({"event": "overview", "data": json.loads(ov.model_dump_json())})
+            ov = run_overview(ticker, years, progress=progress, live=live)
+            event_q.put({"event": "overview", "data": _with_recovery_summary(
+                ticker, json.loads(ov.model_dump_json()))})
         except TickerNotFoundError as exc:
             event_q.put({"event": "error", "data": {"error": "ticker_not_found", "detail": str(exc)}})
         except NoFilingsError as exc:
             event_q.put({"event": "error", "data": {"error": "no_filings", "detail": str(exc)}})
         except Exception as exc:
+            log.exception("overview stream failed for %s", ticker)
             event_q.put({"event": "error", "data": {"error": "pipeline_error", "detail": str(exc)}})
         finally:
             event_q.put({"event": "__done__", "data": {}})
@@ -1254,18 +1284,19 @@ async def hazard_stream(
         event_q.put({"event": "progress", "data": evt.to_dict()})
 
     def worker() -> None:
-        log = ProgressLog(sink=sink)
+        progress = ProgressLog(sink=sink)
         try:
-            data = _hazard_section(ticker, years, live, progress=log)
+            data = _hazard_section(ticker, years, live, progress=progress)
             event_q.put({"event": "hazard", "data": data})
             try:   # fill the screening index's risk columns; never fail the stream
                 with session_scope() as session:
                     update_snapshot_risk(session, ticker.strip().upper(), data)
             except Exception:
-                pass
+                log.exception("screen risk columns not updated for %s", ticker)
         except TickerNotFoundError as exc:
             event_q.put({"event": "error", "data": {"error": "ticker_not_found", "detail": str(exc)}})
         except Exception as exc:
+            log.exception("hazard stream failed for %s", ticker)
             event_q.put({"event": "error", "data": {"error": "pipeline_error", "detail": str(exc)}})
         finally:
             event_q.put({"event": "__done__", "data": {}})

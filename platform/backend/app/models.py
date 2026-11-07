@@ -275,6 +275,8 @@ class Snapshot(Base):
     saved_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     reported_leverage: Mapped[Optional[float]] = mapped_column(Float)
     economic_leverage: Mapped[Optional[float]] = mapped_column(Float)
+    # the bridge's EBITDA ($): tells n.m. leverage (EBITDA ≤ 0) from a bridge never built
+    ebitda: Mapped[Optional[float]] = mapped_column(Float)
     flag_count: Mapped[Optional[int]] = mapped_column(Integer)
     overall_risk: Mapped[Optional[float]] = mapped_column(Float)        # hazard composite
     trained_pd: Mapped[Optional[float]] = mapped_column(Float)          # calibrated 12m PD

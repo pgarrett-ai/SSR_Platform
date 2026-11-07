@@ -59,15 +59,31 @@ def test_snapshot_upsert_and_screen(tmp_path, monkeypatch):
 
 
 def test_screen_ranks_not_meaningful_leverage_as_most_distressed():
-    # leverage is n.m. (None) at EBITDA <= 0: those names lead, not trail, the screen
+    # leverage is n.m. (None) at EBITDA <= 0: those names lead the screen, while a name
+    # whose leverage was never extracted trails it
     with session_scope() as s:
-        s.merge(models.Snapshot(ticker="ZZTEST", issuer="Burner", economic_leverage=None))
-        s.merge(models.Snapshot(ticker="ZZHIGH", issuer="Levered", economic_leverage=50.0))
-    order = [r["ticker"] for r in client.get("/api/screen").json()]
+        s.merge(models.Snapshot(ticker="ZZTEST", issuer="Burner", economic_leverage=None,
+                                ebitda=-50e6))
+        s.merge(models.Snapshot(ticker="ZZHIGH", issuer="Levered", economic_leverage=50.0,
+                                ebitda=10e6))
+        s.merge(models.Snapshot(ticker="ZZNONE", issuer="No bridge"))
+    rows = client.get("/api/screen").json()
     with session_scope() as s:
-        s.query(models.Snapshot).filter_by(ticker="ZZHIGH").delete()
+        s.query(models.Snapshot).filter(models.Snapshot.ticker.in_(["ZZHIGH", "ZZNONE"])).delete()
     _cleanup()
-    assert order.index("ZZTEST") < order.index("ZZHIGH")
+    order = [r["ticker"] for r in rows]
+    assert order.index("ZZTEST") < order.index("ZZHIGH") < order.index("ZZNONE")
+    assert next(r for r in rows if r["ticker"] == "ZZTEST")["ebitda"] == -50e6
+
+
+def test_snapshot_carries_the_bridge_ebitda():
+    ov = _overview()
+    ov.economic_debt_bridge.ebitda = CitedValue(value=-120e6)
+    with session_scope() as s:
+        upsert_snapshot(s, "ZZTEST", ov)
+    row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
+    _cleanup()
+    assert row["ebitda"] == -120e6
 
 
 def test_risk_update_survives_resave(tmp_path, monkeypatch):

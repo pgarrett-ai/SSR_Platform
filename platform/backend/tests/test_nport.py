@@ -73,3 +73,26 @@ def test_ingest_zip_roundtrip(tmp_path):
             s.delete(r)
         for r in s.query(models.DebtInstrumentRow).filter_by(ticker="AAL").all():
             s.delete(r)
+
+
+def test_holders_endpoint_serves_the_latest_quarter_only():
+    # a fund reports the same position every quarter: mixing quarters double-counts it
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    client = TestClient(app).__enter__()
+    with session_scope() as s:
+        s.add_all([
+            models.NportHolding(ticker="ZZHLD", fund_name="Fund A", value_usd=900.0,
+                                report_quarter="2025q4"),
+            models.NportHolding(ticker="ZZHLD", fund_name="Fund A", value_usd=500.0,
+                                report_quarter="2026q1"),
+            models.NportHolding(ticker="ZZHLD", fund_name="Fund B", value_usd=100.0,
+                                report_quarter="2026q1"),
+        ])
+    d = client.get("/api/company/ZZHLD/holders").json()
+    with session_scope() as s:
+        s.query(models.NportHolding).filter_by(ticker="ZZHLD").delete()
+    assert d["quarter"] == "2026q1"
+    assert [h["value_usd"] for h in d["holdings"]] == [500.0, 100.0]

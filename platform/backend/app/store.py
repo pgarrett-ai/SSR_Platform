@@ -261,6 +261,7 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         last_updated=overview.header.last_updated,
         reported_leverage=_val(bridge.reported_leverage) if bridge else None,
         economic_leverage=_val(bridge.economic_leverage) if bridge else None,
+        ebitda=_val(bridge.ebitda) if bridge else None,
         flag_count=len(overview.forensic_flags),
         net_market_leverage=net_mkt_lev,
         creation_multiple_fulcrum=creation_mult,

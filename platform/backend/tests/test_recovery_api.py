@@ -190,13 +190,30 @@ def test_crisis_endpoint_detects_trigger(monkeypatch):
             date="2026-05", kind="maturity", instrument="Notes",
             amount=CitedValue(value=2e9, formula="face"), flags=["maturity_unfundable"])])
     monkeypatch.setattr(main, "load_overview", lambda *a, **k: ov)   # cache-only endpoint
-    monkeypatch.setattr(eightk, "crisis_triggers", lambda cik: [
+    monkeypatch.setattr(eightk, "crisis_triggers", lambda cik, since=None: [
         {"filing_date": "2026-02-01", "accession": "x-26-1", "source_url": "u",
          "items": ["4.02"], "items_unknown": False,
          "triggers": {"4.02": "non-reliance / restatement"}}])
     d = client.get("/api/company/RSTT/recovery/crisis").json()
     assert d["triggered"] is True and d["crisis"] is True     # trigger + unfundable maturity, cash < need
     assert d["trigger_items"] == ["4.02"] and d["trigger_error"] is False
+
+
+def test_crisis_screen_reads_only_the_last_three_years(monkeypatch):
+    # a decade-old restatement 8-K is history, not a live crisis trigger
+    import datetime as dt
+
+    import app.capstack.eightk as eightk
+    import app.main as main
+    from app.schemas import IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "load_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Old Co", ticker="OLDC", years=3, cik="0000012345")))
+    seen = {}
+    monkeypatch.setattr(eightk, "crisis_triggers",
+                        lambda cik, since=None: seen.update(since=since) or [])
+    client.get("/api/company/OLDC/recovery/crisis")
+    assert seen["since"] == (dt.date.today() - dt.timedelta(days=3 * 365)).isoformat()
 
 
 def test_case_endpoint_detects_petition(monkeypatch):
@@ -263,6 +280,44 @@ def test_simulate_persists_recovery_summary():
     assert [t["tranche"] for t in summ["tranches"] if t["is_fulcrum"]] == ["2L Notes"]
     # the response hands the strip the exact summary it persisted
     assert r.json()["recovery_summary"] == summ
+
+
+def test_overview_stream_carries_the_recovery_summary(monkeypatch):
+    # the strip's RECOVER cell seeds from the stream on a tab's first open
+    import json
+
+    import app.main as main
+    from app import models
+    from app.core.db import session_scope
+    from app.schemas import IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Stream Co", ticker="ZZSTRM", years=3)))
+    with session_scope() as s:
+        s.merge(models.Snapshot(ticker="ZZSTRM", issuer="Stream Co",
+                                recovery_summary={"mode": "simulation", "fulcrum": "X"}))
+    body = client.get("/api/overview/stream?ticker=ZZSTRM").text
+    with session_scope() as s:
+        s.query(models.Snapshot).filter_by(ticker="ZZSTRM").delete()
+    block = body[body.index("event: overview"):]
+    data = json.loads(block.split("data: ", 1)[1].splitlines()[0])
+    assert data["recovery_summary"] == {"mode": "simulation", "fulcrum": "X"}
+
+
+def test_unknown_ticker_is_a_404_with_a_reason(monkeypatch):
+    # one shape on every route: a slug for code, a sentence for the error card
+    import app.main as main
+    from app.edgar.client import TickerNotFoundError
+
+    def _missing(*a, **k):
+        raise TickerNotFoundError("Ticker 'NOPE' not found in SEC company_tickers.json")
+
+    monkeypatch.setattr(main, "run_overview", _missing)
+    for url in ("/api/overview?ticker=NOPE", "/api/company/NOPE/recovery/structure"):
+        r = client.get(url)
+        assert r.status_code == 404, url
+        assert r.json() == {"error": "ticker_not_found",
+                            "detail": "Ticker 'NOPE' not found in SEC company_tickers.json"}
 
 
 def test_structure_carries_the_chapter11_case(monkeypatch):
