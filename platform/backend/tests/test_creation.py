@@ -138,9 +138,22 @@ def test_waterfall_claim_is_principal_less_oid():
         # TSE revolver: the face tag is a $50M sub-limit, $265M is drawn
         {"instrument": "Super-Priority Revolver", "facility_type": "revolver",
          "outstanding": _cv(265e6), "face_amount": _cv(50e6)},
+        # TSE 2029 PIK notes: interest paid in kind accreted principal above the issuance face
+        {"instrument": "2029 Refinance Senior Notes", "facility_type": "notes", "pik": True,
+         "outstanding": _cv(419.9e6), "face_amount": _cv(391.0e6)},
+        # a face tag below carrying on cash-pay notes is stale; carrying stands
+        {"instrument": "Stale-Face Notes", "facility_type": "notes",
+         "outstanding": _cv(250e6), "face_amount": _cv(200e6)},
     ]
     structure, _, _ = overview_to_structure(_ov(schedule=sched))
-    assert [round(t.face, 1) for t in structure.tranches] == [1100.0, 71.2, 265.0]
+    assert [round(t.face, 1) for t in structure.tranches] == [1100.0, 71.2, 265.0, 419.9, 250.0]
+
+
+def test_ltm_ebitda_skips_a_row_without_fiscal_year():
+    from app.fulcrum.adapter import ltm_ebitda
+    ov = _ov()
+    ov["forensic_table"].append({"label": "Q1 2026", "ebitda": _cv(90e6)})
+    assert ltm_ebitda(ov) == (100.0, "test")
 
 
 def test_spread_bps_interpolation():

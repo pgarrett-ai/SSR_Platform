@@ -83,33 +83,36 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
 
 def _claim_amount(inst: dict) -> tuple[Optional[float], Optional[dict]]:
     """($, citation) a drawn instrument claims. Notes and term loans claim principal — the
-    tagged face less any tagged OID (unmatured interest, not a claim) — because carrying
-    also nets issuance costs, which never reduce a claim (LCID 2030 converts: $1,085M
-    carrying, $1,100M principal). A revolver's face tag is a sub-limit or the facility size
-    (TSE's super-priority revolver: $50M tag, $265M drawn), so its carrying amount stands."""
+    tagged face less any tagged OID (unmatured interest, not a claim) — when that is at
+    least the carrying amount, which also nets issuance costs that never reduce a claim
+    (LCID 2030 converts: $1,085M carrying, $1,100M principal). The face tag is par at
+    issuance, so PIK accretion lifts principal above it: a PIK note claims the larger of
+    face and carrying (TSE 2029 notes: $391.0M face, $419.9M carrying). A revolver's face
+    tag is a sub-limit or the facility size (TSE's super-priority revolver: $50M tag, $265M
+    drawn), and a face below carrying is stale, so otherwise the carrying amount stands."""
     cv = next((inst[k] for k in ("outstanding", "principal")
                if (inst.get(k) or {}).get("value")), None)
     if cv is None:
         return None, None
+    carrying = float(cv["value"]), cv.get("citation") or inst.get("citation")
     face = inst.get("face_amount") or {}
-    if face.get("value") and inst.get("facility_type") in ("notes", "term loan"):
-        oid = (inst.get("unamortized_discount") or {}).get("value") or 0.0
-        return float(face["value"]) - float(oid), face.get("citation")
-    return float(cv["value"]), cv.get("citation") or inst.get("citation")
+    if not face.get("value") or inst.get("facility_type") not in ("notes", "term loan"):
+        return carrying
+    oid = 0.0 if inst.get("pik") else (inst.get("unamortized_discount") or {}).get("value") or 0.0
+    principal = float(face["value"]) - float(oid)
+    return (principal, face.get("citation")) if principal >= carrying[0] else carrying
 
 
 def ltm_ebitda(overview: dict) -> tuple[Optional[float], Optional[str]]:
-    """($mm, label) of the canonical EBITDA: forensic.ltm_ebitda over the overview's
-    forensic table, so Recovery seeds from the number the leverage ratios use. The label
-    names its definition and period."""
-    from ..capstack.forensic import ltm_ebitda as ltm_row
-    from ..schemas import ForensicTableRow
-
-    row = ltm_row([ForensicTableRow.model_validate(r)
-                   for r in overview.get("forensic_table") or []])
-    if row is None:
-        return None, None
-    return row.ebitda.value / 1e6, row.ebitda.note or row.ebitda.formula
+    """($mm, label) of the canonical EBITDA: the forensic column forensic.ltm_ebitda picks
+    (the latest one with an EBITDA), so Recovery seeds from the number the leverage ratios
+    use. Read off the serialized rows; a row without a fiscal year is malformed and skipped.
+    The label names its definition and period."""
+    for row in reversed(overview.get("forensic_table") or []):
+        e = row.get("ebitda") or {}
+        if row.get("fiscal_year") is not None and e.get("value") is not None:
+            return e["value"] / 1e6, e.get("note") or e.get("formula")
+    return None, None
 
 
 def _tranche_coupon(inst: dict) -> float:
