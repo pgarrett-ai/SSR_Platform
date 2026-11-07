@@ -97,7 +97,7 @@ async def _limit_request_body(request, call_next):
 
 @app.middleware("http")
 async def _bearer_auth(request, call_next):
-    """Auth v1 (plan §11): when PLATFORM_API_TOKEN is set, every /api/* request needs
+    """When PLATFORM_API_TOKEN is set, every /api/* request needs
     `Authorization: Bearer <token>`. /api/health stays open — liveness probes and the
     token-entry UI need a pre-auth signal, and it carries operational metadata only.
     EventSource can't send headers, so the platform_token cookie is an equivalent
@@ -317,11 +317,12 @@ def screen() -> JSONResponse:
 @app.get("/api/company/{ticker}/capital/ladder")
 def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
                    recast_mezz: int = Query(0, ge=0, le=1)):
-    """Creation-multiple ladder (Moyer): cumulative claims through each class at face and
+    """Creation-multiple ladder: cumulative claims through each class at face and
     at market ÷ EBITDA, plus the quotes matched per instrument (quote_by_instrument, which
     Recovery prices its IRR and blocking cost from). On-demand (not cached in the overview)
     so a marks refresh reprices without a pipeline run. recast_mezz=1 appends temporary
-    equity as a preferred claim before the structure is derived (Moyer ch. 6)."""
+    equity as a preferred claim before the structure is derived (Moyer, Distressed Debt
+    Analysis, ch. 6)."""
     from .capstack.creation import (build_creation_ladder, detect_capacity_avoidance,
                                     mezz_recast_row)
     from .capstack.quotes import spread_bps
@@ -337,7 +338,7 @@ def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
                 ov["debt_schedule"] = [*(ov.get("debt_schedule") or []), mezz_row]
         payload = build_creation_ladder(ov, bonds)
 
-        # per-quote spread flags (F7c) off the coarse 3-point treasury curve;
+        # per-quote spread flags off the coarse 3-point treasury curve;
         # equity price (detector input) from the same session
         treasuries: dict[str, float] = {}
         equity_price = None
@@ -490,7 +491,7 @@ def list_events(
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0, le=100_000),
 ):
-    """Event-store firehose (plan §9). Ordered detected_at DESC NULLS LAST — live
+    """Event-store firehose. Ordered detected_at DESC NULLS LAST — live
     detections first, honest backfill (detected_at NULL) last. since/until filter
     occurred_at (the world-time axis; backfill rows have no detected_at).
     No total count: the client pages by 'came back full'."""
@@ -551,13 +552,13 @@ class SimulateBody(BaseModel):
     model_config = ConfigDict(allow_inf_nan=False)   # reject Infinity/NaN floats at the boundary
     sim: dict = {}                      # SimConfig overrides (base_ebitda, corr, n_draws, ...)
     structure: Optional[dict] = None    # explicit {entities, tranches, admin_fees}; else derived
-    petition_date: Optional[str] = None  # derives accrual_years vs debt_schedule_asof (Moyer:
-                                         # unsecured interest tolls at the petition date)
+    petition_date: Optional[str] = None  # derives accrual_years vs debt_schedule_asof:
+                                         # unsecured interest stops accruing at the petition
     attack: Optional[str] = None         # priority-attack scenario (fulcrum.attacks)
     attack_target: Optional[str] = None  # tranche name; default = all secured
     mode: Optional[str] = None           # "liquidation" forces the asset-based waterfall
     priming: Optional[dict] = None       # {face ($mm), entity?} — rank-0 secured layer
-                                         # (fulcrum.proforma.prime, Moyer ch. 9)
+                                         # (fulcrum.proforma.prime)
 
 
 def _structure_dict(structure: CapitalStructure) -> dict:
@@ -671,7 +672,8 @@ def _accrual_from_petition(petition_date: str, ov: dict) -> float:
 
 def _suggested_mezzanine(ov: dict) -> Optional[dict]:
     """Temporary-equity carrying ($mm) — the pre-seed for the 'mezzanine recast as debt'
-    row (Moyer ch. 6: debt-like redemption obligations dressed as equity)."""
+    row: debt-like redemption obligations carried as equity (Moyer, Distressed Debt
+    Analysis, ch. 6)."""
     cv = ov.get("mezzanine") or {}
     if not cv.get("value") or float(cv["value"]) <= 0:
         return None
@@ -721,8 +723,9 @@ def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
 def _liquidation_payload(structure: CapitalStructure, ov: dict,
                          accrual_years: float, note: str, body_rates=None,
                          body_admin=None, body_assets=None) -> dict:
-    """Asset-based waterfall payload (Moyer: cash-flow metrics are irrelevant when positive
-    EBITDA is unattainable). Degrades with a note when no asset snapshot was extracted."""
+    """Asset-based waterfall payload, for when positive EBITDA is unattainable and
+    cash-flow metrics say nothing. Degrades with a note when no asset snapshot was
+    extracted."""
     from .fulcrum.liquidation import assets_from_snapshot, liquidate
 
     assets = body_assets or assets_from_snapshot(ov.get("asset_snapshot"))
@@ -836,7 +839,7 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
                 for n in attacked.priority_order()]
         priming_rows = None
         primed_dict = None
-        if body.priming is not None:   # attack-block mirror: same EV draws (Moyer ch. 9)
+        if body.priming is not None:   # same EV draws as the attack block
             from .fulcrum.proforma import prime
             primed = prime(structure, float(body.priming.get("face") or 0.0),
                            body.priming.get("entity"))
@@ -859,8 +862,7 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
     claim = {n: tmap[n].claim(ay) for n in order}   # recovery % is against the allowed claim
 
     # Chart payload, computed server-side so the response stays small (no raw draws).
-    # Per-tranche histograms/CDF were cut with their charts — the table's mean/P10/P90/
-    # P(zero) already carries the distribution.
+    # No per-tranche histograms: the table's mean/P10/P90/P(zero) carries the distribution.
     ev_counts, ev_edges = np.histogram(ev, bins=40)
     med_wf = run_waterfall(result.structure, np.array([float(np.median(ev))]), accrual_years=ay)
     waterfall_at_median = [
@@ -940,9 +942,9 @@ _EXCHANGE_GRID_P = (0.0, 25.0, 50.0, 75.0, 90.0, 100.0)
 
 @app.post("/api/company/{ticker}/recovery/exchange")
 def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=1, le=10)):
-    """Exchange-offer analyzer (Moyer ch. 11): a calculator over typed offer terms —
-    holdout-vs-tender payoff curves per participation level, direct run_waterfall per
-    scenario over the BASE structure's EV grid (clones recovery_explore's shell)."""
+    """Exchange-offer analyzer (Moyer, Distressed Debt Analysis, ch. 11): a calculator over
+    typed offer terms — holdout-vs-tender payoff curves per participation level, direct
+    run_waterfall per scenario over the BASE structure's EV grid."""
     from .capstack.quotes import match_quotes
     from .edgar.facts import derived_value
     from .fulcrum.explore import _cross
@@ -1027,7 +1029,7 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
                        "premium_per_100": round(pkg - price, 2),
                        "ref_ev_mm": round(float(grid[ref_idx]), 1)}
 
-        # holdout runway (ch. 11): can the estate carry a holdout fight?
+        # holdout runway: can the company carry a holdout fight?
         cash = burn = None
         for row in reversed(ov.get("forensic_table") or []):
             if cash is None and (row.get("cash") or {}).get("value") is not None:
@@ -1077,9 +1079,10 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
 
 @app.get("/api/company/{ticker}/recovery/case")
 def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
-    """Chapter-11 case card inputs (Moyer ch. 12): the cited petition date (the 8-K Item
-    1.03 filing date, a proxy for the docket petition date) and a weak free-fall hint
-    (revolver drawn ≈ $0 undrawn). The statutory clocks/benchmark are computed frontend."""
+    """Chapter-11 case card inputs (Moyer, Distressed Debt Analysis, ch. 12): the cited
+    petition date (the 8-K Item 1.03 filing date, a proxy for the docket petition date)
+    and a weak free-fall hint (revolver drawn ≈ $0 undrawn). The statutory
+    clocks/benchmark are computed frontend."""
     from .capstack.eightk import petition_citation, petition_filing
 
     ov = _cached_overview(ticker, years)   # cache-only: a page-mount fetch must not launch a live run
@@ -1123,7 +1126,7 @@ class DocketBody(BaseModel):
 
 @app.post("/api/company/{ticker}/recovery/docket")
 def add_docket_event(ticker: str, body: DocketBody):
-    """Manual docket ingest (Moyer ch. 12 milestones) — a direct event-store write with
+    """Manual docket ingest of Chapter 11 milestones — a direct event-store write with
     source='manual', not a registry-detector route. Re-POST of the same (cik, date,
     subtype[, docket_no]) is idempotent (inserted=0) — that is the edit path. /api/events
     serves these rows, and a client may render source_url as a link, hence the http(s)
@@ -1140,8 +1143,9 @@ def add_docket_event(ticker: str, body: DocketBody):
         return JSONResponse(status_code=400, content={"error": "occurred_at is not a real calendar date"})
     with session_scope() as session:
         cik = _resolve_cik(session, ticker)
-        if cik is None:
-            return JSONResponse(status_code=404, content={"error": "ticker_not_found"})
+        if cik is None:   # answered by the app-level 404 handler
+            raise TickerNotFoundError(f"{ticker.strip().upper()!r} is in neither the "
+                                      f"universe nor the snapshot index")
         ev = docket_event(cik, body)
         # ponytail: manual rows must be filtered source!='manual' at backtest time — not enforced here
         n = insert_events(session, [ev], detected_at=dt.datetime.now(dt.UTC).replace(tzinfo=None))
@@ -1161,11 +1165,12 @@ def delete_docket_event(event_id: int):
 
 @app.get("/api/company/{ticker}/recovery/crisis")
 def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
-    """Crisis-of-confidence four-factor screen (Moyer ch. 8): a restatement/fraud 8-K
-    trigger (Items 4.01/4.02/5.02) filed in the last three years, assessed against the four
-    liquidity factors — cash, revolver reliance, acceleration/MAC language, and the
-    immediate cash need. An older 8-K is history, not a live trigger. On-demand: an 8-K
-    fetch must not gate every overview build or screener row."""
+    """Crisis-of-confidence four-factor screen (Moyer, Distressed Debt Analysis, ch. 8): a
+    restatement/fraud 8-K trigger (Items 4.01/4.02/5.02) filed in the last three years,
+    assessed against the four liquidity factors — cash, revolver reliance,
+    acceleration/MAC language, and the immediate cash need. An older 8-K is history, not
+    a live trigger. On-demand: an 8-K fetch must not gate every overview build or
+    screener row."""
     from sqlalchemy import text as sql
 
     from .capstack.eightk import crisis_screen, crisis_triggers

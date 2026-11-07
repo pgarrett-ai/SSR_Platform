@@ -76,6 +76,7 @@ def test_unknown_ticker_404():
     r = client.post("/api/company/ZZZZNOPE/recovery/docket", json={
         "subtype": "plan", "occurred_at": "2026-03-01", "title": "x"})
     assert r.status_code == 404
+    assert r.json()["error"] == "ticker_not_found" and "ZZZZNOPE" in r.json()["detail"]
 
 
 def test_empty_title_422():
