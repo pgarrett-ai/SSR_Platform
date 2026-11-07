@@ -7,10 +7,13 @@ cache for a real re-run. Successful live runs are also written back so repeat re
 from __future__ import annotations
 
 import re
+import threading
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
 
 from .config import CACHE_DIR, get_settings
+from .progress import ProgressLog
 from ..schemas import Overview
 
 # Trust boundary: `ticker` is request-derived and is interpolated into cache FILENAMES
@@ -84,6 +87,29 @@ def save_overview(ticker: str, years: int, overview: Overview) -> None:
 
 def is_hero(ticker: str) -> bool:
     return ticker.strip().upper() in get_settings().hero_ticker_set
+
+
+_flight_guard = threading.Lock()
+_flight_locks: dict[tuple, threading.Lock] = {}
+
+
+@contextmanager
+def single_flight(key: tuple, progress: Optional[ProgressLog] = None):
+    """Hold the lock for one cache key, so concurrent requests for the same key run the
+    pipeline once. The caller re-checks the cache inside the block: a waiter then reuses
+    the result the first run wrote."""
+    # ponytail: per-process locks, fine for one uvicorn worker; a file or DB lock if the API
+    # ever runs several. Never evicted: one small lock per key requested.
+    with _flight_guard:
+        lock = _flight_locks.setdefault(key, threading.Lock())
+    if not lock.acquire(blocking=False):
+        if progress is not None:
+            progress.emit("Waiting for the same run already in progress…", step="cache")
+        lock.acquire()
+    try:
+        yield
+    finally:
+        lock.release()
 
 
 

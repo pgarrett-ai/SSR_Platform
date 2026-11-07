@@ -14,7 +14,8 @@ from typing import Optional
 from .capstack.bridge import build_bridge, build_ebitda_box, renormalize_spliced_bridge
 from .capstack.agreements import group_families, map_instruments
 from .capstack.covenants import extract_covenant_package, find_credit_documents
-from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
+from .core.cache import (is_hero, load_latest_overview, load_overview, save_overview,
+                         single_flight)
 from .capstack.debt_schedule import (annotate_maturities, drop_retired,
                                      extract_debt_schedule, fill_maturity_from_name)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
@@ -96,26 +97,36 @@ def run_overview(
     progress: Optional[ProgressLog] = None,
     live: bool = False,
 ) -> Overview:
-    """Run the pipeline and return a structured Overview.
-
-    Phase 1: header + sources populated; analytical sections come online in later phases.
-    Raises TickerNotFoundError / NoFilingsError for clean handling by the API layer.
+    """The Overview for (ticker, years): the cached run (hero names and any earlier run)
+    unless live=True, else a fresh pipeline run. Concurrent requests for one key run the
+    pipeline once and the rest reuse its result. Raises TickerNotFoundError /
+    NoFilingsError for clean handling by the API layer.
     """
-    settings = get_settings()
     progress = progress or ProgressLog()
     ticker = ticker.strip().upper()
     years = max(1, min(int(years), 10))
-    warnings: list[str] = []
+    asked_at = datetime.now(timezone.utc).isoformat()
 
-    # Serve hero names (and any previously cached run) from the cache unless live=True.
-    if not live:
+    def _reuse() -> Optional[Overview]:
         cached = load_overview(ticker, years)
-        if cached is not None:
-            tag = "hero" if is_hero(ticker) else "recent"
-            progress.emit(
-                f"Served {ticker} from the cached {tag} analysis.", step="cache", pct=100,
-            )
-            return cached
+        # a live request reuses only a run that finished after it was asked (both stamps
+        # are UTC isoformat strings, so they compare in time order)
+        if cached is None or (live and (cached.header.last_updated or "") < asked_at):
+            return None
+        tag = "hero" if is_hero(ticker) else "recent"
+        progress.emit(f"Served {ticker} from the cached {tag} analysis.", step="cache", pct=100)
+        return cached
+
+    if not live and (cached := _reuse()) is not None:   # a cache hit never waits on a build
+        return cached
+    with single_flight(("overview", ticker, years), progress):
+        return _reuse() or _build_overview(ticker, years, progress)
+
+
+def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
+    """Run every pipeline step, assemble the Overview and cache it."""
+    settings = get_settings()
+    warnings: list[str] = []
 
     progress.emit(f"Resolving ticker {ticker} → CIK…", step="resolve", pct=5)
     client = EdgarClient()

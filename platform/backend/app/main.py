@@ -17,6 +17,7 @@ import queue
 import re
 import secrets
 import threading
+import time
 from contextlib import asynccontextmanager
 from typing import NamedTuple, Optional
 
@@ -31,7 +32,7 @@ import datetime as dt
 
 from . import models
 from . import models_events
-from .core.cache import load_latest_overview, load_overview, safe_ticker
+from .core.cache import load_latest_overview, load_overview, safe_ticker, single_flight
 from .core.config import CACHE_DIR, get_settings, set_llm_runtime_enabled
 from .core.db import init_db, session_scope
 from .edgar.client import NoFilingsError, TickerNotFoundError
@@ -211,7 +212,8 @@ def _native(obj):
 def _hazard_section(ticker: str, years: int, live: bool, progress: ProgressLog | None = None) -> dict:
     """Same-day disk cache around the hazard pipeline. Market data moves daily and EDGAR on
     filings, so a day-fresh payload serves page reloads instantly instead of re-running the
-    ~30s pipeline; live=True bypasses. Kept in its own subdir so the overview-cache globs
+    ~30s pipeline; live=True bypasses. Concurrent requests for one key compute once and the
+    rest reuse its result. Kept in its own subdir so the overview-cache globs
     (TICKER_*y.json) never pick these up."""
     try:
         safe_t = safe_ticker(ticker)   # trust boundary: keep request-derived ticker out of the path
@@ -219,23 +221,37 @@ def _hazard_section(ticker: str, years: int, live: bool, progress: ProgressLog |
         # invalid ticker -> skip the cache path entirely; hazard_analyze resolves it and raises cleanly
         return jsonable(_native(hazard_analyze(ticker, years, progress=progress)))
     p = CACHE_DIR / "hazard" / f"{safe_t}_{int(years)}y.json"
-    today = dt.date.today().isoformat()
-    if not live and p.exists():
+    asked_at = time.time()
+
+    def _reuse() -> Optional[dict]:
+        # a live request reuses only a file written after it was asked
+        if not p.exists() or (live and p.stat().st_mtime < asked_at):
+            return None
         try:
             blob = json.loads(p.read_text(encoding="utf-8"))
-            if blob.get("as_of") == today:
-                if progress:
-                    progress.emit("Served from today's hazard cache.", step="cache", pct=100)
-                return blob["data"]
         except Exception:   # an unreadable cache file means a fresh run, not a failure
             log.exception("hazard cache unreadable: %s", p)
-    data = jsonable(_native(hazard_analyze(ticker, years, progress=progress)))
-    try:
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps({"as_of": today, "data": data}), encoding="utf-8")
-    except Exception:   # caching is best-effort; never fail a request over it
-        log.exception("hazard cache not written: %s", p)
-    return data
+            return None
+        if blob.get("as_of") != dt.date.today().isoformat():
+            return None
+        if progress:
+            progress.emit("Served from today's hazard cache.", step="cache", pct=100)
+        return blob["data"]
+
+    if not live and (data := _reuse()) is not None:   # a cache hit never waits on a run
+        return data
+    with single_flight(("hazard", safe_t, int(years)), progress):
+        data = _reuse()
+        if data is not None:
+            return data
+        data = jsonable(_native(hazard_analyze(ticker, years, progress=progress)))
+        try:
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(json.dumps({"as_of": dt.date.today().isoformat(), "data": data}),
+                         encoding="utf-8")
+        except Exception:   # caching is best-effort; never fail a request over it
+            log.exception("hazard cache not written: %s", p)
+        return data
 
 
 @app.get("/api/screen")
