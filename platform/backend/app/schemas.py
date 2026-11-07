@@ -275,7 +275,7 @@ class LiquidityEvent(BaseModel):
 
 class LiquidityRunway(BaseModel):
     """Distressed-mode framing: total liquidity, burn, months of runway, next wall.
-    is_distressed (EBITDA <= 0) puts the runway in the issuer strip."""
+    runway_months is set only while free cash flow is negative; the strip shows it then."""
 
     is_distressed: bool = False
     as_of_label: Optional[str] = None            # 'Q1 2026' / 'FY2025'

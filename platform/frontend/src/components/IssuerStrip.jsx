@@ -118,9 +118,9 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
               <CitedNumber cv={liq.total_liquidity} className="text-slate-100" />
               <div className="truncate text-xs text-slate-400">
                 <span className="relative" title={liquidityParts(liq)}>{liquidityParts(liq)}</span>
-                {liq.is_distressed && liq.runway_months != null && (
+                {liq.runway_months != null && (
                   <span className={runwayTone(liq.runway_months)}>
-                    {" "}· runway {liq.runway_months.toFixed(0)} mo
+                    {" "}· runway {liq.runway_months > 60 ? "60+" : liq.runway_months.toFixed(0)} mo
                   </span>
                 )}
               </div>
