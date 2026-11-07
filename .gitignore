@@ -1,4 +1,4 @@
-# secrets — API keys live in .env files, never commit
+# secrets
 .env
 **/.env
 
@@ -13,54 +13,26 @@ __pycache__/
 node_modules/
 dist/
 
-# runtime state (SQLite DBs, trained model bundles incl. .prev backups, launch logs)
+# runtime state: databases, trained model bundles, logs, local caches
 *.db
 *.joblib
 *.joblib.*
 *.pkl
 .logs/
-platform/backend/app/data/runtime_settings.json
-platform/backend/app/data/worker_heartbeat.json
-platform/backend/app/data/worker.lock
+.edgar_cache/
+platform/backend/app/data/
+platform/backend/app/cache/hazard/
+platform/backend/app/cache/eightk/
 
-# editor/os noise
-.DS_Store
-Thumbs.db
-.claude/
-.obsidian/
-.~lock*#
+# operator-supplied inputs: the raw LoPucki BRD table (licensed) and bond marks (your own
+# pricing source); the derived sd_events.json and bond_quotes.example.json are committed
+platform/backend/app/hazard/data/lopucki_brd_cases.csv
+platform/backend/app/hazard/data/bond_quotes.json
 
-# project instructions (local, not part of the public product)
-/CLAUDE.md
-
-# internal working material — never public (see memory: repo = product only)
-#   docs/      cheatsheets, workflows, plans, handoffs, guides
-#   research/  memos, daily sweeps, watchlist + tracker
-#   archive/   git bundles, source office docs
-/docs/
-/research/
-/archive/
-
-# pre-platform legacy apps (superseded by platform/; kept on disk for reference only)
-/capstack/
-/hazard/
-/fulcrum/
-
-# stray office docs / bundles anywhere (belt-and-suspenders over the dir ignores above)
-*.docx
-*.xlsx
-*.bundle
-
-# bulk source data drops (SEC N-PORT quarterly ZIPs etc.) — hundreds of MB, never commit
+# bulk source data drops (SEC N-PORT quarterly ZIPs etc.)
 *.zip
 platform/backend/data/
 
-# Florida-UCLA-LoPucki BRD Cases table (operator-supplied raw CSV; derived sd_events.json IS committed)
-platform/backend/app/hazard/data/lopucki_brd_cases.csv
-
-# hazard day-cache: derived, valid one day — never committed (hero overview caches ARE committed)
-platform/backend/app/cache/hazard/
-# 8-K submissions cache: derived, 1h TTL
-platform/backend/app/cache/eightk/
-route_audit.csv
-.superpowers/
+# os noise
+.DS_Store
+Thumbs.db

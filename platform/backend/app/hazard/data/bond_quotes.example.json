@@ -1,0 +1,17 @@
+{
+ "TICKER": [
+  {
+   "cusip": "000000AA0",
+   "issuer": "Example Issuer Inc",
+   "coupon": 5.75,
+   "maturity": "2029-04-15",
+   "callable": false,
+   "convertible": false,
+   "last_price": 98.5,
+   "last_yield": 6.21,
+   "last_trade": "2026-10-30",
+   "as_of": "2026-10-31",
+   "source": "your pricing source"
+  }
+ ]
+}
