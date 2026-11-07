@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import math
 import queue
 import re
 import secrets
@@ -90,6 +91,9 @@ _MAX_BODY_BYTES = 5_000_000   # reject oversized POST bodies before Starlette bu
 @app.middleware("http")
 async def _limit_request_body(request, call_next):
     cl = request.headers.get("content-length")
+    if cl is None and request.method in ("POST", "PUT", "PATCH"):
+        # a chunked body has no length to check, and request.json() would buffer all of it
+        return JSONResponse(status_code=411, content={"error": "Content-Length required"})
     if cl is not None and cl.isdigit() and int(cl) > _MAX_BODY_BYTES:
         return JSONResponse(status_code=413, content={"error": "request body too large (max 5 MB)"})
     return await call_next(request)
@@ -583,6 +587,20 @@ class RecoveryCtx(NamedTuple):
     accrual_years: float
 
 
+def _require_finite(obj, where: str) -> None:
+    """ValueError (the recovery routes' 400) on a NaN or infinity anywhere in a request
+    dict: the JSON parser accepts those literals, and pydantic's allow_inf_nan only covers
+    float-typed fields, not the untyped sim/structure/priming dicts."""
+    if isinstance(obj, float) and not math.isfinite(obj):
+        raise ValueError(f"{where} must be a finite number")
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            _require_finite(v, f"{where}.{k}")
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            _require_finite(v, f"{where}[{i}]")
+
+
 def recovery_context(ticker: str, years: int, sim: dict,
                      structure: Optional[dict] = None,
                      petition_date: Optional[str] = None,
@@ -592,6 +610,8 @@ def recovery_context(ticker: str, years: int, sim: dict,
     request body if given, else derived from the capstack overview (cache-first) with
     an XBRL total-debt seed fallback; EBITDA defaulting; petition date -> accrual toll.
     need_ov=False skips the overview load on the body-structure path (offline callers)."""
+    _require_finite(sim, "sim")
+    _require_finite(structure, "structure")
     citations: dict = {}
     subsidiaries: list = []
     ebitda = sim.get("base_ebitda")
@@ -797,6 +817,7 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
     instead of failing: a going-concern EV simulation is meaningless below zero EBITDA."""
     sim_kwargs = dict(body.sim)
     try:
+        _require_finite(body.priming, "priming")
         # a run that will liquidate needs the overview's asset snapshot
         need_ov = bool(body.structure is None or body.petition_date
                        or body.mode == "liquidation"
@@ -1230,6 +1251,7 @@ def recovery_liquidation(ticker: str, body: LiquidationBody, years: int = Query(
     """Asset-based liquidation waterfall with editable advance rates and the
     ch11-orderly vs ch7-fire-sale comparison."""
     try:
+        _require_finite({"rates": body.rates, "assets": body.assets}, "body")
         ctx = recovery_context(ticker, years, {"accrual_years": body.accrual_years},
                                structure=body.structure, need_ov=body.assets is None)
         payload = _liquidation_payload(ctx.structure, ctx.ov, body.accrual_years,

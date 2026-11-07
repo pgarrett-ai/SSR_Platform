@@ -148,6 +148,14 @@ def test_waterfall_claim_is_principal_less_oid():
     assert [round(t.face, 1) for t in structure.tranches] == [1100.0, 71.2, 265.0, 391.0]
 
 
+def test_stale_issuance_face_claims_the_carrying_amount():
+    # AAL's 2019-1 EETC: tagged at its $339M issuance face, $228M still owed after amortizing
+    from app.fulcrum.adapter import _claim_amount
+    amount, _ = _claim_amount({"facility_type": "notes", "outstanding": _cv(228e6),
+                               "face_amount": _cv(339e6)})
+    assert amount == 228e6
+
+
 def test_ltm_ebitda_skips_a_row_without_fiscal_year():
     from app.fulcrum.adapter import ltm_ebitda
     ov = _ov()

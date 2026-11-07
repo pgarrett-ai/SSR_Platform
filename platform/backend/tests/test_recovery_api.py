@@ -1,5 +1,6 @@
 """The Project-Apex worked example reproduced through the API,
 plus a scenarios save/list/delete roundtrip. No network needed."""
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -254,6 +255,32 @@ def test_simulate_product_bound_400(monkeypatch):
     r = client.post("/api/company/APEX/recovery/simulate",
                     json={"structure": many, "sim": {**APEX_SIM, "n_draws": 1_000_000}})
     assert r.status_code == 400          # 100 × 1e6 = 1e8 cells > 20M budget
+
+
+_SIM_5K = {**APEX_SIM, "n_draws": 5_000}
+_INF_TRANCHE = {**APEX_STRUCTURE, "tranches": [
+    {**APEX_STRUCTURE["tranches"][0], "face": float("inf")}, *APEX_STRUCTURE["tranches"][1:]]}
+
+
+@pytest.mark.parametrize("body", [
+    {"structure": APEX_STRUCTURE, "sim": {**_SIM_5K, "accrual_years": float("nan")}},
+    {"structure": _INF_TRANCHE, "sim": _SIM_5K},
+    {"structure": APEX_STRUCTURE, "sim": _SIM_5K, "priming": {"face": float("nan")}},
+], ids=["sim", "structure", "priming"])
+def test_simulate_non_finite_number_400(monkeypatch, body):
+    # the JSON parser takes NaN/Infinity literals; untyped dicts carry them past pydantic
+    import json
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/simulate", content=json.dumps(body),
+                    headers={"Content-Type": "application/json"})
+    assert r.status_code == 400 and "finite" in r.json()["error"]
+
+
+def test_chunked_body_without_length_411():
+    # a chunked body carries no Content-Length for the 5 MB cap to check
+    r = client.post("/api/settings/llm", content=iter([b"{}"]),
+                    headers={"Content-Type": "application/json"})
+    assert r.status_code == 411
 
 
 def test_ticker_charset_rejected_422():

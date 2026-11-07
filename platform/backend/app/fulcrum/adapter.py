@@ -78,14 +78,19 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
     return structure, ltm_ebitda(overview)[0], citations
 
 
+_FACE_TOLERANCE = 0.10   # principal within this share of carrying is the same debt
+
+
 def _claim_amount(inst: dict) -> tuple[Optional[float], Optional[dict]]:
     """($, citation) a drawn instrument claims. Notes and term loans claim principal: the
     tagged face less any tagged OID (unmatured interest, not a claim). Carrying amounts net
     issuance costs (LCID 2030 converts: $1,085M carrying, $1,100M principal) or add an
     exchange premium (TSE 2029 PIK notes: $419.9M carrying, $391.0M par, which already
-    includes the PIK), and neither changes the claim. A revolver's face tag is a sub-limit
-    or the facility size (TSE's super-priority revolver: $50M tag, $265M drawn), so
-    revolvers and untagged instruments claim the carrying amount."""
+    includes the PIK), and neither changes the claim. A principal more than 10% off
+    carrying (an EETC tagged at its $339M issuance face, $228M still owed) claims the
+    carrying amount. A revolver's face tag is a sub-limit or the facility size (TSE's
+    super-priority revolver: $50M tag, $265M drawn), so revolvers and untagged instruments
+    claim the carrying amount."""
     cv = next((inst[k] for k in ("outstanding", "principal")
                if (inst.get(k) or {}).get("value")), None)
     if cv is None:
@@ -94,9 +99,13 @@ def _claim_amount(inst: dict) -> tuple[Optional[float], Optional[dict]]:
     face = inst.get("face_amount") or {}
     if not face.get("value") or inst.get("facility_type") not in ("notes", "term loan"):
         return carrying
-    # ponytail: trusts the face tag; an add-on issuance missing from it understates the claim
     oid = (inst.get("unamortized_discount") or {}).get("value") or 0.0
-    return float(face["value"]) - float(oid), face.get("citation")
+    principal = float(face["value"]) - float(oid)
+    # ponytail: a 10% band, not a reconciliation. The face tag is par at issuance; further
+    # off carrying it is stale (amortized, repurchased or exchanged paper) and carrying claims
+    if abs(principal - carrying[0]) > _FACE_TOLERANCE * carrying[0]:
+        return carrying
+    return principal, face.get("citation")
 
 
 def ltm_ebitda(overview: dict) -> tuple[Optional[float], Optional[str]]:

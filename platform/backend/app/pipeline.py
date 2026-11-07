@@ -15,8 +15,8 @@ from typing import Optional
 from .capstack.bridge import build_bridge, build_ebitda_box, renormalize_spliced_bridge
 from .capstack.agreements import group_families, map_instruments
 from .capstack.covenants import extract_covenant_package, find_credit_documents
-from .core.cache import (is_hero, load_latest_overview, load_overview, save_overview,
-                         single_flight)
+from .core.cache import (is_hero, load_latest_overview, load_overview, safe_ticker,
+                         save_overview, single_flight)
 from .capstack.debt_schedule import (annotate_maturities, drop_retired,
                                      extract_debt_schedule, fill_maturity_from_name, is_caption)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
@@ -122,7 +122,10 @@ def run_overview(
     NoFilingsError for clean handling by the API layer.
     """
     progress = progress or ProgressLog()
-    ticker = ticker.strip().upper()
+    try:   # before any cache read or lock: a malformed ticker never reaches either
+        ticker = safe_ticker(ticker)
+    except ValueError as exc:
+        raise TickerNotFoundError(str(exc)) from exc
     years = max(1, min(int(years), 10))
     asked_at = datetime.now(timezone.utc).isoformat()
 

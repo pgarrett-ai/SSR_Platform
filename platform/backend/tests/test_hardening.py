@@ -38,6 +38,19 @@ def test_load_overview_invalid_ticker_degrades_to_none():
     assert load_overview("../../etc/x", 3) is None
 
 
+def test_run_overview_rejects_a_malformed_ticker_before_any_lock(monkeypatch):
+    # a path ticker of any length would otherwise leave one never-evicted lock per value
+    from app import pipeline
+    from app.core import cache
+    from app.edgar.client import TickerNotFoundError
+
+    monkeypatch.setattr(pipeline, "_build_overview", lambda *a: pytest.fail("pipeline ran"))
+    before = dict(cache._flight_locks)
+    with pytest.raises(TickerNotFoundError):
+        pipeline.run_overview("X" * 8000, 3)
+    assert cache._flight_locks == before
+
+
 def test_simconfig_n_draws_bounded():
     with pytest.raises(ValueError):
         SimConfig(base_ebitda=100.0, n_draws=10**9)
