@@ -4,7 +4,7 @@ The lender flag is deterministic and effectively free — it reuses the credit-a
 admin_agent already extracted for the covenant package (covenants.py: a related-party
 lender named as the agent bank IS the flag). The ownership percentage is the one new LLM
 seam: DEF 14A "beneficial owner" / "related person transactions" text, windowed and read
-with a forced tool call, verbatim-quote-gated like every other extractor in this package.
+with a tool call, verbatim-quote-gated like every other extractor in this package.
 
 There is no fuzzy admin_agent<->owner name matcher (Ayar != "Public Investment Fund"
 literally): the related-person-transaction footnote itself states the lender IS the
