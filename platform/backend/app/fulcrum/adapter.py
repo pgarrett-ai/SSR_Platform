@@ -9,12 +9,15 @@ from typing import Optional
 from .structure import CapitalStructure, Entity, Tranche
 
 
-def classify_seniority(seniority: Optional[str], secured: Optional[bool], instrument: str) -> tuple[bool, int, bool]:
+def classify_seniority(seniority: Optional[str], secured: Optional[bool], instrument: str,
+                       member: Optional[str] = None) -> tuple[bool, int, bool]:
     """Map CapStack's free-text seniority to (secured, lien_rank, preferred). Super-priority
     and DIP facilities, and receivables securitizations (the receivables sit in a
     bankruptcy-remote vehicle), rank 0 ahead of every lien. An explicit unsecured flag beats
-    the name patterns: 'Senior unsecured revolving credit facility' is not a first lien."""
-    text = f"{seniority or ''} {instrument}".lower()
+    the name patterns: 'Senior unsecured revolving credit facility' is not a first lien.
+    The XBRL member is read too: TSE names its receivables facility '2026 AR Facility' and
+    tags it AccountsReceivableSecuritizationFacility2026Member."""
+    text = f"{seniority or ''} {instrument} {member or ''}".lower()
     if "preferred" in text:
         return False, 99, True
     if re.search(r"super[- ]?priority|debtor[- ]in[- ]possession|\bdip\b|securiti[sz]ation", text):
@@ -48,8 +51,8 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
         if not amount or amount <= 0:
             continue
         secured, lien, preferred = classify_seniority(
-            inst.get("seniority"), inst.get("secured"), inst.get("instrument", "")
-        )
+            inst.get("seniority"), inst.get("secured"), inst.get("instrument", ""),
+            inst.get("xbrl_member"))
         tname = inst.get("instrument") or f"Tranche {i + 1}"
         while tname in seen:
             tname += " *"

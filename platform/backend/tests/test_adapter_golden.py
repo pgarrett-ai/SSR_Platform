@@ -71,6 +71,10 @@ def test_classify_seniority():
     assert classify_seniority(None, None, "Super-Priority Revolver") == (True, 0, False)
     assert classify_seniority(None, None, "Accounts Receivable Securitization Facility") == \
         (True, 0, False)
+    assert classify_seniority(None, None, "2026 AR Facility",
+                              "tse:AccountsReceivableSecuritizationFacility2026Member") == \
+        (True, 0, False)
+    assert classify_seniority(None, None, "2026 AR Facility") == (False, 99, False)
 
 
 def test_aal_snapshot_to_recovery():
