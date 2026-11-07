@@ -87,7 +87,7 @@ def test_petition_filing_none_when_no_103(monkeypatch):
 
 
 def test_fetch_submissions_day_caches(monkeypatch, tmp_path):
-    # PR-B: the per-CIK day-cache collapses repeated fetches to one EDGAR hit per CIK per day
+    # the per-CIK disk cache collapses repeated fetches to one EDGAR hit per CIK per TTL
     # (SEC 10 req/s fair-access). The raw seam _http_get_submissions is the only network call.
     calls = {"n": 0}
 

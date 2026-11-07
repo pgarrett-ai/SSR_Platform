@@ -1,4 +1,4 @@
-"""Detector registry (plan §5): form prefix -> pure detector functions.
+"""Detector registry: form prefix -> pure detector functions.
 
 A detector: detect(filing_meta, raw_header, universe_row) -> list[Event]. No I/O.
 A prefix covers the exact form, its '/A' amendments, and '-' variants ('15' covers

@@ -1,4 +1,4 @@
-"""The forensic 'where is the cash coming from?' test (brief §6a).
+"""The forensic 'where is the cash coming from?' test.
 
 Builds a year-by-year cited table (debt, cash, FCF, capex, AP, inventory, DPO, EBITDA, OCF) and
 auto-detects divergences that hint at off-balance-sheet financing:
@@ -342,8 +342,8 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
 
 
 def build_asset_snapshot(series: FinancialSeries, cik: str):
-    """Latest balance-sheet asset categories for the liquidation waterfall (Moyer
-    asset-based valuation). Intangibles = goodwill + other intangibles (derived sum);
+    """Latest balance-sheet asset categories for the asset-based liquidation waterfall.
+    Intangibles = goodwill + other intangibles (derived sum);
     `other` = total assets − categorized residual (derived)."""
     from ..schemas import AssetSnapshot
 

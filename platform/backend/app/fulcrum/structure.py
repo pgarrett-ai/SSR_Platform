@@ -68,7 +68,8 @@ class Tranche:
                                               # the unsecured pool. None = all-asset pledge.
     subordinated_to: Optional[str] = None     # contractual subordination: this tranche's recovery
                                               # is redirected to the named tranche until it is
-                                              # paid in full (Moyer ch. 7 subrogation)
+                                              # paid in full (subrogation; Moyer, Distressed
+                                              # Debt Analysis, ch. 7)
 
     def __post_init__(self) -> None:
         if self.face < 0:
@@ -122,7 +123,7 @@ class CapitalStructure:
     tranches: list[Tranche]
     admin_fees: float = 0.0
     admin_pct: float = 0.0            # admin/deadweight cost as a fraction of EV, deducted
-                                      # before distribution (Moyer: outsiders underestimate;
+                                      # before distribution (outsiders underestimate it;
                                       # UI defaults 7%). Stacks with the $ admin_fees.
 
     def __post_init__(self) -> None:

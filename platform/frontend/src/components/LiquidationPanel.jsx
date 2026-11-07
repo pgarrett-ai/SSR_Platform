@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { liquidateRecovery } from "../api.js";
 import { Button, ErrorCard, Section, Th, fmt, fmtMoney } from "../ui/index.jsx";
 
-// Asset-based liquidation waterfall (Moyer ch. 5/8): book values × advance rates, net of
+// Asset-based liquidation waterfall (Moyer, Distressed Debt Analysis, ch. 5 and 8): book
+// values × advance rates, net of
 // estate costs, distributed by absolute priority. Recovery shows it in place of the
 // going-concern answer when EBITDA ≤ 0. Recompute keeps the simulated run's stack and
 // accrual, so its claims match the run it replaces.

@@ -1,8 +1,8 @@
-"""Asset-based liquidation waterfall (Moyer ch. 5/8): when the firm cannot sustain
-positive EBITDA, cash-flow metrics are irrelevant — value the assets at advance/haircut
-rates (orderly vs fire-sale), net estate costs, and run the SAME waterfall on the
-proceeds (single draw). This is also the negative-EBITDA degradation path for the
-Recovery page (C4): a going-concern EV simulation is meaningless below zero EBITDA.
+"""Asset-based liquidation waterfall (Moyer, Distressed Debt Analysis, ch. 5 and 8): when
+the firm cannot sustain positive EBITDA, cash-flow metrics are irrelevant — value the assets
+at advance/haircut rates (orderly vs fire-sale), net estate costs, and run the SAME waterfall
+on the proceeds (single draw). This is also the negative-EBITDA path for the Recovery page:
+a going-concern EV simulation is meaningless below zero EBITDA.
 
 All dollar figures $mm.
 """
@@ -17,7 +17,7 @@ from .structure import CapitalStructure
 from .waterfall import run_waterfall
 
 # Recovery rate on book value by asset category. Fire-sale ≈ half the orderly rate on
-# non-cash assets (Moyer: the disposition basis is a key, stated assumption).
+# non-cash assets; the disposition basis is a key, stated assumption.
 ORDERLY = {"cash": 1.00, "accounts_receivable": 0.75, "inventory": 0.50,
            "ppe": 0.40, "intangibles": 0.10, "other": 0.25}
 FIRE_SALE = {"cash": 1.00, "accounts_receivable": 0.40, "inventory": 0.25,

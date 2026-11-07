@@ -24,7 +24,7 @@ def _meta(items, form="8-K", accession=ACCN):
                       items_unknown=(form.startswith("8-K") and not items))
 
 
-# --- Task 18: the full 16-item 8-K table -------------------------------------
+# --- the full 16-item 8-K table ---------------------------------------------
 
 def test_all_sixteen_plan_items_present():
     assert set(ITEM_SPECS) == {"1.01", "1.02", "1.03", "2.01", "2.03", "2.04", "2.05",
@@ -58,7 +58,7 @@ def test_multi_item_one_event_per_tracked_item():
     assert [e.event_type for e in evs] == ["acceleration", "exit_costs"]
 
 
-# --- Task 19: structural (non-8-K) form detectors ----------------------------
+# --- structural (non-8-K) form detectors ------------------------------------
 from app.events import detectors_forms  # noqa: E402,F401 — import registers the detectors
 from app.events.registry import detectors_for
 
@@ -92,7 +92,7 @@ def test_untracked_forms_route_nowhere(form):
     assert [e for det in detectors_for(form) for e in det(meta, {}, None)] == []
 
 
-# --- Task 20: 17g-7 ratings default detector ---------------------------------
+# --- 17g-7 ratings default detector -----------------------------------------
 from app.events.detectors_ratings import events_from_sd_rows
 
 
@@ -110,7 +110,7 @@ def test_ratings_events_pure_and_idempotent():
     assert events_from_sd_rows(rows)[0].dedupe_key == e.dedupe_key
 
 
-# --- Task 21: golden fixture (real captured Trinseo submissions doc) ----------
+# --- golden fixture (real captured Trinseo submissions doc) ------------------
 GOLD = Path(__file__).parent / "data" / "submissions_1519061_8k.json"
 
 

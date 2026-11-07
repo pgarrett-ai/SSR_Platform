@@ -1,4 +1,5 @@
-"""Deterministic EV explorer (Moyer ch. 5/6/12): who is in the money at EV = X.
+"""Deterministic EV explorer: who is in the money at EV = X (Moyer, Distressed Debt
+Analysis, ch. 5, 6 and 12).
 
 One vectorized run_waterfall call over an EV grid gives every tranche's recovery curve;
 the waterfall is piecewise-linear in EV, so breakpoints interpolate exactly between grid
@@ -97,7 +98,8 @@ def explore(structure: CapitalStructure, ebitda: Optional[float],
     if ebitda is not None and ebitda > 0:
         out["ebitda"] = ebitda
         out["multiple_grid"] = np.round(grid / ebitda, 3).tolist()
-        # Moyer ch. 6 coverage-vs-multiple: EV/total, EV/senior, (EV − senior)/junior
+        # coverage vs multiple (Moyer, Distressed Debt Analysis, ch. 6): EV/total,
+        # EV/senior, (EV − senior)/junior
         senior = sum(claims[n] for n in order if tmap[n].secured)
         junior = total_claim - senior
         m = np.arange(2.0, 10.01, 0.25)
@@ -115,8 +117,8 @@ def explore(structure: CapitalStructure, ebitda: Optional[float],
         out["breakeven_multiples"] = breakeven
         out["coverage_note"] = ("junior coverage = (EV − senior claims) ÷ junior claims — "
                                 "distorted when the junior tranche is small (Moyer ch. 6)")
-        # 'market has not repriced' (ch. 6): face debt exceeds the reference EV while the
-        # quoted paper still trades near par
+        # 'market has not repriced' (Moyer, Distressed Debt Analysis, ch. 6): face debt
+        # exceeds the reference EV while the quoted paper still trades near par
         if quotes:
             out["not_repriced"] = bool(structure.total_face() > 6.0 * ebitda
                                        and float(np.mean(quotes)) >= 90.0)

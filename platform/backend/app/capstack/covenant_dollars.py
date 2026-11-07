@@ -1,8 +1,8 @@
-"""Covenant dollars (Moyer ch. 7/9): the RP-basket builder — how much value can leak
-to shareholders — and permitted-liens headroom — how much new secured debt can prime
-you. Deterministic regex over already-cached covenant extractions plus XBRL quarterly
-flows; no re-extraction (both heroes' operative RP/lien sections sit outside the
-extraction window — prompt-v3 + window targeting is Phase-3+ backlog).
+"""Covenant dollars (Moyer, Distressed Debt Analysis, ch. 7 and 9): the RP-basket
+builder — how much value can leak to shareholders — and permitted-liens headroom — how
+much new secured debt can prime you. Deterministic regex over already-cached covenant
+extractions plus XBRL quarterly flows; no re-extraction. An operative RP or lien section
+that falls outside the extraction window reads as not extracted.
 """
 from __future__ import annotations
 
@@ -49,7 +49,7 @@ def parse_capacity_tokens(text: Optional[str]) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# F1: RP-basket builder
+# RP-basket builder
 # --------------------------------------------------------------------------- #
 
 
@@ -57,7 +57,8 @@ def rp_basket_from_flows(flows: dict, covenants: list[dict], years: int) -> RpBa
     """Assemble the basket from per-quarter flow series (raw $, quarterly_flows shape)
     plus the cached covenant layer. Pure — unit-tested on hand-built series.
 
-    Per quarter (Moyer ch. 7): contribution = (0.5×NI if NI>0 else 1.0×NI)
+    Per quarter (Moyer, Distressed Debt Analysis, ch. 7):
+    contribution = (0.5×NI if NI>0 else 1.0×NI)
     + equity proceeds − dividends − buybacks; capacity = starter + Σ contributions."""
     today = dt.date.today()
     start = today.replace(year=today.year - years, day=min(today.day, 28))
@@ -153,7 +154,7 @@ def build_rp_basket(entity_facts, covenants: list[dict], years: int) -> RpBasket
 
 
 # --------------------------------------------------------------------------- #
-# F2: permitted-liens headroom
+# Permitted-liens headroom
 # --------------------------------------------------------------------------- #
 
 
@@ -187,7 +188,7 @@ def _nta_mm(ov: dict) -> tuple[Optional[float], Optional[str]]:
 
 
 def build_liens_headroom(ov: dict) -> dict:
-    """Permitted-liens headroom archetypes per extracted lien fact, the fixed unbounded
+    """Permitted-liens headroom archetypes per extracted lien fact, the unbounded
     gate (unsecured/convertible notes whose governing family was extracted with no lien
     fact — the LCID pattern; never fires vacuously on AAL), LME chips, and the priming
     pre-seed for the Recovery page."""
@@ -227,7 +228,7 @@ def build_liens_headroom(ov: dict) -> dict:
                          "dollars_mm": tok["dollars"], "pct": tok["pct"],
                          "ratio": tok["ratio"], "headroom": headroom})
 
-    # unbounded gate (fixed): unsecured/convertible notes exist AND a family governing
+    # unbounded gate: unsecured/convertible notes exist AND a family governing
     # them was extracted AND that family has no lien fact
     unbounded: list[str] = []
     for inst in ov.get("debt_schedule") or []:

@@ -1,8 +1,5 @@
-"""CapStack overview -> Fulcrum CapitalStructure.
-
-Kept from fulcrum's capstack_bridge.py: the seniority classifier and the overview mapper.
-Deleted from it: the three-tier loader (live API -> disk-cache path hack -> XBRL seed) —
-in the merged platform the overview comes from an in-process `run_overview()` call.
+"""CapStack overview -> Fulcrum CapitalStructure: the seniority classifier and the
+overview mapper. The overview comes from an in-process `run_overview()` call.
 """
 from __future__ import annotations
 
@@ -36,8 +33,8 @@ def classify_seniority(seniority: Optional[str], secured: Optional[bool], instru
 def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[float], dict]:
     """Build a single-entity CapitalStructure ($mm) from a CapStack overview.
 
-    CapStack's debt schedule has no legal-entity mapping yet (Phase 4 item), so all
-    tranches sit at one OpCo; the UI lets the user split HoldCo/OpCo manually.
+    CapStack's debt schedule has no legal-entity mapping, so all tranches sit at one
+    OpCo; the UI lets the user split HoldCo/OpCo manually.
     Returns (structure, ltm_ebitda_mm, citations) - EBITDA may be None; citations maps
     tranche name -> the filing citation behind its face amount (drill-down provenance).
     """

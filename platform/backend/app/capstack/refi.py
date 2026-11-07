@@ -104,7 +104,7 @@ def build_refi_wall(ov: dict, bonds: list[dict]) -> dict:
 
     rows = sequence_walls(ladder, liquidity_mm, cum_internal, base.year)
 
-    # market overlay: matched drop-file quotes keyed to schedule rows
+    # market overlay: matched bond marks keyed to schedule rows
     quotes, _ = match_quotes(ov.get("debt_schedule") or [], bonds)
     sched_by_name = {(i.get("instrument") or ""): i
                      for i in ov.get("debt_schedule") or []}

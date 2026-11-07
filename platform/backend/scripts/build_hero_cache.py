@@ -1,4 +1,4 @@
-"""Pre-build the hero-name overview cache so the demo opens instantly.
+"""Pre-build the hero-name overview cache so those names open instantly.
 
 Runs the full live pipeline for each hero ticker and writes the snapshot to app/cache/. A live
 run makes several Claude calls + large EDGAR downloads, so this takes a few minutes per name.

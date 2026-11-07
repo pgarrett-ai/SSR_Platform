@@ -1,4 +1,4 @@
-"""Phase 5: real default labels — label-window logic + bundle provenance (no network)."""
+"""Real default labels — label-window logic + bundle provenance (no network)."""
 from __future__ import annotations
 
 import datetime as dt
@@ -283,8 +283,8 @@ def test_sign_safe_panel_backfills_stale_checkpoint_rows():
 def test_checkpointed_rows_relabeled_under_current_rule(tmp_path, monkeypatch):
     import pytest
 
-    # stored under the old rule: FY2019 was a positive, but the default lands 61 days after
-    # FYE, before its 10-K could be public; FY2018 now carries the positive instead
+    # a row stored under a different label rule: FY2019 holds the positive, but the default
+    # lands 61 days after FYE, before its 10-K could be public, so FY2018 must carry it
     monkeypatch.setattr(labels, "PANEL_DB", tmp_path / "panel.db")
     con = labels._panel_db()
     con.execute("INSERT INTO firm_rows VALUES (?,?,?,?,?)", ("1", "2020-03-01", 365, "2026-07-06",
@@ -308,7 +308,7 @@ def test_runway_feature_registered_with_monotone_sign():
 
 def test_fts_429_truncates_without_outer_retries(monkeypatch, capsys):
     # paced_get already spends the sanctioned 429/403 backoff (~14s) before re-raising;
-    # the harvest's 4-attempt outer loop must NOT re-amplify it (~56s/page pre-fix).
+    # the harvest's 4-attempt outer loop must NOT re-amplify it (~56s/page if it did).
     # A persistent 429 goes straight to the documented WARN-and-truncate path.
     import urllib.error
 

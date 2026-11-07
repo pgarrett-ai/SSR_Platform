@@ -3,7 +3,8 @@ import { exchangeRecovery } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
 import { Badge, Button, Field, NUM_CLS, Section, Th, fmt, fmtMoney, fmtX } from "../ui/index.jsx";
 
-// Exchange-offer analyzer (Moyer ch. 11): a calculator over typed offer terms. The server
+// Exchange-offer analyzer (Moyer, Distressed Debt Analysis, ch. 11): a calculator over typed
+// offer terms. The server
 // returns holdout and tender payoff curves per participation level over the simulated
 // stack's EV grid; the slider and matrix read the curves client-side. It fetches only on
 // Run, so its closed section costs nothing.

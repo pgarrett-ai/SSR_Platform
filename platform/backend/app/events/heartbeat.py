@@ -1,6 +1,6 @@
 """Worker liveness gauges for /api/health. File-based (DATA_DIR) so the API process
 shares nothing with the worker beyond the events table. The silent-death failure mode
-of every poller (plan §10) is covered by two independent RAW gauges — heartbeat age
+of every poller is covered by two independent RAW gauges — heartbeat age
 (is the process looping?) and hours since the last detected event (is it ingesting?).
 zero_ingest_alarm below turns those gauges into the one filing-hours-aware alarm."""
 from __future__ import annotations
@@ -42,7 +42,7 @@ _QUIET_AFTER_H = 6.0
 
 
 def zero_ingest_alarm(worker: dict, now: dt.datetime) -> bool:
-    """Poller silent-death alarm (plan §10), from the raw worker_status() gauges.
+    """Poller silent-death alarm, from the raw worker_status() gauges.
     True when: the heartbeat exists but is dead, OR the worker is alive yet detected
     nothing for 6h inside weekday filing hours (EDGAR runs 3-6k filings/business day —
     a quiet afternoon means a broken poller, not a quiet market). Never alarms before

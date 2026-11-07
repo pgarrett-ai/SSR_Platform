@@ -26,8 +26,10 @@ def _(mo):
 
         Trains the distress-hazard model on **real data**: 8-K Item 1.03 bankruptcies +
         Fitch 17g-7 D/RD events as labels, controls from the point-in-time 10-K filer
-        universe, EDGAR XBRL fundamentals and point-in-time market features per firm-year.
-        Walk-forward validated; PDs prior-corrected to the measured base rate.
+        universe, and accounting ratios from EDGAR XBRL fundamentals per firm-year. The
+        model takes no market features; market signal stays in Merton as a separate
+        cross-check. Walk-forward validated with a one-year embargo; PDs prior-corrected to
+        the measured base rate.
         """
     )
     return

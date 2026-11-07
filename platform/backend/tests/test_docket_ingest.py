@@ -1,7 +1,7 @@
-"""PR-D: Moyer F2 docket events, Layer A (manual ingest).
-Manual analyst-entered Chapter-11 milestone events (petition/DIP/363/plan/confirmation…)
-written straight into the Phase-6 event store via a direct store call — no registry
-detector, no schema change (source='manual' already anticipated in models_events.py)."""
+"""Manual docket events: analyst-entered Chapter-11 milestones
+(petition/DIP/363/plan/confirmation…) written straight into the event store via a direct
+store call — no registry detector, no schema change (models_events.py allows
+source='manual')."""
 import pytest
 from fastapi.testclient import TestClient
 

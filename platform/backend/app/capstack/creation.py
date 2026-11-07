@@ -1,10 +1,11 @@
 """Creation-multiple ladder: what multiple of EBITDA are you 'creating' the company at
-through each class of the capital structure — at face and at market (Moyer ch. 1/10/11:
-the Magellan computation; market value of the stack through a class ÷ LTM EBITDA).
+through each class of the capital structure — at face and at market (the Magellan
+computation: market value of the stack through a class ÷ LTM EBITDA; Moyer, Distressed
+Debt Analysis, ch. 1, 10 and 11).
 
 Deterministic. Faces come from the same adapter the Recovery page uses (so class ordering
-is the structural priority order, never re-derived); market values use the TRACE drop-file
-quotes where an instrument matched, face otherwise (flagged `unquoted`).
+is the structural priority order, never re-derived); market values use bond marks from the
+marks file where an instrument matched, face otherwise (flagged `unquoted`).
 All dollar figures in $mm.
 """
 from __future__ import annotations
@@ -38,7 +39,7 @@ def _ebitda_variants(ov: dict) -> dict[str, Optional[float]]:
 
 def _face_accreted(ov: dict) -> dict[str, dict]:
     """{instrument[:80]: {face, accreted, oid}} in $mm. Accreted = carrying (GAAP
-    effective-interest ≡ Moyer's original-issue-IRR accretion; ≤ 1 quarter stale);
+    effective-interest ≡ original-issue-IRR accretion; ≤ 1 quarter stale);
     face = tagged DebtInstrumentFaceAmount, else carrying (no OID visible)."""
     out: dict[str, dict] = {}
     for i in ov.get("debt_schedule") or []:
@@ -86,7 +87,8 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         quote = quotes.get(name)
         info = fa.get(name) or {"face": t.face, "accreted": t.face, "oid": False}
         # $mm market value: quoted price % of PRINCIPAL (face), never carrying — quotes
-        # are % of face (Moyer ch. 5); accreted fallback when unquoted
+        # are % of face (Moyer, Distressed Debt Analysis, ch. 5); accreted fallback when
+        # unquoted
         mkt = (info["face"] * (quote["last_price"] / 100.0)
                if quote and quote.get("last_price") is not None else info["accreted"])
         if classes and classes[-1]["_key"] == key:
@@ -146,8 +148,8 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
             note="market values from TRACE drop-file where quoted, face otherwise",
         ).model_dump()
 
-    # % of accreted value, never face, where OID exists (Moyer ch. 5) — a 65 quote on
-    # 71.2 of accreted claim is 91.3, not distressed.
+    # % of accreted value, never face, where OID exists (Moyer, Distressed Debt Analysis,
+    # ch. 5) — a 65 quote on 71.2 of accreted claim is 91.3, not distressed.
     def pct_of_accreted(n: str, q: dict) -> Optional[float]:
         p = q.get("last_price")
         if p is None:
@@ -155,8 +157,9 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         info = fa.get(n)
         return round(p * info["face"] / info["accreted"], 1) if info else p
 
-    # min quoted price among unsecured instruments — one leg of the Moyer distress
-    # fact pattern (stock < $1 AND unsecured debt > 40% discount); equity leg is client-side.
+    # min quoted price among unsecured instruments — one leg of the distress fact pattern
+    # (stock < $1 AND unsecured debt > 40% discount; Moyer, Distressed Debt Analysis, ch. 1);
+    # the equity leg is client-side.
     # Re-based to % of accreted where OID (the raw quote overstates the discount).
     unsec_names = {(i.get("instrument") or "")[:80] for i in ov.get("debt_schedule") or []
                    if i.get("secured") is False}
@@ -190,7 +193,7 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# F9: capacity-avoidance detector + mezzanine recast (Moyer ch. 6)
+# Capacity-avoidance detector + mezzanine recast (Moyer, Distressed Debt Analysis, ch. 6)
 # --------------------------------------------------------------------------- #
 
 
@@ -207,10 +210,10 @@ def mezz_recast_row(ov: dict) -> Optional[dict]:
 
 def detect_capacity_avoidance(ov: dict, equity_price: Optional[float],
                               bonds: Optional[list[dict]] = None) -> dict:
-    """Instruments engineered around leverage optics (Moyer ch. 6): busted converts
-    (analyze purely as debt), PIK (cash coverage overstated), mezzanine preferred
-    (recast as debt). Price-dependent — assembled on demand in the ladder endpoint;
-    equity_price = Snapshot.last_price (set by a Default Risk run)."""
+    """Instruments engineered around leverage optics (Moyer, Distressed Debt Analysis,
+    ch. 6): busted converts (analyze purely as debt), PIK (cash coverage overstated),
+    mezzanine preferred (recast as debt). Price-dependent — assembled on demand in the
+    ladder endpoint; equity_price = Snapshot.last_price (set by a Default Risk run)."""
     from ..edgar.facts import fmt_money_millions
 
     quotes, _ = match_quotes(ov.get("debt_schedule") or [], bonds or [])

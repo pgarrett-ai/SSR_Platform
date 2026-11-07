@@ -52,8 +52,8 @@ def upsert_filings(
 def persist_covenants(
     session: Session, ticker: str, items: list[tuple[CovenantPackage, str]]
 ) -> None:
-    """Store extracted covenant packages, keeping `clause_text` so a vector index can be added
-    later (brief §5 — embedding/clustering is v2; we just keep the raw clauses now)."""
+    """Store extracted covenant packages, keeping `clause_text` so a vector index can be
+    built over the raw clauses."""
     # Replace prior rows for this ticker so re-runs don't accumulate duplicates.
     for row in session.scalars(
         select(models.Covenant).where(models.Covenant.ticker == ticker)
@@ -235,8 +235,8 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
 
     bridge = overview.economic_debt_bridge
 
-    # Market-layer columns (Moyer creation ladder) — best-effort; quotes are a manual
-    # drop-file so these lag a refresh until the next overview run (tooltip notes it).
+    # Market-layer columns (creation ladder) — best-effort; marks are a local file, so
+    # these lag a refresh until the next overview run (tooltip notes it).
     net_mkt_lev = creation_mult = None
     try:
         import json as _json
@@ -302,8 +302,9 @@ def update_snapshot_recovery(session: Session, ticker: str, summary: dict) -> No
 
 
 def distress_badge(session: Session, ticker: str, last_price) -> bool | None:
-    """Moyer fact pattern (ch. 1): equity de minimis (< $1) AND any unsecured quote < 60
-    (> 40% discount). Live against the drop-file; None when either input is missing."""
+    """Distress fact pattern (Moyer, Distressed Debt Analysis, ch. 1): equity de minimis
+    (< $1) AND any unsecured quote < 60 (> 40% discount). Live against the marks file;
+    None when either input is missing."""
     from .capstack.quotes import match_quotes
     from .hazard.trace import get_issuer_bonds
 

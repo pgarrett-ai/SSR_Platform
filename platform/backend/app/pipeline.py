@@ -1,9 +1,10 @@
 """Pipeline orchestration for a single (ticker, years) run.
 
-Phase 1 covers issuer resolution + filing/exhibit retrieval + persistence, and assembles the
-header + sources of the Overview. Later phases (XBRL facts, economic-debt bridge, covenants,
-MD&A sections) attach their sections here. The function takes a ProgressLog so the API can
-stream "what it's doing" to the UI.
+Resolves the issuer, retrieves and persists filings and exhibits, then builds every Overview
+section in order: XBRL forensic table, footnote/OBS extraction and the economic-debt bridge,
+the debt schedule, covenants, Exhibit 21 entities, sponsor ownership, MD&A, and the
+deterministic liquidity, capacity and covenant-dollar reads. The function takes a ProgressLog
+so the API can stream "what it's doing" to the UI.
 """
 from __future__ import annotations
 
@@ -158,7 +159,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
         rows = upsert_filings(session, ticker, cik, filings)
         sources = filing_refs(rows)
 
-    # --- Phase 2: XBRL forensic cash-vs-debt table + auto-flags (§6a) ---
+    # --- XBRL forensic cash-vs-debt table + auto-flags ---
     forensic_table = []
     forensic_flags = []
     series = None
@@ -221,7 +222,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
         ltm_facts = (ttm_view(quarters[-1]) if ltm_row.label else
                      next(y for y in series.years if y.fiscal_year == ltm_row.fiscal_year))
 
-    # --- Phase 3: footnote/OBS LLM extraction → economic-debt bridge + debt schedule (§6b/§6c/§8.3) ---
+    # --- footnote/OBS LLM extraction → economic-debt bridge + debt schedule ---
     economic_debt_bridge = None
     obs_items = []
     obs_extractions = []
@@ -318,7 +319,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
                                       step="debt", pct=79)
                     if gf_err:
                         warnings.append(f"Gap-fill re-search: {gf_err}")
-                else:               # undimensioned issuer: legacy extraction + hard filters
+                else:               # undimensioned issuer: footnote extraction + hard filters
                     instruments, debt_err = extract_debt_schedule(debt_ft or ft)
                     debt_schedule = drop_retired(instruments, debt_asof)
                     if debt_err:
@@ -366,7 +367,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
         if empty_warning:
             warnings.append(empty_warning)
 
-    # --- Phase 4: covenant extraction from credit agreements / indentures (§5) ---
+    # --- covenant extraction from credit agreements / indentures ---
     credit_docs = []
     try:   # locating + fetching the exhibits is EDGAR-only — always runs (warms cache)
         from .capstack.covenants import CENSUS_MAX_CHECK, CENSUS_MAX_KEEP, CENSUS_YEARS
@@ -430,7 +431,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
             warnings.append(f"Covenant step failed: {exc}")
             progress.emit(f"Covenant step failed: {exc}", step="covenants", pct=92)
 
-        # --- Phase 4.5: Exhibit 21 legal-entity list (seeds Fulcrum entities) ---
+        # --- Exhibit 21 legal-entity list (seeds Fulcrum entities) ---
         try:
             progress.emit("Parsing Exhibit 21 (legal-entity list)…", step="entities", pct=93)
             from .capstack.subsidiaries import extract_subsidiaries
@@ -443,7 +444,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
         except Exception as exc:
             warnings.append(f"Exhibit 21 step failed: {exc}")
 
-        # --- Phase 4.7: sponsor ownership — DEF 14A beneficial table + related-party notes ---
+        # --- sponsor ownership — DEF 14A beneficial table + related-party notes ---
         try:
             progress.emit("Extracting sponsor ownership (DEF 14A beneficial table + "
                           "related-party notes)…", step="sponsor", pct=94)
@@ -457,7 +458,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
 
     maturities = maturity_wall(debt_schedule)
 
-    # --- Phase 5: MD&A section retention — deterministic, runs even without an API key ---
+    # --- MD&A section retention — deterministic, runs even without an API key ---
     try:
         progress.emit("Storing MD&A sections per period…", step="mdna", pct=94)
         mdna_periods = build_mdna_series(company, years)
@@ -527,7 +528,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
     except Exception as exc:
         warnings.append(f"EBITDA box step failed: {exc}")
 
-    # --- Asset snapshot (liquidation-waterfall inputs) — deterministic, from Phase-2 facts ---
+    # --- Asset snapshot (liquidation-waterfall inputs) — deterministic, from the XBRL facts ---
     asset_snapshot = None
     try:
         if series is not None and series.years:
@@ -535,7 +536,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
     except Exception as exc:
         warnings.append(f"Asset snapshot step failed: {exc}")
 
-    # --- Sponsor / related-party support (Moyer control-holder framing, C8) — deterministic
+    # --- Sponsor / related-party support (the control holder) — deterministic
     # assembler; runs unconditionally so the free admin_agent lender flag survives LLM-off.
     # `covenants` may already be the LLM-off splice above, so admin_agent flows through
     # automatically. Only backfill the richer cached snapshot (e.g. a DEF 14A ownership_pct
@@ -577,7 +578,8 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
     except Exception as exc:
         warnings.append(f"Liquidity/runway step failed: {exc}")
 
-    # --- Capacity-ratio chips (Moyer ch. 6 dual leverage + paired coverage) ---
+    # --- Capacity-ratio chips: dual leverage + paired coverage (Moyer, Distressed Debt
+    # Analysis, ch. 6) ---
     coverage = None
     try:
         from .capstack.capacity import coverage_chips
@@ -594,7 +596,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
     except Exception as exc:
         warnings.append(f"Coverage chips step failed: {exc}")
 
-    # --- Mezzanine / temporary equity — the recast-as-debt input (Moyer ch. 6) ---
+    # --- Mezzanine / temporary equity — the recast-as-debt input ---
     mezzanine = None
     try:
         from .edgar.facts import cited_metric
@@ -603,7 +605,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
     except Exception as exc:
         warnings.append(f"Mezzanine (temporary equity) step failed: {exc}")
 
-    # --- Gross NOL carryforward — the §382 tax-asset input (Moyer ch. 11) ---
+    # --- Gross NOL carryforward — the §382 tax-asset input ---
     nol_carryforward = None
     try:
         from .edgar.facts import cited_metric
@@ -612,7 +614,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
     except Exception as exc:
         warnings.append(f"NOL carryforward step failed: {exc}")
 
-    # --- Covenant dollars (Moyer ch. 7/9): RP-basket build + permitted-liens headroom —
+    # --- Covenant dollars: RP-basket build + permitted-liens headroom —
     # deterministic regex over the cached covenant extractions + XBRL quarterly flows ---
     rp_basket = None
     liens_headroom = None

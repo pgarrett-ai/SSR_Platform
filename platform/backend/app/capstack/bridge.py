@@ -1,4 +1,4 @@
-"""The Economic Debt bridge (brief §6c) — the headline output.
+"""The Economic Debt bridge — the headline output.
 
 Reported Debt
   + operating & finance lease liabilities      (from XBRL, precise)
@@ -42,7 +42,7 @@ from ..schemas import (
 from .forensic import total_debt
 from .obs_llm import ObsExtraction
 
-# Categories whose amounts feed the bridge by design (the brief's structural lines). Judgment
+# Categories whose amounts feed the bridge by design (structural debt-like lines). Judgment
 # categories (guarantee/take_or_pay/litigation_env/vie/related_party/other) defer to the LLM's
 # include_in_bridge call so we don't pull in intercompany guarantees or pure disclosures.
 _STRUCTURAL_BRIDGE_CATEGORIES = {"pension_opeb", "supplier_finance", "securitization"}
@@ -288,7 +288,7 @@ def _leverage_ratios(rep_val: float, econ_val: float, ebitda: Optional[CitedValu
     return rep_lev, econ_lev
 
 
-# Bridge lines produced by pre-rework code that current semantics no longer include.
+# Bridge lines a spliced snapshot can carry that the current bridge does not compute.
 _LEGACY_LINE_KEYS = {"cash_offset", "restricted_cash_offset", "net_economic_debt"}
 
 
@@ -296,9 +296,10 @@ def renormalize_spliced_bridge(bridge: EconomicDebtBridge, ebitda: Optional[Cite
                                debt_period: Optional[str] = None) -> EconomicDebtBridge:
     """A bridge spliced from a prior snapshot carries whatever ratio semantics its era used
     (EBITDAR denominator, cash-netting lines, a net-income-walk EBITDA). The LLM-extracted
-    content is reusable; the arithmetic is not — drop legacy lines and recompute both
-    leverage ratios over this run's canonical EBITDA. `debt_period` names the balance sheet
-    the prior debt is from. With no current EBITDA the prior ratios stand."""
+    content is reusable; the arithmetic is not — drop lines the current bridge does not
+    compute and recompute both leverage ratios over this run's canonical EBITDA.
+    `debt_period` names the balance sheet the prior debt is from. With no current EBITDA the
+    prior ratios stand."""
     bridge.lines = [l for l in bridge.lines if l.key not in _LEGACY_LINE_KEYS]
     rep = bridge.reported_debt.value if bridge.reported_debt else None
     econ = bridge.economic_debt.value if bridge.economic_debt else None

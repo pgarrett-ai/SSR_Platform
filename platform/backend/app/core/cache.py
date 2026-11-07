@@ -1,8 +1,8 @@
-"""Pre-computed overview cache (brief §3 'demo safety').
+"""Pre-computed overview cache.
 
-A full live run makes several Claude calls + large EDGAR downloads (~3 min). For the demo, hero
-names are pre-built into JSON snapshots and served instantly; a "Run live" toggle bypasses the
-cache for a real re-run. Successful live runs are also written back so repeat requests are fast.
+A full live run makes several Claude calls + large EDGAR downloads (~3 min), so hero names
+are pre-built into JSON snapshots and served instantly; `live=true` bypasses the cache for a
+real re-run. Successful live runs are also written back so repeat requests are fast.
 """
 from __future__ import annotations
 

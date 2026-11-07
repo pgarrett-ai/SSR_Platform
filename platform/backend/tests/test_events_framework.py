@@ -1,6 +1,6 @@
-"""Phase 6 event framework: dataclasses/dedupe, registry routing, idempotent store,
-poller end-to-end with every network seam monkeypatched. No network, temp DB only.
-CIKs everywhere are the canonical 10-digit zero-padded form (Interface Contract)."""
+"""Event framework: dataclasses/dedupe, registry routing, idempotent store, poller
+end-to-end with every network seam monkeypatched. No network, temp DB only.
+CIKs everywhere are the canonical 10-digit zero-padded form."""
 from __future__ import annotations
 
 import datetime as dt
@@ -37,7 +37,7 @@ def test_event_bounds_enforced():
         _ev(confidence=1.5)
 
 
-# --- Task 14: registry + feed seams ------------------------------------------
+# --- registry + feed seams --------------------------------------------------
 from app.events import registry
 import app.events.edgar_feed as feed
 
@@ -104,7 +104,7 @@ def test_efts_hits_pages_like_labels(monkeypatch):
     assert urls[0].startswith("https://efts.sec.gov/LATEST/search-index?")
 
 
-# --- Task 15: store adapter + seeded 8-K detector ----------------------------
+# --- store adapter + 8-K detector -------------------------------------------
 from app import models_events as me
 from app.core.db import init_db, session_scope
 from app.events import store
@@ -117,7 +117,7 @@ def test_store_adapter_idempotent_and_detected_at_discipline():
         assert store.insert_events(s, [_ev(), _ev()], detected_at=dt.datetime(2026, 1, 2, 13)) == 0
         assert store.has_event(s, CIK, "2026-01-02", ("bankruptcy",))
         assert not store.has_event(s, CIK, "2026-01-02", ("acceleration",))
-        # backfill rows: detected_at stays NULL, never faked (plan §10)
+        # backfill rows: detected_at stays NULL, never faked
         assert store.insert_events(s, [_ev(accession_no="x-2")], detected_at=None) == 1
     with session_scope() as s:
         row = s.query(me.Event).filter_by(accession_no="x-2").one()
@@ -151,7 +151,7 @@ def test_unknown_items_never_silent():
     assert evs[0].severity == 1 and evs[0].confidence == 0.5
 
 
-# --- Task 16: poller ---------------------------------------------------------
+# --- poller -----------------------------------------------------------------
 import app.events.poller as poller
 from app import models_events
 
@@ -202,7 +202,7 @@ def test_catchup_resolves_missing_accessions(monkeypatch):
     assert poller.catchup_form_idx() == 0             # reconciled -> nothing to do
 
 
-# --- Task 17: universe refresh + heartbeat + worker + health block -----------
+# --- universe refresh + heartbeat + worker + health block -------------------
 import app.events.heartbeat as hb
 import app.events.universe as uni
 import app.worker as worker
@@ -229,7 +229,7 @@ def test_heartbeat_counter_and_status(monkeypatch, tmp_path):
     hb.beat(2, {"poll_filings": None})
     st = hb.worker_status()
     assert st["alive"] is True and st["events_ingested_today"] == 5
-    assert "last_event_hours" in st                    # raw gauge; PR-6 computes the alarm
+    assert "last_event_hours" in st                    # raw gauge; zero_ingest_alarm reads it
     stale = json.loads(hb.HEARTBEAT_PATH.read_text(encoding="utf-8"))
     stale["ts"] -= 9999
     hb.HEARTBEAT_PATH.write_text(json.dumps(stale), encoding="utf-8")

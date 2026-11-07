@@ -75,7 +75,7 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
                 "AccountsPayableAndAccruedLiabilitiesCurrent")),
     MetricSpec("inventory", "Inventory", "BalanceSheet", "instant",
                ("InventoryNet", "AirlineRelatedInventoryNet", "InventoryFinishedGoodsNetOfReserves")),
-    # --- liquidation-analysis assets (Moyer asset-based valuation) ---
+    # --- liquidation-analysis assets (asset-based valuation) ---
     MetricSpec("accounts_receivable", "Accounts receivable (net)", "BalanceSheet", "instant",
                ("ReceivablesNetCurrent", "AccountsReceivableNetCurrent", "AccountsReceivableNet")),
     MetricSpec("ppe_net", "PP&E (net)", "BalanceSheet", "instant",
@@ -107,8 +107,9 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("stockholders_equity", "Stockholders' equity", "BalanceSheet", "instant",
                ("StockholdersEquity",
                 "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest")),
-    # mezzanine (temporary equity) — the recast-as-debt input (Moyer ch. 6); the
-    # including-NCI variant may carry redeemable NCI (caveated where displayed)
+    # mezzanine (temporary equity) — the recast-as-debt input (Moyer, Distressed Debt
+    # Analysis, ch. 6); the including-NCI variant may carry redeemable NCI (caveated where
+    # displayed)
     MetricSpec("temporary_equity", "Temporary equity (mezzanine)", "BalanceSheet", "instant",
                ("TemporaryEquityCarryingAmountAttributableToParent",
                 "TemporaryEquityCarryingAmountIncludingPortionAttributableToNoncontrollingInterests")),
@@ -144,7 +145,8 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     # tax-footnote ratio (decimal, e.g. 0.24); no statement filter
     MetricSpec("effective_tax_rate", "Effective tax rate", None, "duration",
                ("EffectiveIncomeTaxRateContinuingOperations",)),
-    # GROSS NOL carryforward (Moyer ch. 11 §382). Gross concept ONLY — do NOT add
+    # GROSS NOL carryforward, the §382 input (Moyer, Distressed Debt Analysis, ch. 11).
+    # Gross concept ONLY — do NOT add
     # DeferredTaxAssetsOperatingLossCarryforwards (that is the tax-effected DTA ≈ NOL×rate,
     # a different quantity); often tagged only dimensioned-by-jurisdiction (then skipped),
     # so manual entry is the expected fallback. Footnote item, no statement filter.
@@ -159,7 +161,8 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("capex", "Capital expenditures", "CashFlowStatement", "duration",
                ("PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets",
                 "PaymentsForCapitalImprovements", "PaymentsToAcquireOtherProductiveAssets")),
-    # --- RP-basket builder flows (Moyer ch. 7) — data-only, consumed by quarterly_flows;
+    # --- RP-basket builder flows (Moyer, Distressed Debt Analysis, ch. 7) — data-only,
+    # consumed by quarterly_flows;
     # three separate specs: a spec's concepts are alternates, never summed ---
     MetricSpec("equity_issuance_proceeds", "Proceeds from equity issuance", "CashFlowStatement",
                "duration",
@@ -178,7 +181,7 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     # ATUS: the FY2025 10-K tags its $1.6bn franchise-rights charge as indefinite-lived
     # intangible impairment; its 10-Qs use GoodwillAndIntangibleAssetImpairment.
     # ponytail: largest-concept rule undercounts two disjoint charges with no total tagged
-    # (goodwill + tangible); sum the components if that shows up in a hero.
+    # (goodwill + tangible); sum the components if an issuer tags them that way.
     MetricSpec("impairment", "Impairment charges", None, "duration",
                ("AssetImpairmentCharges", "GoodwillAndIntangibleAssetImpairment",
                 "GoodwillImpairmentLoss", "ImpairmentOfIntangibleAssetsExcludingGoodwill",
@@ -453,7 +456,7 @@ def build_financial_series(company, lookback_years: int) -> FinancialSeries:
 
 
 # ---------------------------------------------------------------------------
-# Quarterly cadence + TTM (Phase 4.6b)
+# Quarterly cadence + TTM
 #
 # 10-Q XBRL carries quarter and year-to-date durations; Q4 flows are only implicit
 # (annual − 9M). The industry-standard TTM at any quarter end is therefore
@@ -609,8 +612,8 @@ def quarters_from_periods(periods: list[tuple[dt.date, dt.date, float]]) -> list
 
 def quarterly_flows(entity_facts, spec: MetricSpec) -> list[tuple[dt.date, float]]:
     """Quarterly (period_end, value) series for a duration metric — the RP-basket
-    builder's flow input (Moyer ch. 7). Each quarter is differenced inside one concept, the
-    first that yields it."""
+    builder's flow input (Moyer, Distressed Debt Analysis, ch. 7). Each quarter is
+    differenced inside one concept, the first that yields it."""
     out: dict[dt.date, float] = {}
     for periods in _concept_periods(entity_facts, spec):
         for pe, v in quarters_from_periods(periods):

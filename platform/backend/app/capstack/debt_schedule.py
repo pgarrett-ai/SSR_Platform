@@ -2,8 +2,8 @@
 
 Numbers come from dimensional XBRL (debt_xbrl.py). This module's LLM does the two jobs the
 tags can't: (a) `annotate_maturities` — per-instrument maturity strings and the floating-rate
-base, quote-cited, keyed to the deterministic instrument list; (b) the legacy full extraction
-`extract_debt_schedule`, kept ONLY as the fallback for issuers that don't dimension their
+base, quote-cited, keyed to the deterministic instrument list; (b) the full extraction
+`extract_debt_schedule`, used ONLY as the fallback for issuers that don't dimension their
 debt, with deterministic post-filters (`drop_retired`) on top.
 """
 from __future__ import annotations
@@ -118,7 +118,7 @@ def _cv(amount: Optional[float], citation: Citation,
 
 
 def drop_retired(instruments: list[DebtInstrument], asof: Optional[str]) -> list[DebtInstrument]:
-    """Deterministic post-filter for the legacy path: no balance outstanding, or a maturity
+    """Deterministic post-filter for the fallback path: no balance outstanding, or a maturity
     year before the schedule's as-of year, means the instrument is gone."""
     asof_year = None
     if asof:

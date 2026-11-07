@@ -1,5 +1,5 @@
-"""EDGAR feed seams for the event engine. Every outbound byte goes through PR-1's
-paced_get. Endpoints are the ones this codebase already exercises: the EFTS
+"""EDGAR feed seams for the event engine. Every outbound byte goes through
+edgar.http.paced_get. Endpoints are the ones this codebase already exercises: the EFTS
 search-index labels.py pages (labels.py:57,67-71) and the per-CIK submissions doc
 eightk.py parses (eightk.py:24,100-120). tracked_rows generalizes
 eightk._rows_from_arrays from 8-K-only to every registered form prefix."""
@@ -60,7 +60,7 @@ def tracked_rows(arrays: dict, cik, since: Optional[str] = None,
                  prefixes: Optional[tuple[str, ...]] = None) -> list[tuple[FilingMeta, dict]]:
     """(FilingMeta, raw_header) for every tracked-form filing in a submissions arrays
     dict — same parallel-array fields eightk._rows_from_arrays reads (eightk.py:103-106),
-    plus acceptanceDateTime when present (UNVERIFIED #3 — None-tolerant)."""
+    plus acceptanceDateTime when present (None-tolerant: not every row carries it)."""
     if prefixes is None:
         from .registry import tracked_prefixes
         prefixes = tracked_prefixes()

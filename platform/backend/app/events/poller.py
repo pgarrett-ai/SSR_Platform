@@ -26,9 +26,9 @@ from .store import has_event, insert_events
 
 _UNKNOWN = "8k_items_unknown"
 
-# Form 4 is excluded from market-wide catch-up in P6: ~1,000-2,500/day (plan §5) of
-# owner-CIK-attributed lines. Raw Form-4 ingest happens opportunistically whenever an
-# issuer's submissions doc is resolved; Phase 8 owns real insider flow.
+# Form 4 is excluded from market-wide catch-up: ~1,000-2,500/day of owner-CIK-attributed
+# lines. Raw Form-4 ingest happens opportunistically whenever an issuer's submissions doc
+# is resolved; insider-flow analysis is out of scope.
 CATCHUP_EXCLUDE = ("4",)
 
 
@@ -103,9 +103,8 @@ def _line_form(line: str, prefix: str) -> bool:
 
 def _idx_lines(text: str, prefixes, since: str):
     """(padded_cik, date, accession) from tracked-form lines of a form.idx. Layout per
-    labels.ten_k_ciks (labels.py:257-267): company names hold spaces, so fields come
-    off the END. Accession = FILENAME stem — format UNVERIFIED (ledger #5); a wrong
-    parse only causes extra re-resolution, never a wrong event."""
+    labels.ten_k_ciks: company names hold spaces, so fields come off the END. Accession =
+    FILENAME stem; a wrong parse only causes extra re-resolution, never a wrong event."""
     for line in text.splitlines():
         if not any(_line_form(line, p) for p in prefixes):
             continue
@@ -120,14 +119,13 @@ def _idx_lines(text: str, prefixes, since: str):
 
 def catchup_form_idx(window_days: int = 7) -> int:
     """Daily reconciliation: anything the EFTS poll missed in the last week surfaces
-    here by accession diff against the current quarter's form.idx (URL labels.py:58).
+    here by accession diff against the current quarter's form.idx (the URL labels.py uses).
     Also the sole live path for structural forms (NT/25/15/13D/G).
 
     Convergence note: the accession-diff reconciles against stored events, so a resolved
-    filing that yields NO tracked event is re-resolved on later runs. With only 1.03
-    seeded (this PR) that means a bounded daily re-fetch burst. Once the full detector
-    table lands (next PR: all 16 8-K items + items_unknown + structural forms) the diff
-    converges for all signal-bearing 8-Ks; a bounded residual of all-untracked-item
+    filing that yields NO tracked event is re-resolved on later runs. The full detector
+    table (all 16 8-K items + items_unknown + structural forms) makes the diff converge
+    for all signal-bearing 8-Ks; a bounded residual of all-untracked-item
     8-Ks (notably 9.01-only /A amendments and 6.0x ABS-only filings) still re-resolves
     within the window — paced, idempotent, no data loss. Revisit with a
     processed-accessions ledger only if telemetry shows churn beyond that class

@@ -1,4 +1,4 @@
-"""Sponsor-support extraction (brief C8): related-party-lender flag + beneficial ownership.
+"""Sponsor-support extraction: related-party-lender flag + beneficial ownership.
 
 The lender flag is deterministic and effectively free — it reuses the credit-agreement
 admin_agent already extracted for the covenant package (covenants.py: a related-party
@@ -156,7 +156,7 @@ def extract_sponsor_ownership(company) -> tuple[list[OwnerRaw], list[RptRaw], Op
     if result is None:
         try:
             # A proxy has no Item 8 structure — read the raw filing text directly (same
-            # .text() accessor get_filing_text falls back to; PR-B) rather than routing
+            # .text() accessor get_filing_text falls back to) rather than routing
             # through the 10-K Item-structured parse.
             text = filing.text()
         except Exception as exc:

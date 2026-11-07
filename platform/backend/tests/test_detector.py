@@ -1,4 +1,5 @@
-"""Capacity-avoidance detector + mezzanine recast (Moyer ch. 6): busted-convert ratio
+"""Capacity-avoidance detector + mezzanine recast (Moyer, Distressed Debt Analysis, ch. 6):
+busted-convert ratio
 tones, PIK flags, temporary-equity recast to a preferred class, graceful empties."""
 from app.capstack.creation import detect_capacity_avoidance, mezz_recast_row
 from app.fulcrum.adapter import overview_to_structure
@@ -52,7 +53,7 @@ def test_no_conversion_price_degrades():
 
 
 def test_convertible_flag_from_quote():
-    # XBRL missed the seniority; the drop-file quote knows it's a convert
+    # XBRL missed the seniority; the bond mark knows it's a convert
     conv = {**CONVERT, "seniority": None, "conversion_price": None}
     bonds = [{"coupon": 2.0, "maturity": "2030-03-01", "last_price": 40.0,
               "convertible": True}]

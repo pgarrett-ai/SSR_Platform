@@ -16,6 +16,6 @@ os.environ["DATABASE_URL"] = (
 )
 
 # A developer .env with PLATFORM_API_TOKEN set must not 401 the whole suite; env vars
-# outrank .env values in pydantic-settings, so pin it open here (PR-6 auth tests set it
+# outrank .env values in pydantic-settings, so pin it open here (the auth tests set it
 # per-test by mutating the lru_cached Settings instance).
 os.environ["PLATFORM_API_TOKEN"] = ""

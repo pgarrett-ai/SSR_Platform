@@ -61,8 +61,8 @@ def _ensure_columns() -> None:
     """Idempotent micro-migration: create_all never ALTERs an existing table, so add any
     mapped columns missing from the live SQLite file. Nullable ADD COLUMN only.
 
-    FROZEN as of PR-2a: legacy (models.py) tables on SQLite only — event-store tables and
-    any Postgres deployment migrate via Alembic exclusively."""
+    Frozen: covers the models.py tables on SQLite only — event-store tables and any
+    Postgres deployment migrate via Alembic exclusively."""
     from .. import models, models_events
 
     if engine.dialect.name != "sqlite":

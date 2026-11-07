@@ -1,4 +1,4 @@
-"""Asset-based liquidation waterfall + the C4 regression (negative EBITDA -> 200)."""
+"""Asset-based liquidation waterfall; a negative-EBITDA simulate answers 200, not 400."""
 import pytest
 from fastapi.testclient import TestClient
 
@@ -59,7 +59,7 @@ def test_assets_from_snapshot_units():
 
 
 def test_negative_ebitda_returns_liquidation_mode_not_400():
-    """C4 regression: the Overview's quick simulate on a negative-EBITDA name must not 400."""
+    """The Overview's quick simulate on a negative-EBITDA name must not 400."""
     r = client.post("/api/company/NOSUCHTICKER/recovery/simulate", json={
         "structure": {"name": "L",
                       "entities": [{"name": "OpCo", "ev_share": 1.0, "parent": None}],

@@ -1,10 +1,10 @@
-"""Covenant extraction from credit agreements / indentures (brief §5), single issuer.
+"""Covenant extraction from credit agreements / indentures, single issuer.
 
 Credit docs carry terse exhibit descriptions (just "EX-10.1"), so we classify by document content,
 not metadata. The agreements are 500k-850k characters, so we don't chunk blindly: we window the
 text around the negative-covenant clauses AND the definitions of the key defined terms they cite
 (Consolidated EBITDA, leverage ratio, Restricted Payment, Unrestricted Subsidiary, …) — a pragmatic
-cross-reference resolution — then feed that to Claude with the fixed §5 schema. `clause_text` is
+cross-reference resolution — then feed that to Claude with a fixed schema. `clause_text` is
 stored so a vector index can be added later (not built now).
 """
 from __future__ import annotations
@@ -346,7 +346,7 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
         anchor_clause=anchor,
         lme_vectors=vectors,
         citation=citation,
-        # legacy display fields, filled for DB/FTS continuity
+        # flat display fields the covenants table and FTS index read
         agreement_type=family.doc_class,
         leverage_covenant_type=fincovs[0].kind if fincovs else None,
         leverage_ratio_threshold=fincovs[0].threshold if fincovs else None,

@@ -37,7 +37,7 @@ def seed():
             _ev(dedupe_key="pr5-e2", event_type="late_filing", subtype=None, severity=3,
                 source_form="NT 10-K", occurred_at=dt.datetime(2026, 6, 15),
                 detected_at=dt.datetime(2026, 6, 15, 9), title="NT 10-K — late filing"),
-            # backfill row: detected_at NULL, never faked (plan §5)
+            # backfill row: detected_at NULL, never faked
             _ev(dedupe_key="pr5-e3", severity=5, subtype="1.03",
                 occurred_at=dt.datetime(2024, 3, 1), detected_at=None,
                 accession_no="0000999-24-000001",

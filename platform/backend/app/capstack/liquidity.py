@@ -97,7 +97,8 @@ def build_liquidity(forensic_table: list[ForensicTableRow],
 
 
 # --------------------------------------------------------------------------- #
-# Liquidity-event calendar (Moyer ch. 8: covenant / coupon / maturity events)
+# Liquidity-event calendar: covenant / coupon / maturity events (Moyer, Distressed Debt
+# Analysis, ch. 8)
 # --------------------------------------------------------------------------- #
 
 _MONTHS = {m.lower(): i + 1 for i, m in enumerate(

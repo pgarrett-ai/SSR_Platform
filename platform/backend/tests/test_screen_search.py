@@ -102,8 +102,8 @@ def test_risk_update_survives_resave(tmp_path, monkeypatch):
 
 
 def test_screen_market_columns_and_badge(tmp_path, monkeypatch):
-    """New Moyer columns ride the snapshot; the distress badge computes live against
-    the drop-file (None here — no quotes for ZZTEST)."""
+    """The market-layer columns ride the snapshot; the distress badge computes live against
+    the marks file (None here — no quotes for ZZTEST)."""
     monkeypatch.setattr(cache, "CACHE_DIR", tmp_path)
     cache.save_overview("ZZTEST", 3, _overview())
     with session_scope() as s:
@@ -114,7 +114,7 @@ def test_screen_market_columns_and_badge(tmp_path, monkeypatch):
     row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
     assert row["net_market_leverage"] == 4.1
     assert row["creation_multiple_fulcrum"] == 3.0
-    assert row["distress_badge"] is None      # no drop-file quotes for ZZTEST
+    assert row["distress_badge"] is None      # no bond marks for ZZTEST
     _cleanup()
 
 

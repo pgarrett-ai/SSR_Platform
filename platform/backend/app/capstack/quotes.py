@@ -1,6 +1,6 @@
-"""Match TRACE drop-file bond quotes to debt-schedule instruments (deterministic).
+"""Match bond marks to debt-schedule instruments (deterministic).
 
-The drop file (hazard/data/bond_quotes.json, manual browser-scrape refresh) has no
+The marks file (hazard/data/bond_quotes.json, see hazard/trace.py) has no
 instrument names, and the XBRL debt schedule has no CUSIPs, so matching keys on
 (coupon, maturity year). An ambiguous key — two instruments or two bonds sharing
 coupon+year — matches nothing rather than guessing; the miss is reported in `notes`.

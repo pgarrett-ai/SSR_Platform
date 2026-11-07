@@ -10,7 +10,7 @@ Retired instruments carry $0 at the latest instant and no committed capacity, so
 drop without any text interpretation — but undrawn committed facilities (revolvers,
 delayed-draw term loans) are KEPT as rows: their commitment/undrawn capacity is the
 liquidity story for a cash-burner. Issuers that don't dimension their debt
-(< _MIN_MEMBERS members) fall back to the legacy footnote extraction in debt_schedule.py.
+(< _MIN_MEMBERS members) fall back to the footnote extraction in debt_schedule.py.
 """
 from __future__ import annotations
 
@@ -62,8 +62,9 @@ _EFFECTIVE_PCT = "LongTermDebtPercentageBearingVariableInterestRate"
 _SPREAD_TOKEN = "BasisSpreadOnVariableRate"
 _MIN_MEMBERS = 3   # fewer dimensioned members than this -> issuer doesn't tag debt; fall back
 
-# OID / convert trade-mechanics concepts (Moyer ch. 5/6): principal at maturity vs the
-# accreted carrying amount, the conversion strike, and PIK detection.
+# OID / convert trade-mechanics concepts (Moyer, Distressed Debt Analysis, ch. 5 and 6):
+# principal at maturity vs the accreted carrying amount, the conversion strike, and PIK
+# detection.
 _FACE_CONCEPTS = {"us-gaap:DebtInstrumentFaceAmount"}
 _DISCOUNT_CONCEPTS = {"us-gaap:DebtInstrumentUnamortizedDiscount"}
 _CONV_PRICE_CONCEPTS = {"us-gaap:DebtInstrumentConvertibleConversionPrice1"}
@@ -358,7 +359,7 @@ def build_xbrl_debt_schedule(company, rates: Optional[dict] = None
                                         Optional[str]]:
     """Instrument-level debt schedule from the latest 10-K/10-Q's dimensional XBRL.
     Returns ([], None, filing, note) when the issuer doesn't dimension debt — caller falls
-    back to the legacy footnote extraction. The source filing rides along so maturity
+    back to the footnote extraction. The source filing rides along so maturity
     annotation reads the same document the numbers came from; the note names debt facts
     left out for being in a foreign currency."""
     filing = company.get_filings(form=["10-K", "10-Q"], amendments=False).latest(1)

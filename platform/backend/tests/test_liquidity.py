@@ -86,7 +86,7 @@ def test_liquidity_counts_short_term_investments():
 
 
 # --------------------------------------------------------------------------- #
-# Event calendar (Moyer ch. 8)
+# Event calendar (Moyer, Distressed Debt Analysis, ch. 8)
 # --------------------------------------------------------------------------- #
 
 def _note(name, outstanding, coupon_pct, maturity, facility_type="notes"):

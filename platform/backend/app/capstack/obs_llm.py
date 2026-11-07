@@ -1,4 +1,4 @@
-"""Footnote / MD&A LLM extraction of off-balance-sheet / economic-debt items (brief §6b).
+"""Footnote / MD&A LLM extraction of off-balance-sheet / economic-debt items.
 
 Runs Claude with structured output over the focused footnote window and returns items that are
 economically debt-like but not labeled as debt — each with a verbatim quote and the note it came

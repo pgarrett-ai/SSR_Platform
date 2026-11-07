@@ -21,7 +21,7 @@ class MarketData:
     equity_vol: Optional[float] = None           # annualized realized vol (daily, ~1y)
     drawdown_52w: Optional[float] = None         # (price / 52w-high - 1), <= 0
     excess_return_1y: Optional[float] = None     # 1y total return minus benchmark
-    monthly_returns: Optional[list[float]] = None  # trailing monthly returns (CHS, Phase 2+)
+    monthly_returns: Optional[list[float]] = None  # trailing 24 monthly returns
     ok: bool = False
 
 
@@ -137,7 +137,7 @@ def get_market_data(ticker: str, index: str = "SPY") -> MarketData:
             md.shares_outstanding = float(shares)
             md.market_cap = float(shares) * md.price
 
-        # Monthly returns (resample) for later CHS work.
+        # Monthly returns (month-end resample), last 24.
         try:
             m = hist["Close"].resample("ME").last().pct_change().dropna()
             md.monthly_returns = [float(x) for x in m.to_numpy()[-24:]]

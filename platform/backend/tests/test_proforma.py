@@ -1,4 +1,5 @@
-"""fulcrum.proforma (Moyer ch. 9/11): the rank-0 priming transform — value shifts
+"""fulcrum.proforma (Moyer, Distressed Debt Analysis, ch. 9 and 11): the rank-0 priming
+transform — value shifts
 off the unsecureds, purity, admin forwarding, the ValueError 400 boundary — and the
 exchange-offer transform with its Boxco/Steelbox worked-example payoffs."""
 import numpy as np
@@ -27,7 +28,7 @@ def test_priming_shifts_value_from_unsecureds():
     assert p.priority_order()[0] == "Priming loan"    # rank 0 pays first
     assert wfp["Priming loan"][0] == 100.0            # 100%
     assert wfp["1L Term Loan"][0] == 300.0            # still 100%
-    assert wfp["Unsecured Notes"][0] == 0.0           # 0% — the Moyer point
+    assert wfp["Unsecured Notes"][0] == 0.0           # 0% — priming wipes the unsecureds
 
 
 def test_priming_goes_ahead_of_an_existing_super_priority_layer():
@@ -56,7 +57,7 @@ def test_nonpositive_face_and_unknown_entity_raise():
         prime(_base(), 100.0, entity="Nowhere")
 
 
-# ---- exchange offer (Moyer ch. 11) ------------------------------------------------
+# ---- exchange offer (Moyer, Distressed Debt Analysis, ch. 11) ---------------------
 
 
 def _boxco():
@@ -66,7 +67,8 @@ def _boxco():
 
 
 def test_boxco_full_participation_payoff():
-    # Moyer ch. 11 Boxco: 700 unsecured exchange into priming paper at 14.2857 per 100
+    # Boxco (Moyer, Distressed Debt Analysis, ch. 11): 700 unsecured exchange into priming
+    # paper at 14.2857 per 100
     # plus 98.3% of the equity to tendering holders; at EV 290 and p=100 the package
     # is worth 41.0 per 100 (new paper 14.3 + equity slice 26.7)
     out = exchange_scenario(_boxco(), "Unsecured Notes", np.array([290.0]),

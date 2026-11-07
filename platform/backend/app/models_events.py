@@ -2,10 +2,10 @@
 
 Separate from models.py on purpose: these tables are CIK-keyed (String(16), stored
 10-digit zero-padded — the only primary key at universe scale; matches the
-legacy Filing.cik/Snapshot.cik typing and the eightk.py zfill(10) convention), carry
+Filing.cik/Snapshot.cik typing and the eightk.py zfill(10) convention), carry
 the point-in-time discipline (occurred_at = when the world changed, detected_at = when
 WE saw it, NULL for backfill — never faked), and migrate via Alembic only. models.py's
-legacy tables stay on create_all + the frozen _ensure_columns micro-migration;
+tables stay on create_all + the frozen _ensure_columns micro-migration;
 core/db._ensure_columns skips everything in EVENT_STORE_TABLES.
 
 Datetimes are naive UTC by convention (pysqlite drops tz offsets on round-trip)."""
@@ -65,7 +65,7 @@ class Event(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     cik: Mapped[str] = mapped_column(String(16))  # no FK: events key on CIK forever,
     # independent of universe membership — backfill ingests dead filers company_tickers
-    # never lists, and Postgres would enforce the FK fatally (whole-branch review F1)
+    # never lists, and Postgres would enforce the FK fatally
     event_type: Mapped[str] = mapped_column(String(48))
     subtype: Mapped[Optional[str]] = mapped_column(String(48))
     severity: Mapped[int] = mapped_column(Integer, default=1)        # 1-5

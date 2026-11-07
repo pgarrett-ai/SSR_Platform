@@ -1,4 +1,4 @@
-"""Phase 1 exit test: the Project-Apex worked example reproduced through the API,
+"""The Project-Apex worked example reproduced through the API,
 plus a scenarios save/list/delete roundtrip. No network needed."""
 from fastapi.testclient import TestClient
 
@@ -80,7 +80,7 @@ def test_priming_scenario_rides_same_draws():
     primed = {t["tranche"]: t["mean_recovery_%"] for t in d["priming_tranches"]}
     assert primed["Priming loan"] > base["1L Term Loan"]         # rank 0 pays first
     assert primed["1L Term Loan"] < base["1L Term Loan"]         # primed down
-    assert primed["OpCo Unsecured"] < base["OpCo Unsecured"]     # the Moyer point
+    assert primed["OpCo Unsecured"] < base["OpCo Unsecured"]     # priming comes out of unsecureds
     assert d["primed_structure"]["tranches"][0]["lien_rank"] == 0
     # same EV draws: the base tranche table is unchanged by the priming overlay
     plain = client.post("/api/company/APEX/recovery/simulate", json={
@@ -109,7 +109,7 @@ def test_506_headroom_reported():
 
 
 def _patch_offline(monkeypatch):
-    """No cached overview / drop-file needed — the endpoint's ov + bonds legs degrade."""
+    """No cached overview / marks file needed — the endpoint's ov + bonds legs degrade."""
     import app.hazard.trace as trace
     import app.main as main
     from app.schemas import IssuerHeader, Overview
@@ -137,7 +137,7 @@ def test_exchange_endpoint_smoke(monkeypatch):
     assert s0["holdout"] == d["base_pct"]          # p=0 ≡ base on the same grid
     s90 = next(s for s in d["scenarios"] if s["participation_pct"] == 90.0)
     assert len(s90["tender"]) == 241 and s90["fails"] is False
-    # Cash-free crossover regression: the leading both-zero plateau (EV under the
+    # Cash-free crossover: the leading both-zero plateau (EV under the
     # 30 admin floor) must not read as a crossover at ~0. Hand check: the stub's
     # holdout line starts after admin 30 + 1L 500 + 2L 250 + new paper p·F·ratio,
     # and catches the 50-per-100 tender plateau after (1−p)·F·ratio more —
@@ -178,7 +178,7 @@ def test_crisis_endpoint_smoke(monkeypatch):
 
 
 def test_crisis_endpoint_detects_trigger(monkeypatch):
-    # B1 regression: cik lives at header.cik, not top-level — the trigger path must actually run.
+    # cik lives at header.cik, not top-level — the trigger path must actually run.
     import app.capstack.eightk as eightk
     import app.main as main
     from app.schemas import CitedValue, IssuerHeader, LiquidityEvent, LiquidityRunway, Overview
@@ -217,7 +217,7 @@ def test_crisis_screen_reads_only_the_last_three_years(monkeypatch):
 
 
 def test_case_endpoint_detects_petition(monkeypatch):
-    # B1 regression (PR1 twin): recovery_case must read header.cik and cite the petition 8-K.
+    # recovery_case must read header.cik and cite the petition 8-K.
     import app.capstack.eightk as eightk
     import app.main as main
     from app.schemas import IssuerHeader, Overview
@@ -359,7 +359,7 @@ def test_nonfinite_recovery_summary_is_not_persisted():
 
 
 def test_case_crisis_are_cache_only(monkeypatch):
-    # PR-B: the read-only case/crisis screens must NEVER trigger a live pipeline run — they
+    # the read-only case/crisis screens must NEVER trigger a live pipeline run — they
     # self-fetch on page mount, so run_overview here would launch a ~3-min LLM+EDGAR run.
     import app.main as main
 

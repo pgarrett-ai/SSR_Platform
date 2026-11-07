@@ -1,4 +1,4 @@
-"""API hardening (PR-A): the ticker path-traversal guard and the resource-exhaustion input
+"""API hardening: the ticker path-traversal guard and the resource-exhaustion input
 bounds. Pure/unit level — no network, no TestClient (endpoint-level 400/422 checks live in
 test_recovery_api.py)."""
 import pytest

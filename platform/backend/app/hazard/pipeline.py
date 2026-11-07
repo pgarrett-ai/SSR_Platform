@@ -2,7 +2,7 @@
 
     resolve issuer (EDGAR) -> XBRL fact series -> per-year features
                            -> current market snapshot (yfinance)
-                           -> issuer bond quotes (local drop file)
+                           -> issuer bond marks (local marks file)
                            -> scorers on the latest year (Altman, Merton, trained model)
                            -> Altman Z'' history per quarter (annual fallback)
 

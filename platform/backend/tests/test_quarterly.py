@@ -1,4 +1,4 @@
-"""Phase 4.6b: quarterly cadence — TTM core + quarterly timeline/what-changed (pure)."""
+"""Quarterly cadence — TTM core + quarterly timeline/what-changed (pure)."""
 from __future__ import annotations
 
 import datetime as dt

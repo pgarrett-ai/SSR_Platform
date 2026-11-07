@@ -64,7 +64,7 @@ class DebtInstrument(BaseModel):
     secured: Optional[bool] = None
     seniority: Optional[str] = None
     citation: Optional[Citation] = None
-    # deterministic rate fields from dimensional XBRL (None on the legacy LLM path)
+    # deterministic rate fields from dimensional XBRL (None on the footnote-LLM fallback path)
     coupon_pct: Optional[float] = None
     coupon_pct_max: Optional[float] = None  # set when the instrument is a rate range (EETCs)
     spread_pct: Optional[float] = None
@@ -79,7 +79,8 @@ class DebtInstrument(BaseModel):
     facility_type: Optional[str] = None      # 'revolver' | 'term loan' | 'notes' | …
     commitment: Optional[CitedValue] = None  # total committed size, latest tagged instant
     undrawn: Optional[CitedValue] = None     # remaining borrowing capacity
-    # OID / convert / PIK trade mechanics (Moyer ch. 5/6) — Optional so old caches load
+    # OID / convert / PIK trade mechanics (Moyer, Distressed Debt Analysis, ch. 5 and 6) —
+    # Optional so caches written without them still load
     face_amount: Optional[CitedValue] = None           # principal at maturity
     unamortized_discount: Optional[CitedValue] = None  # face − accreted carrying
     conversion_price: Optional[CitedValue] = None      # unit "USD/share"
@@ -117,7 +118,7 @@ class ObsItem(BaseModel):
     category: str
     label: str
     amount: Optional[CitedValue] = None      # gross, as disclosed
-    tax_effect: Optional[CitedValue] = None  # gross × latest effective tax rate (uniform, v1)
+    tax_effect: Optional[CitedValue] = None  # gross × latest effective tax rate (one uniform rate)
     net: Optional[CitedValue] = None         # gross − tax effect
     recourse: Optional[str] = None
     include_in_bridge: bool = True
@@ -213,7 +214,7 @@ class CovenantPackage(BaseModel):
     anchor_clause: Optional[str] = None     # always rendered, verbatim
     lme_vectors: list[LmeVector] = Field(default_factory=list)
     citation: Optional[Citation] = None
-    # legacy fields — pre-rework cached snapshots still render through these
+    # flat fields — cached snapshots written before the per-family read render through these
     agreement_type: Optional[str] = None
     leverage_covenant_type: Optional[str] = None
     leverage_ratio_threshold: Optional[str] = None
@@ -258,7 +259,8 @@ class NextMaturity(BaseModel):
 
 class LiquidityEvent(BaseModel):
     """One cash-critical date: a coupon payment or a maturity, sized against liquidity
-    (Moyer ch. 8: every coupon is a potential filing trigger for a cash-burner)."""
+    (every coupon is a potential filing trigger for a cash-burner; Moyer, Distressed Debt
+    Analysis, ch. 8)."""
 
     date: str                              # YYYY-MM (coupon dates aren't in XBRL — month
                                            # anchored on the maturity anniversary, assumed)
@@ -287,9 +289,10 @@ class LiquidityRunway(BaseModel):
 
 
 class CoverageChips(BaseModel):
-    """Moyer ch. 6 capacity-ratio discipline: quoted EBITDA leverage understates true
-    leverage when capex is heavy — always pair with Debt/(EBITDA−CAPX); interest coverage
-    reads as a pair too (2.0x/1.2x is already declinable credit for a volatile business)."""
+    """Capacity-ratio discipline (Moyer, Distressed Debt Analysis, ch. 6): quoted EBITDA
+    leverage understates true leverage when capex is heavy — always pair with
+    Debt/(EBITDA−CAPX); interest coverage reads as a pair too (2.0x/1.2x is already
+    declinable credit for a volatile business)."""
 
     debt_ebitda: Optional[CitedValue] = None
     debt_ebitda_capex: Optional[CitedValue] = None
@@ -299,8 +302,8 @@ class CoverageChips(BaseModel):
 
 
 class AssetSnapshot(BaseModel):
-    """Latest balance-sheet asset categories — feeds the liquidation waterfall (Moyer
-    asset-based valuation). `other` is the derived residual vs total assets."""
+    """Latest balance-sheet asset categories — feeds the asset-based liquidation
+    waterfall. `other` is the derived residual vs total assets."""
 
     as_of_fy: Optional[int] = None
     cash: Optional[CitedValue] = None
@@ -328,7 +331,7 @@ class ChangeItem(BaseModel):
 
 
 class RpBasketPoint(BaseModel):
-    """One quarter of the RP-basket build (all $mm, Moyer ch. 7)."""
+    """One quarter of the RP-basket build (all $mm)."""
 
     label: str                              # calendar-quarter label, e.g. "Q1 2025"
     period_end: str
@@ -342,7 +345,8 @@ class RpBasketPoint(BaseModel):
 
 
 class RpBasket(BaseModel):
-    """Cumulative restricted-payments basket build (Moyer ch. 7): builder-formula
+    """Cumulative restricted-payments basket build (Moyer, Distressed Debt Analysis, ch. 7):
+    builder-formula
     quarterly contributions plus the extracted covenant layer (the issuer's own RP fact,
     or the flag that none was extracted — unbounded leakage)."""
 
@@ -376,7 +380,7 @@ class SponsorItem(BaseModel):
 
 
 class SponsorSupport(BaseModel):
-    """Sponsor / related-party support (Moyer control-holder framing, C8): the deterministic
+    """Sponsor / related-party support (the control holder): the deterministic
     admin_agent lender flag (free, from the covenant package) plus the DEF 14A ownership %
     when the LLM ran. has_sponsor False -> the Overview card shows an empty state."""
 
@@ -418,10 +422,10 @@ class Overview(BaseModel):
     asset_snapshot: Optional[AssetSnapshot] = None  # liquidation-waterfall inputs
     coverage_chips: Optional["CoverageChips"] = None  # dual-leverage + interest-coverage pairs
     mezzanine: Optional[CitedValue] = None   # temporary equity — the recast-as-debt input
-    nol_carryforward: Optional[CitedValue] = None  # gross NOL — the §382 tax-asset input (ch. 11)
-    sponsor: Optional[SponsorSupport] = None  # C8: control holder + related-party lender
-    rp_basket: Optional[RpBasket] = None     # F1 RP-basket capacity build (Moyer ch. 7)
-    liens_headroom: Optional[dict] = None    # F2 permitted-liens headroom archetypes (ch. 9)
+    nol_carryforward: Optional[CitedValue] = None  # gross NOL — the §382 tax-asset input
+    sponsor: Optional[SponsorSupport] = None  # control holder + related-party lender
+    rp_basket: Optional[RpBasket] = None     # RP-basket capacity build
+    liens_headroom: Optional[dict] = None    # permitted-liens headroom archetypes
     leverage_timeline: list[LeverageTimelinePoint] = Field(default_factory=list)
     maturity_wall: list[MaturityBucket] = Field(default_factory=list)
     what_changed: list[ChangeItem] = Field(default_factory=list)   # latest FY vs prior FY

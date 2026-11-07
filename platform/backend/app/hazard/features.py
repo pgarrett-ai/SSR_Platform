@@ -2,8 +2,7 @@
 
 Accounting ratios are computed for every fiscal year (so the risk timeline / sparklines are
 fully historical). Market-implied features (Merton, vol, drawdown) attach to the latest year
-only, since historical shares-outstanding isn't reliably available from yfinance — historical
-DD is a Phase-2 refinement.
+only, since historical shares-outstanding isn't reliably available from yfinance.
 
 Every ratio guards against missing/zero denominators and returns None rather than raising,
 because real filings have gaps.

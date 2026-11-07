@@ -1,6 +1,7 @@
-"""Priority-attack scenarios (Moyer ch. 12): never take the stated priority stack as
-fixed. Each attack is a pure transform of the CapitalStructure; the caller re-runs the
-waterfall on the SAME EV draws and renders the payout matrix side by side with base.
+"""Priority-attack scenarios (Moyer, Distressed Debt Analysis, ch. 12): never take the
+stated priority stack as fixed. Each attack is a pure transform of the CapitalStructure;
+the caller re-runs the waterfall on the SAME EV draws and renders the payout matrix side
+by side with base.
 """
 from __future__ import annotations
 

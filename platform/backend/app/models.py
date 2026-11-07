@@ -1,8 +1,8 @@
 """ORM models. Citations are the spine: every extracted value points at a Citation row,
 or is explicitly marked `derived` with a formula. Nothing fakes a source.
 
-Tables (per brief §2/§4): filings, exhibits, citations, extracted_facts, covenants,
-obs_items, forensic_flags, mdna_sections, snapshots (screening index).
+Tables: filings, exhibits, citations, covenants, obs_items, extraction_aliases, filing_notes,
+mdna_sections, debt_instruments, nport_holdings, rates, scenarios, snapshots (screening index).
 """
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ class Exhibit(Base):
 
 
 class Citation(Base):
-    """The non-negotiable provenance object (brief §4). Referenced by facts/covenants/obs."""
+    """The non-negotiable provenance object. Referenced by facts/covenants/obs."""
 
     __tablename__ = "citations"
 
@@ -96,7 +96,7 @@ class Citation(Base):
 
 
 class Covenant(Base):
-    """An extracted covenant clause from a credit agreement / indenture (brief §5)."""
+    """An extracted covenant clause from a credit agreement / indenture."""
 
     __tablename__ = "covenants"
 
@@ -113,14 +113,14 @@ class Covenant(Base):
     j_crew_blocker_present: Mapped[Optional[bool]] = mapped_column(Boolean)
     unrestricted_subsidiary_designation_flexibility: Mapped[Optional[str]] = mapped_column(Text)
 
-    # Kept verbatim so a vector index can be added later (brief §5: v2 hook, not built now).
+    # Kept verbatim so a vector index can be built over the clauses.
     clause_text: Mapped[Optional[str]] = mapped_column(Text)
     citation_id: Mapped[Optional[int]] = mapped_column(ForeignKey("citations.id"))
     citation: Mapped[Optional["Citation"]] = relationship()
 
 
 class ObsItem(Base):
-    """An off-balance-sheet / economic-debt item that feeds the bridge (brief §6b/§6c)."""
+    """An off-balance-sheet / economic-debt item that feeds the bridge."""
 
     __tablename__ = "obs_items"
 
@@ -176,7 +176,7 @@ class FilingNotes(Base):
 
 
 class MdnaSection(Base):
-    """Extracted MD&A (and liquidity/going-concern) text per filing for §7 drift."""
+    """Extracted MD&A (and liquidity/going-concern) text per filing for MD&A drift."""
 
     __tablename__ = "mdna_sections"
 
@@ -281,7 +281,7 @@ class Snapshot(Base):
     overall_risk: Mapped[Optional[float]] = mapped_column(Float)        # hazard composite
     trained_pd: Mapped[Optional[float]] = mapped_column(Float)          # calibrated 12m PD
     implied_rating: Mapped[Optional[str]] = mapped_column(String(8))
-    # Market-layer columns (Moyer): filled at snapshot-write time from the TRACE drop-file,
+    # Market-layer columns: filled at snapshot-write time from the bond marks file,
     # so they lag a quotes refresh until the next overview/risk run for the ticker.
     net_market_leverage: Mapped[Optional[float]] = mapped_column(Float)
     creation_multiple_fulcrum: Mapped[Optional[float]] = mapped_column(Float)

@@ -1,4 +1,4 @@
-"""PR-4 backfill: idx parsing, checkpoint/resume, detected_at=NULL discipline."""
+"""Backfill: idx parsing, checkpoint/resume, detected_at=NULL discipline."""
 from __future__ import annotations
 
 
@@ -59,4 +59,4 @@ def test_backfill_checkpoints_resumes_and_never_stamps_detected_at(tmp_path, mon
     with session_scope() as s:
         row = s.query(models_events.Event).filter_by(cik="0000000111").one()
         assert row.event_type == "acceleration"
-        assert row.detected_at is None        # backfill NEVER fakes detection (plan §10)
+        assert row.detected_at is None        # backfill NEVER fakes detection

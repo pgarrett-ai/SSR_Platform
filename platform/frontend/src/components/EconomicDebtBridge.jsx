@@ -1,8 +1,8 @@
 import React from "react";
 import CitedNumber from "./CitedNumber.jsx";
 
-// ponytail: pre-rework cached snapshots still carry cash/net lines as data; drop them at
-// render. Remove this filter once the hero caches are regenerated.
+// ponytail: cached snapshots can carry cash/net lines the bridge does not compute; drop them
+// at render. The filter can go once every cached snapshot is rebuilt.
 const DROPPED_KEYS = new Set(["cash_offset", "restricted_cash_offset", "net_economic_debt"]);
 
 function Chip({ label, cv }) {

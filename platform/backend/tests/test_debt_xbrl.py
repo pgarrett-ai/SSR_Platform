@@ -157,7 +157,7 @@ def test_undrawn_facility_kept_and_convertible_seniority():
     assert notes.facility_type == "notes"
 
 
-# OID / convert / PIK trade-mechanics facts (Moyer ch. 5/6)
+# OID / convert / PIK trade-mechanics facts (Moyer, Distressed Debt Analysis, ch. 5 and 6)
 OID_FACTS = [
     _fact("us-gaap:DebtInstrumentCarryingAmount", 962.8e6, "stlb:DiscountNotesMember",
           dimension_member_label="Senior Discount Notes"),

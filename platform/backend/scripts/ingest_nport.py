@@ -4,7 +4,7 @@ Usage (from platform/backend, main venv):
     python scripts/ingest_nport.py path\\to\\2026q1_nport.zip 2026q1 [--issuer AAL "AMERICAN AIRLINES"]
 
 Download the quarter's ZIP first from https://www.sec.gov/about/dera_form-n-port-data-sets
-(drop-file pattern — the ZIP is ~1GB and is streamed, never extracted). Without --issuer,
+(the ZIP is ~1GB and is streamed, never extracted). Without --issuer,
 every ticker in the snapshots screening table is ingested, matching on the stored issuer
 name. Rerunning a quarter replaces that quarter's rows.
 """

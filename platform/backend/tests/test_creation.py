@@ -1,4 +1,4 @@
-"""Creation-multiple ladder (Moyer): quote matching, cumulative math, degradation."""
+"""Creation-multiple ladder: quote matching, cumulative math, degradation."""
 from app.capstack.creation import build_creation_ladder
 from app.capstack.quotes import match_quotes, spread_bps
 
@@ -92,7 +92,8 @@ def test_ladder_empty_schedule():
 
 
 def test_oid_market_leg_and_pct_of_accreted():
-    # Moyer Table 5-5 shape: face 100, carrying (accreted) 71.2, quote 65
+    # Table 5-5 shape (Moyer, Distressed Debt Analysis, ch. 5): face 100, carrying (accreted)
+    # 71.2, quote 65
     sched = [
         {"instrument": "Term Loan B", "outstanding": _cv(300e6), "coupon_pct": 7.0,
          "maturity": "April 2028", "secured": True, "seniority": "senior secured"},

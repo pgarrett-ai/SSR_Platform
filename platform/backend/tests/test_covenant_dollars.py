@@ -1,6 +1,6 @@
-"""F1/F2 covenant dollars: the Moyer ch. 7 RP-basket template, NI asymmetry,
+"""Covenant dollars: the RP-basket template (Moyer, Distressed Debt Analysis, ch. 7), NI asymmetry,
 quarterly-flow YTD differencing, capacity tokens, and the liens-headroom archetypes
-including the fixed unbounded gate (must NOT fire on AAL-shaped inputs)."""
+including the unbounded gate (must NOT fire on AAL-shaped inputs)."""
 import datetime as dt
 
 from app.capstack.covenant_dollars import (build_liens_headroom, parse_capacity_tokens,
@@ -20,7 +20,7 @@ def _flows(ni=(), eq=(), div=(), buy=()):
             "dividends_paid": list(div), "stock_repurchases": list(buy)}
 
 
-# ---- F1: RP-basket builder -------------------------------------------------------
+# ---- RP-basket builder -----------------------------------------------------------
 
 
 def test_moyer_template_cumulative_15():
@@ -42,7 +42,7 @@ def test_moyer_template_cumulative_15():
 
 
 def test_ni_asymmetry():
-    # 50% credit on profits, 100% deduction on losses (Moyer ch. 7)
+    # 50% credit on profits, 100% deduction on losses (Moyer, Distressed Debt Analysis, ch. 7)
     rp = rp_basket_from_flows(_flows(ni=[(Q1, 10e6), (Q2, -10e6)]), [], 3)
     assert rp.points[0].ni_credit == 5.0
     assert rp.points[1].ni_credit == -10.0
@@ -103,13 +103,13 @@ def test_parse_capacity_tokens_fixtures():
     assert stub == {"dollars": None, "pct": None, "ratio": None}
 
 
-# ---- F2: liens-headroom archetypes -----------------------------------------------
+# ---- liens-headroom archetypes ---------------------------------------------------
 
 AAL_SHAPED = {
     "debt_schedule": [
         {"instrument": "2025 AAdvantage Term Loan Facility", "secured": True},
         # unsecured, but governed by NO extracted family (the PSP-note shape) — the
-        # unbounded gate must not fire vacuously (feasibility-critic regression)
+        # unbounded gate must not fire vacuously
         {"instrument": "PSP Promissory Note", "secured": False},
     ],
     "covenants": [
@@ -133,7 +133,7 @@ AAL_SHAPED = {
 }
 
 
-def test_aal_shaped_not_unbounded_gate_regression():
+def test_aal_shaped_unbounded_gate_stays_off():
     out = build_liens_headroom(AAL_SHAPED)
     assert out["archetype"] != "unbounded"
     assert out["unbounded_instruments"] == []

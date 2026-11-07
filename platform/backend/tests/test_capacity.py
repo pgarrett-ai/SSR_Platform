@@ -1,4 +1,5 @@
-"""Credit-capacity machinery (Moyer ch. 6): the cash sweep, its inputs, the coverage chips."""
+"""Credit-capacity machinery (Moyer, Distressed Debt Analysis, ch. 6): the cash sweep, its
+inputs, the coverage chips."""
 import pytest
 
 from app.capstack.capacity import capacity_inputs, coverage_chips, sweep

@@ -1,4 +1,4 @@
-"""Phase 4.6: leverage timeline / maturity wall / what-changed (pure; no network)."""
+"""Leverage timeline / maturity wall / what-changed (pure; no network)."""
 from __future__ import annotations
 
 from app.capstack.timelines import leverage_timeline, maturity_wall, what_changed

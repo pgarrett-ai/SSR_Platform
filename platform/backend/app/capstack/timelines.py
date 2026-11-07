@@ -1,6 +1,6 @@
-"""Phase 4.6: leverage timeline, maturity wall, and the "what changed" card.
+"""Leverage timeline, maturity wall, and the "what changed" card.
 
-Quarterly cadence (4.6b): `build_quarterly_series` reads 10-Q XBRL and computes TTM flows,
+Quarterly cadence: `build_quarterly_series` reads 10-Q XBRL and computes TTM flows,
 so the timeline and the change card move quarter-over-quarter (TTM EBITDA/FCF, point-in-time
 debt/cash) — the industry-standard view. The annual FY-vs-FY versions remain as the fallback
 when an issuer's quarterly facts are unavailable.

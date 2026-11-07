@@ -1,16 +1,16 @@
 """python -m app.events.backfill — seed the event store 2020->present.
 
-Strategy (math in the PR description): quarterly form.idx files (URL labels.py:58)
-enumerate every CIK that filed a tracked form in the window — dead filers included,
-which is the whole point (today's company_tickers.json misses exactly the bankrupt
-names). Per-CIK submissions docs (eightk.py pattern, overflow pages followed as at
-eightk.py:134-141) then give items + accessions for everything at ~1.6 req/CIK.
+Strategy: quarterly form.idx files (the URL labels.py uses) enumerate every CIK that
+filed a tracked form in the window — dead filers included, which is the whole point
+(today's company_tickers.json misses exactly the bankrupt names). Per-CIK submissions docs
+(the eightk.py pattern, overflow pages followed) then give items + accessions for
+everything at ~1.6 req/CIK.
 EFTS chunking is rejected: 10-hit pages, a 400-hit/quarter sanity cap even in labels'
 own harvest, documented 500-flakiness, and no verified accession field.
 
-detected_at = NULL, ALWAYS (plan §10: backfilled history never masquerades as
-detected). Checkpoint/resume: data/backfill.db, the labels.py panel.db pattern —
-per-CIK commit, failures not marked done so they retry."""
+detected_at = NULL, ALWAYS: backfilled history never masquerades as detected.
+Checkpoint/resume: data/backfill.db, the labels.py panel.db pattern — per-CIK commit,
+failures not marked done so they retry."""
 from __future__ import annotations
 
 import datetime as dt

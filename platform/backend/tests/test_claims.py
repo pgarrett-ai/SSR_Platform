@@ -1,4 +1,4 @@
-"""Phase 4.4: accrued interest + make-whole in the allowed claim."""
+"""Accrued interest + make-whole in the allowed claim."""
 from __future__ import annotations
 
 from app.fulcrum import CapitalStructure, Entity, SimConfig, Tranche, analyze

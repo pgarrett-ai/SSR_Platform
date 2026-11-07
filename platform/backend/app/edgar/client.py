@@ -28,7 +28,7 @@ _identity_set = False
 # credit-agreement / LME exhibits; S-1/S-4 carry indentures.
 DEFAULT_FORMS = ["10-K", "10-Q", "8-K", "S-1", "S-4"]
 
-# Exhibit types that are candidate credit documents (brief §5).
+# Exhibit types that are candidate credit documents.
 CREDIT_EXHIBIT_PREFIXES = ("EX-10", "EX-4")
 
 # Legacy / delisted / renamed tickers the SEC's current company_tickers.json no longer maps.

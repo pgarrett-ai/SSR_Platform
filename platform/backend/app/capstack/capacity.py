@@ -1,6 +1,7 @@
-"""Credit-capacity machinery (Moyer ch. 6): the bank-style cash-sweep repayment model the
-refi wall sequences maturities with, and the capacity-ratio chips (dual leverage + paired
-interest coverage). All deterministic, seeded from the cached overview.
+"""Credit-capacity machinery (Moyer, Distressed Debt Analysis, ch. 6): the bank-style
+cash-sweep repayment model the refi wall sequences maturities with, and the capacity-ratio
+chips (dual leverage + paired interest coverage). All deterministic, seeded from the cached
+overview.
 
 Quoted EBITDA leverage understates true leverage when capex is heavy — pair Debt/EBITDA
 with Debt/(EBITDA−CAPX).
@@ -16,7 +17,7 @@ from ..schemas import CoverageChips
 def sweep(debt0: float, ebitda0: float, rate: float, capex: float,
           growth: list[float]) -> dict:
     """Cash-sweep amortization: EBITDA_t grows by growth[t]; interest = rate × beginning
-    debt; residual after capex sweeps principal. Taxes/working capital ignored (Moyer)."""
+    debt; residual after capex sweeps principal. Taxes and working capital are ignored."""
     rows = []
     debt, e = debt0, ebitda0
     for g in growth:

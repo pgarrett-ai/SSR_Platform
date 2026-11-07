@@ -1,8 +1,8 @@
-"""Event-framework primitives (plan §4/§5): the detector contract's input and output.
+"""Event-framework primitives: the detector contract's input and output.
 Pure data — no I/O, no ORM. Storage mapping lives in events/store.py; detected_at is
 deliberately NOT a field here: the store stamps it at insert time (now for the poller,
 NULL for backfill), so a detector can never fake point-in-time provenance.
-CIKs are the canonical 10-digit zero-padded string everywhere (Interface Contract)."""
+CIKs are the canonical 10-digit zero-padded string everywhere."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -21,20 +21,20 @@ class FilingMeta:
     accession_no: str
     source_url: Optional[str] = None    # filing index page (eightk._index_url)
     items: Optional[list[str]] = None   # 8-K item codes when reported
-    items_unknown: bool = False         # 8-K with an empty items list (decision #8)
-    accepted_at: Optional[str] = None   # submissions acceptanceDateTime (UNVERIFIED #3;
-                                        # None-tolerant everywhere — latency gauge only)
+    items_unknown: bool = False         # 8-K with an empty items list
+    accepted_at: Optional[str] = None   # submissions acceptanceDateTime (None-tolerant
+                                        # everywhere — latency gauge only)
 
 
 @dataclass(frozen=True)
 class Event:
-    """One detected event, aligned 1:1 with the events table (plan §4)."""
+    """One detected event, aligned 1:1 with the events table."""
     cik: str                            # 10-digit zero-padded
     event_type: str
     subtype: Optional[str]
     severity: int                       # 1-5
     confidence: float                   # 0-1; 1.0 = EDGAR header metadata, not inference
-    occurred_at: Optional[str]          # ISO date the world changed (filing date in v1)
+    occurred_at: Optional[str]          # ISO date the world changed (the filing date)
     source: str                         # "edgar" | "ratings"
     source_form: str
     accession_no: str                   # synthetic "ratings:..." key for non-filing sources

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Section, Th, fmtPct } from "../ui/index.jsx";
 
-// Duration-sensitive IRR (Moyer ch. 9/12): a recovery estimate is meaningless without
+// Duration-sensitive IRR (Moyer, Distressed Debt Analysis, ch. 9 and 12): a recovery
+// estimate is meaningless without
 // time — annualized return = (recovery / entry price)^(1/T) − 1 across entry prices and
 // case durations, shaded where it clears the 15–25% distressed hurdle band.
 

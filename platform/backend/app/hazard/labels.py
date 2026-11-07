@@ -1,9 +1,8 @@
-"""Real default labels (Phase 5): harvest 8-K Item 1.03 (Bankruptcy or Receivership) events
+"""Real default labels: harvest 8-K Item 1.03 (Bankruptcy or Receivership) events
 from EDGAR full-text search, build a real training panel, and train the hazard model on it.
 
-This retires the synthetic plumbing fixture as the model's data source: the served bundle is
-fitted on actual bankruptcy events, walk-forward validated (train.py already enforces that),
-and carries its label provenance so the UI can say what the number is.
+The served bundle is fitted on actual bankruptcy events, walk-forward validated (train.py
+enforces that), and carries its label provenance so the UI can say what the number is.
 
 Run:  python -m app.hazard.labels --defaulters 120 --controls 120
       (harvest is cached in data/default_events.json; delete it to re-harvest)
@@ -527,7 +526,7 @@ def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: in
     df = sign_safe_panel(df)    # checkpointed rows may predate the current feature definition
     print(f"panel: {len(df)} firm-years, {int(df['label'].sum())} defaults, "
           f"{used_defaulters} defaulter firms, {used_controls} controls "
-          f"({dead_controls} no longer filing — the survivorship-bias fix at work)")
+          f"({dead_controls} no longer filing)")
     if skips:
         print("  sample skips:", " | ".join(skips))
     return df

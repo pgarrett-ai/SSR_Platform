@@ -35,7 +35,7 @@ def quote_in_text(quote: Optional[str], text: Optional[str]) -> bool:
     return bool(frags)
 
 
-# Topic keywords used to route footnote text to the OBS extractor (brief §6b).
+# Topic keywords used to route footnote text to the OBS extractor.
 OBS_KEYWORDS = (
     "lease", "pension", "postretirement", "opeb", "retirement benefit",
     "supplier finance", "supply chain finance", "supply-chain finance", "payables facility",
