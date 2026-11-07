@@ -1,6 +1,8 @@
-"""Demo reliability: concurrent identical requests run the pipeline once."""
+"""Demo reliability: concurrent identical requests run the pipeline once; a failed hazard
+run falls back to the last cached payload."""
 from __future__ import annotations
 
+import json
 import threading
 import time
 from datetime import datetime, timezone
@@ -49,3 +51,22 @@ def test_concurrent_runs_for_one_key_build_once(monkeypatch, tmp_path, live):
     assert builds == ["ZZSF"]
     assert len(results) == 2
     assert results[0].header.last_updated == results[1].header.last_updated
+
+
+def test_failed_hazard_run_serves_newest_cache_marked_stale(monkeypatch, tmp_path):
+    import app.main as main
+
+    monkeypatch.setattr(main, "CACHE_DIR", tmp_path)
+    (tmp_path / "hazard").mkdir()
+    (tmp_path / "hazard" / "ZZHZ_10y.json").write_text(
+        json.dumps({"as_of": "2026-01-02", "data": {"scores": {"Merton DD": {"pd": 0.2}}}}),
+        encoding="utf-8")
+
+    def edgar_down(*a, **k):
+        raise ConnectionError("SEC unreachable")
+
+    monkeypatch.setattr(main, "hazard_analyze", edgar_down)
+    assert main._hazard_section("ZZHZ", 10, live=True) == {
+        "scores": {"Merton DD": {"pd": 0.2}}, "stale_as_of": "2026-01-02"}
+    with pytest.raises(ConnectionError):   # nothing cached: the real cause surfaces
+        main._hazard_section("ZZNONE", 10, live=False)

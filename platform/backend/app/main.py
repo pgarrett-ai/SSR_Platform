@@ -209,12 +209,26 @@ def _native(obj):
     return obj
 
 
+def _newest_hazard_cache(safe_t: str) -> Optional[dict]:
+    """The newest readable hazard payload for the ticker (any window, any day), marked with
+    "stale_as_of": the day it was computed. None when there is none."""
+    for f in sorted((CACHE_DIR / "hazard").glob(f"{safe_t}_*y.json"),
+                    key=lambda f: f.stat().st_mtime, reverse=True):
+        try:
+            blob = json.loads(f.read_text(encoding="utf-8"))
+            return {**blob["data"], "stale_as_of": blob["as_of"]}
+        except Exception:
+            log.exception("hazard cache unreadable: %s", f)
+    return None
+
+
 def _hazard_section(ticker: str, years: int, live: bool, progress: ProgressLog | None = None) -> dict:
     """Same-day disk cache around the hazard pipeline. Market data moves daily and EDGAR on
     filings, so a day-fresh payload serves page reloads instantly instead of re-running the
     ~30s pipeline; live=True bypasses. Concurrent requests for one key compute once and the
-    rest reuse its result. Kept in its own subdir so the overview-cache globs
-    (TICKER_*y.json) never pick these up."""
+    rest reuse its result. A failed run serves the newest cached payload for the ticker,
+    marked stale_as_of; the error propagates only when no cache exists. Kept in its own
+    subdir so the overview-cache globs (TICKER_*y.json) never pick these up."""
     try:
         safe_t = safe_ticker(ticker)   # trust boundary: keep request-derived ticker out of the path
     except ValueError:
@@ -244,7 +258,18 @@ def _hazard_section(ticker: str, years: int, live: bool, progress: ProgressLog |
         data = _reuse()
         if data is not None:
             return data
-        data = jsonable(_native(hazard_analyze(ticker, years, progress=progress)))
+        try:
+            data = jsonable(_native(hazard_analyze(ticker, years, progress=progress)))
+        except Exception:
+            stale = _newest_hazard_cache(safe_t)
+            if stale is None:
+                raise
+            log.exception("hazard run failed for %s; serving the cache from %s",
+                          ticker, stale["stale_as_of"])
+            if progress:
+                progress.emit(f"Live run failed; serving the cached run from "
+                              f"{stale['stale_as_of']}.", step="cache", pct=100)
+            return stale
         try:
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(json.dumps({"as_of": dt.date.today().isoformat(), "data": data}),
