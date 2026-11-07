@@ -3,7 +3,7 @@ import {
   CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import CitedNumber from "./CitedNumber.jsx";
-import { ACCENT, Badge, INK, Td, Th, chartTooltipStyle, rowClass } from "../ui/index.jsx";
+import { ACCENT, Badge, INK, Td, Th, chartTooltipStyle, fmtMoney, rowClass } from "../ui/index.jsx";
 
 // What the documents let the company do to its creditors. One collapsed card per
 // agreement family whose summary row carries the LME read (uptier, drop-down,
@@ -247,7 +247,7 @@ function RpBasket({ rp }) {
             <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
             <XAxis dataKey="label" tick={{ fill: "#94a3b8", fontSize: 11 }} />
             <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
-            <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [`$${v}M cumulative`, null]} />
+            <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [`${fmtMoney(v * 1e6)} cumulative`, null]} />
             <Line dataKey="cumulative" stroke={ACCENT} dot={false} />
           </LineChart>
         </ResponsiveContainer>

@@ -3,7 +3,7 @@ import {
   CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { exploreRecovery } from "../api.js";
-import { INK, LINE_COLORS, Section, Skeleton, Th, chartTooltipStyle, fmt } from "../ui/index.jsx";
+import { INK, LINE_COLORS, Section, Skeleton, Th, chartTooltipStyle, fmt, fmtMoney, fmtX } from "../ui/index.jsx";
 
 // Deterministic breakpoints: who is in the money at EV = X. The server runs one waterfall
 // over an EV grid; the slider, breakpoints and inverse solver all read that grid here. It
@@ -94,11 +94,11 @@ export default function EvExplorer({ ticker, years, result }) {
         <>
           <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-400">
             <label className="flex items-center gap-3">
-              <span className="text-[11px] uppercase tracking-wide text-slate-400">EV $M</span>
+              <span className="text-[11px] uppercase tracking-wide text-slate-400">EV</span>
               <input type="range" min={0} max={data.ev_grid.length - 1} value={idx}
                 onChange={(e) => setIdx(Number(e.target.value))} className="w-64 accent-accent" />
-              <span className="font-mono text-slate-100">{fmt(ev, 0)}</span>
-              {mult != null && <span className="font-mono text-slate-400">= {mult.toFixed(1)}x EBITDA</span>}
+              <span className="font-mono text-slate-100">{fmtMoney(ev * 1e6)}</span>
+              {mult != null && <span className="font-mono text-slate-400">= {fmtX(mult)} EBITDA</span>}
             </label>
             {fulcrumAt && <span>fulcrum at this EV: <span className="font-mono text-rose-300">{fulcrumAt}</span></span>}
           </div>
@@ -124,7 +124,7 @@ export default function EvExplorer({ ticker, years, result }) {
                     <td className="px-2 py-1.5 text-right">{t.covered == null ? "—" : fmt(t.covered, 0)}</td>
                     {data.ebitda > 0 && (
                       <td className="px-2 py-1.5 text-right">
-                        {t.covered == null ? "—" : `${(t.covered / data.ebitda).toFixed(1)}x`}
+                        {t.covered == null ? "—" : fmtX(t.covered / data.ebitda)}
                       </td>
                     )}
                   </tr>
@@ -151,9 +151,9 @@ export default function EvExplorer({ ticker, years, result }) {
               title="price as % of allowed claim" />
             {implied ? (
               <span className="text-slate-300">
-                → implied EV <span className="font-mono text-slate-100">{fmt(implied.ev, 0)} $M</span>
+                → implied EV <span className="font-mono text-slate-100">{fmtMoney(implied.ev * 1e6)}</span>
                 {implied.multiple != null && (
-                  <span> = <span className="font-mono text-slate-100">{implied.multiple.toFixed(1)}x</span> EBITDA</span>
+                  <span> = <span className="font-mono text-slate-100">{fmtX(implied.multiple)}</span> EBITDA</span>
                 )}
               </span>
             ) : (
@@ -165,14 +165,14 @@ export default function EvExplorer({ ticker, years, result }) {
             <div className="mt-5">
               <div className="mb-1 text-xs text-slate-400" title={data.coverage_note}>
                 Asset coverage vs EV multiple — breakevens:{" "}
-                {Object.entries(data.breakeven_multiples).map(([k, v]) => `${k} ${v}x`).join(" · ")}
+                {Object.entries(data.breakeven_multiples).map(([k, v]) => `${k} ${fmtX(v)}`).join(" · ")}
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={covChart} margin={{ top: 4, right: 8, bottom: 4, left: 8 }}>
                   <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
                   <XAxis dataKey="m" tick={{ fill: "#94a3b8", fontSize: 11 }} unit="x" />
                   <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
-                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${fmt(v, 2)}x coverage`}
+                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${fmtX(v, 2)} coverage`}
                     labelFormatter={(m) => `EV = ${m}x EBITDA`} />
                   <ReferenceLine y={1.0} stroke="#fb7185" strokeDasharray="4 4" />
                   {["total", "senior", "junior"].filter((k) => covChart[0][k] != null).map((k, i) => (

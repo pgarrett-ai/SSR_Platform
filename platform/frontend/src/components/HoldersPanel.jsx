@@ -1,14 +1,12 @@
 import React from "react";
 import { fetchHolders } from "../api.js";
 import { useAsync } from "../cache.js";
-import { Td, Th, rowClass, useShowMore } from "../ui/index.jsx";
+import { Td, Th, fmtMoney, fmtPct, rowClass, useShowMore } from "../ui/index.jsx";
 
 // Known holders (registered funds) per instrument, from the ingested N-PORT data set.
 // One part of the Capital appendix; renders nothing at all until an ingest has run.
 
 const partTitle = "mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400";
-
-const fmtM = (v) => (v == null ? "—" : `$${(v / 1e6).toFixed(1)}M`);
 
 // One instrument group — its own component so each group owns a useShowMore.
 function HolderGroup({ instrument, rows }) {
@@ -30,9 +28,10 @@ function HolderGroup({ instrument, rows }) {
             <tr key={i} className={rowClass}>
               <Td className="text-slate-300">{h.fund_name || "—"}</Td>
               <Td className="text-[12px] text-slate-500">{h.title || "—"}</Td>
-              <Td right mono className="text-slate-300">{fmtM(h.value_usd)}</Td>
+              {/* fund positions run small: one decimal keeps a $0.4M line from reading $0M */}
+              <Td right mono className="text-slate-300">{fmtMoney(h.value_usd, 1)}</Td>
               <Td right mono className="text-slate-400">
-                {h.pct_of_fund == null ? "—" : `${h.pct_of_fund.toFixed(2)}%`}
+                {fmtPct(h.pct_of_fund == null ? null : h.pct_of_fund / 100, 2)}
               </Td>
             </tr>
           ))}

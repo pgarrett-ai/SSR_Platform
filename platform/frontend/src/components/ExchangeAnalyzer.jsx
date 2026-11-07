@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { exchangeRecovery } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Button, Field, NUM_CLS, Section, Th, fmt } from "../ui/index.jsx";
+import { Badge, Button, Field, NUM_CLS, Section, Th, fmt, fmtMoney, fmtX } from "../ui/index.jsx";
 
 // Exchange-offer analyzer (Moyer ch. 11): a calculator over typed offer terms. The server
 // returns holdout and tender payoff curves per participation level over the simulated
@@ -138,20 +138,20 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
         <>
           <div className="mt-4 mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-400">
             <label className="flex items-center gap-3">
-              <span className="text-[11px] uppercase tracking-wide text-slate-400">EV $M</span>
+              <span className="text-[11px] uppercase tracking-wide text-slate-400">EV</span>
               <input type="range" min={0} max={data.ev_grid.length - 1} value={idx}
                 onChange={(e) => setIdx(Number(e.target.value))} className="w-64 accent-accent" />
-              <span className="font-mono text-slate-100">{fmt(ev, 0)}</span>
-              {mult != null && <span className="font-mono text-slate-400">= {mult.toFixed(1)}x EBITDA</span>}
+              <span className="font-mono text-slate-100">{fmtMoney(ev * 1e6)}</span>
+              {mult != null && <span className="font-mono text-slate-400">= {fmtX(mult)} EBITDA</span>}
             </label>
             {userRow?.proforma_leverage != null && (
-              <Badge tone="info" title={`pro-forma face $${fmt(userRow.proforma_face, 0)}M at your ${userP}% participation`}>
-                pro-forma {userRow.proforma_leverage}x
+              <Badge tone="info" title={`pro-forma face ${fmtMoney(userRow.proforma_face * 1e6)} at your ${userP}% participation`}>
+                pro-forma {fmtX(userRow.proforma_leverage)}
               </Badge>
             )}
             {data.quote_premium && (
               <Badge tone={data.quote_premium.premium_per_100 > 0 ? "ok" : "watch"}
-                title={`package ${data.quote_premium.package_at_ref} vs quote ${data.quote_premium.target_quote} at EV $${fmt(data.quote_premium.ref_ev_mm, 0)}M`}>
+                title={`package ${data.quote_premium.package_at_ref} vs quote ${data.quote_premium.target_quote} at EV ${fmtMoney(data.quote_premium.ref_ev_mm * 1e6)}`}>
                 package premium {fmt(data.quote_premium.premium_per_100)}
               </Badge>
             )}
@@ -193,7 +193,7 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
                     </td>
                     <td className="px-2 py-1.5 text-right">{r.fails ? "—" : fmt(r.proforma_face, 0)}</td>
                     <td className="px-2 py-1.5 text-right">
-                      {r.fails || r.proforma_leverage == null ? "—" : `${r.proforma_leverage}x`}
+                      {r.fails || r.proforma_leverage == null ? "—" : fmtX(r.proforma_leverage)}
                     </td>
                     <td className="px-2 py-1.5 text-right text-slate-100">{fmt(r.tenderAt)}</td>
                     <td className="px-2 py-1.5 text-right">{fmt(r.holdoutAt)}</td>

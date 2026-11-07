@@ -255,7 +255,7 @@ function TrancheTable({ result, citations, quotes }) {
                   <Td right mono className="text-slate-300">{fmt(t.face, 0)}</Td>
                   <Td right mono className="text-slate-300"
                     title={t["accrued_$"] || t["make_whole_$"]
-                      ? `+ accrued ${fmt(t["accrued_$"], 0)} + make-whole ${fmt(t["make_whole_$"], 0)}` : undefined}>
+                      ? `+ accrued ${mm(t["accrued_$"])} + make-whole ${mm(t["make_whole_$"])}` : undefined}>
                     {fmt(t.claim, 0)}
                   </Td>
                   <Td right mono className="text-slate-100">{pct(t["mean_recovery_%"])}</Td>

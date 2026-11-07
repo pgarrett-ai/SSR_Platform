@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { liquidateRecovery } from "../api.js";
-import { Button, ErrorCard, Section, Th, fmt } from "../ui/index.jsx";
+import { Button, ErrorCard, Section, Th, fmt, fmtMoney } from "../ui/index.jsx";
 
 // Asset-based liquidation waterfall (Moyer ch. 5/8): book values × advance rates, net of
 // estate costs, distributed by absolute priority. Recovery shows it in place of the
@@ -154,10 +154,10 @@ export default function LiquidationPanel({ ticker, years, initial }) {
           {pair && (
             <div className="mt-3 text-xs text-slate-400">
               <span className="text-[11px] uppercase tracking-wide text-slate-400">ch. 11 orderly vs ch. 7 fire-sale (net proceeds): </span>
-              <span className="font-mono text-slate-200">{fmt(pair.ch11_orderly.net_proceeds, 0)}</span>
+              <span className="font-mono text-slate-200">{fmtMoney(pair.ch11_orderly.net_proceeds * 1e6)}</span>
               <span className="mx-1 text-slate-400">vs</span>
-              <span className="font-mono text-rose-300">{fmt(pair.ch7_fire_sale.net_proceeds, 0)}</span>
-              <span className="ml-2 text-slate-500">$M — the going-concern-in-ch11 vs shutdown gap</span>
+              <span className="font-mono text-rose-300">{fmtMoney(pair.ch7_fire_sale.net_proceeds * 1e6)}</span>
+              <span className="ml-2 text-slate-500">— the going-concern vs shutdown gap</span>
             </div>
           )}
         </div>

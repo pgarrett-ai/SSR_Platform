@@ -25,11 +25,13 @@ export const fmt = (v, d = 1) =>
     ? "—"
     : Number(v).toLocaleString("en-US", { maximumFractionDigits: d });
 
-// Raw USD → "$27,305M", the same format the backend gives every cited display.
-export const fmtMoney = (x) =>
+// Raw USD → "$27,305M" (a negative reads "-$305M"), the same format the backend gives
+// every cited display; dp adds decimals for small positions.
+export const fmtMoney = (x, dp = 0) =>
   x == null || Number.isNaN(x)
     ? "—"
-    : `${x < 0 ? "-" : ""}$${Math.round(Math.abs(x) / 1e6).toLocaleString("en-US")}M`;
+    : `${x < 0 ? "-" : ""}$${(Math.abs(x) / 1e6).toLocaleString("en-US",
+      { minimumFractionDigits: dp, maximumFractionDigits: dp })}M`;
 
 /* ---------- status colors ---------- */
 

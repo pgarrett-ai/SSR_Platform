@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Section, Th } from "../ui/index.jsx";
+import { Section, Th, fmtPct } from "../ui/index.jsx";
 
 // Duration-sensitive IRR (Moyer ch. 9/12): a recovery estimate is meaningless without
 // time — annualized return = (recovery / entry price)^(1/T) − 1 across entry prices and
@@ -81,7 +81,7 @@ export default function IrrMatrix({ tranches, quotedByName }) {
                     <td key={d}
                       title={`(${recovery.toFixed(0)} ÷ ${p.toFixed(0)})^(1/${d}) − 1`}
                       className={`px-3 py-1.5 text-right font-mono ${cellTone(irr)}`}>
-                      {(100 * irr).toFixed(0)}%
+                      {fmtPct(irr, 0)}
                     </td>
                   );
                 })}
