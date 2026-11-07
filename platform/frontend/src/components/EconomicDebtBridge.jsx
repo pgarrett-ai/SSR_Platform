@@ -1,10 +1,6 @@
 import React from "react";
 import CitedNumber from "./CitedNumber.jsx";
 
-// ponytail: cached snapshots can carry cash/net lines the bridge does not compute; drop them
-// at render. The filter can go once every cached snapshot is rebuilt.
-const DROPPED_KEYS = new Set(["cash_offset", "restricted_cash_offset", "net_economic_debt"]);
-
 function Chip({ label, cv }) {
   return (
     <span className="rounded bg-ink-700/60 px-2 py-1 text-[11px] text-slate-400">
@@ -16,7 +12,7 @@ function Chip({ label, cv }) {
 // Reported debt → each debt-like obligation → economic debt, every line cited. The footer
 // names the EBITDA every leverage figure divides by, and the coverage it implies.
 export default function EconomicDebtBridge({ bridge, coverage }) {
-  const lines = (bridge?.lines || []).filter((ln) => !DROPPED_KEYS.has(ln.key));
+  const lines = bridge?.lines || [];
   if (lines.length === 0)
     return <p className="text-sm text-slate-400">No reported debt figure tagged in XBRL.</p>;
 

@@ -274,14 +274,14 @@ class LiquidityEvent(BaseModel):
 
 
 class LiquidityRunway(BaseModel):
-    """Distressed-mode framing: cash + undrawn credit, burn, months of runway, next wall.
-    is_distressed (EBITDA <= 0) drives the Overview to lead with this over leverage."""
+    """Distressed-mode framing: total liquidity, burn, months of runway, next wall.
+    is_distressed (EBITDA <= 0) puts the runway in the issuer strip."""
 
     is_distressed: bool = False
     as_of_label: Optional[str] = None            # 'Q1 2026' / 'FY2025'
     cash: Optional[CitedValue] = None
     undrawn_committed: Optional[CitedValue] = None   # sum of tagged undrawn facility capacity
-    total_liquidity: Optional[CitedValue] = None     # cash + undrawn
+    total_liquidity: Optional[CitedValue] = None     # cash + short-term investments + undrawn
     annual_burn: Optional[CitedValue] = None         # |FCF| when burning
     runway_months: Optional[float] = None            # total liquidity / monthly burn
     next_maturity: Optional[NextMaturity] = None
@@ -316,7 +316,7 @@ class AssetSnapshot(BaseModel):
 
 
 class ChangeItem(BaseModel):
-    """One year-over-year move for the Overview 'what changed' card."""
+    """One period-over-period move in a forensic metric (Overview.what_changed)."""
 
     metric: str
     unit: Optional[str] = None             # 'USD' | 'x'
@@ -382,7 +382,7 @@ class SponsorItem(BaseModel):
 class SponsorSupport(BaseModel):
     """Sponsor / related-party support (the control holder): the deterministic
     admin_agent lender flag (free, from the covenant package) plus the DEF 14A ownership %
-    when the LLM ran. has_sponsor False -> the Overview card shows an empty state."""
+    when the LLM ran. has_sponsor False means no control holder was found."""
 
     has_sponsor: bool = False
     sponsor_name: Optional[str] = None

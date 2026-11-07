@@ -59,7 +59,7 @@ def test_assets_from_snapshot_units():
 
 
 def test_negative_ebitda_returns_liquidation_mode_not_400():
-    """The Overview's quick simulate on a negative-EBITDA name must not 400."""
+    """A negative-EBITDA simulate must not 400."""
     r = client.post("/api/company/NOSUCHTICKER/recovery/simulate", json={
         "structure": {"name": "L",
                       "entities": [{"name": "OpCo", "ev_share": 1.0, "parent": None}],

@@ -1,3 +1,3 @@
-"""Capital Structure & Hidden-Leverage Analyzer — backend package."""
+"""Distressed Credit — backend package."""
 
 __version__ = "0.1.0"

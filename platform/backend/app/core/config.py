@@ -59,8 +59,8 @@ class Settings(BaseSettings):
 
 
 
-# Runtime toggles the UI can flip without a restart. Read per access (tiny file) so the
-# lru_cached Settings needs no invalidation.
+# Runtime toggles set through the API (POST /api/settings/llm) without a restart. Read per
+# access (tiny file) so the lru_cached Settings needs no invalidation.
 RUNTIME_SETTINGS_PATH = DATA_DIR / "runtime_settings.json"
 
 

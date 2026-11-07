@@ -139,7 +139,7 @@ def health() -> dict:
     return {
         "status": "ok",
         "llm_enabled": s.llm_enabled,
-        "llm_key_set": s.llm_key_set,   # lets the UI tell "toggled off" from "no key"
+        "llm_key_set": s.llm_key_set,   # tells "toggled off" (POST /api/settings/llm) from "no key"
         "auth_required": bool(s.platform_api_token.strip()),   # the SPA shows the token box
         "sec_user_agent_set": bool(s.sec_user_agent and "example.com" not in s.sec_user_agent),
         "worker": w,                       # raw worker gauges
@@ -1172,7 +1172,8 @@ def add_docket_event(ticker: str, body: DocketBody):
             raise TickerNotFoundError(f"{ticker.strip().upper()!r} is in neither the "
                                       f"universe nor the snapshot index")
         ev = docket_event(cik, body)
-        # ponytail: manual rows must be filtered source!='manual' at backtest time — not enforced here
+        # ponytail: a manual row is stored as entered (source='manual'); nothing checks it
+        # against the court docket
         n = insert_events(session, [ev], detected_at=dt.datetime.now(dt.UTC).replace(tzinfo=None))
     return JSONResponse(content={"inserted": n, "dedupe_key": ev.dedupe_key,
                                  "note": None if n else "already recorded (idempotent)"})

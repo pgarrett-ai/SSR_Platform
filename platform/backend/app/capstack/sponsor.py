@@ -6,9 +6,9 @@ lender named as the agent bank IS the flag). The ownership percentage is the one
 seam: DEF 14A "beneficial owner" / "related person transactions" text, windowed and read
 with a forced tool call, verbatim-quote-gated like every other extractor in this package.
 
-Deliberately skips a fuzzy admin_agent<->owner name-matcher (Ayar != "Public Investment
-Fund" literally): the related-person-transaction footnote itself states the lender IS the
-affiliate, so that verbatim quote is the owner->lender bridge. YAGNI the matcher.
+There is no fuzzy admin_agent<->owner name matcher (Ayar != "Public Investment Fund"
+literally): the related-person-transaction footnote itself states the lender IS the
+affiliate, so that verbatim quote is the owner->lender bridge.
 """
 from __future__ import annotations
 
