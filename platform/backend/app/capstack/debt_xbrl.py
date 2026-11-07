@@ -294,11 +294,17 @@ def _pick_key(f: dict) -> tuple[int, float]:
     return (0 if f.get("dim_dei_LegalEntityAxis") else 1, _num(f) or 0.0)
 
 
+def _usd(fact: dict) -> bool:
+    """USD amounts and unitless facts (rates). Every amount here is summed as dollars, so a
+    SAR or EUR fact would inflate the schedule (LCID's SAR 1.9bn GIB facility read $1,890M)."""
+    return fact.get("currency") in (None, "USD")
+
+
 def group_debt_facts(facts: list[dict]) -> tuple[dict[str, dict], list[dict], Optional[str]]:
-    """(carrying fact per member at the latest instant, all debt-dimensioned facts, as-of).
-    Comparative-period columns and duplicate per-entity tagging are filtered here:
+    """(carrying fact per member at the latest instant, all USD debt-dimensioned facts,
+    as-of). Comparative-period columns and duplicate per-entity tagging are filtered here:
     only the latest instant counts, and consolidated (no LegalEntityAxis) facts win."""
-    debt = [f for f in facts if f.get("dim_us-gaap_DebtInstrumentAxis")]
+    debt = [f for f in facts if f.get("dim_us-gaap_DebtInstrumentAxis") and _usd(f)]
     carrying = [f for f in debt
                 if str(f.get("concept")) in _CARRYING_CONCEPTS and _num(f) is not None]
     if not carrying:
@@ -337,18 +343,25 @@ def facility_capacity(debt: list[dict]) -> dict[str, dict[str, dict]]:
 
 
 def build_xbrl_debt_schedule(company, rates: Optional[dict] = None
-                             ) -> tuple[list[DebtInstrument], Optional[str], Optional[object]]:
+                             ) -> tuple[list[DebtInstrument], Optional[str], Optional[object],
+                                        Optional[str]]:
     """Instrument-level debt schedule from the latest 10-K/10-Q's dimensional XBRL.
-    Returns ([], None, filing) when the issuer doesn't dimension debt — caller falls back
-    to the legacy footnote extraction. The source filing rides along so maturity
-    annotation reads the same document the numbers came from."""
-    filing = company.get_filings(form=["10-K", "10-Q"]).latest(1)
+    Returns ([], None, filing, note) when the issuer doesn't dimension debt — caller falls
+    back to the legacy footnote extraction. The source filing rides along so maturity
+    annotation reads the same document the numbers came from; the note names debt facts
+    left out for being in a foreign currency."""
+    filing = company.get_filings(form=["10-K", "10-Q"], amendments=False).latest(1)
     if filing is None:
-        return [], None, None
+        return [], None, None, None
     facts = filing.xbrl().query().execute()
+    foreign = sorted({f"{prettify_member(str(f['dim_us-gaap_DebtInstrumentAxis']))} "
+                      f"({f.get('currency')})"
+                      for f in facts if f.get("dim_us-gaap_DebtInstrumentAxis") and not _usd(f)})
+    note = (f"Non-USD debt facts left out of the schedule: {', '.join(foreign)}. A facility "
+            "shows only where the filing also tags its USD amount.") if foreign else None
     by_member, debt, asof = group_debt_facts(facts)
     if len(by_member) < _MIN_MEMBERS:
-        return [], None, filing
+        return [], None, filing, note
 
     cik = str(company.cik)
     accession = getattr(filing, "accession_no", None)
@@ -380,4 +393,4 @@ def build_xbrl_debt_schedule(company, rates: Optional[dict] = None
                    inst.face_amount, inst.unamortized_discount, inst.conversion_price):
             stamp(cv)
         instruments.append(inst)
-    return instruments, asof, filing
+    return instruments, asof, filing, note

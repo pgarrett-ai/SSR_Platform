@@ -164,7 +164,8 @@ def run_overview(
     ft = None
     try:
         progress.emit("Fetching latest 10-K text…", step="obs", pct=65)
-        latest_10k = company.get_filings(form="10-K").latest(1)
+        # amendments off: a Part III 10-K/A carries no footnotes (TSE's latest 10-K was one)
+        latest_10k = company.get_filings(form="10-K", amendments=False).latest(1)
         ft = get_filing_text(latest_10k) if latest_10k is not None else None
     except Exception as exc:
         warnings.append(f"10-K text fetch failed: {exc}")
@@ -177,7 +178,10 @@ def run_overview(
         from .rates import get_key_rates
         with session_scope() as session:
             rate_map = {r["series"]: r["value"] for r in get_key_rates(session)}
-        debt_schedule, debt_asof, debt_filing = build_xbrl_debt_schedule(company, rate_map)
+        debt_schedule, debt_asof, debt_filing, fx_note = build_xbrl_debt_schedule(
+            company, rate_map)
+        if fx_note:
+            warnings.append(fx_note)
         if debt_schedule:
             progress.emit(
                 f"{len(debt_schedule)} instruments from XBRL dimensions (as of {debt_asof}).",

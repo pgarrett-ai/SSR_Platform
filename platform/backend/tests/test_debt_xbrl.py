@@ -98,6 +98,21 @@ def test_broadened_concepts_and_asof_ignores_capacity_instants():
     assert float(cap["lcid:DDTLAmendmentMember"]["commitment"]["numeric_value"]) == 2500e6
 
 
+def test_non_usd_debt_facts_are_never_read_as_dollars():
+    # LCID tags its Saudi GIB facility in SAR; its USD amount sits on another member
+    facts = [
+        _fact("us-gaap:ShortTermBorrowings", 1890e6, "lcid:A2025GIBCreditFacilityMember",
+              currency="SAR"),
+        _fact("us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity", 1900e6,
+              "lcid:A2025GIBCreditFacilityMember", currency="SAR"),
+        _fact("us-gaap:ShortTermBorrowings", 503.5e6, "lcid:GIBCreditFacilityMember",
+              currency="USD"),
+    ]
+    by_member, debt, _ = group_debt_facts(facts)
+    assert list(by_member) == ["lcid:GIBCreditFacilityMember"]
+    assert facility_capacity(debt) == {}
+
+
 def test_prettify_and_label_collision():
     assert prettify_member("lcid:A2025GIBCreditFacilityMember") == "2025 GIB Credit Facility"
     assert prettify_member("lcid:DDTLCreditFacilityMember") == "DDTL Credit Facility"
