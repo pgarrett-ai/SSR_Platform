@@ -384,3 +384,22 @@ def test_scenarios_roundtrip():
     assert any(s["id"] == sid and s["name"] == "Base" for s in listed)
     assert client.delete(f"/api/scenarios/{sid}").json()["deleted"] == 1
     assert not any(s["id"] == sid for s in client.get("/api/company/APEX/scenarios").json())
+
+
+def test_negative_ebitda_body_run_liquidates_on_the_overview_assets(monkeypatch):
+    # the page's auto-run sends its cap table with a negative EBITDA; the liquidation still
+    # needs the overview's asset snapshot, so the overview must load
+    import app.main as main
+    from app.schemas import AssetSnapshot, CitedValue, IssuerHeader, Overview
+
+    _patch_offline(monkeypatch)
+    cash = CitedValue(value=500e6, display="$500M", derived=True, formula="test")
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Apex", ticker="APEX", years=3),
+        asset_snapshot=AssetSnapshot(cash=cash)))
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": -50.0}})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["mode"] == "liquidation" and d["available"] is True
+    assert d["recovery_summary"] is not None

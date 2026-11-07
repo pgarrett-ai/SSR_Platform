@@ -96,6 +96,7 @@ def test_covenant_quotes_not_in_the_agreement_are_dropped(monkeypatch):
         "baskets": [{"name": "General RP basket", "value": "$500 million",
                      "quote": "Restricted Payments not to exceed $500 million"}],
         "lme_vectors": []}, "", None))
-    pkg, _, _ = covenants.extract_covenant_package(fam)
+    pkg, _, _, dropped = covenants.extract_covenant_package(fam)
+    assert dropped == 1                               # counted for the pipeline's warning
     assert pkg.anchor_clause == "governing the 5.75% Senior Secured Notes due 2029"
     assert pkg.baskets[0].value == "$500 million" and pkg.baskets[0].quote is None

@@ -282,19 +282,24 @@ def _as_list(v) -> list:
     return []
 
 
-def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optional[str], Optional[str]]:
+def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optional[str],
+                                              Optional[str], int]:
     """Extract the covenant package for an agreement family's operative document.
-    Returns (package, clause_text_window, error)."""
+    Returns (package, clause_text_window, error, quotes dropped as not verbatim)."""
     op = family.operative
     doc = op.doc
     result, window, err = _extract_raw(doc)
     if result is None:
-        return None, None, err
+        return None, None, err, 0
+    dropped = [0]
 
     def verbatim(quote: Optional[str]) -> Optional[str]:
         """Checked against the agreement itself, so cached extractions are checked too: a
         quote the text does not contain is dropped, never shown as verbatim; its fact stays."""
-        return quote if quote_in_text(quote, doc.text) else None
+        if quote and not quote_in_text(quote, doc.text):
+            dropped[0] += 1
+            return None
+        return quote
 
     fincovs = [FinancialCovenant(**{k: fc.get(k) for k in
                                     ("kind", "threshold", "test_frequency",
@@ -346,4 +351,4 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
         leverage_covenant_type=fincovs[0].kind if fincovs else None,
         leverage_ratio_threshold=fincovs[0].threshold if fincovs else None,
     )
-    return package, window, None
+    return package, window, None, dropped[0]

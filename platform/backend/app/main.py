@@ -753,8 +753,10 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
     instead of failing: a going-concern EV simulation is meaningless below zero EBITDA."""
     sim_kwargs = dict(body.sim)
     try:
+        # a run that will liquidate needs the overview's asset snapshot
         need_ov = bool(body.structure is None or body.petition_date
-                       or body.mode == "liquidation" or not sim_kwargs.get("base_ebitda"))
+                       or body.mode == "liquidation"
+                       or not (sim_kwargs.get("base_ebitda") or 0) > 0)
         ctx = recovery_context(ticker, years, sim_kwargs, structure=body.structure,
                                petition_date=body.petition_date, need_ov=need_ov)
         structure, source, ov = ctx.structure, ctx.source, ctx.ov

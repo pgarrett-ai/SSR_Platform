@@ -559,6 +559,10 @@ def _has_interim(facts) -> bool:
                if not getattr(f, "is_dimensioned", False))
 
 
+def _floor0(v: Optional[float]) -> Optional[float]:
+    return None if v is None else max(v, 0.0)
+
+
 def _addback_periods(entity_facts, spec: MetricSpec) -> Periods:
     """An add-back's concepts nest (a total contains its parts) and issuers move the charge
     between them from 10-K to 10-Q (ATUS), so each span keeps its largest tagged value."""
@@ -646,8 +650,9 @@ def build_quarterly_series(company, lookback_years: int) -> list[QuarterFacts]:
             continue
         if spec.addback:
             periods = _addback_periods(entity_facts, spec)
-            ttm[spec.key] = {q: ttm_from_periods(periods, q, absent_is_zero=True) if periods
-                             else None for q in quarters}
+            # spans can come from different concepts; a charge never reads as a negative
+            ttm[spec.key] = {q: _floor0(ttm_from_periods(periods, q, absent_is_zero=True))
+                             if periods else None for q in quarters}
         else:
             ttm[spec.key] = _ttm_strip(spec, _concept_periods(entity_facts, spec), quarters)
 

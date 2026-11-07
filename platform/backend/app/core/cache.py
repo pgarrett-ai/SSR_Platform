@@ -86,8 +86,4 @@ def is_hero(ticker: str) -> bool:
     return ticker.strip().upper() in get_settings().hero_ticker_set
 
 
-def cached_tickers() -> list[str]:
-    out = []
-    for p in CACHE_DIR.glob("*_*y.json"):
-        out.append(p.stem)
-    return sorted(out)
+

@@ -72,12 +72,11 @@ def test_later_103_is_the_plan_confirmation(monkeypatch):
     pf = eightk.petition_filing("320193")
     assert (pf["date"], pf["accession"]) == ("2023-11-20", "0000000000-23-000009")
     assert pf["plan_confirmed"]["date"] == "2024-03-28"
-    # an emerged issuer is not a live case: no Chapter11 section, so nothing reads 'stayed'
+    # the case stays on record, marked confirmed; the warning hedges the reading
     warnings: list[str] = []
-    assert pipeline._chapter11("320193", warnings) is None
-    assert warnings == ["Chapter 11 plan confirmed 2024-03-28 (8-K Item 1.03; petition "
-                        "2023-11-20): the case is not treated as live and no payments are "
-                        "flagged stayed."]
+    c11 = pipeline._chapter11("320193", warnings)
+    assert (c11.petition_date, c11.confirmed_at) == ("2023-11-20", "2024-03-28")
+    assert len(warnings) == 1 and "read as plan confirmation" in warnings[0]
 
 
 def test_petition_filing_none_when_no_103(monkeypatch):

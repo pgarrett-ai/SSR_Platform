@@ -70,9 +70,9 @@ def _empty_schedule_warning(debt_schedule: list, series: Optional[FinancialSerie
 
 
 def _chapter11(cik: str, warnings: list[str]) -> Optional[Chapter11]:
-    """The live Chapter 11 case from the issuer's 8-K Item 1.03 filings, cited. A confirmed
-    plan ends the case and the automatic stay with it, so that is reported as a warning
-    instead of a case."""
+    """The Chapter 11 case from the issuer's 8-K Item 1.03 filings, cited. A later 1.03 in the
+    window is read as plan confirmation: the case stays on record with confirmed_at, and
+    the caller stops treating payments as stayed."""
     from .capstack.eightk import petition_citation, petition_filing
 
     pf = petition_filing(cik)
@@ -80,11 +80,14 @@ def _chapter11(cik: str, warnings: list[str]) -> Optional[Chapter11]:
         return None
     confirmed = pf.get("plan_confirmed")
     if confirmed:
-        warnings.append(f"Chapter 11 plan confirmed {confirmed['date']} (8-K Item 1.03; "
-                        f"petition {pf['date']}): the case is not treated as live and no "
-                        f"payments are flagged stayed.")
-        return None
-    return Chapter11(petition_date=pf["date"], source=petition_citation(pf))
+        # ponytail: a second 1.03 can also be a conversion, dismissal or affiliate filing;
+        # reading the 8-K body is the upgrade if an issuer does that
+        warnings.append(f"A later 8-K Item 1.03 ({confirmed['date']}"
+                        + (f", {confirmed['source_url']}" if confirmed.get("source_url") else "")
+                        + f") is read as plan confirmation for the case filed {pf['date']}; "
+                        "payments are no longer flagged stayed.")
+    return Chapter11(petition_date=pf["date"], source=petition_citation(pf),
+                     confirmed_at=confirmed["date"] if confirmed else None)
 
 
 def run_overview(
@@ -104,14 +107,13 @@ def run_overview(
     years = max(1, min(int(years), 10))
     warnings: list[str] = []
 
-    # Demo safety: serve hero names (and any previously-cached run) instantly unless "Run live".
+    # Serve hero names (and any previously cached run) from the cache unless live=True.
     if not live:
         cached = load_overview(ticker, years)
         if cached is not None:
             tag = "hero" if is_hero(ticker) else "recent"
             progress.emit(
-                f"Served {ticker} from the pre-computed {tag} cache "
-                f"(toggle 'Run live' to re-run against EDGAR).", step="cache", pct=100,
+                f"Served {ticker} from the cached {tag} analysis.", step="cache", pct=100,
             )
             return cached
 
@@ -394,13 +396,18 @@ def run_overview(
                 f"extracting up to {_MAX_COVENANT_EXTRACTS}…", step="covenants", pct=85,
             )
             clause_texts: list[tuple] = []
+            n_cov_dropped = 0
             for fam in families[:_MAX_COVENANT_EXTRACTS]:
-                pkg, clause, cov_err = extract_covenant_package(fam)
+                pkg, clause, cov_err, n_drop = extract_covenant_package(fam)
+                n_cov_dropped += n_drop
                 if cov_err:
                     warnings.append(f"Covenant extraction ({fam.label}): {cov_err}")
                 if pkg:
                     covenants.append(pkg)
                     clause_texts.append((pkg, clause))
+            if n_cov_dropped:
+                warnings.append(f"{n_cov_dropped} covenant quote(s) not found verbatim in the "
+                                "agreement text; their values are kept, the quotes dropped.")
             if clause_texts:
                 with session_scope() as session:
                     persist_covenants(session, ticker, clause_texts)
@@ -552,7 +559,8 @@ def run_overview(
                      if liquidity and liquidity.total_liquidity else None)
         liquidity_events, liquidity_events_note = build_event_calendar(
             debt_schedule, total_liq, ebitda_v, debt_asof,
-            petition_date=chapter11.petition_date if chapter11 else None)
+            petition_date=(chapter11.petition_date
+                           if chapter11 and not chapter11.confirmed_at else None))
         if liquidity and liquidity_events:
             liquidity.next_event = liquidity_events[0]
     except Exception as exc:

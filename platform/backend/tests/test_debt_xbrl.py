@@ -290,3 +290,14 @@ def test_tranche_coupon_preference_order():
     assert _parse_coupon("SOFR + 2.75% → 6.05%") == 0.0605
     assert _parse_coupon("fixed rates ranging from 2.88% to 7.15%, averaging 3.95%") == 0.0395
     assert _parse_coupon(None) == 0.0
+
+
+def test_zero_carrying_column_does_not_beat_a_compromise_amount():
+    # after the petition a member's carrying column can be tagged 0 while the debt sits in
+    # liabilities subject to compromise; the positive amount must win
+    from app.capstack.debt_xbrl import _COMPROMISE_CONCEPTS, _pick_key
+    lstc = {"concept": next(iter(_COMPROMISE_CONCEPTS)), "numeric_value": 391.0e6}
+    zero = {"concept": "us-gaap:LongTermDebt", "numeric_value": 0.0}
+    carrying = {"concept": "us-gaap:LongTermDebt", "numeric_value": 440.2e6}
+    assert max([zero, lstc], key=_pick_key) is lstc
+    assert max([lstc, carrying], key=_pick_key) is carrying

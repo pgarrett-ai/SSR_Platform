@@ -82,14 +82,13 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
 
 
 def _claim_amount(inst: dict) -> tuple[Optional[float], Optional[dict]]:
-    """($, citation) a drawn instrument claims. Notes and term loans claim principal — the
-    tagged face less any tagged OID (unmatured interest, not a claim) — when that is at
-    least the carrying amount, which also nets issuance costs that never reduce a claim
-    (LCID 2030 converts: $1,085M carrying, $1,100M principal). The face tag is par at
-    issuance, so PIK accretion lifts principal above it: a PIK note claims the larger of
-    face and carrying (TSE 2029 notes: $391.0M face, $419.9M carrying). A revolver's face
-    tag is a sub-limit or the facility size (TSE's super-priority revolver: $50M tag, $265M
-    drawn), and a face below carrying is stale, so otherwise the carrying amount stands."""
+    """($, citation) a drawn instrument claims. Notes and term loans claim principal: the
+    tagged face less any tagged OID (unmatured interest, not a claim). Carrying amounts net
+    issuance costs (LCID 2030 converts: $1,085M carrying, $1,100M principal) or add an
+    exchange premium (TSE 2029 PIK notes: $419.9M carrying, $391.0M par, which already
+    includes the PIK), and neither changes the claim. A revolver's face tag is a sub-limit
+    or the facility size (TSE's super-priority revolver: $50M tag, $265M drawn), so
+    revolvers and untagged instruments claim the carrying amount."""
     cv = next((inst[k] for k in ("outstanding", "principal")
                if (inst.get(k) or {}).get("value")), None)
     if cv is None:
@@ -98,9 +97,9 @@ def _claim_amount(inst: dict) -> tuple[Optional[float], Optional[dict]]:
     face = inst.get("face_amount") or {}
     if not face.get("value") or inst.get("facility_type") not in ("notes", "term loan"):
         return carrying
-    oid = 0.0 if inst.get("pik") else (inst.get("unamortized_discount") or {}).get("value") or 0.0
-    principal = float(face["value"]) - float(oid)
-    return (principal, face.get("citation")) if principal >= carrying[0] else carrying
+    # ponytail: trusts the face tag; an add-on issuance missing from it understates the claim
+    oid = (inst.get("unamortized_discount") or {}).get("value") or 0.0
+    return float(face["value"]) - float(oid), face.get("citation")
 
 
 def ltm_ebitda(overview: dict) -> tuple[Optional[float], Optional[str]]:

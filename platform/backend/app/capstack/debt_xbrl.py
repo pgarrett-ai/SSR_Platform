@@ -295,12 +295,14 @@ def _instrument_from_member(member: str, carrying: Optional[dict], related: list
 
 
 def _pick_key(f: dict) -> tuple[int, int, float]:
-    """Consolidated (no LegalEntityAxis) beats per-entity duplicates; a carrying concept
-    beats a subject-to-compromise amount; then the larger amount wins — carrying concepts
-    overlap (LongTermDebt spans ConvertibleDebt etc.), so max-of-concepts avoids
-    double-counting a member without preferring a tag style."""
-    return (0 if f.get("dim_dei_LegalEntityAxis") else 1,
-            0 if str(f.get("concept")) in _COMPROMISE_CONCEPTS else 1, _num(f) or 0.0)
+    """Consolidated (no LegalEntityAxis) beats per-entity duplicates; a positive carrying
+    amount beats a subject-to-compromise amount (a carrying column tagged 0 after the
+    petition does not); then the larger amount wins — carrying concepts overlap
+    (LongTermDebt spans ConvertibleDebt etc.), so max-of-concepts avoids double-counting a
+    member without preferring a tag style."""
+    amount = _num(f) or 0.0
+    carrying = str(f.get("concept")) not in _COMPROMISE_CONCEPTS and amount > 0
+    return (0 if f.get("dim_dei_LegalEntityAxis") else 1, 1 if carrying else 0, amount)
 
 
 def _usd(fact: dict) -> bool:
