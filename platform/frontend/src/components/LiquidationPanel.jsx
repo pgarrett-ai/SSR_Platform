@@ -87,7 +87,7 @@ export default function LiquidationPanel({ ticker, years, initial }) {
         <Button onClick={() => rerun("orderly")} disabled={running}>ch. 11 orderly preset</Button>
         <Button onClick={() => rerun("fire_sale")} disabled={running}>ch. 7 fire-sale preset</Button>
         <label className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500">Estate costs % of proceeds</span>
+          <span className="text-[11px] uppercase tracking-wide text-slate-400">Estate costs % of proceeds</span>
           <input type="number" step={0.01} min={0} max={0.4} value={adminPct ?? ""}
             onChange={(e) => setAdminPct(Number(e.target.value))}
             className="w-24 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent" />
@@ -141,7 +141,7 @@ export default function LiquidationPanel({ ticker, years, initial }) {
                   className={`border-b border-ink-700/60 font-mono ${r.is_fulcrum ? "bg-rose-900/40 text-rose-100" : "text-slate-300"}`}>
                   <td className="px-2 py-1.5 font-sans">
                     {r.tranche}
-                    {r.is_fulcrum && <span className="ml-2 rounded bg-rose-500/30 px-1.5 py-0.5 text-[9px] uppercase">fulcrum</span>}
+                    {r.is_fulcrum && <span className="ml-2 rounded bg-rose-500/30 px-1.5 py-0.5 text-[11px] uppercase">fulcrum</span>}
                   </td>
                   <td className="px-2 py-1.5 text-right">{fmt(r.claim, 0)}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(r.recovery, 0)}</td>
@@ -153,9 +153,9 @@ export default function LiquidationPanel({ ticker, years, initial }) {
 
           {pair && (
             <div className="mt-3 text-xs text-slate-400">
-              <span className="text-[10px] uppercase tracking-wide text-slate-500">ch. 11 orderly vs ch. 7 fire-sale (net proceeds): </span>
+              <span className="text-[11px] uppercase tracking-wide text-slate-400">ch. 11 orderly vs ch. 7 fire-sale (net proceeds): </span>
               <span className="font-mono text-slate-200">{fmt(pair.ch11_orderly.net_proceeds, 0)}</span>
-              <span className="mx-1 text-slate-600">vs</span>
+              <span className="mx-1 text-slate-400">vs</span>
               <span className="font-mono text-rose-300">{fmt(pair.ch7_fire_sale.net_proceeds, 0)}</span>
               <span className="ml-2 text-slate-500">$M — the going-concern-in-ch11 vs shutdown gap</span>
             </div>

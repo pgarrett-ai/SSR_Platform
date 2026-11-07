@@ -65,7 +65,7 @@ export default function ScreenTable() {
               </Td>
               <Td>
                 <div className="text-slate-300">{r.issuer || "—"}</div>
-                {NOTES[r.ticker] && <div className="text-[11px] text-slate-500">{NOTES[r.ticker]}</div>}
+                {NOTES[r.ticker] && <div className="text-[11px] text-slate-400">{NOTES[r.ticker]}</div>}
               </Td>
               <Td right mono className="text-slate-300">{r._lev === Infinity ? NM : fmtLev(r._lev)}</Td>
               <Td right mono className={r.runway_months == null ? "text-slate-500" : runwayTone(r.runway_months)}>

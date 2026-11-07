@@ -83,7 +83,7 @@ export default function DebtScheduleTable({ instruments, asOf, reported, reporte
                 <Td className="text-slate-200">
                   {d.instrument}
                   {d.facility_type && d.facility_type !== "notes" && (
-                    <span className="ml-2 text-[10px] uppercase tracking-wide text-slate-500">
+                    <span className="ml-2 text-[11px] uppercase tracking-wide text-slate-400">
                       {d.facility_type}
                     </span>
                   )}

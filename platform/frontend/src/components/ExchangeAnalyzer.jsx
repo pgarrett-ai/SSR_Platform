@@ -138,7 +138,7 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
         <>
           <div className="mt-4 mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-400">
             <label className="flex items-center gap-3">
-              <span className="text-[10px] uppercase tracking-wide text-slate-500">EV $M</span>
+              <span className="text-[11px] uppercase tracking-wide text-slate-400">EV $M</span>
               <input type="range" min={0} max={data.ev_grid.length - 1} value={idx}
                 onChange={(e) => setIdx(Number(e.target.value))} className="w-64 accent-accent" />
               <span className="font-mono text-slate-100">{fmt(ev, 0)}</span>
@@ -178,14 +178,14 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.participation_pct}
-                    className={`border-b border-ink-800 font-mono ${r.fails ? "text-slate-600" : "text-slate-300"}`}>
+                    className={`border-b border-ink-800 font-mono ${r.fails ? "text-slate-400" : "text-slate-300"}`}>
                     <td className="px-2 py-1.5 text-right">
                       {fmt(r.participation_pct)}
                       {Math.abs(r.participation_pct - userP) < 1e-6 && (
-                        <span className="ml-1 text-[9px] uppercase text-accent">yours</span>
+                        <span className="ml-1 text-[11px] uppercase text-accent">yours</span>
                       )}
                       {r.fails && (
-                        <span className="ml-1 text-[9px] uppercase text-slate-600"
+                        <span className="ml-1 text-[11px] uppercase text-slate-400"
                           title={`below the ${data.min_tender_pct}% minimum-tender condition — base-structure values shown`}>
                           offer fails
                         </span>
@@ -198,7 +198,7 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
                     <td className="px-2 py-1.5 text-right text-slate-100">{fmt(r.tenderAt)}</td>
                     <td className="px-2 py-1.5 text-right">{fmt(r.holdoutAt)}</td>
                     <td className={`px-2 py-1.5 text-right font-semibold ${
-                      r.fails || r.delta == null ? "text-slate-600"
+                      r.fails || r.delta == null ? "text-slate-400"
                         : r.delta > 0 ? "text-emerald-300" : r.delta < 0 ? "text-rose-300" : "text-slate-500"}`}>
                       {r.fails || r.delta == null ? "—" : `${r.delta > 0 ? "+" : ""}${fmt(r.delta)}`}
                     </td>
@@ -211,7 +211,7 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
             </table>
           </div>
 
-          <div className="mt-2 text-[11px] text-slate-500">{data.note}</div>
+          <div className="mt-2 text-[11px] text-slate-400">{data.note}</div>
         </>
       )}
     </Section>

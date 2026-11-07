@@ -20,7 +20,7 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
     <div>
       {guarantorNotes?.length > 0 && (
         <div className="mb-3 rounded-md border border-ink-700 bg-ink-900/50 p-3 text-[12px] text-slate-300">
-          <div className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">
+          <div className="mb-1 text-[11px] uppercase tracking-wide text-slate-400">
             Guarantors (per the credit documents)
           </div>
           {guarantorNotes.map((g, i) => (
@@ -54,7 +54,7 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
                         {s.role}
                       </Badge>
                     ) : (
-                      <span className="text-slate-600">—</span>
+                      <span className="text-slate-400">—</span>
                     )}
                   </Td>
                 )}
@@ -70,7 +70,7 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
           </tbody>
         </table>
       </div>
-      <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+      <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
         <span>
           {subsidiaries.length} legal entities · debt at an entity is served by that entity's
           value first (structural subordination) · seeds the Recovery entity tree

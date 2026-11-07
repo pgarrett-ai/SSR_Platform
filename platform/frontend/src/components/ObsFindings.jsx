@@ -37,7 +37,7 @@ export default function ObsFindings({ items }) {
             </div>
           )}
           {it.recourse && it.recourse !== "unknown" && (
-            <div className="mt-1 text-[11px] text-slate-500">
+            <div className="mt-1 text-[11px] text-slate-400">
               {it.recourse === "partial" ? "partial recourse" : it.recourse}
             </div>
           )}

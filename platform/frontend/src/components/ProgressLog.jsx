@@ -16,7 +16,7 @@ export default function ProgressLog({ events }) {
       <div className="max-h-40 overflow-y-auto font-mono text-[12px] leading-relaxed text-slate-400">
         {events.map((e, i) => (
           <div key={i} className={i === events.length - 1 ? "text-slate-200" : ""}>
-            <span className="text-slate-600">{e.pct != null ? `${e.pct}%` : "  "}</span>{" "}
+            <span className="text-slate-400">{e.pct != null ? `${e.pct}%` : "  "}</span>{" "}
             {e.message}
           </div>
         ))}

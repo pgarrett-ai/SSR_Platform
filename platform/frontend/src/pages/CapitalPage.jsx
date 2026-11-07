@@ -22,7 +22,7 @@ function Nested({ title, children }) {
   return (
     <details className="group mt-4 border-t border-ink-700 pt-3">
       <summary className={`cursor-pointer list-none [&::-webkit-details-marker]:hidden ${PART}`}>
-        <span aria-hidden className="mr-1 text-[10px] text-slate-500">
+        <span aria-hidden className="mr-1 text-[11px] text-slate-500">
           <span className="group-open:hidden">▸</span><span className="hidden group-open:inline">▾</span>
         </span>
         {title}

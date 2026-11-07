@@ -37,7 +37,7 @@ export default function IrrMatrix({ tranches, quotedByName }) {
     >
       <div className="mb-3 flex flex-wrap items-end gap-4 text-xs">
         <label className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500">Tranche</span>
+          <span className="text-[11px] uppercase tracking-wide text-slate-400">Tranche</span>
           <select value={t.tranche} onChange={(e) => setName(e.target.value)}
             className="max-w-[280px] rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-accent">
             {withRecovery.map((x) => (
@@ -46,16 +46,16 @@ export default function IrrMatrix({ tranches, quotedByName }) {
           </select>
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500">
+          <span className="text-[11px] uppercase tracking-wide text-slate-400">
             Entry price (per 100){quote ? ` · quote ${quote.last_price} as of ${quote.as_of}` : " · no matched quote"}
           </span>
           <input type="number" step={1} value={entry ?? ""}
             onChange={(e) => setEntry(e.target.value === "" ? null : Number(e.target.value))}
             className="w-28 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent" />
         </label>
-        <div className="text-slate-500">
+        <div className="text-slate-400">
           expected recovery <span className="font-mono text-slate-200">{recovery.toFixed(0)}</span> per 100 face
-          <span className="text-slate-600"> (simulation mean, % of face)</span>
+          <span className="text-slate-400"> (simulation mean, % of face)</span>
         </div>
       </div>
 
@@ -90,7 +90,7 @@ export default function IrrMatrix({ tranches, quotedByName }) {
           })}
         </tbody>
       </table>
-      <div className="mt-2 text-[11px] text-slate-500">
+      <div className="mt-2 text-[11px] text-slate-400">
         recovery held at the simulation mean — duration only reprices time value, not outcome
       </div>
     </Section>

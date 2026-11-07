@@ -64,10 +64,10 @@ export default function EbitdaBuild({ build, economicDebt }) {
       {nQuant > 0 && (
         <>
           <div className="mt-4 mb-1 flex items-baseline justify-between gap-3">
-            <span className="text-[10px] uppercase tracking-wide text-slate-500">
+            <span className="text-[11px] uppercase tracking-wide text-slate-400">
               Covenant add-backs (from the credit agreement)
             </span>
-            <span className="text-[10px] text-slate-500">
+            <span className="text-[11px] text-slate-400">
               {nQuant} of {build.addbacks.length} quantifiable · {fmtM(addbackSum)} included
             </span>
           </div>
@@ -85,7 +85,7 @@ export default function EbitdaBuild({ build, economicDebt }) {
                         {a.amount ? (
                           <CitedNumber cv={a.amount} />
                         ) : (
-                          <span className="whitespace-nowrap text-[11px] italic text-slate-500">
+                          <span className="whitespace-nowrap text-[11px] italic text-slate-400">
                             not quantified — disclosed only
                           </span>
                         )}
@@ -135,7 +135,7 @@ export default function EbitdaBuild({ build, economicDebt }) {
       )}
 
       {impliedLev != null && nQuant > 0 && (
-        <p className="mt-2 text-[11px] text-slate-500">
+        <p className="mt-2 text-[11px] text-slate-400">
           Implied economic leverage vs adjusted EBITDA:{" "}
           <span className="font-mono text-slate-300">{fmtLev(impliedLev)}</span>
           {" "}(economic debt {fmtM(economicDebt.value)} / adjusted EBITDA {fmtM(adjusted)})

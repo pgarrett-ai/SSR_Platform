@@ -18,7 +18,7 @@ export const fmtX = (x, dp = 1) =>
 export const fmtLev = (x, dp = 1) =>
   x == null || Number.isNaN(x) ? "—"
   : x < 0
-    ? <span className="text-slate-600" title="not meaningful — negative EBITDA">n.m.</span>
+    ? <span className="text-slate-400" title="not meaningful — negative EBITDA">n.m.</span>
     : fmtX(x, dp);
 export const fmt = (v, d = 1) =>
   v == null || Number.isNaN(v)
@@ -66,7 +66,7 @@ export function Badge({ tone = "neutral", mono = false, className = "", children
   return (
     <span
       {...rest}
-      className={`inline-block rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wide ${mono ? "font-mono" : ""} ${BADGE_TONES[tone] || BADGE_TONES.neutral} ${className}`}
+      className={`inline-block rounded px-1.5 py-0.5 text-[11px] uppercase tracking-wide ${mono ? "font-mono" : ""} ${BADGE_TONES[tone] || BADGE_TONES.neutral} ${className}`}
     >
       {children}
     </span>
@@ -74,7 +74,7 @@ export function Badge({ tone = "neutral", mono = false, className = "", children
 }
 
 export function Loading({ className = "", children = "Loading…" }) {
-  return <div className={`py-8 text-center text-sm text-slate-500 ${className}`}>{children}</div>;
+  return <div className={`py-8 text-center text-sm text-slate-400 ${className}`}>{children}</div>;
 }
 
 export function ErrorCard({ className = "", children }) {
@@ -129,10 +129,10 @@ export function Section({
     <div className="mb-2 flex items-baseline justify-between gap-3">
       <div className="flex flex-wrap items-baseline gap-x-2">
         {collapsible && (
-          <span aria-hidden className="text-[10px] text-slate-500">{open ? "▾" : "▸"}</span>
+          <span aria-hidden className="text-[11px] text-slate-500">{open ? "▾" : "▸"}</span>
         )}
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</h2>
-        {subtitle && <span className="text-xs text-slate-500">{subtitle}</span>}
+        {subtitle && <span className="text-xs text-slate-400">{subtitle}</span>}
       </div>
       {/* controls in the right slot must never toggle the disclosure */}
       {right && <span onClick={(e) => e.stopPropagation()}>{right}</span>}
@@ -168,7 +168,7 @@ export function Section({
 export function Stat({ label, value, sub, color, bare = false }) {
   const body = (
     <>
-      <div className="text-[10px] uppercase tracking-wide text-slate-500">{label}</div>
+      <div className="text-[11px] uppercase tracking-wide text-slate-400">{label}</div>
       <div
         className={bare ? "font-mono text-sm text-slate-200" : "mt-1 text-2xl font-semibold"}
         style={color ? { color } : undefined}
@@ -184,8 +184,8 @@ export function Stat({ label, value, sub, color, bare = false }) {
 /* ---------- disclosure / state primitives ---------- */
 
 // Muted convention: user-excluded = strikethrough; not-quantifiable/not-applicable =
-// dimmed with NO pointer affordance. Bare text-slate-600 is reserved for "—"/zero
-// placeholders — never for interactive or toggled state.
+// dimmed with NO pointer affordance. text-slate-600 is for borders and decoration only,
+// never for text a reader needs.
 export const MUTED_EXCLUDED = "line-through text-slate-500";
 export const MUTED_NA = "opacity-60";
 
@@ -210,8 +210,8 @@ export function useShowMore(items = [], initial, label = "items") {
 export function EmptyState({ children, hint, action }) {
   return (
     <div className="py-6 text-center">
-      <div className="text-sm text-slate-500">{children}</div>
-      {hint && <div className="mt-1 text-xs text-slate-600">{hint}</div>}
+      <div className="text-sm text-slate-400">{children}</div>
+      {hint && <div className="mt-1 text-xs text-slate-400">{hint}</div>}
       {action && (
         <Button onClick={action.onClick} className="mt-3">
           {action.label}
@@ -248,7 +248,7 @@ export function Th({ right = false, className = "", title, onClick, sorted, chil
     <th
       title={title}
       aria-sort={sorted ? (sorted === "desc" ? "descending" : "ascending") : undefined}
-      className={`px-2 py-2 text-[11px] font-medium uppercase tracking-wide text-slate-500 ${right ? "text-right" : "text-left"} ${className}`}
+      className={`px-2 py-2 text-[11px] font-medium uppercase tracking-wide text-slate-400 ${right ? "text-right" : "text-left"} ${className}`}
     >
       {onClick ? (
         <button
@@ -312,7 +312,7 @@ export const NUM_CLS =
 export function Field({ label, title, children }) {
   return (
     <label className="flex flex-col gap-1" title={title}>
-      <span className="text-[10px] uppercase tracking-wide text-slate-500">{label}</span>
+      <span className="text-[11px] uppercase tracking-wide text-slate-400">{label}</span>
       {children}
     </label>
   );

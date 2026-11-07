@@ -37,7 +37,7 @@ function CiteCard({ anchorRef, cardRef, cv, onEnter, onLeave }) {
     >
       {cv.citation ? (
         <div>
-          <div className="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-wide text-slate-400">
+          <div className="mb-1 flex items-center gap-2 text-[11px] uppercase tracking-wide text-slate-400">
             <Badge mono>{cv.citation.form_type || "filing"}</Badge>
             <span className="font-mono">{cv.citation.filing_date}</span>
             {cv.citation.exhibit && <span className="font-mono normal-case">· {cv.citation.exhibit}</span>}
@@ -98,7 +98,7 @@ export default function CitedNumber({ cv, className = "", placeholder = "—" })
   useEffect(() => () => clearTimeout(closeTimer.current), []);
 
   if (!cv || (cv.value == null && !cv.display)) {
-    return <span className="text-slate-600">{placeholder}</span>;
+    return <span className="text-slate-400">{placeholder}</span>;
   }
 
   const label = cv.display ?? (cv.value != null ? String(cv.value) : placeholder);
@@ -130,7 +130,7 @@ export default function CitedNumber({ cv, className = "", placeholder = "—" })
         }`}
       >
         {label}
-        {isDerived && <sup className="ml-0.5 text-[9px] text-amber-400/80">ƒ</sup>}
+        {isDerived && <sup className="ml-0.5 text-[11px] text-amber-400/80">ƒ</sup>}
       </button>
       {open && (
         <CiteCard anchorRef={anchorRef} cardRef={cardRef} cv={cv} onEnter={openNow} onLeave={closeSoon} />

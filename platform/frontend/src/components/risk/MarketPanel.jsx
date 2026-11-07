@@ -50,7 +50,7 @@ export default function MarketPanel({ data }) {
                   </span>
                 </div>
                 {b.last_trade && (
-                  <div className="text-[11px] text-slate-500">
+                  <div className="text-[11px] text-slate-400">
                     last trade {b.last_trade} · {daysAgo(b.last_trade)}d ago
                   </div>
                 )}

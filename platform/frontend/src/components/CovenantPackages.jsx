@@ -15,7 +15,7 @@ function Row({ label, value, mono }) {
   if (value == null || value === "") return null;
   return (
     <div className="flex flex-col gap-0.5 border-b border-ink-700/50 py-2 sm:flex-row sm:gap-3">
-      <span className="w-48 shrink-0 text-[11px] uppercase tracking-wide text-slate-500">{label}</span>
+      <span className="w-48 shrink-0 text-[11px] uppercase tracking-wide text-slate-400">{label}</span>
       <span className={`text-[13px] text-slate-200 ${mono ? "font-mono" : ""}`}>{value}</span>
     </div>
   );
@@ -66,7 +66,7 @@ function PackageCard({ cov }) {
   return (
     <details className="group rounded-lg border border-ink-700 bg-ink-800/50">
       <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-2 gap-y-1 px-3 py-2 [&::-webkit-details-marker]:hidden">
-        <span aria-hidden className="text-[10px] text-slate-500">
+        <span aria-hidden className="text-[11px] text-slate-500">
           <span className="group-open:hidden">▸</span><span className="hidden group-open:inline">▾</span>
         </span>
         <span className="text-sm font-semibold text-slate-100">{title}</span>
@@ -138,7 +138,7 @@ function PackageCard({ cov }) {
         <Row label="MFN sunset" value={cov.mfn_sunset_period} />
         <Row label="Unrestricted-sub flexibility" value={cov.unrestricted_subsidiary_designation_flexibility} />
         <div className="flex flex-col gap-0.5 border-b border-ink-700/50 py-2 sm:flex-row sm:gap-3">
-          <span className="w-48 shrink-0 text-[11px] uppercase tracking-wide text-slate-500">J.Crew blocker</span>
+          <span className="w-48 shrink-0 text-[11px] uppercase tracking-wide text-slate-400">J.Crew blocker</span>
           <Blocker present={cov.j_crew_blocker_present} />
         </div>
         {vectors.map((v) => <Row key={v.vector} label={v.label} value={v.rationale} />)}
@@ -146,7 +146,7 @@ function PackageCard({ cov }) {
 
         {creditors.length > 0 && (
           <div className="border-b border-ink-700/50 py-2">
-            <span className="text-[11px] uppercase tracking-wide text-slate-500">Agents</span>
+            <span className="text-[11px] uppercase tracking-wide text-slate-400">Agents</span>
             <div className="mt-1 text-[13px] text-slate-200">{creditors.join(" · ")}</div>
             {cov.creditor_note && <div className="mt-0.5 text-[11px] text-slate-400">{cov.creditor_note}</div>}
           </div>
@@ -189,7 +189,7 @@ function LiensRead({ lh }) {
   if (!text) return null;
   return (
     <p className={`mb-3 text-[13px] ${lh.archetype === "unbounded" ? "text-rose-300" : "text-slate-300"}`}>
-      <span className="mr-2 text-[11px] uppercase tracking-wide text-slate-500">Liens</span>{text}
+      <span className="mr-2 text-[11px] uppercase tracking-wide text-slate-400">Liens</span>{text}
     </p>
   );
 }
@@ -199,7 +199,7 @@ function LiensHeadroom({ lh }) {
   if (!rows.length) return null;
   return (
     <div className="mt-4 overflow-x-auto">
-      <div className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">Permitted-liens headroom</div>
+      <div className="mb-1 text-[11px] uppercase tracking-wide text-slate-400">Permitted-liens headroom</div>
       <table className="w-full text-xs">
         <thead>
           <tr className="border-b border-ink-600">
@@ -231,7 +231,7 @@ function RpBasket({ rp }) {
   const data = (rp.points || []).map((p) => ({ label: p.label, cumulative: p.cumulative }));
   return (
     <div className="mt-4">
-      <div className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">Restricted-payments capacity</div>
+      <div className="mb-1 text-[11px] uppercase tracking-wide text-slate-400">Restricted-payments capacity</div>
       <div className="mb-2 text-sm text-slate-200">
         <CitedNumber cv={rp.capacity} className="text-slate-100" />
         <span className="ml-3 text-xs text-slate-400">
@@ -245,8 +245,8 @@ function RpBasket({ rp }) {
         <ResponsiveContainer width="100%" height={120}>
           <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -18 }}>
             <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
-            <XAxis dataKey="label" tick={{ fill: "#94a3b8", fontSize: 10 }} />
-            <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} />
+            <XAxis dataKey="label" tick={{ fill: "#94a3b8", fontSize: 11 }} />
+            <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
             <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [`$${v}M cumulative`, null]} />
             <Line dataKey="cumulative" stroke={ACCENT} dot={false} />
           </LineChart>

@@ -21,7 +21,7 @@ function Cell({ to, label, active, children }) {
     >
       <Link
         to={to}
-        className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 after:absolute after:inset-0"
+        className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 after:absolute after:inset-0"
       >
         {label}
       </Link>

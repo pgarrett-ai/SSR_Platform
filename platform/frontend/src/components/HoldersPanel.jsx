@@ -59,7 +59,7 @@ export default function HoldersPanel({ ticker }) {
     <div>
       <h3 className={partTitle}>
         Known holders
-        <span className="ml-2 normal-case tracking-normal text-slate-500">
+        <span className="ml-2 normal-case tracking-normal text-slate-400">
           registered funds via N-PORT · {data.holdings.length} positions
         </span>
       </h3>
