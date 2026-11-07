@@ -71,6 +71,24 @@ def _empty_schedule_warning(debt_schedule: list, series: Optional[FinancialSerie
     )
 
 
+def _tieout_warning(debt_schedule: list, debt_asof: Optional[str],
+                    forensic_table: list) -> Optional[str]:
+    """Instrument sum vs reported total debt for the schedule's own as-of period: the
+    forensic column ending on that date, else the latest fiscal year. A big gap means
+    double-counted members (a facility and its sub-facility) or missing instruments."""
+    row = (next((r for r in forensic_table if debt_asof and r.period_end == debt_asof), None)
+           or next((r for r in reversed(forensic_table) if not r.label), None))
+    reported = row.total_debt.value if row and row.total_debt else None
+    sched_sum = sum(i.outstanding.value for i in debt_schedule
+                    if i.outstanding and i.outstanding.value)
+    if not reported or not sched_sum or abs(sched_sum - reported) / reported <= 0.15:
+        return None
+    return (f"Debt schedule sums to {fmt_money_millions(sched_sum)} vs "
+            f"{fmt_money_millions(reported)} reported total debt "
+            f"({row.label or f'FY{row.fiscal_year}'}) — instruments may overlap (a facility "
+            f"and its sub-facility) or be missing; review the schedule citations.")
+
+
 def _chapter11(cik: str, warnings: list[str]) -> Optional[Chapter11]:
     """The Chapter 11 case from the issuer's 8-K Item 1.03 filings, cited. A later 1.03 in the
     window is read as plan confirmation: the case stays on record with confirmed_at, and
@@ -323,7 +341,10 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
                     if gf_err:
                         warnings.append(f"Gap-fill re-search: {gf_err}")
                 else:               # undimensioned issuer: footnote extraction + hard filters
-                    instruments, debt_err = extract_debt_schedule(debt_ft or ft)
+                    note_ft = debt_ft or ft
+                    instruments, debt_err = extract_debt_schedule(note_ft)
+                    if instruments:   # read from the filing's latest balance-sheet column
+                        debt_asof = note_ft.period_of_report
                     debt_schedule = drop_retired(instruments, debt_asof)
                     if debt_err:
                         warnings.append(f"Debt-schedule extraction error: {debt_err}")
@@ -342,22 +363,9 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
         if filled:
             progress.emit(f"Filled {fmt_count(filled, 'maturity year')} from instrument names.",
                           step="debt", pct=81)
-        # tie-out: instrument sum vs the reported balance-sheet total. A big gap means
-        # double-counted members (facility + its sub-facility) or missing instruments.
-        try:
-            if series is not None and series.years:
-                reported, _parts = total_debt(series.years[-1])
-                sched_sum = sum((i.outstanding.value or 0) for i in debt_schedule
-                                if i.outstanding and i.outstanding.value)
-                if reported and sched_sum and abs(sched_sum - reported) / reported > 0.15:
-                    warnings.append(
-                        f"Debt schedule sums to {fmt_money_millions(sched_sum)} vs "
-                        f"{fmt_money_millions(reported)} reported total debt "
-                        f"(latest FY) — instruments may overlap (a facility and its "
-                        f"sub-facility) or be missing; review the schedule citations."
-                    )
-        except Exception:
-            pass
+        tieout = _tieout_warning(debt_schedule, debt_asof, forensic_table)
+        if tieout:
+            warnings.append(tieout)
         missing_mat = [i.instrument for i in debt_schedule
                        if not i.maturity and (i.outstanding and (i.outstanding.value or 0) > 0)]
         if missing_mat:

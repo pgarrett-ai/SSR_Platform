@@ -307,6 +307,22 @@ def test_empty_schedule_no_warning_when_debt_immaterial():
     assert _empty_schedule_warning([], None) is None
 
 
+def test_tieout_compares_the_schedule_with_its_own_period():
+    # LCID: the 2026-06-30 schedule ($3,256M) ties to the Q2 2026 column ($3,254M), not FY2025
+    from app.pipeline import _tieout_warning
+    from app.schemas import ForensicTableRow
+
+    table = [ForensicTableRow(fiscal_year=2025, period_end="2025-12-31",
+                              total_debt=CitedValue(value=2718e6)),
+             ForensicTableRow(fiscal_year=2026, label="Q2 2026", period_end="2026-06-30",
+                              total_debt=CitedValue(value=3254e6))]
+    sched = [DebtInstrument(instrument="x", outstanding=CitedValue(value=3256e6))]
+    assert _tieout_warning(sched, "2026-06-30", table) is None
+    assert "(FY2025)" in _tieout_warning(sched, "2026-03-31", table)   # no column: latest FY
+    short = [DebtInstrument(instrument="x", outstanding=CitedValue(value=1e9))]
+    assert "(Q2 2026)" in _tieout_warning(short, "2026-06-30", table)
+
+
 def test_tranche_coupon_preference_order():
     assert _tranche_coupon({"effective_rate_pct": 6.0, "coupon": "SOFR + 2.75%"}) == 0.06
     assert _tranche_coupon({"coupon_pct": 2.88, "coupon_pct_max": 7.15}) == (2.88 + 7.15) / 200
