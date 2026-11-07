@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import CitedNumber from "./CitedNumber.jsx";
-import { MUTED_EXCLUDED, MUTED_NA, fmtLev } from "../ui/index.jsx";
+import { MUTED_EXCLUDED, MUTED_NA, fmtLev, fmtMoney as fmtM } from "../ui/index.jsx";
 
 // The EBITDA box: net income → EBITDA walk (each line XBRL-cited), then the issuer's own
-// covenant add-back categories. Quantified add-backs toggle (checkbox or row click) and
-// the Adjusted EBITDA + implied-leverage lines react; unquantified add-backs are inert —
-// dimmed, no toggle affordance, because excluding them can't change any number.
-
-const fmtM = (v) =>
-  v == null ? "—" : `${v < 0 ? "−" : ""}$${Math.round(Math.abs(v) / 1e6).toLocaleString()}M`;
+// covenant add-back categories — only when at least one is quantified, since a list of
+// unpriced categories cannot move any number. Quantified add-backs toggle (checkbox or
+// row click) and the Adjusted EBITDA + implied-leverage lines react; unquantified ones
+// stay inert — dimmed, no toggle affordance.
 
 export default function EbitdaBuild({ build, economicDebt }) {
   const [excluded, setExcluded] = useState(() => new Set());
@@ -63,7 +61,7 @@ export default function EbitdaBuild({ build, economicDebt }) {
         </tbody>
       </table>
 
-      {build.addbacks.length > 0 && (
+      {nQuant > 0 && (
         <>
           <div className="mt-4 mb-1 flex items-baseline justify-between gap-3">
             <span className="text-[10px] uppercase tracking-wide text-slate-500">
@@ -87,7 +85,7 @@ export default function EbitdaBuild({ build, economicDebt }) {
                         {a.amount ? (
                           <CitedNumber cv={a.amount} />
                         ) : (
-                          <span className="text-[11px] italic text-slate-500">
+                          <span className="whitespace-nowrap text-[11px] italic text-slate-500">
                             not quantified — disclosed only
                           </span>
                         )}
@@ -136,7 +134,7 @@ export default function EbitdaBuild({ build, economicDebt }) {
         </>
       )}
 
-      {impliedLev != null && (
+      {impliedLev != null && nQuant > 0 && (
         <p className="mt-2 text-[11px] text-slate-500">
           Implied economic leverage vs adjusted EBITDA:{" "}
           <span className="font-mono text-slate-300">{fmtLev(impliedLev)}</span>

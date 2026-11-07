@@ -10,13 +10,7 @@ export default function SubsidiariesList({ subsidiaries, guarantorNotes }) {
     () => [...(subsidiaries || [])].sort((a, b) => (b.role ? 1 : 0) - (a.role ? 1 : 0)),
     [subsidiaries]);
   const { shown, control } = useShowMore(ordered, 24, "entities");
-  if (!subsidiaries || subsidiaries.length === 0) {
-    return (
-      <p className="text-sm text-slate-400">
-        No Exhibit 21 entity list — LLM extraction off.
-      </p>
-    );
-  }
+  if (!subsidiaries || subsidiaries.length === 0) return null;
   const src = subsidiaries.find((s) => s.citation?.source_url)?.citation;
   // hide columns Exhibit 21 didn't populate for any entity — a column of "—" says nothing
   const hasRole = subsidiaries.some((s) => s.role);

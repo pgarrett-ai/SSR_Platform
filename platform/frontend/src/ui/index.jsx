@@ -25,15 +25,11 @@ export const fmt = (v, d = 1) =>
     ? "—"
     : Number(v).toLocaleString("en-US", { maximumFractionDigits: d });
 
-export function fmtMoney(x) {
-  if (x == null || Number.isNaN(x)) return "—";
-  const a = Math.abs(x);
-  const sign = x < 0 ? "-" : "";
-  if (a >= 1e12) return `${sign}$${(a / 1e12).toFixed(2)}T`;
-  if (a >= 1e9) return `${sign}$${(a / 1e9).toFixed(2)}B`;
-  if (a >= 1e6) return `${sign}$${(a / 1e6).toFixed(0)}M`;
-  return `${sign}$${a.toFixed(0)}`;
-}
+// Raw USD → "$27,305M", the same format the backend gives every cited display.
+export const fmtMoney = (x) =>
+  x == null || Number.isNaN(x)
+    ? "—"
+    : `${x < 0 ? "-" : ""}$${Math.round(Math.abs(x) / 1e6).toLocaleString("en-US")}M`;
 
 /* ---------- status colors ---------- */
 

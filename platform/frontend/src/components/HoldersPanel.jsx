@@ -1,10 +1,12 @@
 import React from "react";
 import { fetchHolders } from "../api.js";
 import { useAsync } from "../cache.js";
-import { Section, Td, Th, rowClass, useShowMore } from "../ui/index.jsx";
+import { Td, Th, rowClass, useShowMore } from "../ui/index.jsx";
 
 // Known holders (registered funds) per instrument, from the ingested N-PORT data set.
-// Renders its own section, and nothing at all until an ingest has run — no empty promises.
+// One part of the Capital appendix; renders nothing at all until an ingest has run.
+
+const partTitle = "mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400";
 
 const fmtM = (v) => (v == null ? "—" : `$${(v / 1e6).toFixed(1)}M`);
 
@@ -45,26 +47,28 @@ export default function HoldersPanel({ ticker }) {
   const { data } = useAsync(`holders:${ticker}`, () => fetchHolders(ticker), [ticker]);
   if (!data?.holdings?.length) return null;
 
-  // group by matched instrument; issuer-level (unmatched) paper last
+  // group by matched instrument; positions the matcher could not tie to one go last
   const groups = new Map();
   for (const h of data.holdings) {
-    const key = h.instrument || "Unmatched issuer paper";
+    const key = h.instrument || "Instrument not matched";
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(h);
   }
 
   return (
-    <Section
-      collapsible
-      title="Known holders"
-      subtitle={`registered funds via N-PORT · ${data.holdings.length} positions`}
-    >
+    <div>
+      <h3 className={partTitle}>
+        Known holders
+        <span className="ml-2 normal-case tracking-normal text-slate-500">
+          registered funds via N-PORT · {data.holdings.length} positions
+        </span>
+      </h3>
       {[...groups.entries()].map(([instrument, rows]) => (
         <HolderGroup key={instrument} instrument={instrument} rows={rows} />
       ))}
-      <p className="text-[11px] text-slate-500">
+      <p className="text-[11px] text-slate-400">
         {data.quarter ? `As of ${data.quarter}. ` : ""}{data.note}
       </p>
-    </Section>
+    </div>
   );
 }
