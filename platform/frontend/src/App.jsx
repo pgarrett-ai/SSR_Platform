@@ -1,10 +1,11 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
 import { fetchHealth, getToken, setToken, streamHazard, streamOverview } from "./api.js";
 import { useStreamed } from "./cache.js";
 import { Input, Loading } from "./ui/index.jsx";
+import IssuerStrip from "./components/IssuerStrip.jsx";
 import ScreenTable from "./components/ScreenTable.jsx";
 
 // Route-level code-splitting: the recharts-heavy company pages load on demand as separate
@@ -34,20 +35,33 @@ const HAZARD_YEARS = 10;
 // tab switch never restarts one. Neither stream blocks rendering of the other's consumers.
 function CompanyLayout() {
   const t = useParams().ticker.toUpperCase();
+  const tab = useLocation().pathname.split("/")[3];
   const overview = useStreamed(`overview:${t}:${OVERVIEW_YEARS}`,
     (onProgress) => streamOverview(t, OVERVIEW_YEARS, false, onProgress).promise);
   const hazard = useStreamed(`hazard:${t}`,
     (onProgress) => streamHazard(t, HAZARD_YEARS, onProgress).promise);
 
+  // The RECOVER cell reads the persisted last run until Recovery reports a fresh one
+  // (same shape as overview.recovery_summary: {mode, saved_at, fulcrum, tranches:
+  // [{tranche, mean_recovery_pct, is_fulcrum}]}), so the strip and the tranche table agree.
+  // Tagged with its ticker so a switch never shows the previous issuer's run.
+  const [live, setLive] = useState(null);
+  const onRecoveryResult = useCallback((summary) => setLive({ ticker: t, summary }), [t]);
+  const recovery = (live?.ticker === t && live.summary) || overview.data?.recovery_summary;
+
   return (
-    <Suspense fallback={<Loading />}>
-      <Routes>
-        <Route path="capital" element={<CapitalPage ticker={t} overview={overview} />} />
-        <Route path="risk" element={<RiskPage ticker={t} hazard={hazard} />} />
-        <Route path="recovery" element={<RecoveryPage ticker={t} years={OVERVIEW_YEARS} />} />
-        <Route path="*" element={<Navigate to={`/company/${t}/capital`} replace />} />
-      </Routes>
-    </Suspense>
+    <>
+      <IssuerStrip ticker={t} tab={tab} overview={overview} hazard={hazard} recovery={recovery} />
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="capital" element={<CapitalPage ticker={t} overview={overview} />} />
+          <Route path="risk" element={<RiskPage ticker={t} hazard={hazard} />} />
+          <Route path="recovery" element={
+            <RecoveryPage ticker={t} years={OVERVIEW_YEARS} onRecoveryResult={onRecoveryResult} />} />
+          <Route path="*" element={<Navigate to={`/company/${t}/capital`} replace />} />
+        </Routes>
+      </Suspense>
+    </>
   );
 }
 
