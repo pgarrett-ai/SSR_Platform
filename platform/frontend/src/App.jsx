@@ -40,9 +40,10 @@ function CompanyLayout() {
   // [{tranche, mean_recovery_pct, is_fulcrum}]}), so the strip and the tranche table agree;
   // a fresh run with nothing to report (null) hides the cell. Tagged with its ticker so a
   // switch never shows the previous issuer's run.
-  const [live, setLive] = useState(null);
-  const onRecoveryResult = useCallback((summary) => setLive({ ticker: t, summary }), [t]);
-  const recovery = live?.ticker === t ? live.summary : overview.data?.recovery_summary;
+  // keyed by ticker: a run from the previous issuer that resolves late cannot overwrite this one
+  const [live, setLive] = useState({});
+  const onRecoveryResult = useCallback((summary) => setLive((m) => ({ ...m, [t]: summary })), [t]);
+  const recovery = t in live ? live[t] : overview.data?.recovery_summary;
 
   useEffect(() => {
     document.title = `${t} — Distressed Credit`;

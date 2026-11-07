@@ -237,7 +237,7 @@ function TrancheTable({ result, citations, quotes }) {
               <Th right title="share of draws in which the class recovers less than its full claim">P(impaired) %</Th>
               <Th right title="share of draws in which the class recovers nothing">P(zero) %</Th>
               <Th right title="dollars the class recovers at the median EV draw">At median EV $M</Th>
-              <Th right title="33.4% of class face blocks plan acceptance (the two-thirds-in-amount vote); the cost at the last bond quote when one is matched">
+              <Th right title="33.4% of this tranche's face at the last matched bond quote. A blocking position needs one third of the whole class's allowed claims (the two-thirds-in-amount vote), so for a multi-tranche class it costs more">
                 Block 33.4% $M
               </Th>
             </tr>
