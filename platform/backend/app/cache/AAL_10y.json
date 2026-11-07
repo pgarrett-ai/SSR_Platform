@@ -2573,7 +2573,7 @@
       ],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries.\" Consolidated Net Income and Consolidated EBITDAR exclude the net income (loss) of any Unrestricted Subsidiary, confirming the restricted/unrestricted subsidiary architecture; specific designation conditions/caps are not reproduced in the provided text.",
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries.\" Consolidated Net Income and Consolidated EBITDAR exclude the net income (loss) of any Unrestricted Subsidiary, confirming the restricted/unrestricted subsidiary architecture.",
       "anchor_clause": null,
       "lme_vectors": [],
       "citation": {
@@ -2619,9 +2619,9 @@
         "Proceeds from business interruption insurance",
         "Expenses/charges covered by indemnification or reimbursement in connection with permitted acquisitions, mergers, dispositions, debt/equity issuances or investments"
       ],
-      "mfn_sunset_period": "Not present in the provided excerpts. The agreement defines \"All-In/Initial Yield\" (relevant to MFN pricing on Incremental Term Loans referencing the Original Term Loans' Adjusted Term SOFR floor), but no MFN spread cushion or sunset period is stated in the text provided.",
+      "mfn_sunset_period": "The agreement defines \"All-In/Initial Yield\" (relevant to MFN pricing on Incremental Term Loans referencing the Original Term Loans' Adjusted Term SOFR floor), but no MFN spread cushion or sunset period is stated in the text provided.",
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries\" and Consolidated Net Income excludes the net income (loss) of any Unrestricted Subsidiary, confirming an unrestricted-subsidiary construct exists. The specific designation mechanics/limitations are not reproduced in the provided excerpts.",
+      "unrestricted_subsidiary_designation_flexibility": "Section 5.05 provides for \"Designation of Restricted and Unrestricted Subsidiaries\" and Consolidated Net Income excludes the net income (loss) of any Unrestricted Subsidiary, confirming an unrestricted-subsidiary construct exists.",
       "anchor_clause": null,
       "lme_vectors": [],
       "citation": {
@@ -2636,7 +2636,7 @@
       },
       "agreement_type": "credit_agreement",
       "leverage_covenant_type": "None (no total-leverage maintenance financial covenant); the deal instead uses a Collateral Coverage Ratio maintenance test and a Liquidity covenant",
-      "leverage_ratio_threshold": "No leverage ratio. Maintenance tests are: Collateral Coverage Ratio (Section 6.09) with a Collateral Coverage Ratio Failure defined as failure to be at least 1.6 to 1.0; plus a minimum Liquidity covenant (Section 6.08) — dollar threshold not stated in the excerpts provided.",
+      "leverage_ratio_threshold": "No leverage ratio. Maintenance tests are: Collateral Coverage Ratio (Section 6.09) with a Collateral Coverage Ratio Failure defined as failure to be at least 1.6 to 1.0.",
       "restricted_payments_basket_size": "Not specified in the excerpts (Section 6.01 Restricted Payments referenced but basket amounts not reproduced in the provided text).",
       "lme_risk_notes": "This is a secured airline financing (American Airlines) collateralized by route authorities, slots, foreign gate leaseholds, aircraft/spare engines, ground equipment, spare parts and related assets held by a Collateral Trustee. Rather than a leverage covenant, credit protection runs through the Collateral Coverage Ratio (must stay ≥ 1.6:1.0) plus a Liquidity covenant and Collateral disposition controls (Section 6.04). The presence of an Unrestricted Subsidiary designation construct (Section 5.05) plus CNI exclusion of Unrestricted Subsidiary results creates potential drop-down/collateral-leakage capacity typical of J.Crew-style risk — though the excerpts do not reproduce a specific IP/asset-transfer blocker, so the strength of any drop-down protection cannot be confirmed from the text provided. The Fourth Amendment itself terminates existing revolver/LC commitments and establishes $1,451,333,333.35 of 2026 Incremental Revolving Commitments; incremental capacity (Section 2.27) is a priming/dilution vector. Uptier risk turns on amendment/voting provisions not included in these excerpts."
     }

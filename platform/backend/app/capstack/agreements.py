@@ -86,7 +86,9 @@ def parse_doc_head(doc: CreditDoc) -> DocHead:
             dh.amendment_no = int(m.group(1))
     dh.amended_restated = "AMENDED AND RESTATED" in head.upper()
 
-    dates = re.findall(rf"dated\s+as\s+of\s+{_DATE_RE}", head, flags=re.IGNORECASE)
+    # .title(): a cover page in capitals ("JULY 6, 2026") reads as July 6, 2026
+    dates = [d.title() for d in re.findall(rf"dated\s+as\s+of\s+{_DATE_RE}", head,
+                                           flags=re.IGNORECASE)]
     if dates:
         dh.dated = dates[0]
         # an amendment's later "dated as of" usually names the underlying base agreement
@@ -151,7 +153,7 @@ def group_families(docs: list[CreditDoc]) -> list[AgreementFamily]:
             label = f"{operative.note_coupon:g}% notes due {operative.note_due or '?'}"
         else:
             anchor = operative.base_date or operative.dated
-            label = dc.replace("_", " ")
+            label = dc.replace("_", " ").capitalize().replace("Dip ", "DIP ")
             if anchor:
                 label += f" dated {anchor}"
         families.append(AgreementFamily(

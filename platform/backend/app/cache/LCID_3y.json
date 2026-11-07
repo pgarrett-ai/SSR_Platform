@@ -2226,28 +2226,28 @@
           "vector": "uptier_priming",
           "risk": "not_addressed",
           "rationale": "This Amendment No. 2 only increases the Delayed Draw Term Commitment and amends select definitions; it contains no sacred-rights, voting, or priming provisions.",
-          "basis": "The excerpt covers commitment increase and amendments to defined terms (Material Debt, Aggregate Delayed Draw Term Commitment) with no lender-consent or lien-subordination language.",
+          "basis": null,
           "quote": "the Borrower desires to increase the Aggregate Delayed Draw Term Commitment by $500,000,000"
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "not_addressed",
-          "rationale": "The provided text does not address transfers of IP or material assets to unrestricted subsidiaries or unrestricted-subsidiary designation.",
+          "rationale": null,
           "basis": "Only definitional amendments (Material Debt, Aggregate Delayed Draw Term Commitment) and reservation/replacement of certain Section 4.02 conditions are shown.",
           "quote": "Section 4.02(b) of the Credit Agreement is hereby replaced in its entirety with “[Reserved]”"
         },
         {
           "vector": "incremental_debt",
           "risk": "unclear",
-          "rationale": "The amendment increases the Aggregate Delayed Draw Term Commitment by $500,000,000, expanding funded debt capacity under this facility, but the excerpt does not include incremental/ratio debt covenant mechanics.",
+          "rationale": "The amendment increases the Aggregate Delayed Draw Term Commitment by $500,000,000, expanding funded debt capacity under this facility.",
           "basis": "Commitment increased such that outstanding Loans plus remaining Delayed Draw Term Commitments equal $2,478,787,899.58; Material Debt threshold set at $200,000,000.",
           "quote": "such that, after giving effect to such increase, the sum of outstanding Loans and remaining Delayed Draw Term Commitments shall be $2,478,787,899.58"
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
-          "rationale": "No restricted-payments, dividend, or investment covenant appears in the provided text.",
-          "basis": "The excerpt is limited to commitment increases and definition amendments, deletions of Compliance Certificate and Liquidity definitions, and Section 4.02 borrowing-condition changes.",
+          "rationale": null,
+          "basis": null,
           "quote": "Section 1.01 of the Credit Agreement is hereby amended by deleting the definitions of “Compliance Certificate” and “Liquidity” in their entirety"
         }
       ],
@@ -2286,13 +2286,13 @@
       "ebitda_addback_categories": [],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": false,
-      "unrestricted_subsidiary_designation_flexibility": "Not addressed. This convertible note indenture contains no concept of \"Restricted\" or \"Unrestricted Subsidiaries\" and no subsidiary-designation mechanic in the provided text.",
+      "unrestricted_subsidiary_designation_flexibility": "Not addressed.",
       "anchor_clause": "\"7.00% Convertible Senior Notes due 2031\" — This is an unsecured convertible senior note indenture that contains no maintenance financial covenants, no negative covenants restricting debt, liens, restricted payments or asset transfers, and no unrestricted-subsidiary machinery; the operative Holder protections are limited to the conversion mechanics (Article 5) and the optional repurchase right (Section 4.04). A distressed analyst should note the near-total absence of incurrence or lien covenants: the Notes rely on structural/contractual seniority in name only (\"Senior\"), with the amendment provisions in Article 8 governing sacred rights.",
       "lme_vectors": [
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The indenture contains no lien covenant, no debt-subordination or priming restriction, and no sacred-rights provision addressing collateral or payment priority in the provided text; the Notes are unsecured senior obligations with no anti-priming protection.",
+          "rationale": "The Notes are unsecured senior obligations with no anti-priming protection.",
           "basis": "No negative covenants restricting incurrence of secured or priming debt appear; amendment provisions (Article 8) are the only Holder-protection mechanic shown.",
           "quote": "designated as its 7.00% Convertible Senior Notes due 2031"
         },
@@ -2306,14 +2306,14 @@
         {
           "vector": "incremental_debt",
           "risk": "not_addressed",
-          "rationale": "The indenture permits Additional Notes but contains no debt-incurrence covenant or ratio test limiting other indebtedness of the Company or its subsidiaries in the provided text.",
+          "rationale": null,
           "basis": "Section 2.03 contemplates 'Initial Notes and Additional Notes'; no incurrence covenant or leverage cap appears.",
           "quote": "Section 2.03. Initial Notes and Additional Notes."
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
-          "rationale": "No restricted-payments covenant appears; the indenture does not limit dividends, distributions, or equity/junior-debt repurchases in the provided text.",
+          "rationale": "No restricted-payments covenant appears.",
           "basis": "No restricted payment basket or builder-basket provision is present in the covenant clauses supplied.",
           "quote": "This Note will accrue interest at a rate and in the"
         }
@@ -2348,7 +2348,7 @@
       "trustee": null,
       "collateral_agent": null,
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "Not addressed in this text; the Amendment references \"Loan Parties\" and \"Loan Documents\" but does not set out the guarantor class.",
+      "guarantors": null,
       "financial_covenants": [],
       "baskets": [],
       "ebitda_addback_categories": [],
@@ -2483,9 +2483,9 @@
       "guarantors": "The Subsidiary Guarantors — being the wholly-owned subsidiaries that are not Excluded Subsidiaries; Foreign Subsidiaries, Foreign Holdcos, Unrestricted Subsidiaries, Limited Purpose Subsidiaries and IP-only subsidiaries are excluded, with the Borrower having discretion to designate any Excluded Subsidiary as a Guarantor (Schedule 1.01(a) lists the Subsidiary Guarantors).",
       "financial_covenants": [
         {
-          "kind": "Minimum Liquidity (financial-condition metric referenced in definitions; the maintenance covenant clause itself, Section 6.x, was not included in the excerpt)",
-          "threshold": "Not stated in the provided text — the excerpt defines 'Liquidity' (Availability under the ABL plus unrestricted cash/Permitted Investments, with Foreign Liquidity capped at 25%) but does not include the operative covenant threshold.",
-          "test_frequency": "Not stated in the provided text",
+          "kind": "Minimum Liquidity",
+          "threshold": null,
+          "test_frequency": null,
           "springing_trigger": null,
           "quote": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries"
         }
@@ -2510,34 +2510,34 @@
       "ebitda_addback_categories": [],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
-      "unrestricted_subsidiary_designation_flexibility": "The agreement contemplates Unrestricted Subsidiaries (Schedule 1.01(b) lists them; designation feeds into the Investments definition, which values the net assets contributed on designation and values property transferred to/from an Unrestricted Subsidiary at fair market value). The specific designation mechanics, conditions and caps were not included in the excerpt provided, so the degree of flexibility cannot be fully assessed from this text.",
+      "unrestricted_subsidiary_designation_flexibility": "The agreement contemplates Unrestricted Subsidiaries (Schedule 1.01(b) lists them; designation feeds into the Investments definition, which values the net assets contributed on designation and values property transferred to/from an Unrestricted Subsidiary at fair market value).",
       "anchor_clause": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries ... provided that the aggregate amount of unrestricted cash and unrestricted Permitted Investments of Foreign Subsidiaries shall not at any time exceed 25% of all Liquidity.",
       "lme_vectors": [
         {
           "vector": "dropdown_jcrew",
           "risk": "unclear",
-          "rationale": "The text carries the machinery for IP dropdowns (Material IP, Material IP Subsidiary, Unrestricted Subsidiary, and an Excluded Subsidiary limb for IP-only subsidiaries) but the operative transfer restriction / J.Crew blocker was not included in the excerpt.",
+          "rationale": null,
           "basis": "'Material IP' and 'Material IP Subsidiary' are defined; the Excluded Subsidiary definition includes a subsidiary that 'does not own any assets ... that are not Intellectual Property'; Investments definition values property transferred to/from an Unrestricted Subsidiary at fair market value.",
           "quote": "that does not own any assets (other than de minimis assets) that are not Intellectual Property, so long as such subsidiary is not an obligor in respect of any Permitted Additional Indebtedness"
         },
         {
           "vector": "incremental_debt",
           "risk": "unclear",
-          "rationale": "The text references incremental/additional debt concepts (Permitted Additional Indebtedness, Permitted Refinancing sized to refinanced principal plus premium/fees, Permitted Convertible Notes under Sections 6.01(s)/(t)) but the incremental facility sizing and the operative Section 6.01 debt basket schedule were not included.",
+          "rationale": null,
           "basis": "Permitted Refinancing capped at refinanced principal plus accrued interest/premium/fees; Permitted Convertible Notes tied to Section 6.01(s)/(t); 'Permitted Additional Indebtedness' referenced in the Excluded Subsidiary IP limb.",
           "quote": "has an aggregate outstanding principal amount not greater than the aggregate principal amount of the Debt being refinanced or extended plus an amount equal to accrued and unpaid interest and any premium thereon"
         },
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The excerpt does not include the voting/amendment (sacred rights) or pro rata sharing provisions needed to assess uptier/priming protection.",
-          "basis": "No amendment, sacred-rights, or pro rata sharing provisions appear in the provided text; only definitions and Permitted Encumbrances/Liens definitions are present.",
+          "rationale": null,
+          "basis": "Only definitions and Permitted Encumbrances/Liens definitions are present.",
           "quote": "Section 9.24. Release of Liens and Guarantees"
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
-          "rationale": "The operative restricted payments covenant (Section 6.x) is not in the excerpt; only definitional building blocks (Permitted Payee, Permitted Party, Disqualified Equity Interests) appear, so RP capacity cannot be assessed.",
+          "rationale": "Only definitional building blocks (Permitted Payee, Permitted Party, Disqualified Equity Interests) appear, so RP capacity cannot be assessed.",
           "basis": "'Permitted Payee' and 'Permitted Party' are defined but no restricted-payment basket or builder-basket text is included.",
           "quote": "\"Permitted Payee\" means, collectively (i) any future, current or former officer, director, manager, member ... of the Borrower, any Subsidiary or any direct or indirect parent company thereof"
         }
@@ -2553,8 +2553,8 @@
         "quote": "\"Liquidity\" shall mean, on any date of determination, an amount equal to the sum of, without duplication, (a) Availability (as defined in the ABL Credit Agreement as in effect on the Effective Date) as of such date, plus (b) the aggregate amount of unrestricted cash and unrestricted Permitted Investments of the Borrower and the Restricted Subsidiaries ... provided that the aggregate amount of unrestricted cash and unrestricted Permitted Investments of Foreign Subsidiaries shall not at any time exceed 25% of all Liquidity."
       },
       "agreement_type": "credit_agreement",
-      "leverage_covenant_type": "Minimum Liquidity (financial-condition metric referenced in definitions; the maintenance covenant clause itself, Section 6.x, was not included in the excerpt)",
-      "leverage_ratio_threshold": "Not stated in the provided text — the excerpt defines 'Liquidity' (Availability under the ABL plus unrestricted cash/Permitted Investments, with Foreign Liquidity capped at 25%) but does not include the operative covenant threshold.",
+      "leverage_covenant_type": "Minimum Liquidity",
+      "leverage_ratio_threshold": null,
       "restricted_payments_basket_size": null,
       "lme_risk_notes": null
     }

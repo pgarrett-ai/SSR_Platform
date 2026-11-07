@@ -367,11 +367,6 @@
         "amount": null
       },
       {
-        "category": "Pro Forma EBITDA adjustments referenced (clauses (a) through (c) of the definition of 'Pro Forma EBITDA') — the substantive add-back categories are not set out in the provided excerpt",
-        "label": "Pro Forma EBITDA adjustments referenced (clauses (a) through (c) of the definition of 'Pro Forma EBITDA') — the substantive add-back categories are not set out in the provided excerpt",
-        "amount": null
-      },
-      {
         "category": "Parent Expenses of a CVC Parent",
         "label": "Parent Expenses of a CVC Parent",
         "amount": null
@@ -1210,35 +1205,35 @@
       ],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "The excerpt does not include an unrestricted-subsidiary designation mechanic in the ordinary covenant-lite sense. Instead, 'Designation' refers to designating the Loan Parties as 'unrestricted subsidiaries' under the Existing Debt Documents, and the deal contemplates a separate ring-fenced ABS/receivables structure (ABS Borrower, ABS Holdings, ABS InfraCos, ABS Loan Parties). Section 6.01 (Prohibition on Liability Management Exercises) and Section 6.17 (Delaware LLC Divisions) further constrain structural transfers. Full designation flexibility cannot be confirmed from the provided text.",
-      "anchor_clause": "Section 6.01. Prohibition on Liability Management Exercises. (The table of contents identifies Section 6.01 as an express covenant prohibiting liability management exercises — a distressed analyst must read this bespoke anti-LME clause first, as it directly governs uptier/dropdown capacity; the operative text was not included in the excerpt provided.)",
+      "unrestricted_subsidiary_designation_flexibility": "'Designation' refers to designating the Loan Parties as 'unrestricted subsidiaries' under the Existing Debt Documents, and the deal contemplates a separate ring-fenced ABS/receivables structure (ABS Borrower, ABS Holdings, ABS InfraCos, ABS Loan Parties). Section 6.01 (Prohibition on Liability Management Exercises) and Section 6.17 (Delaware LLC Divisions) further constrain structural transfers.",
+      "anchor_clause": null,
       "lme_vectors": [
         {
           "vector": "uptier_priming",
           "risk": "unclear",
-          "rationale": "The agreement contains a bespoke Section 6.01 'Prohibition on Liability Management Exercises' plus intercreditor machinery, but the operative text was not in the excerpt, so the precise scope of uptier/priming protection cannot be confirmed.",
+          "rationale": "The agreement contains a bespoke Section 6.01 'Prohibition on Liability Management Exercises' plus intercreditor machinery.",
           "basis": "TOC Section 6.01 'Prohibition on Liability Management Exercises'; Section 6.13 Intercreditor Agreements; defined 'Junior Debt' and 'Pari Passu Debt' concepts.",
           "quote": "Section 6.01. Prohibition on Liability Management Exercises"
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "unclear",
-          "rationale": "The deal is built around a segregated ABS/receivables structure (ABS Borrower, ABS InfraCos, IP License / Trademark License arrangements with CSC) and includes an anti-LME covenant and Delaware LLC division restriction, suggesting attention to asset/IP transfer, but the governing transfer-restriction text is not in the excerpt.",
+          "rationale": "The deal is built around a segregated ABS/receivables structure (ABS Borrower, ABS InfraCos, IP License / Trademark License arrangements with CSC) and includes an anti-LME covenant and Delaware LLC division restriction, suggesting attention to asset/IP transfer.",
           "basis": "Defined ABS Transaction Parties, IP License Agreement, Trademark License Agreement; TOC Section 6.01 (anti-LME) and Section 6.17 (Delaware LLC Divisions); definition of 'Material Assets' and 'Material Intellectual Property'.",
           "quote": "“Material Assets” shall mean any property or assets (whether intellectual property or otherwise) material to the business or operations of the Loan Parties (taken as a whole)."
         },
         {
           "vector": "incremental_debt",
           "risk": "not_addressed",
-          "rationale": "The provided excerpt (definitions and TOC) does not include the operative Section 6.04 incremental/ratio debt capacity, MFN, or free-and-clear amount, so incremental debt capacity cannot be assessed from the text.",
+          "rationale": null,
           "basis": "Section 6.04 (Limitation on Indebtedness) is listed in the TOC but its operative text and any incremental basket were not provided.",
           "quote": "Section 6.04. Limitation on Indebtedness"
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
-          "rationale": "Section 6.05 (Limitation on Restricted Payments) is referenced but the operative RP capacity, builder basket and carve-outs are not included in the excerpt, so RP leakage capacity cannot be assessed.",
-          "basis": "Section 6.05 (Limitation on Restricted Payments) listed in TOC; 'Restricted Payment', 'Permitted Payment' and 'Permitted Investment' referenced in the Asset Disposition carve-outs but not defined in the excerpt.",
+          "rationale": null,
+          "basis": "Section 6.05 (Limitation on Restricted Payments) listed in TOC.",
           "quote": "any Restricted Payment that is permitted to be made under Section 6.05, any transaction specifically excluded from the definition of Restricted Payment and the making of any Permitted Payment and Permitted Investment"
         }
       ],
@@ -1250,7 +1245,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465926080797/tm2619807d1_ex10-1.htm",
-        "quote": "Section 6.01. Prohibition on Liability Management Exercises. (The table of contents identifies Section 6.01 as an express covenant prohibiting liability management exercises — a distressed analyst must read this bespoke anti-LME clause first, as it directly governs uptier/dropdown capacity; the operative text was not included in the excerpt provided.)"
+        "quote": null
       },
       "agreement_type": "credit_agreement",
       "leverage_covenant_type": "Combined Gross Pari Passu Leverage Ratio test (governs 'Amortization Period')",
@@ -1269,7 +1264,7 @@
       "trustee": "Wilmington Trust, National Association, as Indenture Trustee",
       "collateral_agent": null,
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "The Guarantor (referenced as a distinct party alongside the Issuer and the Asset Entities); specific identity and guarantee scope not set out in the provided text.",
+      "guarantors": "The Guarantor (referenced as a distinct party alongside the Issuer and the Asset Entities).",
       "financial_covenants": [],
       "baskets": [],
       "ebitda_addback_categories": [],
@@ -1281,22 +1276,22 @@
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The excerpted text contains only transfer-registration, ERISA representation, and non-petition provisions, and does not address debt priority, sacred rights, or amendment mechanics relevant to an uptier transaction.",
+          "rationale": null,
           "basis": "Provided clauses cover Note transfer procedures, ERISA/prohibited-transaction certifications, and a non-petition covenant only.",
           "quote": "As provided in the Indenture and subject to certain limitations therein set forth, the transfer of this Note is registerable in the Note Register upon surrender of this Note for registration of transfer"
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "not_addressed",
-          "rationale": "No provisions concerning unrestricted subsidiaries, asset or IP transfers, or investment capacity appear in the excerpt.",
-          "basis": "This is a securitization (Secured Fiber Network Revenue Notes) supplement excerpt limited to transfer and non-petition mechanics; no restricted-payment or investment covenants are shown.",
+          "rationale": null,
+          "basis": "No restricted-payment or investment covenants are shown.",
           "quote": "one or more new Notes of the same Class of the same Series in authorized denominations evidencing a like aggregate Percentage Interest will be issued to the designated transferee or transferees"
         },
         {
           "vector": "incremental_debt",
           "risk": "not_addressed",
-          "rationale": "The text does not include any debt-incurrence, ratio, or MFN provisions.",
-          "basis": "Excerpt is confined to note transfer registration, ERISA representations, and the non-petition covenant.",
+          "rationale": null,
+          "basis": null,
           "quote": "No service charge will be imposed for any transfer or exchange (or de-registration) of this Note"
         },
         {
@@ -1334,7 +1329,7 @@
       "trustee": null,
       "collateral_agent": "JPMorgan Chase Bank, N.A.",
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "Each of the Guarantors party hereto (the Loan Parties); the agreement references a Facility Guaranty (Exhibit F-1) and Section 5.14 Guarantee and Security Requirements. Specific guarantor class not fully set out in the excerpted text.",
+      "guarantors": "Each of the Guarantors party hereto (the Loan Parties); the agreement references a Facility Guaranty (Exhibit F-1) and Section 5.14 Guarantee and Security Requirements.",
       "financial_covenants": [
         {
           "kind": "Amortization Period trigger (springing cash sweep / amortization tied to leverage, not a maintenance covenant)",
@@ -1368,13 +1363,13 @@
       ],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "The agreement is structured around a fixed set of Loan Parties/Subsidiaries; the only 'Designation' concept in the excerpted text refers to the designation of the Loan Parties as 'unrestricted subsidiaries' under the Existing Debt Documents (i.e., these borrowers sit outside the CSC/Existing Debt restricted group), not a general covenant power for the Borrowers to designate their own unrestricted subsidiaries. No standard unrestricted-subsidiary designation basket appears in the provided text.",
-      "anchor_clause": "Section 6.01. Prohibition on Liability Management Exercises (as listed in the Table of Contents and reinforced by the covenant package). This is the single clause a distressed analyst must read because it directly addresses LME capacity; the excerpted text confirms its existence but does not reproduce its operative language.",
+      "unrestricted_subsidiary_designation_flexibility": "The agreement is structured around a fixed set of Loan Parties/Subsidiaries.",
+      "anchor_clause": null,
       "lme_vectors": [
         {
           "vector": "uptier_priming",
           "risk": "unclear",
-          "rationale": "The agreement contemplates Pari Passu Debt, Junior Debt and multiple intercreditor agreements, and a general 'Prohibition on Liability Management Exercises' (Section 6.01) is present, but the operative sacred-rights/priming language is not reproduced in the excerpt so the degree of protection against a non-pro-rata uptier cannot be confirmed.",
+          "rationale": "The agreement contemplates Pari Passu Debt, Junior Debt and multiple intercreditor agreements, and a general 'Prohibition on Liability Management Exercises' (Section 6.01) is present.",
           "basis": "Section 6.01 titled 'Prohibition on Liability Management Exercises'; definitions of Junior Debt, Pari Passu Debt and Additional Intercreditor Agreements (Equal Priority and First Lien/Second Lien forms) are provided.",
           "quote": "Section 6.01. Prohibition on Liability Management Exercises"
         },
@@ -1388,14 +1383,14 @@
         {
           "vector": "incremental_debt",
           "risk": "unclear",
-          "rationale": "The deal includes a $1,100 million Incremental Term Loan facility and a general limitation on indebtedness (Section 6.04) with a ratio construct (Combined Net Leverage Ratio referencing Section 6.04(b)), but the incremental capacity, MFN and ratio thresholds are not set out in the excerpted text.",
+          "rationale": "The deal includes a $1,100 million Incremental Term Loan facility and a general limitation on indebtedness (Section 6.04) with a ratio construct (Combined Net Leverage Ratio referencing Section 6.04(b)).",
           "basis": "$1,100 million Incremental Term Loan Commitment; Section 6.04 Limitation on Indebtedness; Combined Net Leverage Ratio definition referencing debt incurred under Section 6.04(b).",
           "quote": "the pro forma calculation of the Combined Net Leverage Ratio shall not give effect to (i) any Indebtedness incurred on the date of determination pursuant to Section 6.04(b)"
         },
         {
           "vector": "rp_leakage",
           "risk": "unclear",
-          "rationale": "A dedicated Limitation on Restricted Payments (Section 6.05) exists and RP/Permitted Payment/Permitted Investment concepts are referenced, but the RP builder basket and fixed baskets are not reproduced in the excerpted text so leakage capacity cannot be quantified.",
+          "rationale": "A dedicated Limitation on Restricted Payments (Section 6.05) exists and RP/Permitted Payment/Permitted Investment concepts are referenced.",
           "basis": "Section 6.05 Limitation on Restricted Payments; Schedule 6.05 Existing Investments; references to Permitted Payment and Permitted Investment in the Asset Disposition definition.",
           "quote": "any Restricted Payment that is permitted to be made under Section 6.05, any transaction specifically excluded from the definition of Restricted Payment and the making of any Permitted Payment and Permitted Investment"
         }
@@ -1408,7 +1403,7 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000110465926002909/tm262903d1_ex10-1.htm",
-        "quote": "Section 6.01. Prohibition on Liability Management Exercises (as listed in the Table of Contents and reinforced by the covenant package). This is the single clause a distressed analyst must read because it directly addresses LME capacity; the excerpted text confirms its existence but does not reproduce its operative language."
+        "quote": null
       },
       "agreement_type": "credit_agreement",
       "leverage_covenant_type": "Amortization Period trigger (springing cash sweep / amortization tied to leverage, not a maintenance covenant)",
@@ -1423,9 +1418,9 @@
       "amendment_count": 1,
       "base_missing": false,
       "governs_instruments": [],
-      "admin_agent": "Lenders party thereto from time to time, JPMorgan Chase Bank, N.A.",
+      "admin_agent": null,
       "trustee": null,
-      "collateral_agent": "The Security Agent (named as \"Security Agent\"; specific entity not identified in the provided text)",
+      "collateral_agent": null,
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
       "guarantors": "The Loan Parties/Guarantors signatory to the Facility Guaranty — a group of CSC Holdings affiliates (e.g., A-R Cable Services – NY, Inc., A R H, Ltd., Cable Systems, Inc., Cablevision of Brookhaven, Inc., Cablevision of Litchfield, LLC, Kingwood Security Services, LLC, W.K. Communications, Inc., and other listed subsidiaries)",
       "financial_covenants": [],
@@ -1445,29 +1440,29 @@
         {
           "vector": "incremental_debt",
           "risk": "unclear",
-          "rationale": "The amendment establishes a $2.0 billion incremental term loan tranche under Section 2.22 of the Credit Agreement as Refinancing Indebtedness, but the governing incremental capacity mechanics, ratio tests and MFN protections live in Section 2.22 and Annex I/II, which are not reproduced in the provided text.",
-          "basis": "New Class of Incremental Term Loan Commitments of $2,000,000,000 established pursuant to Section 2.22; loans incurred as Refinancing Indebtedness in respect of the 2022 Refinancing Term Loans; Section 2.22 governing terms not in the excerpt.",
+          "rationale": "The amendment establishes a $2.0 billion incremental term loan tranche under Section 2.22 of the Credit Agreement as Refinancing Indebtedness.",
+          "basis": "New Class of Incremental Term Loan Commitments of $2,000,000,000 established pursuant to Section 2.22; loans incurred as Refinancing Indebtedness in respect of the 2022 Refinancing Term Loans.",
           "quote": "pursuant to Section 2.22 of the Existing Credit Agreement, the Borrower may establish Incremental Term Loan Commitments with one or more existing or additional Lenders"
         },
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The amendment text does not reproduce voting, sacred-rights or pro rata sharing provisions relevant to an uptier/priming transaction; it only states the incremental loans benefit ratably from existing guaranties and liens.",
-          "basis": "Text confirms new loans 'benefit equally and ratably from the Facility Guaranty, liens and security interests created by the Security Documents' but does not set out amendment-voting protections.",
+          "rationale": "It only states the incremental loans benefit ratably from existing guaranties and liens.",
+          "basis": null,
           "quote": "shall, without limiting the foregoing, benefit equally and ratably from the Facility Guaranty, liens and security interests created by the Security Documents"
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "not_addressed",
-          "rationale": "The provided excerpt does not include unrestricted-subsidiary designation mechanics or investment/IP-transfer covenants; those provisions reside in Annex I (Covenants), which is incorporated by reference but not reproduced.",
-          "basis": "Annex I (Covenants) and Annex II (Additional Definitions) are referenced as amended but their substantive text is not in the excerpt.",
+          "rationale": null,
+          "basis": null,
           "quote": "Annex I (Covenants) and Annex II (Additional Definitions) to the Existing Credit Agreement ... are hereby amended, solely with respect to the 2025 Incremental Term Loans"
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
           "rationale": "No restricted-payments covenant or basket is set out in the amendment text; the negative covenants are contained in the un-reproduced Annex I.",
-          "basis": "The excerpt contains only the incremental establishment mechanics, pricing and conditions; no restricted payments language appears.",
+          "basis": "No restricted payments language appears.",
           "quote": "the Credit Agreement and other Loan Documents remain unmodified and in full force and effect"
         }
       ],
@@ -1546,13 +1541,13 @@
       ],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "Unusual structure: the Loan Parties here are themselves entities that were \"designated\" as unrestricted subsidiaries under the Existing Debt Documents (see \"Designation\"). The agreement contains a dedicated Section 6.01 \"Prohibition on Liability Management Exercises\" and Section 6.15 restricting amendments to the Shared Services Agreement / IP License Agreement, indicating tight control over subsidiary/asset movements. Text provided does not include a general unrestricted-subsidiary designation mechanic within this facility.",
+      "unrestricted_subsidiary_designation_flexibility": "Unusual structure: the Loan Parties here are themselves entities that were \"designated\" as unrestricted subsidiaries under the Existing Debt Documents (see \"Designation\"). The agreement contains a dedicated Section 6.01 \"Prohibition on Liability Management Exercises\" and Section 6.15 restricting amendments to the Shared Services Agreement / IP License Agreement, indicating tight control over subsidiary/asset movements.",
       "anchor_clause": "\"Amortization Period\" shall mean each period commencing on the first date on which the Combined Gross Pari Passu Leverage Ratio exceeds 2.50:1.00 and ending on the first date thereafter when the Combined Gross Pari Passu Leverage Ratio on such date does not exceed 2.50:1.00.",
       "lme_vectors": [
         {
           "vector": "uptier_priming",
           "risk": "unclear",
-          "rationale": "The agreement includes a dedicated Section 6.01 'Prohibition on Liability Management Exercises' and defines Junior Debt subordinate to the Obligations, but the operative uptier/sacred-rights amendment protections are not in the provided text.",
+          "rationale": "The agreement includes a dedicated Section 6.01 'Prohibition on Liability Management Exercises' and defines Junior Debt subordinate to the Obligations.",
           "basis": "Section 6.01 caption 'Prohibition on Liability Management Exercises'; Junior Debt defined as unsecured or junior-lien via applicable Intercreditor Agreement.",
           "quote": "Section 6.01. Prohibition on Liability Management Exercises"
         },
@@ -1566,14 +1561,14 @@
         {
           "vector": "incremental_debt",
           "risk": "unclear",
-          "rationale": "Debt capacity runs through Section 6.04 and Pari Passu Debt / Junior Debt concepts tied to the Combined Gross Pari Passu Leverage Ratio, but the actual incremental caps in Section 6.04 are not in the provided text.",
+          "rationale": "Debt capacity runs through Section 6.04 and Pari Passu Debt / Junior Debt concepts tied to the Combined Gross Pari Passu Leverage Ratio.",
           "basis": "Section 6.04 Limitation on Indebtedness; Combined Net Leverage Ratio carve-out referencing Section 6.04(b); Pari Passu Debt in Combined Gross Pari Passu Leverage.",
           "quote": "the pro forma calculation of the Combined Net Leverage Ratio shall not give effect to (i) any Indebtedness incurred on the date of determination pursuant to Section 6.04(b)"
         },
         {
           "vector": "rp_leakage",
           "risk": "unclear",
-          "rationale": "Restricted Payments are governed by Section 6.05 with Permitted Payment/Permitted Investment concepts, but the RP builder and specific baskets are not contained in the provided text; investments into non-Loan-Party subsidiaries are conditioned on no Amortization Period.",
+          "rationale": "Restricted Payments are governed by Section 6.05 with Permitted Payment/Permitted Investment concepts, investments into non-Loan-Party subsidiaries are conditioned on no Amortization Period.",
           "basis": "Section 6.05 Limitation on Restricted Payments; Permitted Investment clause (a) conditioned on no Amortization Period; Permitted Investment clause (q) $5mm basket.",
           "quote": "such Investment is made in cash or Cash Equivalents from operating cash flow or the proceeds of Junior Debt or Pari Passu Debt permitted under this Agreement and no Event of Default has occurred and is continuing and, on a pro forma basis, no Amortization Period is in existence"
         }
@@ -1601,7 +1596,7 @@
       "amendment_count": 0,
       "base_missing": false,
       "governs_instruments": [],
-      "admin_agent": "Lenders from time to time party thereto, Goldman Sachs Bank USA",
+      "admin_agent": null,
       "trustee": null,
       "collateral_agent": "Deutsche Bank Trust Company Americas",
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
@@ -1630,8 +1625,8 @@
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "This incremental assumption agreement does not address voting/sacred-rights or lien-subordination provisions; those reside in the underlying credit agreement amendments not excerpted here.",
-          "basis": "The excerpt is limited to establishing the 2024 Incremental Term Loan and reaffirming existing liens; no priming or voting mechanics appear.",
+          "rationale": "This incremental assumption agreement does not address voting/sacred-rights or lien-subordination provisions.",
+          "basis": "No priming or voting mechanics appear.",
           "quote": "Nothing implied in this Amendment ... shall discharge or release the Lien or priority of any Security Document"
         },
         {
@@ -1645,7 +1640,7 @@
           "vector": "rp_leakage",
           "risk": "not_addressed",
           "rationale": "The document does not address restricted payments capacity; use of proceeds references Permitted Investments but no RP basket is set out.",
-          "basis": "The excerpt contains no restricted payment covenant or basket text.",
+          "basis": null,
           "quote": "will be used for general corporate purposes (including Permitted Investments and related fees and expenses ...)"
         }
       ],
@@ -1676,12 +1671,12 @@
       "trustee": null,
       "collateral_agent": "Administrative Agent, Deutsche Bank Trust Company Americas",
       "creditor_note": "Agents/trustee as named in the agreement. Beneficial holders of loans and bonds are not public; registered-fund holdings (N-PORT) are a partial view shown separately when available.",
-      "guarantors": "Not determinable from the provided excerpt; the text references \"Loan Parties\" and \"Restricted Subsidiaries\" but does not set out the guarantee class in the portions supplied.",
+      "guarantors": null,
       "financial_covenants": [
         {
           "kind": "Leverage-based financial covenant (Section 6.01, captioned 'Leverage Based Financial Covenant')",
-          "threshold": "Not stated in the provided excerpt — the operative Section 6.01 text (level, whether springing) was not included. A related pricing grid references a Consolidated Net Senior Secured Leverage Ratio breakpoint of 3.75:1.00, but that governs commitment-fee pricing, not the maintenance covenant level.",
-          "test_frequency": "Not stated in the provided excerpt",
+          "threshold": "A related pricing grid references a Consolidated Net Senior Secured Leverage Ratio breakpoint of 3.75:1.00, but that governs commitment-fee pricing, not the maintenance covenant level.",
+          "test_frequency": null,
           "springing_trigger": null,
           "quote": "SECTION 6.01.Leverage Based Financial Covenant      148"
         }
@@ -1693,40 +1688,38 @@
           "quote": "\"Closing Date Revolving Available Amount\" shall mean $10,000,000."
         }
       ],
-      "ebitda_addback_categories": [
-        "Pro Forma EBITDA adjustments referenced (clauses (a) through (c) of the definition of 'Pro Forma EBITDA') — the substantive add-back categories are not set out in the provided excerpt"
-      ],
+      "ebitda_addback_categories": [],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": null,
       "unrestricted_subsidiary_designation_flexibility": null,
-      "anchor_clause": "\"Applicable Revolving Commitment Fee Percentage\" pricing grid is keyed to the \"Consolidated Net Senior Secured Leverage Ratio\" (Level I ≥ 3.75:1.00 at 0.500%; Level II < 3.75:1.00 at 0.375%), and Section 6.01 is captioned \"Leverage Based Financial Covenant\" — but the provided text does not contain the operative threshold or trigger of Section 6.01, so the actual financial-covenant level cannot be confirmed from this excerpt.",
+      "anchor_clause": null,
       "lme_vectors": [
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The provided excerpt is limited to the refinancing amendment mechanics, definitions, and the table of contents; it contains no sacred-rights or pro rata sharing/voting provisions bearing on non-pro-rata uptiering.",
+          "rationale": "It contains no sacred-rights or pro rata sharing/voting provisions bearing on non-pro-rata uptiering.",
           "basis": "No amendment/voting or 'Required Lenders' sacred-rights text is present in the supplied portions.",
           "quote": "SECTION 9.08.Waivers; Amendment                         176"
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "not_addressed",
-          "rationale": "The excerpt does not include the investments, unrestricted-subsidiary designation, or IP-transfer covenants needed to assess dropdown/J.Crew capacity.",
+          "rationale": null,
           "basis": "'Restricted Subsidiary' and 'Borrower Group' are defined, but no unrestricted-subsidiary designation mechanics or asset/IP-transfer restrictions appear in the text provided.",
           "quote": "\"Borrower Group\" shall mean the Borrower and each Restricted Subsidiary."
         },
         {
           "vector": "incremental_debt",
           "risk": "unclear",
-          "rationale": "Section 2.22 (Incremental Loans) exists and the deal has already layered in incremental/refinancing tranches, but the excerpt omits the incremental capacity, ratio conditions, and MFN terms needed to gauge risk.",
-          "basis": "Table of contents lists Section 2.22 Incremental Loans and the definitions confirm executed 2024 Incremental Term Loans ($100,000,000) and 2025 Refinancing Term Loans; no incremental basket size or MFN text is in the excerpt.",
+          "rationale": "Section 2.22 (Incremental Loans) exists and the deal has already layered in incremental/refinancing tranches.",
+          "basis": "Table of contents lists Section 2.22 Incremental Loans and the definitions confirm executed 2024 Incremental Term Loans ($100,000,000) and 2025 Refinancing Term Loans.",
           "quote": "SECTION 2.22.Incremental Loans                       100"
         },
         {
           "vector": "rp_leakage",
           "risk": "not_addressed",
           "rationale": "No restricted-payments covenant or associated basket appears in the supplied text.",
-          "basis": "The excerpt contains no negative covenant on restricted payments; only pricing/commitment-fee mechanics tied to leverage are shown.",
+          "basis": "Only pricing/commitment-fee mechanics tied to leverage are shown.",
           "quote": "ARTICLE VI Financial Covenant                        148"
         }
       ],
@@ -1738,11 +1731,11 @@
         "section": "Negative covenants / Definitions",
         "page": null,
         "source_url": "https://www.sec.gov/Archives/edgar/data/1702780/000162828025005486/exhibit10-21lightpathrefin.htm",
-        "quote": "\"Applicable Revolving Commitment Fee Percentage\" pricing grid is keyed to the \"Consolidated Net Senior Secured Leverage Ratio\" (Level I ≥ 3.75:1.00 at 0.500%; Level II < 3.75:1.00 at 0.375%), and Section 6.01 is captioned \"Leverage Based Financial Covenant\" — but the provided text does not contain the operative threshold or trigger of Section 6.01, so the actual financial-covenant level cannot be confirmed from this excerpt."
+        "quote": null
       },
       "agreement_type": "credit_agreement",
       "leverage_covenant_type": "Leverage-based financial covenant (Section 6.01, captioned 'Leverage Based Financial Covenant')",
-      "leverage_ratio_threshold": "Not stated in the provided excerpt — the operative Section 6.01 text (level, whether springing) was not included. A related pricing grid references a Consolidated Net Senior Secured Leverage Ratio breakpoint of 3.75:1.00, but that governs commitment-fee pricing, not the maintenance covenant level.",
+      "leverage_ratio_threshold": "A related pricing grid references a Consolidated Net Senior Secured Leverage Ratio breakpoint of 3.75:1.00, but that governs commitment-fee pricing, not the maintenance covenant level.",
       "restricted_payments_basket_size": null,
       "lme_risk_notes": null
     },
@@ -1790,34 +1783,34 @@
       ],
       "mfn_sunset_period": null,
       "j_crew_blocker_present": true,
-      "unrestricted_subsidiary_designation_flexibility": "The indenture contemplates Unrestricted Subsidiaries and permits dispositions of their Capital Stock/Indebtedness/securities free of the Asset Disposition regime (Asset Disposition definition clause 15). Consolidated Net Income excludes income of non-Restricted Subsidiaries except to the extent of cash actually distributed, and Restricted Payments capacity (Section 4.05) governs designation value leakage. Full designation conditions were not included in the excerpt provided.",
+      "unrestricted_subsidiary_designation_flexibility": "The indenture contemplates Unrestricted Subsidiaries and permits dispositions of their Capital Stock/Indebtedness/securities free of the Asset Disposition regime (Asset Disposition definition clause 15). Consolidated Net Income excludes income of non-Restricted Subsidiaries except to the extent of cash actually distributed, and Restricted Payments capacity (Section 4.05) governs designation value leakage.",
       "anchor_clause": "\"Limitation on Transfer of Assets by Restricted Subsidiaries.\" (Section 4.24) — read alongside Section 4.05 (Limitation on Restricted Payments) and the Unrestricted Subsidiary designation mechanics, as these govern the ability to move value beyond the guarantor group.",
       "lme_vectors": [
         {
           "vector": "incremental_debt",
           "risk": "unclear",
-          "rationale": "The excerpt references Section 4.04 (Limitation on Indebtedness) and ratio-based debt capacity via the Consolidated Net Leverage / Senior Secured Leverage Ratio definitions, but the operative 4.04 basket ladder and ratio thresholds are not included in the provided text.",
+          "rationale": null,
           "basis": "Consolidated Net Leverage Ratio and Consolidated Net Senior Secured Leverage Ratio are defined and cross-referenced to Section 4.04(b); an unlimited amount of Additional Notes with identical terms may be issued subject to covenant compliance.",
           "quote": "an unlimited principal amount of additional securities having identical terms and conditions as the Initial Notes ... subject to the conditions and in compliance with the covenants set forth herein"
         },
         {
           "vector": "dropdown_jcrew",
           "risk": "protected",
-          "rationale": "The indenture contains a dedicated Section 4.24 'Limitation on Transfer of Assets by Restricted Subsidiaries,' the standard J.Crew blocker restricting transfers of material assets, though the operative text of the section was not included in the excerpt.",
+          "rationale": "The indenture contains a dedicated Section 4.24 'Limitation on Transfer of Assets by Restricted Subsidiaries,' the standard J.Crew blocker restricting transfers of material assets.",
           "basis": "Table of Contents lists Section 4.24 Limitation on Transfer of Assets by Restricted Subsidiaries; Asset Disposition definition also carves out (clause 15) dispositions of Capital Stock/Indebtedness/securities of an Unrestricted Subsidiary.",
           "quote": "Section 4.24 Limitation on Transfer of Assets by Restricted Subsidiaries."
         },
         {
           "vector": "rp_leakage",
           "risk": "unclear",
-          "rationale": "Section 4.05 (Limitation on Restricted Payments) exists with a builder-basket construct (Section 4.05(a)(C)(i)/(ii) referenced), but the actual RP baskets, builder amount and Permitted Payment carve-outs were not in the provided excerpt.",
+          "rationale": "Section 4.05 (Limitation on Restricted Payments) exists with a builder-basket construct (Section 4.05(a)(C)(i)/(ii) referenced).",
           "basis": "Consolidated Net Income definition carves out amounts 'solely for the purpose of determining the amount available for Restricted Payments under Section 4.05(a)(C)(i)'; Designated Preference Shares proceeds excluded from Section 4.05(a)(C)(ii) calculation.",
           "quote": "solely for the purpose of determining the amount available for Restricted Payments under Section 4.05(a)(C)(i), any net income (loss) of any Restricted Subsidiary that is not a Guarantor"
         },
         {
           "vector": "uptier_priming",
           "risk": "not_addressed",
-          "rationale": "The provided excerpt (title block, definitions, and Asset Disposition definition) does not include voting/amendment 'sacred rights' provisions or lien-subordination protections needed to assess uptier priming risk.",
+          "rationale": null,
           "basis": "No amendment, waiver, sacred-rights or pro rata sharing provisions appear in the supplied text.",
           "quote": "equal and ratable benefit of the Holders"
         }
@@ -2206,7 +2199,7 @@
     ],
     "uptier_priming": {
       "risk": "unclear",
-      "rationale": "The agreement contains a bespoke Section 6.01 'Prohibition on Liability Management Exercises' plus intercreditor machinery, but the operative text was not in the excerpt, so the precise scope of uptier/priming protection cannot be confirmed.",
+      "rationale": "The agreement contains a bespoke Section 6.01 'Prohibition on Liability Management Exercises' plus intercreditor machinery.",
       "family": "credit agreement dated JULY 6, 2026"
     },
     "j_crew_blocker_present": true,

@@ -100,3 +100,41 @@ def test_covenant_quotes_not_in_the_agreement_are_dropped(monkeypatch):
     assert dropped == 1                               # counted for the pipeline's warning
     assert pkg.anchor_clause == "governing the 5.75% Senior Secured Notes due 2029"
     assert pkg.baskets[0].value == "$500 million" and pkg.baskets[0].quote is None
+
+
+def test_extractor_commentary_and_boilerplate_parties_never_reach_the_package(monkeypatch):
+    from app.capstack import covenants
+
+    fam = group_families([_doc(INDENTURE, doc_class="indenture", exhibit="EX-4.1")])[0]
+    fam.operative.roles = {"trustee": "LLC", "collateral_agent": "THE GUARANTORS"}
+    monkeypatch.setattr(covenants, "_extract_raw", lambda doc: ({
+        "anchor_clause": "governing the 5.75% Senior Secured Notes due 2029",
+        "financial_covenants": [{
+            "kind": "Minimum Liquidity (the maintenance covenant clause itself, Section 6.x, "
+                    "was not included in the excerpt)",
+            "threshold": "Not stated in provided text", "test_frequency": "Quarterly"}],
+        "baskets": [{"name": "Liens", "value": "Governed by Section 6.02; specific capacity "
+                                               "not included in provided excerpt"}],
+        "guarantors": "Not specified in the provided text",
+        "unrestricted_subsidiary_designation_flexibility": (
+            "Section 5.06 governs designation; specific mechanics not reproduced in the "
+            "provided excerpt. IP sits in ring-fenced SPV Parties."),
+        "admin_agent": "Administrative Agent (not named in the provided text)",
+        "trustee": "Wilmington Trust, National Association",
+        "collateral_agent": "Lenders party thereto from time to time",
+        "lme_vectors": []}, "", None))
+    pkg, _, _, _ = covenants.extract_covenant_package(fam)
+    fc = pkg.financial_covenants[0]
+    assert (fc.kind, fc.threshold, fc.test_frequency) == ("Minimum Liquidity", None, "Quarterly")
+    assert pkg.baskets[0].value == "Governed by Section 6.02"
+    assert pkg.guarantors is None
+    assert pkg.unrestricted_subsidiary_designation_flexibility == (
+        "Section 5.06 governs designation; IP sits in ring-fenced SPV Parties.")
+    assert pkg.admin_agent is None and pkg.collateral_agent is None
+    assert pkg.trustee == "Wilmington Trust, National Association"   # head-parse "LLC" skipped
+
+
+def test_shouting_cover_page_date_reads_in_title_case():
+    shouting = BASE_CA.replace("June 27, 2013", "JULY 6, 2026")
+    fam = group_families([_doc(shouting)])[0]
+    assert fam.label == "Credit agreement dated July 6, 2026"
