@@ -15,6 +15,7 @@ from typing import Optional
 import numpy as np
 
 from ..edgar import FinancialSeries, YearFacts, raw_value
+from ..edgar.facts import DEBT_KEYS
 
 
 def _div(a: Optional[float], b: Optional[float]) -> Optional[float]:
@@ -29,9 +30,9 @@ def _sum(*vals) -> Optional[float]:
 
 
 def total_debt(yf: YearFacts) -> Optional[float]:
-    return _sum(raw_value(yf, "lt_debt_noncurrent"),
-                raw_value(yf, "lt_debt_current"),
-                raw_value(yf, "short_term_debt"))
+    """Includes debt subject to compromise: after a petition the pre-petition debt leaves
+    the debt lines, and a quarter must not read as deleveraged."""
+    return _sum(*(raw_value(yf, k) for k in DEBT_KEYS))
 
 
 def ebitda(yf: YearFacts) -> Optional[float]:
@@ -152,8 +153,7 @@ def year_citations(yf: YearFacts, cik: str) -> dict:
         cv.citation.quote = f"{formula} [XBRL]"
         out[key] = cv
 
-    composite("total_debt", total_debt(yf),
-              ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt"))
+    composite("total_debt", total_debt(yf), DEBT_KEYS)
     composite("ebitda", ebitda(yf), ("operating_income", "d_and_a"))
     composite("fcf", fcf(yf), ("operating_cash_flow", "capex"), op=" − ")
     return {k: v.model_dump() for k, v in out.items()}

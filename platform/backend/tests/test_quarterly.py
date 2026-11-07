@@ -48,6 +48,17 @@ def test_ttm_untagged_addback_period_is_no_charge():
     assert ttm_from_periods(periods, D(2025, 9, 30), absent_is_zero=True) == 1611.0
 
 
+def test_ttm_addback_with_no_current_ytd_line_is_no_charge_this_year():
+    # a Q4 impairment, then 10-Qs that carry no impairment line at all
+    q4 = [(D(2025, 1, 1), D(2025, 12, 31), 500.0)]
+    assert ttm_from_periods(q4, D(2026, 3, 31)) is None
+    assert ttm_from_periods(q4, D(2026, 3, 31), absent_is_zero=True) == 500.0
+    assert ttm_from_periods(q4, D(2027, 3, 31), absent_is_zero=True) == 0.0   # rolled out
+    # a first-half charge leaves the trailing window at the next Q2
+    h1 = q4 + [(D(2025, 1, 1), D(2025, 6, 30), 500.0)]
+    assert ttm_from_periods(h1, D(2026, 6, 30), absent_is_zero=True) == 0.0
+
+
 def test_quarter_without_ttm_da_has_no_leverage():
     # AAL: a quarter with TTM operating income but no TTM D&A read as 7.7x -> 15.9x
     q = _q("Q1 2026", D(2026, 3, 31), debt=27e9, oi=1.7e9, da=None)
@@ -95,6 +106,17 @@ def test_quarter_features_maps_instants_and_ttm():
     # a missing TTM flow must degrade to None, not raise
     qf.ttm["operating_income"] = None
     assert quarter_features(qf)["ebitda"] is None
+
+
+def test_hazard_total_debt_counts_debt_subject_to_compromise():
+    # TSE Q2 2026: after the petition $2,433M of debt sits outside the debt lines
+    from app.hazard.features import quarter_features
+
+    qf = QuarterFacts(period_end=D(2026, 6, 30), label="Q2 2026", metrics={
+        "lt_debt_noncurrent": SimpleNamespace(numeric_value=1.9e6),
+        "lt_debt_current": SimpleNamespace(numeric_value=589.6e6),
+        "debt_subject_to_compromise": SimpleNamespace(numeric_value=2432.6e6)})
+    assert abs(quarter_features(qf)["total_debt"] - 3024.1e6) < 1
 
 
 def test_quarterly_timeline_and_changes():

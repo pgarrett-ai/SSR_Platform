@@ -21,6 +21,13 @@ from ..edgar.client import index_url_for
 from ..edgar.facts import fmt_money_millions
 from ..schemas import Citation, CitedValue, DebtInstrument
 
+# After a Chapter 11 petition the pre-petition instruments are carried as subject to
+# compromise. Those amounts add accrued interest, so they stand in for a member's carrying
+# amount only where no carrying concept is tagged for it (_pick_key).
+_COMPROMISE_CONCEPTS = {
+    "us-gaap:LiabilitiesSubjectToCompromiseDebtAndAccruedInterest",
+    "us-gaap:LiabilitiesSubjectToCompromise",
+}
 # Carrying-amount concepts. Issuers spread their instrument table across these (LCID tags
 # converts as LongTermDebt/ConvertibleDebt, facilities as ShortTermBorrowings; AAL uses
 # DebtInstrumentCarryingAmount throughout). Per member we take the LARGEST value at the
@@ -39,10 +46,7 @@ _CARRYING_CONCEPTS = {
     "us-gaap:LongTermLineOfCredit",
     "us-gaap:LinesOfCreditCurrent",
     "us-gaap:ShortTermBorrowings",
-    # after a Chapter 11 petition the pre-petition instruments are carried here
-    "us-gaap:LiabilitiesSubjectToCompromiseDebtAndAccruedInterest",
-    "us-gaap:LiabilitiesSubjectToCompromise",
-}
+} | _COMPROMISE_CONCEPTS
 # Facility capacity concepts — commitment size and undrawn headroom. Selected at their own
 # latest instant (subsequent-event amendments are exactly what we want to surface).
 _COMMITMENT_CONCEPTS = {
@@ -290,11 +294,13 @@ def _instrument_from_member(member: str, carrying: Optional[dict], related: list
     )
 
 
-def _pick_key(f: dict) -> tuple[int, float]:
-    """Consolidated (no LegalEntityAxis) beats per-entity duplicates; then the larger
-    amount wins — carrying concepts overlap (LongTermDebt spans ConvertibleDebt etc.),
-    so max-of-concepts avoids double-counting a member without preferring a tag style."""
-    return (0 if f.get("dim_dei_LegalEntityAxis") else 1, _num(f) or 0.0)
+def _pick_key(f: dict) -> tuple[int, int, float]:
+    """Consolidated (no LegalEntityAxis) beats per-entity duplicates; a carrying concept
+    beats a subject-to-compromise amount; then the larger amount wins — carrying concepts
+    overlap (LongTermDebt spans ConvertibleDebt etc.), so max-of-concepts avoids
+    double-counting a member without preferring a tag style."""
+    return (0 if f.get("dim_dei_LegalEntityAxis") else 1,
+            0 if str(f.get("concept")) in _COMPROMISE_CONCEPTS else 1, _num(f) or 0.0)
 
 
 def _usd(fact: dict) -> bool:

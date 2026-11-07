@@ -64,6 +64,18 @@ def test_group_latest_instant_and_entity_preference():
     assert not by_member["aal:Notes575Member"].get("dim_dei_LegalEntityAxis")  # consolidated wins
 
 
+def test_subject_to_compromise_amount_never_beats_carrying():
+    # post-petition, a member's compromise amount adds accrued interest to its carrying value
+    lstc = "us-gaap:LiabilitiesSubjectToCompromiseDebtAndAccruedInterest"
+    by_member, _, _ = group_debt_facts([
+        _fact("us-gaap:LongTermDebt", 400e6, "tse:NotesMember"),
+        _fact(lstc, 419.9e6, "tse:NotesMember"),
+        _fact(lstc, 1266.2e6, "tse:TermLoanMember"),   # only the compromise amount is tagged
+    ])
+    assert {m: float(f["numeric_value"]) for m, f in by_member.items()} == {
+        "tse:NotesMember": 400e6, "tse:TermLoanMember": 1266.2e6}
+
+
 # LCID-shaped facts: converts under LongTermDebt/ConvertibleDebt (dual-tagged), an undrawn
 # revolver, a commitment-only amendment member, and two facilities sharing a generic label.
 LCID_FACTS = [

@@ -15,6 +15,7 @@ from __future__ import annotations
 from typing import Optional
 
 from ..edgar.facts import (
+    DEBT_KEYS,
     FinancialSeries,
     YearFacts,
     cited_metric,
@@ -25,9 +26,6 @@ from ..edgar.facts import (
 )
 from ..schemas import CitedValue, ForensicFlag, ForensicTableRow
 
-_DEBT_COMPONENTS = ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt",
-                    "debt_subject_to_compromise")
-
 
 # ---- derived metrics -------------------------------------------------------
 
@@ -35,7 +33,7 @@ _DEBT_COMPONENTS = ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt",
 def total_debt(yf: YearFacts) -> tuple[Optional[float], list[str]]:
     parts, total = [], 0.0
     found = False
-    for key in _DEBT_COMPONENTS:
+    for key in DEBT_KEYS:
         v = raw_value(yf, key)
         if v is not None:
             total += v
