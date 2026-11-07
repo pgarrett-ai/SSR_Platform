@@ -142,8 +142,9 @@ def fill_maturity_from_name(instruments: list[DebtInstrument],
     """Deterministic maturity fallback: '2030 Notes' names its due year; 'Notes due 2028'
     states it outright. Facility vintage years ('2025 GIB Credit Facility') are NOT
     maturities and are skipped — notes carry the year-as-maturity convention, and a term
-    loan only when its year is after the as-of year, which no vintage can be ('2028 Term
-    Loan B' at TSE; '2021 AAdvantage Term Loan Facility' stays unfilled at AAL).
+    loan only when no vintage can be meant: a year after the as-of year ('2028 Term Loan B'
+    at TSE), or the as-of year itself unless the name calls itself a facility, as vintages
+    do ('2026 Term Loan' is due this year; '2021 AAdvantage Term Loan Facility' at AAL).
     Returns the number of maturities filled."""
     asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
     filled = 0
@@ -156,7 +157,10 @@ def fill_maturity_from_name(instruments: list[DebtInstrument],
         if year is None and inst.facility_type in ("notes", "term loan"):
             ys = re.findall(r"\b(20[2-6]\d)\b", name)
             year = int(ys[0]) if ys else None
-            if inst.facility_type == "term loan" and not (asof_year and year and year > asof_year):
+            vintage = "facilit" in name.lower()
+            if inst.facility_type == "term loan" and not (
+                    asof_year and year and (year > asof_year
+                                            or (year == asof_year and not vintage))):
                 year = None
         if year and (asof_year is None or year >= asof_year):
             inst.maturity = str(year)
@@ -264,14 +268,15 @@ def _apply_annotations(instruments: list[DebtInstrument], annotations: list[dict
 def annotate_maturities(instruments: list[DebtInstrument], ft: FilingText,
                         asof: Optional[str] = None,
                         aliases: Optional[dict[str, list[str]]] = None,
-                        ) -> tuple[Optional[str], list[tuple[str, str]]]:
+                        ) -> tuple[Optional[str], list[tuple[str, str]], int]:
     """One LLM call: maturity strings + floating-rate bases for the XBRL instrument list.
-    Mutates the instruments in place; returns (error-or-None, learned alias pairs)."""
+    Mutates the instruments in place; returns (error-or-None, learned alias pairs, number
+    of annotations dropped because their quote is not in the footnote)."""
     if not instruments:
-        return None, []
+        return None, [], 0
     window = ft.debt_window()
     if not window:
-        return "no debt footnote text", []
+        return "no debt footnote text", [], 0
     names = "\n".join(f"- {i.instrument}" for i in instruments)
     user = (
         f"Filing: {ft.form_type} filed {ft.filing_date} (period {ft.period_of_report}).\n"
@@ -288,9 +293,9 @@ def annotate_maturities(instruments: list[DebtInstrument], ft: FilingText,
         max_tokens=4000,
     )
     if result is None:
-        return "LLM unavailable", []
+        return "LLM unavailable", [], 0
     if "__error__" in result:
-        return result["__error__"], []
-    learned = _apply_annotations(instruments, result.get("annotations", []), ft, asof, window,
-                                 aliases)
-    return None, learned
+        return result["__error__"], [], 0
+    annotations = result.get("annotations", [])
+    learned = _apply_annotations(instruments, annotations, ft, asof, window, aliases)
+    return None, learned, sum(not quote_in_text(a.get("quote"), window) for a in annotations)

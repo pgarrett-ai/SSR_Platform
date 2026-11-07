@@ -68,3 +68,21 @@ def test_apply_annotations_drops_a_quote_the_text_does_not_contain():
                                  "quote": "the notes mature in 2032"}],
                        ft, "2026-03-31", "The 2030 notes will mature on April 1, 2030.")
     assert inst.maturity is None and inst.citation is None
+
+
+def test_annotate_maturities_counts_the_quotes_it_drops(monkeypatch):
+    from app.capstack import debt_schedule
+
+    window = "The 2030 notes will mature on April 1, 2030."
+    ft = SimpleNamespace(accession_no="a", form_type="10-Q", filing_date="2026-05-05",
+                         period_of_report="2026-03-31", source_url="u",
+                         debt_window=lambda: window)
+    monkeypatch.setattr(debt_schedule, "extract_structured", lambda **kw: {"annotations": [
+        {"instrument": "2030 Notes", "maturity": "April 1, 2030",
+         "quote": "will mature on April 1, 2030"},
+        {"instrument": "2031 Notes", "maturity": "2031", "quote": "the 2031 notes mature in 2031"},
+    ]})
+    insts = [_inst("2030 Notes"), _inst("2031 Notes")]
+    err, _, dropped = debt_schedule.annotate_maturities(insts, ft, "2026-03-31")
+    assert err is None and dropped == 1
+    assert [i.maturity for i in insts] == ["April 1, 2030", None]

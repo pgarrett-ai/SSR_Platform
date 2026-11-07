@@ -205,19 +205,22 @@ def test_fill_maturity_from_name():
         DebtInstrument(instrument="Senior Notes due 2028", facility_type="notes"),
         DebtInstrument(instrument="Term Loan", facility_type="term loan"),
         DebtInstrument(instrument="2026 Notes", facility_type="notes", maturity="December 2026"),
-        # a term loan's year is a maturity only when no vintage could be: after the as-of
+        # a term loan's year is a maturity only when no vintage could be: after the as-of,
+        # or the as-of year itself when the name doesn't call itself a facility
         DebtInstrument(instrument="2028 Term Loan B", facility_type="term loan"),
         DebtInstrument(instrument="2026 Term Loan", facility_type="term loan"),
+        DebtInstrument(instrument="2026 Term Loan Facility", facility_type="term loan"),
         DebtInstrument(instrument="2021 AAdvantage Term Loan Facility", facility_type="term loan"),
     ]
     n = fill_maturity_from_name(insts, "2026-03-31")
-    assert n == 3
+    assert n == 4
     assert insts[0].maturity == "2030"
     assert insts[1].maturity is None        # facility vintage year is not a maturity
     assert insts[2].maturity == "2028"
     assert insts[3].maturity is None
     assert insts[4].maturity == "December 2026"   # existing annotation untouched
-    assert [i.maturity for i in insts[5:]] == ["2028", None, None]   # TSE's $1.9bn of 2028s
+    # TSE's $1.9bn of 2028s; a term loan due this year is the most urgent wall bucket
+    assert [i.maturity for i in insts[5:]] == ["2028", "2026", None, None]
 
 
 def test_instrument_fields_floater_and_range():

@@ -49,6 +49,18 @@ def test_leverage_divides_by_the_canonical_ebitda():
            "FY2025)" in bridge.reported_leverage.formula
 
 
+def test_spliced_bridge_prints_its_debt_period_and_keeps_ratios_without_ebitda():
+    from app.capstack.bridge import renormalize_spliced_bridge
+
+    series = _series(**BASE)
+    prior, _ = build_bridge(series, [], None, _canonical(series))
+    ratio = prior.reported_leverage.value
+    assert renormalize_spliced_bridge(prior, None).reported_leverage.value == ratio
+    assert prior.ebitda is not None
+    spliced = renormalize_spliced_bridge(prior, _canonical(series), "FY2025")
+    assert "reported debt $24,000M (FY2025) / EBITDA" in spliced.reported_leverage.formula
+
+
 def test_canonical_ebitda_adds_back_impairments():
     # ATUS FY2025: a $1.6bn franchise write-down took operating income to -$113M
     series = _series(**dict(BASE, operating_income=-0.113e9, d_and_a=1.697e9),

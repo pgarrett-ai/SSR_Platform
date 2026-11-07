@@ -282,10 +282,14 @@ def run_overview(
                     from .store import load_aliases, record_aliases
                     with session_scope() as session:
                         known_aliases = load_aliases(session, ticker)
-                    ann_err, learned = annotate_maturities(
+                    ann_err, learned, n_ungrounded = annotate_maturities(
                         debt_schedule, debt_ft or ft, debt_asof, aliases=known_aliases)
                     if ann_err:
                         warnings.append(f"Maturity annotation: {ann_err}")
+                    if n_ungrounded:
+                        warnings.append(f"{n_ungrounded} maturity annotation quote(s) not found "
+                                        "verbatim in the debt footnote; those maturities were "
+                                        "not applied.")
                     with session_scope() as session:
                         if learned:
                             record_aliases(session, ticker, learned, source="fuzzy")
@@ -463,8 +467,12 @@ def run_overview(
             # reuse the prior LLM-extracted content, but recompute the ratio arithmetic
             # with current code — a spliced bridge must not fossilize old semantics
             if economic_debt_bridge is None and prior.economic_debt_bridge is not None:
+                # the prior bridge's debt is its latest fiscal-year balance sheet
+                prior_fy = next((r.fiscal_year for r in reversed(prior.forensic_table)
+                                 if not r.label), None)
                 economic_debt_bridge = renormalize_spliced_bridge(
-                    prior.economic_debt_bridge, ebitda_cv)
+                    prior.economic_debt_bridge, ebitda_cv,
+                    f"FY{prior_fy}" if prior_fy else None)
             obs_items = obs_items or prior.obs_items
             covenants = covenants or prior.covenants
             subsidiaries = subsidiaries or prior.subsidiaries

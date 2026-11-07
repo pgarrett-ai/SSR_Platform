@@ -292,19 +292,21 @@ def _leverage_ratios(rep_val: float, econ_val: float, ebitda: Optional[CitedValu
 _LEGACY_LINE_KEYS = {"cash_offset", "restricted_cash_offset", "net_economic_debt"}
 
 
-def renormalize_spliced_bridge(bridge: EconomicDebtBridge,
-                               ebitda: Optional[CitedValue]) -> EconomicDebtBridge:
+def renormalize_spliced_bridge(bridge: EconomicDebtBridge, ebitda: Optional[CitedValue],
+                               debt_period: Optional[str] = None) -> EconomicDebtBridge:
     """A bridge spliced from a prior snapshot carries whatever ratio semantics its era used
     (EBITDAR denominator, cash-netting lines, a net-income-walk EBITDA). The LLM-extracted
     content is reusable; the arithmetic is not — drop legacy lines and recompute both
-    leverage ratios over this run's canonical EBITDA."""
+    leverage ratios over this run's canonical EBITDA. `debt_period` names the balance sheet
+    the prior debt is from. With no current EBITDA the prior ratios stand."""
     bridge.lines = [l for l in bridge.lines if l.key not in _LEGACY_LINE_KEYS]
     rep = bridge.reported_debt.value if bridge.reported_debt else None
     econ = bridge.economic_debt.value if bridge.economic_debt else None
-    if rep is None or econ is None:
+    if rep is None or econ is None or ebitda is None:
         return bridge
     bridge.ebitda = ebitda
-    bridge.reported_leverage, bridge.economic_leverage = _leverage_ratios(rep, econ, ebitda)
+    bridge.reported_leverage, bridge.economic_leverage = _leverage_ratios(
+        rep, econ, ebitda, debt_period)
     return bridge
 
 
