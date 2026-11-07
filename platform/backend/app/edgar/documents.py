@@ -67,7 +67,8 @@ class FilingText:
         return window_by_keywords(self.notes, OBS_KEYWORDS, max_chars=max_chars)
 
     def debt_window(self, max_chars: int = 28000) -> str:
-        return window_by_keywords(self.notes, DEBT_KEYWORDS, max_chars=max_chars)
+        return window_by_keywords(self.notes, DEBT_KEYWORDS, max_chars=max_chars,
+                                  densest_first=True)
 
 
 _SPACE_CHARS = "              　"
@@ -184,9 +185,14 @@ def get_mdna_only(filing) -> Optional[FilingText]:
 
 
 def window_by_keywords(
-    text: str, keywords, radius: int = 2800, max_chars: int = 60000
+    text: str, keywords, radius: int = 2800, max_chars: int = 60000,
+    densest_first: bool = False,
 ) -> str:
-    """Extract merged ±radius windows around every keyword hit, capped at max_chars."""
+    """Extract merged ±radius windows around every keyword hit, capped at max_chars.
+    With `densest_first`, an over-cap text also keeps the windows with the most hits per
+    character, up to another max_chars: the earliest windows alone can be a 10-Q's
+    statement captions ('Long-term debt', one hit each) that fill the cap before the debt
+    note's instrument table. Output stays in document order."""
     if not text:
         return ""
     lowered = text.lower()
@@ -203,21 +209,23 @@ def window_by_keywords(
     if not spans:
         return ""
     spans.sort()
-    merged = [list(spans[0])]
+    merged = [[*spans[0], 1]]   # [start, end, hits]
     for s, e in spans[1:]:
         if s <= merged[-1][1]:
             merged[-1][1] = max(merged[-1][1], e)
+            merged[-1][2] += 1
         else:
-            merged.append([s, e])
-    out: list[str] = []
-    total = 0
-    for s, e in merged:
-        chunk = text[s:e]
-        if total + len(chunk) > max_chars:
-            chunk = chunk[: max(0, max_chars - total)]
-        if chunk:
-            out.append(chunk)
-            total += len(chunk)
-        if total >= max_chars:
-            break
-    return "\n…\n".join(out)
+            merged.append([s, e, 1])
+    orders = [merged]
+    if densest_first:
+        orders.append(sorted(merged, key=lambda m: m[2] / (m[1] - m[0]), reverse=True))
+    kept: dict[int, int] = {}   # window start -> end; each order fills its own max_chars
+    for order in orders:
+        room = max_chars
+        for s, e, _ in order:
+            if room <= 0:
+                break
+            end = min(e, s + room)
+            kept[s] = max(kept.get(s, s), end)
+            room -= end - s
+    return "\n…\n".join(text[s:e] for s, e in sorted(kept.items()))

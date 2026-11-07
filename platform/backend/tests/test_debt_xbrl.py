@@ -254,6 +254,30 @@ def test_drop_retired():
     assert [i.maturity for i in kept] == ["February 2028", "2026 to 2038"]
 
 
+def test_footnote_extraction_drops_balance_sheet_aggregates(monkeypatch):
+    # ATUS: read from the balance sheet alone, the model returned its debt captions as rows
+    from app.capstack import debt_schedule
+
+    ft = SimpleNamespace(accession_no="a", form_type="10-Q", filing_date="2026-11-06",
+                         period_of_report="2026-09-30", source_url="u",
+                         debt_window=lambda: "Debt 6,371,609 Long-term debt 20,445,294")
+    rows = [
+        {"instrument": "Debt (current portion, aggregate balance-sheet line; no instrument "
+                       "detail given)", "outstanding_usd": 6.37e9, "quote": "Debt 6,371,609"},
+        {"instrument": "Long-term debt, net of current maturities", "outstanding_usd": 20.4e9,
+         "quote": "Long-term debt 20,445,294"},
+        {"instrument": "Total debt", "outstanding_usd": 26.8e9, "quote": "Debt"},
+        {"instrument": "Less: current maturities", "outstanding_usd": -6.37e9, "quote": "Debt"},
+    ]
+    monkeypatch.setattr(debt_schedule, "extract_structured", lambda **kw: {"instruments": rows})
+    assert debt_schedule.extract_debt_schedule(ft) == ([], None)
+
+    rows.append({"instrument": "CSC Holdings 7.500% Senior Notes due April 1, 2028",
+                 "outstanding_usd": 1.05e9, "quote": "Long-term debt"})
+    insts, _ = debt_schedule.extract_debt_schedule(ft)
+    assert [i.instrument for i in insts] == ["CSC Holdings 7.500% Senior Notes due April 1, 2028"]
+
+
 # ---- empty-schedule warning (ATUS-style silent gap) --------------------------------------
 
 

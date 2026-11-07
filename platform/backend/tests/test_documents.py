@@ -39,6 +39,24 @@ def test_get_filing_text_falls_back_to_whole_filing_text_when_notes_missing():
     assert "aggregate principal" in ft.debt_window()
 
 
+def test_debt_window_reaches_the_debt_note_past_statement_captions():
+    # ATUS 10-Q: one-hit statement captions fill the first 28k chars; the instrument table
+    # sits further in and must still be read, alongside the early text
+    from app.edgar.documents import FilingText
+
+    captions = "".join(f"Long-term debt, net of current maturities {n},000\n" + "x" * 6000
+                       for n in range(8))
+    note = ("NOTE 9. DEBT\nCSC Holdings Senior Notes: April 1, 2028 7.500% 1,045,882. "
+            "Term loan B-5 matures April 15, 2027. The revolving credit facility matures "
+            "July 13, 2027. Senior secured notes due 2031, aggregate principal $1,527,000.")
+    ft = FilingText(accession_no="a", form_type="10-Q", filing_date="2026-11-06",
+                    period_of_report="2026-09-30", source_url="u", mdna="",
+                    notes=captions + note)
+    window = ft.debt_window()
+    assert "Term loan B-5 matures April 15, 2027" in window
+    assert "net of current maturities 0,000" in window
+
+
 def test_quote_in_text_folds_formatting_and_follows_splices():
     from app.edgar.documents import quote_in_text
 

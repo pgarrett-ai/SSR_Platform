@@ -20,8 +20,17 @@ _SYSTEM = (
     "You are a distressed-credit analyst building an issuer's debt schedule (cap table) from its "
     "long-term-debt footnote. Extract one row per distinct debt instrument or facility. Be precise "
     "and conservative: use only amounts present in the text, and attach a verbatim quote to each "
-    "instrument. Do not invent coupons, maturities, or lien priorities that aren't stated."
+    "instrument. Do not invent coupons, maturities, or lien priorities that aren't stated. "
+    "A balance-sheet total or caption (total debt, current portion or current maturities, "
+    "long-term debt net of current maturities, a subtotal) is not an instrument: never record "
+    "one, and if the text gives only such totals, record no instruments."
 )
+
+# Balance-sheet captions and subtotals that are never instruments: 'Total debt', 'Debt
+# (current portion)', 'Long-term debt, net of current maturities', 'Less: current maturities'.
+_AGGREGATE_RE = re.compile(
+    r"^\s*(?:less\b|total\b|(?:long|short)[- ]term debt\b|debt\b)"
+    r"|\baggregate\b|\bcurrent (?:portion|maturities)\b|\bnet of current\b", re.I)
 
 _TOOL_DESCRIPTION = (
     "Record each debt instrument / facility in the issuer's capital structure. Convert amounts to "
@@ -83,6 +92,8 @@ def extract_debt_schedule(ft: FilingText) -> tuple[list[DebtInstrument], Optiona
 
     out: list[DebtInstrument] = []
     for raw in result.get("instruments", []):
+        if _AGGREGATE_RE.search(raw.get("instrument") or ""):
+            continue   # an aggregate line as a cap-table row would hide the missing detail
         citation = Citation(
             accession_no=ft.accession_no,
             form_type=ft.form_type,
