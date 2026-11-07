@@ -33,25 +33,22 @@ class Settings(BaseSettings):
 
     # LLM extraction (covenant + OBS footnotes). Empty string => LLM phases are skipped gracefully.
     anthropic_api_key: str = ""
-    anthropic_model: str = "claude-opus-4-8"
+    anthropic_model: str = "claude-opus-5-5"
 
     database_url: str = f"sqlite:///{(DATA_DIR / 'platform.db').as_posix()}"
 
-    hero_tickers: str = "AAL,ATUS,TSE"
+    hero_tickers: str = "AAL,ATUS,TSE,LCID"
 
-    # PR-6 auth v1 (plan §11): shared bearer token for every /api/* route except /api/health.
-    # Empty (the localhost default) = open — set it the day the app leaves localhost.
+    # Shared bearer token for every /api/* route except /api/health. Empty (the localhost
+    # default) = open — set it the day the app leaves localhost.
     platform_api_token: str = ""
 
     # Politeness: edgartools/EDGAR allow ~10 req/s; we stay well under.
     edgar_max_requests_per_sec: float = 8.0
 
     # --- hazard (default-risk) settings ---
-    # FINRA TRACE bond spreads (optional). Empty => the bond-spread section is skipped.
-    finra_api_key: str = ""
-    finra_api_secret: str = ""
-    market_index: str = "SPY"        # benchmark for excess return / CHS relative size
-    risk_free_rate: float = 0.04     # Merton r; refine from the curve later
+    market_index: str = "SPY"        # benchmark for the 1-year excess return
+    risk_free_rate: float = 0.04     # Merton r
 
     @property
     def hero_ticker_set(self) -> set[str]:
@@ -65,9 +62,6 @@ class Settings(BaseSettings):
     def llm_enabled(self) -> bool:
         return self.llm_key_set and _runtime().get("llm_enabled", True)
 
-    @property
-    def trace_enabled(self) -> bool:
-        return bool(self.finra_api_key.strip() and self.finra_api_secret.strip())
 
 
 # Runtime toggles the UI can flip without a restart. Read per access (tiny file) so the

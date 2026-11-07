@@ -1,8 +1,9 @@
 """Anthropic client for structured JSON extraction.
 
-Uses tool-use with a forced tool call as the response schema (no regex for semantics, low
-temperature). Returns the tool input as a plain dict. Designed to fail soft: if the key is
-missing or the API errors, callers get None and the pipeline degrades gracefully.
+The response schema is a tool definition; the system prompt tells the model to call it once
+(current models reject a forced tool_choice). Returns the tool input as a plain dict.
+Fails soft: no key -> None; API error, refusal or a truncated response -> {"__error__": ...},
+which every caller turns into a pipeline warning.
 """
 from __future__ import annotations
 
@@ -10,6 +11,12 @@ import json
 from typing import Any, Optional
 
 from .config import get_settings
+
+# Adaptive thinking is always on and its tokens count against max_tokens: leave headroom so
+# the tool call itself is never the part that gets cut off.
+_MIN_MAX_TOKENS = 16000
+_FALLBACK_BETA = "server-side-fallback-2026-06-01"
+_FALLBACK_MODEL = "claude-opus-4-8"   # re-runs a request the primary model declines
 
 
 class LLMUnavailable(Exception):
@@ -22,7 +29,10 @@ def _client():
         raise LLMUnavailable("ANTHROPIC_API_KEY not set")
     import anthropic
 
-    return anthropic.Anthropic(api_key=settings.anthropic_api_key), settings.anthropic_model
+    # whole-document extractions can take minutes; 5 min x 3 attempts bounds a stuck call
+    return (anthropic.Anthropic(api_key=settings.anthropic_api_key, timeout=300.0,
+                                max_retries=2),
+            settings.anthropic_model)
 
 
 def extract_structured(
@@ -34,46 +44,48 @@ def extract_structured(
     input_schema: dict[str, Any],
     max_tokens: int = 4096,
     model: Optional[str] = None,
+    effort: str = "medium",
 ) -> Optional[dict[str, Any]]:
-    """Force a single tool call and return its input dict, or None on failure.
-
-    `model` overrides the configured default for cheap, narrow tasks (e.g. the gap-fill
-    re-search runs on claude-haiku-4-5); big document extractions stay on the default.
-
-    Note: newer models (e.g. claude-opus-4-8) deprecate the `temperature` parameter and run
-    deterministically by default, so we don't send it.
-    """
+    """Ask for exactly one `tool_name` call and return its input dict, or None when the LLM
+    is not configured. `model` overrides the configured default for narrow tasks;
+    `max_tokens` is the size of the expected output, raised to leave room for thinking."""
     try:
         client, default_model = _client()
     except LLMUnavailable:
         return None
 
+    model = model or default_model
+    kwargs: dict[str, Any] = {}
+    if "haiku" not in model:   # Haiku has no server-side refusal fallback
+        kwargs = {"betas": [_FALLBACK_BETA], "fallbacks": [{"model": _FALLBACK_MODEL}]}
     try:
-        resp = client.messages.create(
-            model=model or default_model,
-            max_tokens=max_tokens,
-            system=system,
-            tools=[
-                {
-                    "name": tool_name,
-                    "description": tool_description,
-                    "input_schema": input_schema,
-                }
-            ],
-            tool_choice={"type": "tool", "name": tool_name},
+        resp = client.beta.messages.create(
+            model=model,
+            max_tokens=max(max_tokens, _MIN_MAX_TOKENS),
+            system=f"{system}\n\nRespond by calling the `{tool_name}` tool exactly once.",
+            tools=[{"name": tool_name, "description": tool_description,
+                    "input_schema": input_schema}],
+            tool_choice={"type": "auto", "disable_parallel_tool_use": True},
+            output_config={"effort": effort},
             messages=[{"role": "user", "content": user}],
+            **kwargs,
         )
     except Exception as exc:  # network / rate / model errors -> degrade gracefully
         return {"__error__": str(exc)}
 
+    if resp.stop_reason == "max_tokens":
+        return {"__error__": "LLM response truncated at max_tokens; extraction incomplete"}
+    if resp.stop_reason == "refusal":
+        return {"__error__": "LLM declined the request"}
     for block in resp.content:
         if getattr(block, "type", None) == "tool_use" and block.name == tool_name:
             return dict(block.input)
-    # Fallback: some responses may put JSON in text
-    for block in resp.content:
+    for block in resp.content:   # a model that answered in text instead of the tool
         if getattr(block, "type", None) == "text":
             try:
-                return json.loads(block.text)
-            except Exception:
+                data = json.loads(block.text)
+            except ValueError:
                 continue
-    return None
+            if isinstance(data, dict):
+                return data
+    return {"__error__": f"LLM did not call {tool_name}"}
