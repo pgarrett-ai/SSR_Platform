@@ -1256,7 +1256,7 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
     """Chapter-11 case card inputs (Moyer ch. 12): the cited petition date (the 8-K Item
     1.03 filing date, a proxy for the docket petition date) and a weak free-fall hint
     (revolver drawn ≈ $0 undrawn). The statutory clocks/benchmark are computed frontend."""
-    from .capstack.eightk import petition_filing
+    from .capstack.eightk import petition_citation, petition_filing
 
     ov = _cached_overview(ticker, years)   # cache-only: a page-mount fetch must not launch a live run
 
@@ -1270,11 +1270,7 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
             pf, petition_error = None, True
         if pf and pf.get("date"):
             petition = {"value": pf["date"], "display": pf["date"], "derived": False,
-                        "citation": {"form_type": "8-K",
-                                     "section": "Item 1.03 — Bankruptcy or Receivership",
-                                     "filing_date": pf["date"], "accession_no": pf.get("accession"),
-                                     "source_url": pf.get("source_url"),
-                                     "quote": "petition date proxied by the 8-K Item 1.03 filing date"}}
+                        "citation": petition_citation(pf).model_dump()}
 
     liq = ov.get("liquidity") or {}
     undrawn = liq.get("undrawn_committed")

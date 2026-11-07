@@ -13,7 +13,7 @@ import json
 from dataclasses import dataclass
 from typing import Optional
 
-from ..edgar.documents import window_by_keywords
+from ..edgar.documents import quote_in_text, window_by_keywords
 from ..core.llm import extract_structured
 from ..schemas import Citation, CovenantFact, CovenantPackage, FinancialCovenant, LmeVector
 
@@ -291,16 +291,23 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
     if result is None:
         return None, None, err
 
+    def verbatim(quote: Optional[str]) -> Optional[str]:
+        """Checked against the agreement itself, so cached extractions are checked too: a
+        quote the text does not contain is dropped, never shown as verbatim; its fact stays."""
+        return quote if quote_in_text(quote, doc.text) else None
+
     fincovs = [FinancialCovenant(**{k: fc.get(k) for k in
                                     ("kind", "threshold", "test_frequency",
-                                     "springing_trigger", "quote")})
+                                     "springing_trigger")}, quote=verbatim(fc.get("quote")))
                for fc in result.get("financial_covenants") or [] if isinstance(fc, dict)]
-    baskets = [CovenantFact(name=b.get("name", ""), value=b.get("value"), quote=b.get("quote"))
+    baskets = [CovenantFact(name=b.get("name", ""), value=b.get("value"),
+                            quote=verbatim(b.get("quote")))
                for b in result.get("baskets") or [] if isinstance(b, dict) and b.get("name")]
     vectors = [LmeVector(vector=v.get("vector", ""), risk=v.get("risk", "not_addressed"),
                          rationale=v.get("rationale"), basis=v.get("basis"),
-                         quote=v.get("quote"))
+                         quote=verbatim(v.get("quote")))
                for v in result.get("lme_vectors") or [] if isinstance(v, dict) and v.get("vector")]
+    anchor = verbatim(result.get("anchor_clause"))
 
     citation = Citation(
         accession_no=doc.accession,
@@ -309,7 +316,7 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
         exhibit=doc.exhibit_type,
         section="Negative covenants / Definitions",
         source_url=doc.url,
-        quote=result.get("anchor_clause"),
+        quote=anchor,
     )
     package = CovenantPackage(
         family_label=family.label,
@@ -331,7 +338,7 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
         j_crew_blocker_present=result.get("j_crew_blocker_present"),
         unrestricted_subsidiary_designation_flexibility=result.get(
             "unrestricted_subsidiary_designation_flexibility"),
-        anchor_clause=result.get("anchor_clause"),
+        anchor_clause=anchor,
         lme_vectors=vectors,
         citation=citation,
         # legacy display fields, filled for DB/FTS continuity

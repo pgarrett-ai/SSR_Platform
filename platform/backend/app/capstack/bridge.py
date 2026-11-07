@@ -146,8 +146,8 @@ def _llm_cited_value(item: ObsExtraction, ft: Optional[FilingText],
 
 
 def _include_in_bridge(item: ObsExtraction) -> bool:
-    if item.category in ("lease_operating", "lease_finance"):
-        return False  # leases handled from XBRL
+    if item.category in ("lease_operating", "lease_finance") or not item.grounded:
+        return False  # leases handled from XBRL; an unverifiable quote adds nothing
     if item.amount_usd is None or item.amount_usd <= 0:
         return False
     if item.category in _STRUCTURAL_BRIDGE_CATEGORIES:

@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from ..edgar.documents import FilingText
+from ..edgar.documents import QUOTE_NOT_FOUND, FilingText, quote_in_text
 from ..core.llm import extract_structured
 
 OBS_CATEGORIES = [
@@ -78,6 +78,7 @@ class ObsExtraction:
     bridge_rationale: Optional[str]
     section: Optional[str]
     quote: str
+    grounded: bool = True      # False: the quote is not in the text read; never bridged
 
 
 def extract_obs_items(ft: FilingText) -> tuple[list[ObsExtraction], Optional[str]]:
@@ -112,6 +113,7 @@ def extract_obs_items(ft: FilingText) -> tuple[list[ObsExtraction], Optional[str
 
     items: list[ObsExtraction] = []
     for raw in result.get("items", []):
+        grounded = quote_in_text(raw.get("quote"), window)
         try:
             items.append(
                 ObsExtraction(
@@ -121,10 +123,12 @@ def extract_obs_items(ft: FilingText) -> tuple[list[ObsExtraction], Optional[str
                     amount_text=raw.get("amount_text"),
                     period=raw.get("period"),
                     recourse=raw.get("recourse", "unknown"),
-                    include_in_bridge=bool(raw.get("include_in_bridge", False)),
-                    bridge_rationale=raw.get("bridge_rationale"),
+                    include_in_bridge=grounded and bool(raw.get("include_in_bridge", False)),
+                    bridge_rationale=(raw.get("bridge_rationale") if grounded
+                                      else QUOTE_NOT_FOUND),
                     section=raw.get("section"),
                     quote=raw.get("quote", ""),
+                    grounded=grounded,
                 )
             )
         except Exception:

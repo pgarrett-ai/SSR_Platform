@@ -39,6 +39,9 @@ _CARRYING_CONCEPTS = {
     "us-gaap:LongTermLineOfCredit",
     "us-gaap:LinesOfCreditCurrent",
     "us-gaap:ShortTermBorrowings",
+    # after a Chapter 11 petition the pre-petition instruments are carried here
+    "us-gaap:LiabilitiesSubjectToCompromiseDebtAndAccruedInterest",
+    "us-gaap:LiabilitiesSubjectToCompromise",
 }
 # Facility capacity concepts — commitment size and undrawn headroom. Selected at their own
 # latest instant (subsequent-event amendments are exactly what we want to surface).

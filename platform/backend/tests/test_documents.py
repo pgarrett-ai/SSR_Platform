@@ -37,3 +37,17 @@ def test_get_filing_text_falls_back_to_whole_filing_text_when_notes_missing():
     assert ft is not None
     assert ft.notes != ""
     assert "aggregate principal" in ft.debt_window()
+
+
+def test_quote_in_text_folds_formatting_and_follows_splices():
+    from app.edgar.documents import quote_in_text
+
+    text = ("The Company’s pension plans were underfunded by  $1.2 billion\nat year-end. "
+            "Plan assets totaled $4.0 billion.")
+    assert quote_in_text("the company's pension plans were underfunded by $1.2 billion", text)
+    assert quote_in_text('"underfunded by $1.2 billion ... Plan assets totaled $4.0 billion."',
+                         text)
+    # fragments out of order, a planted figure, and an empty quote are all rejected
+    assert not quote_in_text("Plan assets totaled ... underfunded by", text)
+    assert not quote_in_text("underfunded by $2.4 billion", text)
+    assert not quote_in_text("", text) and not quote_in_text(None, text)

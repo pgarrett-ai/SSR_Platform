@@ -5,10 +5,35 @@ the passages that matter via keyword windowing — so the LLM sees targeted foot
 from __future__ import annotations
 
 import datetime as dt
+import re
 from dataclasses import dataclass
 from typing import Optional
 
 from .client import index_url_for
+
+QUOTE_NOT_FOUND = "quote not found verbatim in source"
+_QUOTE_FOLD = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "–": "-", "—": "-"})
+
+
+def _fold(s: str) -> str:
+    return re.sub(r"\s+", " ", s.translate(_QUOTE_FOLD).lower())
+
+
+def quote_in_text(quote: Optional[str], text: Optional[str]) -> bool:
+    """Is an LLM's 'verbatim' quote really in the text it read? Case, whitespace runs and
+    curly quotes/dashes are folded; a spliced quote ('A ... B') must match as fragments in
+    order. An empty quote is never found."""
+    t = _fold(text or "")
+    pos = 0
+    frags = [f.strip(" .\"'") for f in re.split(r"\.\.\.|…", _fold(quote or ""))]
+    frags = [f for f in frags if f]
+    for f in frags:
+        pos = t.find(f, pos)
+        if pos < 0:
+            return False
+        pos += len(f)
+    return bool(frags)
+
 
 # Topic keywords used to route footnote text to the OBS extractor (brief §6b).
 OBS_KEYWORDS = (

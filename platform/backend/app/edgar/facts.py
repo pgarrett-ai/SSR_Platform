@@ -50,6 +50,13 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
                 "DebtCurrent")),
     MetricSpec("short_term_debt", "Short-term borrowings", "BalanceSheet", "instant",
                ("ShortTermBorrowings", "CommercialPaper")),
+    # in Chapter 11 the pre-petition debt moves off the debt lines into this one (TSE Q2
+    # 2026: $2,562M subject to compromise beside $592M of debt); the total also carries
+    # other pre-petition claims, so the debt-only concept is preferred when tagged
+    MetricSpec("debt_subject_to_compromise", "Liabilities subject to compromise",
+               "BalanceSheet", "instant",
+               ("LiabilitiesSubjectToCompromiseDebtAndAccruedInterest",
+                "LiabilitiesSubjectToCompromise")),
     # balance-sheet cash before the cash-flow total that includes restricted cash (AAL tags
     # only Cash and that total); its short-term investments line is AFS debt securities
     MetricSpec("cash", "Cash & equivalents", "BalanceSheet", "instant",
@@ -301,7 +308,8 @@ def _select_metric(entity_facts, spec: MetricSpec, anchors: dict[int, dt.date],
     return out
 
 
-_DEBT_KEYS = ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt")
+_DEBT_KEYS = ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt",
+              "debt_subject_to_compromise")
 
 
 def _align_debt(entity_facts, metrics: dict, anchor: dict) -> None:

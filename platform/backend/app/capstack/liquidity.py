@@ -105,6 +105,7 @@ _MONTHS = {m.lower(): i + 1 for i, m in enumerate(
      "August", "September", "October", "November", "December"])}
 _YEAR_RE = re.compile(r"(19|20)\d{2}")
 _today = dt.date.today   # clock seam: tests pin the date the calendar starts from
+_DIP_RE = re.compile(r"\bdip\b|debtor[- ]in[- ]possession", re.I)
 
 
 def _parse_maturity(maturity: Optional[str]) -> tuple[Optional[int], Optional[int]]:
@@ -128,12 +129,15 @@ def build_event_calendar(debt_schedule: list[DebtInstrument],
                          liquidity_total: Optional[float],
                          ebitda: Optional[float],
                          asof: Optional[str],
-                         window_months: int = 24) -> tuple[list[LiquidityEvent], Optional[str]]:
+                         window_months: int = 24,
+                         petition_date: Optional[str] = None,
+                         ) -> tuple[list[LiquidityEvent], Optional[str]]:
     """Every coupon payment and maturity over the `window_months` after the later of the
     schedule's as-of date and today, sized against total liquidity. Returns (events,
     excluded-note). Coupon dates are never tagged in XBRL, so payment months anchor on
     the maturity-month anniversary (assumption stated per event); frequency: semiannual
-    for notes, quarterly otherwise."""
+    for notes, quarterly otherwise. In Chapter 11 the automatic stay suspends payment on
+    pre-petition debt, so its events from the petition on are 'stayed', never at risk."""
     from ..fulcrum.adapter import _tranche_coupon
 
     try:
@@ -196,7 +200,10 @@ def build_event_calendar(debt_schedule: list[DebtInstrument],
     thin = (ebitda is not None
             and (ebitda <= 0 or (annual_interest > 0 and ebitda < 2 * annual_interest)))
     for e in events:
-        if (e.kind == "coupon" and thin and liquidity_total
+        if (petition_date and e.date >= petition_date[:7]
+                and not _DIP_RE.search(e.instrument)):   # DIP money is post-petition
+            e.flags = ["stayed"]
+        elif (e.kind == "coupon" and thin and liquidity_total
                 and e.amount.value and e.amount.value > 0.10 * liquidity_total):
             e.flags.append("coupon_at_risk")
 

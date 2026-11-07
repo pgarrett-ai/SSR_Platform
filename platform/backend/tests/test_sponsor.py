@@ -70,7 +70,9 @@ class _FakeFiling:
 
     def text(self):
         return ("Item. Security ownership of certain beneficial owners.\n" * 5 +
-               "Certain relationships and related person transactions.\n" * 5)
+                "PIF owns approximately 57% of our common stock.\n" +
+                "Certain relationships and related person transactions.\n" * 5 +
+                "Ayar is the lender under our DDTL.\n")
 
 
 class _FakeFilings:
@@ -121,6 +123,25 @@ def test_extract_keeps_quoted_rows(monkeypatch):
     assert err is None
     assert len(owners) == 1 and owners[0].name == "Public Investment Fund"
     assert len(rpts) == 1 and rpts[0].is_lender is True
+    # the citation names the proxy it came from, not just the quote
+    cite = build_sponsor([], owners, rpts).ownership_pct.citation
+    assert cite.accession_no == _FakeFiling.accession_no and cite.form_type == "DEF 14A"
+    assert cite.filing_date == "2026-04-01" and cite.source_url == _FakeFiling.url
+
+
+def test_planted_fabricated_quote_is_dropped(monkeypatch):
+    from app.capstack import sponsor as sponsor_mod
+
+    def _fake_extract(**kw):
+        return {"owners": [{"name": "Public Investment Fund", "pct": 92.0, "shares": None,
+                            "quote": "PIF owns approximately 92% of our common stock"}],
+                "rpts": [{"counterparty": "Ayar", "description": "DDTL", "amount_usd": None,
+                         "is_lender": True, "quote": "Ayar is the lender under our DDTL"}]}
+
+    monkeypatch.setattr(sponsor_mod, "extract_structured", _fake_extract)
+    owners, rpts, _ = extract_sponsor_ownership(_FakeCompany())
+    assert owners == []                       # 92% appears nowhere in the proxy text
+    assert [r.counterparty for r in rpts] == ["Ayar"]
 
 
 def test_extract_returns_empty_when_llm_off(monkeypatch):

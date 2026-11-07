@@ -267,6 +267,7 @@ class LiquidityEvent(BaseModel):
     amount: CitedValue                     # derived formula (face × rate ÷ frequency)
     pct_of_liquidity: Optional[float] = None
     flags: list[str] = Field(default_factory=list)   # 'coupon_at_risk' | 'maturity_unfundable'
+                                                     # | 'stayed' (in Chapter 11)
     assumption: Optional[str] = None
 
 
@@ -389,8 +390,17 @@ class SponsorSupport(BaseModel):
     note: Optional[str] = None
 
 
+class Chapter11(BaseModel):
+    """A live Chapter 11 case: an 8-K Item 1.03 filed in the last three years. Its filing
+    date stands in for the docket petition date."""
+
+    petition_date: str
+    source: Citation
+
+
 class Overview(BaseModel):
     header: IssuerHeader
+    chapter11: Optional[Chapter11] = None
     economic_debt_bridge: Optional[EconomicDebtBridge] = None
     ebitda_build: Optional[EbitdaBuild] = None
     debt_schedule: list[DebtInstrument] = Field(default_factory=list)

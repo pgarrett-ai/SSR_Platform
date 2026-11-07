@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from typing import Optional
 
-from ..edgar.documents import FilingText
+from ..edgar.documents import QUOTE_NOT_FOUND, FilingText, quote_in_text
 from ..edgar.facts import fmt_money_millions
 from ..core.llm import extract_structured
 from ..schemas import Citation, CitedValue, DebtInstrument
@@ -93,11 +93,12 @@ def extract_debt_schedule(ft: FilingText) -> tuple[list[DebtInstrument], Optiona
         )
         principal = raw.get("principal_usd")
         outstanding = raw.get("outstanding_usd")
+        note = None if quote_in_text(citation.quote, window) else QUOTE_NOT_FOUND
         out.append(
             DebtInstrument(
                 instrument=raw.get("instrument", ""),
-                principal=_cv(principal, citation),
-                outstanding=_cv(outstanding, citation),
+                principal=_cv(principal, citation, note),
+                outstanding=_cv(outstanding, citation, note),
                 coupon=raw.get("coupon"),
                 maturity=raw.get("maturity"),
                 secured=raw.get("secured"),
@@ -108,10 +109,12 @@ def extract_debt_schedule(ft: FilingText) -> tuple[list[DebtInstrument], Optiona
     return out, None
 
 
-def _cv(amount: Optional[float], citation: Citation) -> Optional[CitedValue]:
+def _cv(amount: Optional[float], citation: Citation,
+        note: Optional[str] = None) -> Optional[CitedValue]:
     if amount is None:
         return None
-    return CitedValue(value=amount, display=fmt_money_millions(amount), citation=citation)
+    return CitedValue(value=amount, display=fmt_money_millions(amount), citation=citation,
+                      note=note)
 
 
 def drop_retired(instruments: list[DebtInstrument], asof: Optional[str]) -> list[DebtInstrument]:
@@ -220,15 +223,18 @@ def match_annotation(inst: DebtInstrument, by_name: dict[str, dict],
 
 
 def _apply_annotations(instruments: list[DebtInstrument], annotations: list[dict],
-                       ft: FilingText, asof: Optional[str],
+                       ft: FilingText, asof: Optional[str], source_text: str,
                        aliases: Optional[dict[str, list[str]]] = None,
                        section: str = "Long-term debt footnote",
                        ) -> list[tuple[str, str]]:
-    """Attach maturity/rate-base annotations to their instruments. Returns the
+    """Attach maturity/rate-base annotations to their instruments. An annotation whose
+    quote is not in `source_text` (what the model read) is dropped: a maturity carries no
+    note to flag it, and an unverified date would move debt on the wall. Returns the
     (xbrl_member, annotation name) pairs that matched non-exactly — the aliases worth
     remembering for the next run."""
     asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
-    by_name = {a.get("instrument", "").strip().lower(): a for a in annotations}
+    by_name = {a.get("instrument", "").strip().lower(): a for a in annotations
+               if quote_in_text(a.get("quote"), source_text)}
     learned: list[tuple[str, str]] = []
     for inst in instruments:
         ann = match_annotation(inst, by_name, aliases)
@@ -285,5 +291,6 @@ def annotate_maturities(instruments: list[DebtInstrument], ft: FilingText,
         return "LLM unavailable", []
     if "__error__" in result:
         return result["__error__"], []
-    learned = _apply_annotations(instruments, result.get("annotations", []), ft, asof, aliases)
+    learned = _apply_annotations(instruments, result.get("annotations", []), ft, asof, window,
+                                 aliases)
     return None, learned

@@ -85,3 +85,17 @@ def test_map_instruments():
     assert mapping["8.50% Senior Notes"] is None      # no matching indenture on file
     fam = next(f for f in fams if f.doc_class == "indenture")
     assert fam.governs_instruments == ["5.75% Senior Notes"]
+
+
+def test_covenant_quotes_not_in_the_agreement_are_dropped(monkeypatch):
+    from app.capstack import covenants
+
+    fam = group_families([_doc(INDENTURE, doc_class="indenture", exhibit="EX-4.1")])[0]
+    monkeypatch.setattr(covenants, "_extract_raw", lambda doc: ({
+        "anchor_clause": "governing the 5.75% Senior Secured Notes due 2029",
+        "baskets": [{"name": "General RP basket", "value": "$500 million",
+                     "quote": "Restricted Payments not to exceed $500 million"}],
+        "lme_vectors": []}, "", None))
+    pkg, _, _ = covenants.extract_covenant_package(fam)
+    assert pkg.anchor_clause == "governing the 5.75% Senior Secured Notes due 2029"
+    assert pkg.baskets[0].value == "$500 million" and pkg.baskets[0].quote is None

@@ -121,6 +121,26 @@ def _obs(amount=1e9, category="pension_opeb"):
                          section="Pension footnote", quote="deficit of $1.0 billion")
 
 
+def test_planted_obs_quote_never_reaches_the_bridge(monkeypatch):
+    from app.capstack import obs_llm
+    from app.edgar.documents import QUOTE_NOT_FOUND, FilingText
+
+    ft = FilingText(accession_no="a", form_type="10-K", filing_date="2026-02-18",
+                    period_of_report="2025-12-31", source_url="u", mdna="",
+                    notes="Pension plans: the deficit of $1.0 billion is unfunded.")
+    monkeypatch.setattr(obs_llm, "extract_structured", lambda **kw: {"items": [
+        dict(category="pension_opeb", label="Pension deficit", amount_usd=1e9,
+             include_in_bridge=True, quote="the deficit of $1.0 billion"),
+        dict(category="supplier_finance", label="Supplier finance", amount_usd=5e9,
+             include_in_bridge=True, quote="supplier finance balances of $5.0 billion")]})
+    items, err = obs_llm.extract_obs_items(ft)
+    assert err is None and [it.grounded for it in items] == [True, False]
+    bridge, obs = build_bridge(_series(**BASE), items, ft)
+    assert "supplier_finance" not in [ln.key for ln in bridge.lines]   # structural, yet out
+    assert bridge.economic_debt.value == 31e9 + 1e9
+    assert obs[1].include_in_bridge is False and obs[1].notes == QUOTE_NOT_FOUND
+
+
 def test_obs_items_gain_tax_effect_from_direct_etr():
     series = _series(**BASE, effective_tax_rate=0.25)
     _, obs = build_bridge(series, [_obs()], None)

@@ -105,7 +105,7 @@ def gap_fill_maturities(session, ticker: str, instruments: list[DebtInstrument],
         return 0, result["__error__"]
 
     before = sum(1 for i in gaps if i.maturity)
-    learned = _apply_annotations(gaps, result.get("annotations", []), ft, asof, aliases,
+    learned = _apply_annotations(gaps, result.get("annotations", []), ft, asof, user, aliases,
                                  section="gap-fill re-search (persisted corpus)")
     if learned:
         record_aliases(session, ticker, learned, source="gapfill")

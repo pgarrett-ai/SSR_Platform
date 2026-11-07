@@ -49,7 +49,9 @@ export default function RecoveryPage({ ticker, years }) {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState(null);
   const [quotedByName, setQuotedByName] = useState({});   // instrument -> drop-file quote
-  const [petitionDate, setPetitionDate] = useState(new Date().toISOString().slice(0, 10));
+  // blank until an 8-K Item 1.03 seeds it or the analyst types one: defaulting to today
+  // accrued ~7 months of interest into every performing issuer's claims
+  const [petitionDate, setPetitionDate] = useState(null);
   const [attack, setAttack] = useState(null);              // priority-attack scenario
   const [suggestedClaims, setSuggestedClaims] = useState(null);
   const [suggestedMezz, setSuggestedMezz] = useState(null);  // temporary equity ($mm)
@@ -73,7 +75,7 @@ export default function RecoveryPage({ ticker, years }) {
   // Reset the petition date on issuer change so a stale date can't toll accrual for the
   // wrong company; CaseCard reseeds it from the new issuer's 8-K Item 1.03 if one exists.
   useEffect(() => {
-    setPetitionDate(new Date().toISOString().slice(0, 10));
+    setPetitionDate(null);
     setReorgEv(""); setReorgDebt(""); setReorgShares("");   // don't leak plan assumptions across issuers
   }, [ticker]);
 

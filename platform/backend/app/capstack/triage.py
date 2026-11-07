@@ -81,8 +81,9 @@ def events_from_ov(ov: dict) -> dict:
             if cv and cv.get("value") is not None:
                 ebitda = float(cv["value"])
                 break
-    events, note = build_event_calendar(sched, liquidity_total, ebitda,
-                                        ov.get("debt_schedule_asof"))
+    events, note = build_event_calendar(
+        sched, liquidity_total, ebitda, ov.get("debt_schedule_asof"),
+        petition_date=(ov.get("chapter11") or {}).get("petition_date"))
     return {"events": events, "liquidity_total": liquidity_total, "cash": cash,
             "note": note}
 

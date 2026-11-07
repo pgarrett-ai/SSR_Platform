@@ -17,7 +17,7 @@ from ..schemas import (
     LeverageTimelinePoint,
     MaturityBucket,
 )
-from .forensic import _ebitda, ttm_view
+from .forensic import _ebitda, total_debt, ttm_view
 
 
 def _v(cv) -> float | None:
@@ -114,10 +114,7 @@ def what_changed(rows: list[ForensicTableRow], threshold_pct: float = 2.0) -> li
 
 
 def _q_debt(q: QuarterFacts) -> float | None:
-    parts = [getattr(q.get(k), "numeric_value", None)
-             for k in ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt")]
-    present = [p for p in parts if p is not None]
-    return sum(present) if present else None
+    return total_debt(q)[0]
 
 
 def _q_ebitda(q: QuarterFacts) -> float | None:

@@ -18,6 +18,7 @@ backfill have populated it, keeping this module as the cold-start fallback.
 """
 from __future__ import annotations
 
+import datetime as dt
 import json
 import re
 import time
@@ -26,7 +27,9 @@ from typing import Optional
 
 from ..core.config import CACHE_DIR
 from ..edgar.http import paced_get
+from ..schemas import Citation
 
+_today = dt.date.today   # clock seam: tests pin the petition lookback window
 _SUBMISSIONS = "https://data.sec.gov/submissions/CIK{cik10}.json"
 _SUBMISSIONS_CACHE_DIR = CACHE_DIR / "eightk"   # per-CIK cache; module global so tests can redirect it
 _SUBMISSIONS_TTL_S = 3600   # 1h — collapses page-mount refetch storms, caps petition-detection lag at ~1h
@@ -148,14 +151,24 @@ def list_8k_items(cik, since: Optional[str] = None) -> list[dict]:
 
 
 def petition_filing(cik) -> Optional[dict]:
-    """Earliest 8-K carrying Item 1.03 (bankruptcy/receivership) → cited petition-date
-    row {date, accession, source_url}; None if no 1.03 filing is found."""
-    rows = [r for r in list_8k_items(cik) if r["items"] and "1.03" in r["items"]]
+    """Latest 8-K carrying Item 1.03 (bankruptcy/receivership) filed in the last three
+    years → cited petition-date row {date, accession, source_url}; None when there is none.
+    An older case has been resolved: AAL's CIK still carries AMR's 2011 petition."""
+    since = (_today() - dt.timedelta(days=3 * 365)).isoformat()
+    rows = [r for r in list_8k_items(cik, since=since) if r["items"] and "1.03" in r["items"]]
     if not rows:
         return None
-    r = min(rows, key=lambda r: r["filing_date"] or "9999-99-99")
+    r = max(rows, key=lambda r: r["filing_date"] or "")
     return {"date": r["filing_date"], "accession": r["accession"],
             "source_url": r["source_url"]}
+
+
+def petition_citation(pf: dict) -> Citation:
+    """The citation behind a petition date from petition_filing."""
+    return Citation(form_type="8-K", section="Item 1.03 — Bankruptcy or Receivership",
+                    filing_date=pf.get("date"), accession_no=pf.get("accession"),
+                    source_url=pf.get("source_url"),
+                    quote="petition date proxied by the 8-K Item 1.03 filing date")
 
 
 def crisis_triggers(cik, since: Optional[str] = None) -> list[dict]:

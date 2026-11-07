@@ -56,6 +56,20 @@ def test_debt_components_come_from_one_balance_sheet():
     assert sorted(fy24.metrics) == ["lt_debt_current", "lt_debt_noncurrent", "revenue"]
 
 
+def test_debt_subject_to_compromise_stays_in_total_debt():
+    # TSE after its petition: the pre-petition debt left the debt lines for this one
+    from app.capstack.forensic import total_debt
+
+    series = build_financial_series(_company({
+        "Revenues": REVENUE,
+        "LongTermDebtNoncurrent": [_row(1.9e6, "2024-12-31", *K25)],
+        "LongTermDebtCurrent": [_row(589.6e6, "2024-12-31", *K25)],
+        "LiabilitiesSubjectToCompromise": [_row(2562.3e6, "2024-12-31", *K25)],
+    }), 10)
+    fy24 = next(y for y in series.years if y.fiscal_year == 2024)
+    assert abs(total_debt(fy24)[0] - 3153.8e6) < 1
+
+
 def test_impairment_is_the_largest_tagged_charge_each_period():
     # ATUS: its FY2025 10-K tags the $1.6bn franchise charge as indefinite-lived intangible
     # impairment beside a $0 goodwill line; its 10-Qs use GoodwillAndIntangibleAssetImpairment

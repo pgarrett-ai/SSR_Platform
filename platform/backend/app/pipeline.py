@@ -33,7 +33,7 @@ from .edgar.client import (
 from .edgar.documents import get_filing_text
 from .edgar.facts import FinancialSeries, build_financial_series, fmt_money_millions
 from .core.progress import ProgressLog
-from .schemas import IssuerHeader, Overview
+from .schemas import Chapter11, IssuerHeader, Overview
 from .store import (
     filing_refs,
     persist_covenants,
@@ -507,6 +507,16 @@ def run_overview(
         prior_sponsor = getattr(load_latest_overview(ticker), "sponsor", None)
         sponsor = prior_sponsor or sponsor
 
+    # --- Chapter 11 status: an 8-K Item 1.03 in the last three years, cited ---
+    chapter11 = None
+    try:
+        from .capstack.eightk import petition_citation, petition_filing
+        pf = petition_filing(cik)
+        if pf and pf.get("date"):
+            chapter11 = Chapter11(petition_date=pf["date"], source=petition_citation(pf))
+    except Exception as exc:
+        warnings.append(f"Chapter 11 check (8-K Item 1.03) failed: {exc}")
+
     # --- Liquidity & runway (distressed-mode framing) — deterministic, LLM-independent ---
     liquidity = None
     liquidity_events: list = []
@@ -518,7 +528,8 @@ def run_overview(
         total_liq = (liquidity.total_liquidity.value
                      if liquidity and liquidity.total_liquidity else None)
         liquidity_events, liquidity_events_note = build_event_calendar(
-            debt_schedule, total_liq, ebitda_v, debt_asof)
+            debt_schedule, total_liq, ebitda_v, debt_asof,
+            petition_date=chapter11.petition_date if chapter11 else None)
         if liquidity and liquidity_events:
             liquidity.next_event = liquidity_events[0]
     except Exception as exc:
@@ -601,6 +612,7 @@ def run_overview(
 
     overview = Overview(
         header=header,
+        chapter11=chapter11,
         economic_debt_bridge=economic_debt_bridge,
         ebitda_build=ebitda_build,
         debt_schedule=debt_schedule,

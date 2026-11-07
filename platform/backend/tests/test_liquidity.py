@@ -146,6 +146,18 @@ def test_calendar_never_lists_past_dates(monkeypatch):
     assert events and min(e.date for e in events) > "2026-11"
 
 
+def test_chapter11_stays_prepetition_coupons():
+    # TSE-shaped: a cash-burner in Chapter 11; pre-petition coupons are not paid in the case
+    sched = [_note("Big Notes", 3000e6, 10.0, "June 2027"),
+             _note("DIP Term Loan", 500e6, 12.0, "June 2027", facility_type="term loan")]
+    events, _ = build_event_calendar(sched, 1000e6, -1e9, "2026-03-31",
+                                     petition_date="2026-05-28")
+    big = [e for e in events if e.instrument == "Big Notes"]
+    assert all(e.flags == ["stayed"] for e in big if e.date >= "2026-05")
+    assert not any("coupon_at_risk" in e.flags or "maturity_unfundable" in e.flags for e in big)
+    assert not any("stayed" in e.flags for e in events if e.instrument == "DIP Term Loan")
+
+
 def test_next_event_is_earliest():
     sched = [_note("A Notes", 100e6, 8.0, "December 2027"),
              _note("B Notes", 100e6, 6.0, "July 2026")]

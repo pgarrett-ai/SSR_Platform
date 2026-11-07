@@ -1,7 +1,7 @@
 """capstack.eightk: per-CIK 8-K item enumeration off the EDGAR submissions API.
 The network seam (_fetch_submissions) is monkeypatched — no network. Verifies 8-K
 filtering, items parsing, the items_unknown flag (empty items -> "unknown", never
-"no trigger"), earliest-1.03 petition detection, and crisis-item triggers."""
+"no trigger"), latest-1.03 petition detection, and crisis-item triggers."""
 import pytest
 
 import app.capstack.eightk as eightk
@@ -39,12 +39,21 @@ def test_since_filter(monkeypatch):
     assert [r["filing_date"] for r in rows] == ["2024-05-01"]
 
 
-def test_petition_filing_earliest_103(monkeypatch):
-    _patch(monkeypatch)
+def test_petition_filing_latest_103_within_three_years(monkeypatch):
+    # AAL's CIK still carries AMR's 2011 petition: a resolved case is not a live Chapter 11
+    import datetime as dt
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2024, 6, 1))
+    subs = _submissions()
+    for key, v in (("form", "8-K"), ("filingDate", "2011-11-29"),
+                   ("accessionNumber", "0000000000-11-000001"), ("items", "1.03")):
+        subs["filings"]["recent"][key].append(v)
+    monkeypatch.setattr(eightk, "_fetch_submissions", lambda cik: subs)
     pf = eightk.petition_filing("320193")
     assert pf["date"] == "2023-11-20"
     assert pf["accession"] == "0000000000-23-000009"
     assert pf["source_url"] is not None
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2027, 1, 1))
+    assert eightk.petition_filing("320193") is None        # 2023 filing now > 3 years old
 
 
 def test_petition_filing_none_when_no_103(monkeypatch):
@@ -84,6 +93,8 @@ def test_list_8k_follows_overflow_pages(monkeypatch):
         return {"form": ["8-K"], "filingDate": ["2021-05-05"],
                 "accessionNumber": ["a-21-9"], "items": ["1.03"]}   # old bankruptcy filing
 
+    import datetime as dt
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2023, 1, 1))
     monkeypatch.setattr(eightk, "_fetch_submissions", subs)
     monkeypatch.setattr(eightk, "_fetch_submission_file", overflow)
     dates = [r["filing_date"] for r in eightk.list_8k_items("320193")]

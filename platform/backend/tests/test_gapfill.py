@@ -51,9 +51,20 @@ def test_apply_annotations_learns_fuzzy_aliases_and_respects_asof():
          "maturity": "April 1, 2030", "quote": "will mature on April 1, 2030"},
         {"instrument": "Old Notes", "maturity": "2019", "quote": "matured 2019"},
     ]
-    learned = _apply_annotations(insts, anns, ft, asof="2026-03-31")
+    text = "The 2030 notes will mature on April 1, 2030. The old notes matured 2019."
+    learned = _apply_annotations(insts, anns, ft, "2026-03-31", text)
     assert insts[0].maturity == "April 1, 2030"
     assert insts[0].citation.quote == "will mature on April 1, 2030"
     assert insts[1].maturity is None            # pre-as-of year rejected (carrying > 0)
     assert ("lcid:A2030NotesMember", "5.00% Convertible Senior Notes due 2030") in learned
     assert all(m != "lcid:OldMember" for m, _ in learned)   # exact match learns nothing
+
+
+def test_apply_annotations_drops_a_quote_the_text_does_not_contain():
+    ft = SimpleNamespace(accession_no="a", form_type="10-Q", filing_date="2026-05-05",
+                         period_of_report="2026-03-31", source_url="u")
+    inst = _inst("2030 Notes")
+    _apply_annotations([inst], [{"instrument": "2030 Notes", "maturity": "2032",
+                                 "quote": "the notes mature in 2032"}],
+                       ft, "2026-03-31", "The 2030 notes will mature on April 1, 2030.")
+    assert inst.maturity is None and inst.citation is None

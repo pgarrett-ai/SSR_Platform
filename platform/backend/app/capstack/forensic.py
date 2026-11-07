@@ -25,7 +25,8 @@ from ..edgar.facts import (
 )
 from ..schemas import CitedValue, ForensicFlag, ForensicTableRow
 
-_DEBT_COMPONENTS = ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt")
+_DEBT_COMPONENTS = ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt",
+                    "debt_subject_to_compromise")
 
 
 # ---- derived metrics -------------------------------------------------------
