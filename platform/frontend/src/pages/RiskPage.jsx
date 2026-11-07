@@ -19,6 +19,12 @@ export default function RiskPage({ ticker, hazard }) {
 
   return (
     <div>
+      {data.stale_as_of && (
+        <p className="mb-4 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+          Showing the last saved analysis from {String(data.stale_as_of).slice(0, 10)}: the live
+          market and EDGAR refresh failed.
+        </p>
+      )}
       <RiskTiles data={data} />
       <MarketPanel data={data} />
       <RiskTimeline data={data} />

@@ -161,7 +161,7 @@ export default function RecoveryPage({ ticker, years, onRecoveryResult }) {
               ))}
               <span className="ml-3 text-[11px] uppercase tracking-wide text-slate-400">Priming $M</span>
               <NumCell value={primingFace} step={100} onChange={setPrimingFace} className="w-24" />
-              <Button disabled={!!running || !(primingFace > 0)} aria-pressed={stress?.key === "priming"}
+              <Button disabled={!!running || !(primingFace > 0)}
                 title={ctx.liens_headroom?.suggested_priming?.basis
                   ? `suggested by the liens covenant: ${ctx.liens_headroom.suggested_priming.basis}`
                   : "a new secured layer ranked ahead of every existing lien"}

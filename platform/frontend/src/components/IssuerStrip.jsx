@@ -127,7 +127,16 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
         </Cell>
 
         <Cell to={`${base}/risk`} label="Default" active={tab === "risk"}>
-          {es?.distress_pd?.["12m"] == null ? fallback(hazard) : (
+          {es?.distress_pd?.["12m"] == null ? (
+            hazard.data?.merton && !hazard.data.merton.available ? (
+              <>
+                <div className="font-mono text-slate-100">n.m.</div>
+                <div className="truncate text-xs text-slate-400" title={hazard.data.merton.note}>
+                  {hazard.data.merton.note || "Merton not available"}
+                </div>
+              </>
+            ) : fallback(hazard)
+          ) : (
             <>
               <div className="truncate font-mono text-slate-100">
                 {pd(es.distress_pd["12m"])}

@@ -52,7 +52,7 @@ export default function RefiWall({ ticker, years }) {
                   <Td mono className="text-slate-200">{r.year}</Td>
                   <Td right mono><CitedNumber cv={r.face} className="text-slate-200" /></Td>
                   <Td className="max-w-[18rem] truncate text-xs text-slate-400" title={list}>
-                    {samePool ? <span className="italic text-slate-500">same amortizing pool</span> : list}
+                    {samePool ? <span className="italic text-slate-400">same amortizing pool<span className="sr-only">: {list}</span></span> : list}
                   </Td>
                   <Td right mono><CitedNumber cv={r.repayable} className="text-slate-300" /></Td>
                   <Td right mono>
@@ -61,7 +61,7 @@ export default function RefiWall({ ticker, years }) {
                   </Td>
                   <Td>
                     <Badge tone={v.tone} title={[
-                      r.quote?.ytm != null && `bonds due this year yield ${r.quote.ytm.toFixed(1)}%${r.markets_closed ? " (≥ 40%: market closed)" : ""}`,
+                      r.quote?.ytm != null && `a bond due this year yields ${r.quote.ytm.toFixed(1)}%${r.markets_closed ? " (≥ 40%: market closed)" : ""}`,
                       r.verdict === "unrefinanceable" && !r.markets_closed && "a later wall cannot be refinanced",
                       ...(r.annotations || []),
                     ].filter(Boolean).join(" · ") || undefined}>

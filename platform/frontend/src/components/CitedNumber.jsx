@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Badge } from "../ui/index.jsx";
 
@@ -11,7 +11,7 @@ import { Badge } from "../ui/index.jsx";
 
 const CARD_W = 320; // matches w-80
 
-function CiteCard({ anchorRef, cardRef, cv, onEnter, onLeave }) {
+function CiteCard({ id, anchorRef, cardRef, cv, onEnter, onLeave }) {
   const [pos, setPos] = useState(null);
 
   useLayoutEffect(() => {
@@ -29,9 +29,14 @@ function CiteCard({ anchorRef, cardRef, cv, onEnter, onLeave }) {
 
   return createPortal(
     <div
+      id={id}
+      role="tooltip"
       ref={cardRef}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
+      // a portal still bubbles through the React tree: keep clicks in the card (the SEC.gov
+      // link, selecting the quote) from toggling a clickable row around the number
+      onClick={(e) => e.stopPropagation()}
       style={pos ? { top: pos.top, left: pos.left } : { top: -9999, left: -9999 }}
       className="fixed z-30 w-80 rounded-md border border-ink-600 bg-ink-900 p-3 text-left text-xs shadow-xl"
     >
@@ -77,6 +82,7 @@ function CiteCard({ anchorRef, cardRef, cv, onEnter, onLeave }) {
 
 export default function CitedNumber({ cv, className = "", placeholder = "—" }) {
   const [open, setOpen] = useState(false);
+  const cardId = useId();
   const anchorRef = useRef(null);
   const cardRef = useRef(null);
   const closeTimer = useRef(null);
@@ -124,7 +130,7 @@ export default function CitedNumber({ cv, className = "", placeholder = "—" })
         onClick={(e) => { e.stopPropagation(); openNow(); }}
         onFocus={openNow}
         aria-label={`Source for ${label}`}
-        aria-expanded={open}
+        aria-describedby={open ? cardId : undefined}
         className={`cite-link font-mono tabular-nums ${className} ${
           isDerived ? "decoration-amber-400/50" : ""
         }`}
@@ -133,7 +139,7 @@ export default function CitedNumber({ cv, className = "", placeholder = "—" })
         {isDerived && <sup className="ml-0.5 text-[11px] text-amber-400/80">ƒ</sup>}
       </button>
       {open && (
-        <CiteCard anchorRef={anchorRef} cardRef={cardRef} cv={cv} onEnter={openNow} onLeave={closeSoon} />
+        <CiteCard id={cardId} anchorRef={anchorRef} cardRef={cardRef} cv={cv} onEnter={openNow} onLeave={closeSoon} />
       )}
     </span>
   );

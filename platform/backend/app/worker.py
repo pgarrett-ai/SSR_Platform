@@ -1,12 +1,11 @@
-"""python -m app.worker — the Phase-6 ingestion daemon.
+"""python -m app.worker — the EDGAR events daemon.
 
-One plain synchronous loop, zero scheduler dependencies. Justification: every job is a
-sequential network-bound call under the single global EDGAR pacing budget, so
-concurrency buys nothing; APScheduler is a new dependency for four fixed cadences;
-asyncio adds Windows-Proactor Ctrl+C pain for zero parallel I/O. KeyboardInterrupt out
-of time.sleep is the one Ctrl+C path that Just Works on Windows. Mid-job kills are
-safe: ingest is idempotent (dedupe_key) and backfill checkpoints per CIK. Re-entry
-trigger for asyncio: a job that genuinely needs parallelism (Phase 7 LLM queue)."""
+One plain synchronous loop, zero scheduler dependencies. Every job is a sequential
+network-bound call under this process's EDGAR pacing budget, so concurrency buys
+nothing; APScheduler is a new dependency for four fixed cadences; asyncio adds
+Windows-Proactor Ctrl+C pain for zero parallel I/O. KeyboardInterrupt out of time.sleep
+is the one Ctrl+C path that works on Windows. Mid-job kills are safe: ingest is
+idempotent (dedupe_key) and backfill checkpoints per CIK."""
 from __future__ import annotations
 
 import datetime as dt
@@ -104,6 +103,10 @@ def run_due(jobs: list[Job], now: float) -> int:
 
 
 def main() -> int:
+    # SEC allows ~10 req/s per host and each process paces itself: the worker takes 3 + 1
+    # (paced transport + edgartools) beside the API's 1 + 4. Set before settings load.
+    os.environ.setdefault("EDGAR_MAX_REQUESTS_PER_SEC", "3")
+    os.environ.setdefault("EDGAR_RATE_LIMIT_PER_SEC", "1")
     try:
         sys.stdout.reconfigure(errors="backslashreplace")   # cp1252 log + unicode WARN
     except AttributeError:

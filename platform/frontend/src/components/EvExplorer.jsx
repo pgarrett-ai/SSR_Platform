@@ -171,7 +171,9 @@ export default function EvExplorer({ ticker, years, result }) {
                 <LineChart data={covChart} margin={{ top: 4, right: 8, bottom: 4, left: 8 }}>
                   <CartesianGrid stroke={INK[600]} strokeDasharray="3 3" />
                   <XAxis dataKey="m" tick={{ fill: "#94a3b8", fontSize: 11 }} unit="x" />
-                  <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                  {/* coverage is EV ÷ claims; the axis always reaches the 1.0x "covered" line */}
+                  <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} tickFormatter={(v) => `${v}x`}
+                    domain={[0, (max) => Math.max(1.1, max)]} />
                   <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${fmtX(v, 2)} coverage`}
                     labelFormatter={(m) => `EV = ${m}x EBITDA`} />
                   <ReferenceLine y={1.0} stroke="#fb7185" strokeDasharray="4 4" />
