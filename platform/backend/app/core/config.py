@@ -1,9 +1,4 @@
-"""Environment-driven settings. One source of truth for all three modules, read from `.env`.
-
-Union of capstack's and hazard's settings (fulcrum's engine has none). The `.env` lives at
-the platform root; the legacy capstack/.env is read first as a fallback so an existing setup
-keeps working, with platform-level files taking precedence.
-"""
+"""Environment-driven settings, read from platform/.env (backend/.env overrides it)."""
 from __future__ import annotations
 
 import json
@@ -13,17 +8,14 @@ from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent.parent   # .../platform/backend
-REPO_ROOT = BACKEND_DIR.parent                                 # .../platform
-LEGACY_CAPSTACK_ENV = REPO_ROOT.parent / "capstack" / ".env"   # pre-merge fallback
+PLATFORM_DIR = BACKEND_DIR.parent                              # .../platform
 DATA_DIR = BACKEND_DIR / "app" / "data"
 CACHE_DIR = BACKEND_DIR / "app" / "cache"
-FILINGS_CACHE_DIR = BACKEND_DIR / ".edgar_cache"
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        # later files take precedence: platform .env overrides the legacy capstack one
-        env_file=(LEGACY_CAPSTACK_ENV, REPO_ROOT / ".env", BACKEND_DIR / ".env"),
+        env_file=(PLATFORM_DIR / ".env", BACKEND_DIR / ".env"),   # later files win
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -86,5 +78,4 @@ def set_llm_runtime_enabled(enabled: bool) -> None:
 def get_settings() -> Settings:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    FILINGS_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     return Settings()

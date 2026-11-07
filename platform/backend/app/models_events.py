@@ -1,7 +1,7 @@
-"""Event-store ORM (SPECIAL_SITUATIONS_PLAN §4) + the idempotent insert seam.
+"""Event-store ORM + the idempotent insert seam.
 
 Separate from models.py on purpose: these tables are CIK-keyed (String(16), stored
-10-digit zero-padded — the only primary key at universe scale, plan §1; matches the
+10-digit zero-padded — the only primary key at universe scale; matches the
 legacy Filing.cik/Snapshot.cik typing and the eightk.py zfill(10) convention), carry
 the point-in-time discipline (occurred_at = when the world changed, detected_at = when
 WE saw it, NULL for backfill — never faked), and migrate via Alembic only. models.py's
@@ -12,12 +12,12 @@ Datetimes are naive UTC by convention (pysqlite drops tz offsets on round-trip).
 from __future__ import annotations
 
 import hashlib
-from datetime import date, datetime
+from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import (
-    Boolean, CheckConstraint, Date, DateTime, Float, ForeignKey, Index, Integer,
-    JSON, String, Text, UniqueConstraint, bindparam, func, update,
+    Boolean, CheckConstraint, DateTime, Float, Index, Integer, JSON, String, Text,
+    UniqueConstraint, bindparam, update,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -26,19 +26,16 @@ from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from .models import Base
 
-# JSON on SQLite, JSONB on Postgres (plan §2: "JSON columns -> JSONB").
+# JSON on SQLite, JSONB on Postgres.
 JSON_VARIANT = JSON().with_variant(JSONB(), "postgresql")
 
 # core/db._ensure_columns skips these: event-store DDL changes go through Alembic only.
-EVENT_STORE_TABLES = frozenset({
-    "universe", "events", "scores", "watchlists", "watchlist_members",
-    "alerts", "alert_log",
-})
+EVENT_STORE_TABLES = frozenset({"universe", "events"})
 
 
 class UniverseCompany(Base):
-    """One EDGAR filer. Refreshed daily from company_tickers.json + submissions
-    (PR-2b's job); ticker/name are display metadata — CIK is the key (plan §1)."""
+    """One EDGAR filer, refreshed daily from company_tickers.json + submissions;
+    ticker/name are display metadata — CIK is the key."""
 
     __tablename__ = "universe"
 
@@ -53,8 +50,8 @@ class UniverseCompany(Base):
 
 
 class Event(Base):
-    """One detected (or backfilled) event. detected_at NULL == backfill row —
-    the Phase-12 backtest replays detected_at, so it is never faked (plan §10)."""
+    """One detected (or backfilled) event. detected_at NULL == backfill row; a
+    point-in-time replay reads detected_at, so it is never faked."""
 
     __tablename__ = "events"
     __table_args__ = (
@@ -84,68 +81,12 @@ class Event(Base):
     dedupe_key: Mapped[str] = mapped_column(String(64))              # sha256 hex
 
 
-class Score(Base):
-    """Nightly batch score observation — time series by construction (plan §4)."""
-
-    __tablename__ = "scores"
-
-    cik: Mapped[str] = mapped_column(String(16),  # no FK — see Event.cik note
-                                     primary_key=True)
-    score_name: Mapped[str] = mapped_column(String(48), primary_key=True)
-    asof: Mapped[date] = mapped_column(Date, primary_key=True)
-    value: Mapped[Optional[float]] = mapped_column(Float)
-    components: Mapped[Optional[dict]] = mapped_column(JSON_VARIANT)
-    model_version: Mapped[Optional[str]] = mapped_column(String(32))
-
-
-class Watchlist(Base):
-    __tablename__ = "watchlists"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    owner: Mapped[Optional[str]] = mapped_column(String(64))
-    name: Mapped[str] = mapped_column(String(64))
-
-
-class WatchlistMember(Base):
-    __tablename__ = "watchlist_members"
-
-    watchlist_id: Mapped[int] = mapped_column(ForeignKey("watchlists.id"),
-                                              primary_key=True)
-    cik: Mapped[str] = mapped_column(String(16),  # no FK — see Event.cik note
-                                     primary_key=True)
-    note: Mapped[Optional[str]] = mapped_column(Text)
-
-
-class Alert(Base):
-    """A saved alert rule: event types x severity x score deltas x watchlist scope."""
-
-    __tablename__ = "alerts"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    rule: Mapped[dict] = mapped_column(JSON_VARIANT)
-    channel: Mapped[str] = mapped_column(String(16), default="ui")   # ui|email|webhook
-    created_by: Mapped[Optional[str]] = mapped_column(String(64))
-
-
-class AlertLog(Base):
-    """One firing of an alert. Surrogate id PK: the same rule may legitimately
-    re-fire for the same event after a redelivery."""
-
-    __tablename__ = "alert_log"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    alert_id: Mapped[int] = mapped_column(ForeignKey("alerts.id"), index=True)
-    event_id: Mapped[Optional[int]] = mapped_column(ForeignKey("events.id"))
-    fired_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    delivered_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
-
-
 # --- idempotent insert seam (poller and backfill both write through this, via
-# --- app/events/store.py's dataclass adapter in PR-2b) ------------------------------
+# --- app/events/store.py's dataclass adapter) -----------------------------------------
 
 def make_dedupe_key(accession_no: Optional[str], event_type: str,
                     subtype: Optional[str]) -> str:
-    """dedupe_key = hash(accession_no, event_type, subtype) — plan §5. The ONE hash
+    """dedupe_key = hash(accession_no, event_type, subtype). The ONE hash
     implementation; events.types.Event.dedupe_key delegates here."""
     raw = f"{accession_no or ''}|{event_type}|{subtype or ''}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -157,10 +98,10 @@ _INSERT_CHUNK = 500   # ponytail: ~15 params/row keeps far under SQLite's bind l
 def insert_events(session: Session, rows: list[dict]) -> int:
     """Idempotent insert of event row dicts; returns the number of NEW rows.
 
-    Conflict policy (plan §10): first writer wins the row, with one exception —
+    Conflict policy: first writer wins the row, with one exception —
     detected_at upgrades NULL -> non-NULL exactly once, so a backfilled row never
     permanently masks a later live detection. A non-NULL detected_at is never changed:
-    the earliest live stamp is the point-in-time truth the Phase-12 backtest replays.
+    the earliest live stamp is the point-in-time truth a replay reads.
     """
     if not rows:
         return 0

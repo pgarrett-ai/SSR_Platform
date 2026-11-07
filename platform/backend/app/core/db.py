@@ -122,12 +122,3 @@ def session_scope() -> Iterator[Session]:
         raise
     finally:
         session.close()
-
-
-def get_session() -> Iterator[Session]:
-    """FastAPI dependency."""
-    session = SessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()

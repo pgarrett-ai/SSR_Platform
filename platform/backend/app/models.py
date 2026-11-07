@@ -63,7 +63,6 @@ class Exhibit(Base):
     document: Mapped[Optional[str]] = mapped_column(Text)  # filename within the filing
     url: Mapped[Optional[str]] = mapped_column(Text)
     is_credit_doc: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
-    local_path: Mapped[Optional[str]] = mapped_column(Text)
 
     filing: Mapped["Filing"] = relationship(back_populates="exhibits")
 

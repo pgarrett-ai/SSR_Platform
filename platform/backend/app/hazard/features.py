@@ -159,17 +159,6 @@ def year_citations(yf: YearFacts, cik: str) -> dict:
     return {k: v.model_dump() for k, v in out.items()}
 
 
-def fcf_margin_slope(timeline: list[dict], window: int = 4) -> Optional[float]:
-    """Deterioration rate: OLS slope of FCF margin over the last `window` years."""
-    pts = [(t["fiscal_year"], t["fcf_margin"]) for t in timeline if t["fcf_margin"] is not None]
-    pts = pts[-window:]
-    if len(pts) < 2:
-        return None
-    x = np.array([p[0] for p in pts], dtype=float)
-    y = np.array([p[1] for p in pts], dtype=float)
-    return float(np.polyfit(x - x.mean(), y, 1)[0])
-
-
 def cash_runway_months(series: FinancialSeries) -> Optional[float]:
     """Months of cash at the current burn. inf-like (None) if the firm is FCF-positive."""
     latest = series.latest()
