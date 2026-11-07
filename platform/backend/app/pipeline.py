@@ -91,7 +91,7 @@ def _tieout_warning(debt_schedule: list, debt_asof: Optional[str],
 
 def _chapter11(cik: str, warnings: list[str]) -> Optional[Chapter11]:
     """The Chapter 11 case from the issuer's 8-K Item 1.03 filings, cited. A later 1.03 in the
-    window is read as plan confirmation: the case stays on record with confirmed_at, and
+    same case is read as plan confirmation: the case stays on record with confirmed_at, and
     the caller stops treating payments as stayed."""
     from .capstack.eightk import petition_citation, petition_filing
 

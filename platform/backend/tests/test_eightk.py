@@ -79,6 +79,26 @@ def test_later_103_is_the_plan_confirmation(monkeypatch):
     assert len(warnings) == 1 and "read as plan confirmation" in warnings[0]
 
 
+@pytest.mark.parametrize("filings, expected", [
+    # petition just outside three years, confirmation inside: still one confirmed case
+    (["2023-08-01", "2024-01-15"], ("2023-08-01", "2024-01-15")),
+    # AMR: 2011 petition, 2013 confirmation, long resolved
+    (["2011-11-29", "2013-10-21"], None),
+    # a single recent 1.03 is a live case
+    (["2026-09-14"], ("2026-09-14", None)),
+])
+def test_petition_filing_groups_one_case(monkeypatch, filings, expected):
+    import datetime as dt
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2026, 11, 7))
+    monkeypatch.setattr(eightk, "_fetch_submissions", lambda cik: {"filings": {"recent": {
+        "form": ["8-K"] * len(filings), "filingDate": filings,
+        "accessionNumber": [f"a-{i}" for i in range(len(filings))],
+        "items": ["1.03"] * len(filings)}}})
+    pf = eightk.petition_filing("1")
+    got = pf and (pf["date"], (pf["plan_confirmed"] or {}).get("date"))
+    assert got == expected
+
+
 def test_petition_filing_none_when_no_103(monkeypatch):
     monkeypatch.setattr(eightk, "_fetch_submissions", lambda cik: {"filings": {"recent": {
         "form": ["8-K"], "filingDate": ["2024-01-01"],

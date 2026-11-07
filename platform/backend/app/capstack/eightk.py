@@ -12,9 +12,10 @@ Feeds the petition date (`petition_filing`) and the crisis triggers
 wraps it with a 1h per-CIK disk cache + retry. Tests monkeypatch either. All bytes leave
 through the one paced EDGAR transport (`edgar.http.paced_get`).
 
-ponytail: case/crisis still enumerate 8-K items live per page mount (1h cache); point
-them at the event store (which already carries 1.03/4.01/4.02 rows) once the worker +
-backfill have populated it, keeping this module as the cold-start fallback.
+ponytail: the petition (per overview build) and the crisis screen (per Risk page mount)
+enumerate 8-K items live (1h cache); point them at the event store (which already carries
+1.03/4.01/4.02 rows) once the worker + backfill have populated it, keeping this module as
+the cold-start fallback.
 """
 from __future__ import annotations
 
@@ -29,7 +30,7 @@ from ..core.config import CACHE_DIR
 from ..edgar.http import paced_get
 from ..schemas import Citation
 
-_today = dt.date.today   # clock seam: tests pin the petition lookback window
+_today = dt.date.today   # clock seam: tests pin the date a case counts as resolved from
 _SUBMISSIONS = "https://data.sec.gov/submissions/CIK{cik10}.json"
 _SUBMISSIONS_CACHE_DIR = CACHE_DIR / "eightk"   # per-CIK cache; module global so tests can redirect it
 _SUBMISSIONS_TTL_S = 3600   # 1h — collapses page-mount refetch storms, caps petition-detection lag at ~1h
@@ -151,24 +152,36 @@ def list_8k_items(cik, since: Optional[str] = None) -> list[dict]:
     return out
 
 
+_CASE_GAP_DAYS = 2 * 365        # 1.03 filings closer together than this are one case
+_CASE_LOOKBACK_DAYS = 3 * 365   # a case whose last filing is older has been resolved
+
+
 def petition_filing(cik) -> Optional[dict]:
-    """The earliest 8-K carrying Item 1.03 (bankruptcy/receivership) filed in the last three
-    years → cited petition-date row {date, accession, source_url, plan_confirmed}; None when
-    there is none. An older case has been resolved: AAL's CIK still carries AMR's 2011
-    petition. Item 1.03 is filed again when the court confirms a plan, so the latest 1.03
-    after the petition is reported as `plan_confirmed` ({date, accession, source_url}, else
-    None): the case is no longer live from that date."""
-    since = (_today() - dt.timedelta(days=3 * 365)).isoformat()
-    rows = sorted((r for r in list_8k_items(cik, since=since)
-                   if r["items"] and "1.03" in r["items"]),
-                  key=lambda r: r["filing_date"] or "")
+    """The issuer's latest Chapter 11 case from its 8-K Item 1.03 (bankruptcy/receivership)
+    filings → cited petition-date row {date, accession, source_url, plan_confirmed}; None
+    when there is none. Every 1.03 is read, and the most recent run of them, each within
+    two years of the one before, is one case: its first filing is the petition. Item 1.03
+    is filed again when the court confirms a plan, so when the run has more than one filing
+    its last is reported as `plan_confirmed` ({date, accession, source_url}, else None):
+    the case is no longer live from that date. A case whose last filing is more than three
+    years old has been resolved: AAL's CIK still carries AMR's 2011 petition."""
+    rows = sorted((r for r in list_8k_items(cik)
+                   if r["items"] and "1.03" in r["items"] and r["filing_date"]),
+                  key=lambda r: r["filing_date"])
     if not rows:
         return None
+    days = [dt.date.fromisoformat(r["filing_date"][:10]) for r in rows]
+    first = len(rows) - 1
+    while first > 0 and (days[first] - days[first - 1]).days <= _CASE_GAP_DAYS:
+        first -= 1
+    if (_today() - days[-1]).days > _CASE_LOOKBACK_DAYS:
+        return None
+    case = rows[first:]
     # ponytail: a later 1.03 for affiliates joining the case reads as a confirmation too;
     # read the 8-K body to tell them apart if an issuer files one
     cite = [{"date": r["filing_date"], "accession": r["accession"],
-             "source_url": r["source_url"]} for r in (rows[0], rows[-1])]
-    return {**cite[0], "plan_confirmed": cite[1] if len(rows) > 1 else None}
+             "source_url": r["source_url"]} for r in (case[0], case[-1])]
+    return {**cite[0], "plan_confirmed": cite[1] if len(case) > 1 else None}
 
 
 def petition_citation(pf: dict) -> Citation:

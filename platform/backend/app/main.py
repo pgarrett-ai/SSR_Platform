@@ -1088,7 +1088,7 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
 
     ov = _cached_overview(ticker, years)   # cache-only: a page-mount fetch must not launch a live run
 
-    petition = None
+    petition = pf = None
     petition_error = False   # distinguish an EDGAR fetch failure from a genuine "no 1.03"
     cik = _ov_cik(ov)
     if cik:
@@ -1107,9 +1107,12 @@ def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
             "case type is the analyst's call. A pre-filing revolver drawdown weakly hints free-fall "
             "but isn't reliably tagged, so it is surfaced (undrawn figure) rather than auto-inferred.")
     if not ov:
-        note = "open this company's Overview tab first to populate its liquidity signals. " + note
+        note = ("no analysis is cached for this company yet; open its Capital Structure tab "
+                "to build one. " + note)
     return JSONResponse(content=jsonable({
         "petition_date": petition,
+        # the case's later 1.03 ({date, accession, source_url}): no longer a live case
+        "plan_confirmed": (pf or {}).get("plan_confirmed"),
         "petition_error": petition_error,   # True = EDGAR lookup failed (NOT "no bankruptcy")
         "revolver_undrawn": undrawn,        # cited undrawn-committed figure; the analyst judges free-fall
         "note": note,
