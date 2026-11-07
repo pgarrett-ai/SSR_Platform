@@ -23,7 +23,7 @@ export default function IrrMatrix({ tranches, quotedByName }) {
   const quote = t ? quotedByName?.[t.tranche] : null;
 
   useEffect(() => {
-    // default entry: matched drop-file quote, else 50
+    // default entry: the bond's last quote when one is matched, else 50
     setEntry(quote?.last_price ?? 50);
   }, [name, quote?.last_price]);
 
@@ -32,8 +32,8 @@ export default function IrrMatrix({ tranches, quotedByName }) {
 
   return (
     <Section
-      title="Duration-sensitive IRR"
-      subtitle="annualized return by entry price × case duration · 15–25% hurdle band shaded"
+      title="IRR per 100 face"
+      subtitle="annualized return by entry price × time to exit · 15–25% hurdle band shaded"
     >
       <div className="mb-3 flex flex-wrap items-end gap-4 text-xs">
         <label className="flex flex-col gap-1">

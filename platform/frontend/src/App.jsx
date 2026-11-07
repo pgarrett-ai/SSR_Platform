@@ -37,11 +37,12 @@ function CompanyLayout() {
 
   // The RECOVER cell reads the persisted last run until Recovery reports a fresh one
   // (same shape as overview.recovery_summary: {mode, saved_at, fulcrum, tranches:
-  // [{tranche, mean_recovery_pct, is_fulcrum}]}), so the strip and the tranche table agree.
-  // Tagged with its ticker so a switch never shows the previous issuer's run.
+  // [{tranche, mean_recovery_pct, is_fulcrum}]}), so the strip and the tranche table agree;
+  // a fresh run with nothing to report (null) hides the cell. Tagged with its ticker so a
+  // switch never shows the previous issuer's run.
   const [live, setLive] = useState(null);
   const onRecoveryResult = useCallback((summary) => setLive({ ticker: t, summary }), [t]);
-  const recovery = (live?.ticker === t && live.summary) || overview.data?.recovery_summary;
+  const recovery = live?.ticker === t ? live.summary : overview.data?.recovery_summary;
 
   return (
     <>
@@ -50,8 +51,9 @@ function CompanyLayout() {
         <Routes>
           <Route path="capital" element={<CapitalPage ticker={t} overview={overview} />} />
           <Route path="risk" element={<RiskPage ticker={t} hazard={hazard} />} />
+          {/* keyed by ticker: a switch remounts it, so no stale run lands on the new issuer */}
           <Route path="recovery" element={
-            <RecoveryPage ticker={t} years={OVERVIEW_YEARS} onRecoveryResult={onRecoveryResult} />} />
+            <RecoveryPage key={t} ticker={t} years={OVERVIEW_YEARS} onRecoveryResult={onRecoveryResult} />} />
           <Route path="*" element={<Navigate to={`/company/${t}/capital`} replace />} />
         </Routes>
       </Suspense>

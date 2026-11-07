@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { liquidateRecovery } from "../api.js";
 import { Button, ErrorCard, Section, Th, fmt } from "../ui/index.jsx";
 
-// Asset-based liquidation waterfall (Moyer ch. 5/8): book values × advance rates,
-// net of estate costs, distributed by absolute priority. This is the negative-EBITDA
-// degradation path for the Recovery page (C4 fix).
+// Asset-based liquidation waterfall (Moyer ch. 5/8): book values × advance rates, net of
+// estate costs, distributed by absolute priority. Recovery shows it in place of the
+// going-concern answer when EBITDA ≤ 0. Recompute keeps the simulated run's stack and
+// accrual, so its claims match the run it replaces.
 
 const CATS = ["cash", "accounts_receivable", "inventory", "ppe", "intangibles", "other"];
 
@@ -16,7 +17,7 @@ function RateCell({ value, onChange }) {
   );
 }
 
-export default function LiquidationPanel({ ticker, years, structure, initial }) {
+export default function LiquidationPanel({ ticker, years, initial }) {
   const [data, setData] = useState(initial || null);
   const [rates, setRates] = useState(null);
   const [adminPct, setAdminPct] = useState(null);
@@ -38,7 +39,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
     setRunning(true);
     setError(null);
     try {
-      const body = { structure };
+      const body = { structure: initial.structure, accrual_years: initial.accrual_years || 0 };
       if (preset) {
         body.rates = data?.presets?.[preset];
         body.admin_pct = preset === "fire_sale" ? data?.presets?.admin_ch7 : data?.presets?.admin_ch11;
@@ -78,7 +79,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
   return (
     <Section
       title="Liquidation waterfall"
-      subtitle={data.note}
+      subtitle={initial?.note || data.note}
     >
       {error && <ErrorCard className="mb-4">{error}</ErrorCard>}
 
@@ -102,7 +103,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
-                <Th>Asset</Th><Th right>Book $mm</Th><Th right>Rate</Th><Th right>Proceeds $mm</Th>
+                <Th>Asset</Th><Th right>Book $M</Th><Th right>Rate</Th><Th right>Proceeds $M</Th>
               </tr>
             </thead>
             <tbody>
@@ -131,7 +132,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
-                <Th>Tranche</Th><Th right>Claim $mm</Th><Th right>Recovery $mm</Th><Th right>%</Th>
+                <Th>Tranche</Th><Th right>Claim $M</Th><Th right>Recovery $M</Th><Th right>% of claim</Th>
               </tr>
             </thead>
             <tbody>
@@ -156,7 +157,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
               <span className="font-mono text-slate-200">{fmt(pair.ch11_orderly.net_proceeds, 0)}</span>
               <span className="mx-1 text-slate-600">vs</span>
               <span className="font-mono text-rose-300">{fmt(pair.ch7_fire_sale.net_proceeds, 0)}</span>
-              <span className="ml-2 text-slate-600">$mm — the going-concern-in-ch11 vs shutdown gap</span>
+              <span className="ml-2 text-slate-500">$M — the going-concern-in-ch11 vs shutdown gap</span>
             </div>
           )}
         </div>

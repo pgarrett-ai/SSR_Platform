@@ -785,9 +785,9 @@ def _suggested_mezzanine(ov: dict) -> Optional[dict]:
         return None
     return {"value": round(float(cv["value"]) / 1e6, 1),
             "formula": "temporary-equity carrying amount",
-            "note": "recast as a preferred claim — pays after debt, before common "
-                    "(Moyer ch. 6); carrying ≈ liquidation preference + accrued "
-                    "dividends and may include redeemable NCI"}
+            "note": "recast as a preferred claim — pays after debt, before common; "
+                    "carrying ≈ liquidation preference + accrued dividends and may "
+                    "include redeemable NCI"}
 
 
 def _suggested_other_claims(ov: dict) -> Optional[dict]:
@@ -802,7 +802,7 @@ def _suggested_other_claims(ov: dict) -> Optional[dict]:
             "formula": " + ".join(f"{it.get('category')} ({it.get('label', '')[:40]})"
                                   for it in items),
             "note": "bridge-included OBS extractions — lease/pension/claim amounts that can "
-                    "dilute the unsecured pool in chapter 11 (Moyer ch. 12)"}
+                    "dilute the unsecured pool in chapter 11"}
 
 
 @app.get("/api/company/{ticker}/recovery/structure")
@@ -817,6 +817,8 @@ def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
     return JSONResponse(content=jsonable({
         "structure": _structure_dict(ctx.structure), "base_ebitda": ctx.ebitda,
         "base_ebitda_label": ltm_ebitda(ctx.ov)[1],
+        # read with the cap table so the first run already accrues to the petition date
+        "chapter11": ctx.ov.get("chapter11"),
         "source": ctx.source,
         "citations": ctx.citations, "available_entities": available_entities,
         "suggested_other_claims": _suggested_other_claims(ctx.ov),
@@ -837,19 +839,20 @@ def _liquidation_payload(structure: CapitalStructure, ov: dict,
     assets = body_assets or assets_from_snapshot(ov.get("asset_snapshot"))
     if assets is None:
         return {
-            "mode": "liquidation", "available": False,
+            "mode": "liquidation", "available": False, "accrual_years": accrual_years,
             "structure": _structure_dict(structure), "note": note,
-            "detail": "no balance-sheet asset snapshot in this cached overview — "
-                      "re-run the pipeline (Run live) to extract asset categories"}
+            "detail": "no balance-sheet asset categories were extracted for this issuer, "
+                      "so there is nothing to liquidate"}
     out = liquidate(assets, structure, rates=body_rates, admin_pct=body_admin,
                     accrual_years=accrual_years)
     out.update({"available": True, "structure": _structure_dict(structure), "note": note,
-                "asset_snapshot": ov.get("asset_snapshot")})
+                "accrual_years": accrual_years, "asset_snapshot": ov.get("asset_snapshot")})
     return out
 
 
-def _save_recovery_summary(ticker: str, payload: dict) -> None:
-    """Persist the run's headline numbers on the snapshot row (Overview recovery card).
+def _save_recovery_summary(ticker: str, payload: dict) -> Optional[dict]:
+    """Persist the run's headline numbers on the snapshot row (the strip's RECOVER cell) and
+    return them, so the response carries the same shape. None when nothing was saved.
     Best-effort — never fails a simulate over a summary write."""
     try:
         saved_at = dt.datetime.utcnow().isoformat()
@@ -884,10 +887,12 @@ def _save_recovery_summary(ticker: str, payload: dict) -> None:
             }
         # a NaN or inf must never reach the snapshot row: it breaks the Overview that reads it
         json.dumps(summary, allow_nan=False, default=str)
+        summary = jsonable(summary)
         with session_scope() as session:
-            update_snapshot_recovery(session, ticker.strip().upper(), jsonable(summary))
+            update_snapshot_recovery(session, ticker.strip().upper(), summary)
+        return summary
     except Exception:
-        pass
+        return None
 
 
 @app.post("/api/company/{ticker}/recovery/simulate")
@@ -912,11 +917,11 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         base_ebitda = sim_kwargs.get("base_ebitda")
         if body.mode == "liquidation" or base_ebitda is None or base_ebitda <= 0:
             note = ("forced liquidation mode" if body.mode == "liquidation" else
-                    "EBITDA ≤ 0 — going-concern EV simulation replaced by asset-based "
-                    "liquidation (Moyer ch. 5)")
+                    "EBITDA ≤ 0, so a going-concern EV is not meaningful: recovery is "
+                    "valued on an asset liquidation instead")
             payload = _liquidation_payload(structure, ov,
                                            float(sim_kwargs.get("accrual_years") or 0.0), note)
-            _save_recovery_summary(ticker, payload)
+            payload["recovery_summary"] = _save_recovery_summary(ticker, payload)
             return JSONResponse(content=jsonable(payload))
 
         cfg = SimConfig(**sim_kwargs)
@@ -998,7 +1003,7 @@ def recovery_simulate(ticker: str, body: SimulateBody, years: int = Query(3, ge=
         "priming_tranches": priming_rows,
         "primed_structure": primed_dict,
     }
-    _save_recovery_summary(ticker, payload)
+    payload["recovery_summary"] = _save_recovery_summary(ticker, payload)
     return JSONResponse(content=jsonable(payload))
 
 

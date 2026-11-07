@@ -391,11 +391,13 @@ class SponsorSupport(BaseModel):
 
 
 class Chapter11(BaseModel):
-    """A live Chapter 11 case: an 8-K Item 1.03 filed in the last three years. Its filing
-    date stands in for the docket petition date."""
+    """A Chapter 11 case: an 8-K Item 1.03 filed in the last three years. Its filing date
+    stands in for the docket petition date. confirmed_at is set once a plan is confirmed;
+    the case's statutory clocks stop there."""
 
     petition_date: str
     source: Citation
+    confirmed_at: Optional[str] = None
 
 
 class Overview(BaseModel):

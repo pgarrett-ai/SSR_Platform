@@ -142,41 +142,8 @@ export function liquidateRecovery(ticker, body, years = 3) {
   return postJson(`${co(ticker)}/recovery/liquidation?years=${years}`, body);
 }
 
-export function planRecovery(ticker, body, years = 3) {
-  return postJson(`${co(ticker)}/recovery/plan?years=${years}`, body);
-}
-
-export function addDocketEvent(ticker, body) {
-  return postJson(`${co(ticker)}/recovery/docket`, body);
-}
-
-// Undo for manual docket rows only — the server refuses detector-sourced ids.
-export async function deleteEvent(eventId) {
-  return jsonOrThrow(await apiFetch(`/api/events/${eventId}`, { method: "DELETE" }));
-}
-
-export async function fetchCh11Case(ticker, years = 3) {
-  return jsonOrThrow(await apiFetch(`${co(ticker)}/recovery/case?years=${years}`));
-}
-
 export async function fetchCrisisScreen(ticker, years = 3) {
   return jsonOrThrow(await apiFetch(`${co(ticker)}/recovery/crisis?years=${years}`));
-}
-
-export function computeTax382(ticker, body, years = 3) {
-  return postJson(`${co(ticker)}/recovery/tax382?years=${years}`, body);
-}
-
-export async function listScenarios(ticker) {
-  return jsonOrThrow(await apiFetch(`${co(ticker)}/scenarios`));
-}
-
-export function saveScenario(ticker, payload) {
-  return postJson(`${co(ticker)}/scenarios`, payload);
-}
-
-export async function deleteScenario(id) {
-  return jsonOrThrow(await apiFetch(`/api/scenarios/${id}`, { method: "DELETE" }));
 }
 
 // ---- Events ----------------------------------------------------------------------

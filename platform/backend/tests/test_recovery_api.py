@@ -330,6 +330,31 @@ def test_simulate_persists_recovery_summary():
     assert summ["mode"] == "simulation" and summ["fulcrum"] == "2nd lien at OpCo (2L Notes)"
     assert {t["tranche"] for t in summ["tranches"]} == {t["name"] for t in APEX_STRUCTURE["tranches"]}
     assert [t["tranche"] for t in summ["tranches"] if t["is_fulcrum"]] == ["2L Notes"]
+    # the response hands the strip the exact summary it persisted
+    assert r.json()["recovery_summary"] == summ
+
+
+def test_structure_carries_the_chapter11_case(monkeypatch):
+    # the page seeds its first run's petition accrual from the same response as the cap table
+    import app.main as main
+    from app.schemas import Chapter11, Citation, IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Bankrupt Co", ticker="BKRT", years=3),
+        chapter11=Chapter11(petition_date="2026-05-28", source=Citation(form_type="8-K"))))
+    d = client.get("/api/company/BKRT/recovery/structure").json()
+    assert d["chapter11"]["petition_date"] == "2026-05-28"
+    assert d["chapter11"]["confirmed_at"] is None
+
+
+def test_liquidation_mode_reports_the_accrual_it_used(monkeypatch):
+    # Recompute on the liquidation panel re-sends this accrual, so its claims match the run
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": -50.0, "accrual_years": 0.5}})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["mode"] == "liquidation" and d["accrual_years"] == 0.5
 
 
 def test_nonfinite_recovery_summary_is_not_persisted():
