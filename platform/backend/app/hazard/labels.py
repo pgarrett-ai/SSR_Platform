@@ -4,8 +4,9 @@ from EDGAR full-text search, build a real training panel, and train the hazard m
 The served bundle is fitted on actual bankruptcy events, walk-forward validated (train.py
 enforces that), and carries its label provenance so the UI can say what the number is.
 
-Run:  python -m app.hazard.labels --defaulters 120 --controls 120
-      (harvest is cached in data/default_events.json; delete it to re-harvest)
+Run:  python -m app.hazard.labels --defaulters 900 --controls 3600 --start-year 2010
+      (the served model; a multi-hour cold run. The harvest is cached in
+      data/default_events.json; delete it to re-harvest from --start-year.)
 
 Honesty notes baked in:
   * label = 1 when the default event falls within `horizon_days` after the fiscal year's
@@ -19,14 +20,15 @@ Honesty notes baked in:
   * competing risks, cause-specific: a dead control's final fiscal year is censored
     (dropped) — its 365d horizon is cut short by the non-bankruptcy exit, and distressed
     delistings that never filed an Item 1.03 hide exactly there.
-  * agency calibration: the case-control sample rate (~9%) is not the real-world default
-    frequency; the bundle stores the MEASURED base rate (events / universe firm-years) and
-    the scorer applies a King–Zeng prior correction, then maps PD to an implied agency
-    rating band (see train.prior_correct / score.implied_rating).
-  * label enrichment (data/sd_events.json, via --harvest-sd): 17g-7 rating default
-    actions (Fitch issuer D/RD, Moody's organization C) — distressed exchanges and
-    missed payments that never file an Item 1.03 8-K; events outside the panel window are
-    dropped, then the earliest event wins per CIK.
+  * agency calibration: the case-control sample rate (~2.5% at 900/3600) is not the
+    real-world default frequency; the bundle stores the MEASURED base rate (events /
+    universe firm-years) and the scorer applies a King–Zeng prior correction, then maps
+    PD to an implied agency rating band (see train.prior_correct / score.implied_rating).
+  * label enrichment (data/sd_events.json, via --harvest-sd, which harvests and exits
+    without training): 17g-7 rating default actions (Fitch issuer D/RD, Moody's
+    organization C) — distressed exchanges and missed payments that never file an Item
+    1.03 8-K; events outside the panel window are dropped, then the earliest event wins
+    per CIK.
   * market features: each panel row also carries trailing-window equity vol / drawdown /
     excess return AS OF that fiscal year end (market.pit_market_features — no lookahead);
     delisted firms without price history leave them NaN, which is why the hazard model
@@ -542,13 +544,15 @@ if __name__ == "__main__":
     ap.add_argument("--controls", type=int, default=120)
     ap.add_argument("--start-year", type=int, default=2015)
     ap.add_argument("--harvest-sd", action="store_true",
-                    help="(re)harvest 17g-7 rating default events into data/sd_events.json")
+                    help="(re)harvest 17g-7 rating default events into data/sd_events.json, then exit")
     args = ap.parse_args()
 
     if args.harvest_sd:
-        print("0/3 harvesting 17g-7 rating default events (Fitch D/RD, Moody's C)…")
+        print("harvesting 17g-7 rating default events (Fitch D/RD, Moody's C)…")
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         SD_PATH.write_text(json.dumps(harvest_sd_events(), indent=1), encoding="utf-8")
+        print(f"   wrote {SD_PATH.name}; retrain with --defaulters/--controls/--start-year")
+        raise SystemExit(0)
 
     print("1/3 harvesting 8-K Item 1.03 events…")
     events = load_or_harvest_events(args.start_year)
