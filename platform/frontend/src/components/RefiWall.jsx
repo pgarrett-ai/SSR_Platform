@@ -10,7 +10,7 @@ import { Badge, Skeleton, Td, Th } from "../ui/index.jsx";
 const VERDICT = {
   fundable: { tone: "ok", label: "covered internally" },
   refi_needed: { tone: "watch", label: "needs refinancing" },
-  unrefinanceable: { tone: "high", label: "market closed" },
+  unrefinanceable: { tone: "high", label: "unrefinanceable" },
 };
 
 export default function RefiWall({ ticker, years }) {
@@ -55,7 +55,11 @@ export default function RefiWall({ ticker, years }) {
                       className={r.refi_need?.value > 0 ? "text-amber-300" : "text-slate-400"} />
                   </Td>
                   <Td>
-                    <Badge tone={v.tone} title={(r.annotations || []).join(" · ") || undefined}>
+                    <Badge tone={v.tone} title={[
+                      r.quote?.ytm != null && `bucket paper yields ${r.quote.ytm.toFixed(1)}%${r.markets_closed ? " (≥ 40%: market closed)" : ""}`,
+                      r.verdict === "unrefinanceable" && !r.markets_closed && "a later wall cannot be refinanced",
+                      ...(r.annotations || []),
+                    ].filter(Boolean).join(" · ") || undefined}>
                       {v.label}
                     </Badge>
                   </Td>

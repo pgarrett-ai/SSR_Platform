@@ -34,7 +34,11 @@ export default function DebtScheduleTable({ instruments, asOf, reported, reporte
   })), [instruments]);
   const { sorted, thProps } = useSort(projected, null);
 
-  const notes = (warnings || []).map((w, i) => (
+  // the subtitle and total row already state these two; keep one statement of each
+  const shown = reported
+    ? (warnings || []).filter((w) => !/^(Maturity unknown|Debt schedule sums to)/.test(w))
+    : warnings || [];
+  const notes = shown.map((w, i) => (
     <p key={i} className="mt-1 text-[11px] text-amber-300/80">{w}</p>
   ));
   if (!instruments || instruments.length === 0) {

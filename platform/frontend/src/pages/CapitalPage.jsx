@@ -45,7 +45,9 @@ export default function CapitalPage({ ticker, overview: stream }) {
   if (!ov) return null;
 
   const schedule = ov.debt_schedule || [];
-  const undated = schedule.filter((d) => !d.maturity).length;
+  // same rule as the backend's maturity warning: only rows that carry an amount count
+  const undated = schedule.filter((d) => !d.maturity
+    && (d.outstanding?.value ?? d.principal?.value) != null).length;
   const asOf = ov.debt_schedule_asof;
   // reported debt for the schedule's own period, not the latest fiscal year's
   const reported = asOf && (ov.forensic_table || []).find((r) => r.period_end === asOf);

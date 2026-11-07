@@ -26,6 +26,7 @@ export default function EconomicDebtBridge({ bridge, coverage }) {
   const chips = positive ? [
     ["EBITDA / interest", cc.ebitda_interest],
     ["Debt / (EBITDA − capex)", cc.debt_ebitda_capex],
+    ["(EBITDA − capex) / interest", cc.ebitda_capex_interest],
     ["Capex % of EBITDA", cc.capex_pct_ebitda != null && {
       value: cc.capex_pct_ebitda, display: `${cc.capex_pct_ebitda}%`, derived: true,
       formula: "capex ÷ EBITDA",

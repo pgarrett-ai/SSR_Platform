@@ -49,6 +49,7 @@ export function useStreamed(key, start) {
     }
     const sub = () => rerender((n) => n + 1);
     run.subs.add(sub);
+    sub();   // a run that settled between render and this effect re-renders now
     return () => run.subs.delete(sub);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
