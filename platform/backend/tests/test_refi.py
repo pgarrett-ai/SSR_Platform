@@ -1,37 +1,28 @@
-"""Refi-wall sequencing (Moyer ch. 6/10): conditional-PD identity, sequential funding,
-back-to-front verdicts, refi-prob anchoring, markets-closed threshold, degradation."""
+"""Refi-wall sequencing: sequential funding, back-to-front verdicts, refi-prob anchoring,
+markets-closed threshold, degradation, bank-paper identification."""
 import datetime as dt
-import json
 
 import pytest
 
-from app.capstack import refi
-from app.capstack.refi import (build_refi_wall, conditional_from_cum, conditional_pds,
-                               hazard_inputs, sequence_walls)
+from app.capstack.refi import _is_bank, build_refi_wall, sequence_walls
 
 
 def _cv(v):
     return {"value": v, "derived": True, "formula": "test"}
 
 
-def test_conditional_identity():
-    # (0.20 − 0.10) / (1 − 0.10) = 0.1111…
-    out = conditional_from_cum([0.10, 0.20])
-    assert out[0] == 0.10
-    assert out[1] == pytest.approx(0.111111, abs=1e-6)
-    # a dipping risk-neutral cum PD floors at 0, never goes negative
-    assert conditional_from_cum([0.10, 0.09]) == [0.10, 0.0]
-
-
-def test_merton_horizon_extension_monotone():
-    # LCID-shaped distressed profile: cumulative PD non-decreasing over near horizons,
-    # conditionals all >= 0 (floored — a risk-neutral cum PD can dip far out)
-    out = conditional_pds(E=2.5e9, sigma_E=0.85, D=2.7e9, r=0.04,
-                          horizons=(0.5, 1.0, 2.0, 4.0))
-    cum = out["cum"]
-    assert all(b >= a - 1e-12 for a, b in zip(cum, cum[1:]))
-    assert all(c >= 0 for c in out["conditional"])
-    assert out["conditional"][0] == cum[0]
+def test_bank_id_name_fallback_and_type():
+    # AAL tags no facility_type — the name regex is load-bearing
+    assert _is_bank({"instrument": "2014 Revolving Facility"}) is True
+    assert _is_bank({"instrument": "2021 AAdvantage Term Loan Facility"}) is True
+    assert _is_bank({"instrument": "ABL Credit Facility"}) is True
+    assert _is_bank({"instrument": "DDTL Credit Facility"}) is True
+    assert _is_bank({"instrument": "5.75% Senior Notes"}) is False
+    assert _is_bank({"instrument": "Special Facility Revenue Bonds"}) is False
+    # tagged facility_type wins over the name
+    assert _is_bank({"instrument": "X", "facility_type": "revolver"}) is True
+    assert _is_bank({"instrument": "X", "facility_type": "commercial paper"}) is False
+    assert _is_bank({"instrument": "X", "facility_type": "notes"}) is False
 
 
 def test_sequential_funding_hand_checked():
@@ -60,26 +51,30 @@ def _ov(wall, schedule=None, ebitda=-10e6, liquidity=None):
     return ov
 
 
-def test_back_to_front_regression(monkeypatch):
-    # last wall unrefinanceable (CCC-band conditional) flags the earlier refi-needing
-    # wall despite its own low near PD
-    monkeypatch.setattr(refi, "conditional_pds", lambda *a, **k: {
-        "cum": [0.01, 0.02, 0.30], "conditional": [0.01, 0.0101, 0.2857],
-        "converged": True})
+def test_back_to_front_markets_closed_poisons_earlier_walls():
+    # the last wall needs refi and its paper yields 45% (market closed) -> it is
+    # unrefinanceable, and so is every earlier refinancing that must survive it
+    sched = [{"instrument": "Term Loan", "maturity": "2027", "secured": True},
+             {"instrument": "8% Notes", "maturity": "2028", "secured": False},
+             {"instrument": "9% Notes", "maturity": "2031", "secured": False,
+              "coupon_pct": 9.0}]
+    bonds = [{"coupon": 9.0, "maturity": "2031-06-01", "last_price": 40.0,
+              "last_yield": 45.0}]
     wall = [{"year": 2027, "face": 500e6, "instruments": ["Term Loan"]},
             {"year": 2028, "face": 300e6, "instruments": ["8% Notes"]},
             {"year": 2031, "face": 800e6, "instruments": ["9% Notes"]}]
-    out = build_refi_wall(_ov(wall, liquidity=100e6), [],
-                          {"E": 1.0, "sigma_E": 1.0, "D": 1.0, "r": 0.04,
-                           "as_of": "2026-07-01", "file": "ZZREFI_10y.json"})
-    rows = out["rows"]
-    # all need refi (liquidity 100 vs walls 500/300/800; negative EBITDA -> no sweep)
+    rows = build_refi_wall(_ov(wall, schedule=sched, liquidity=100e6), bonds)["rows"]
     assert all(r["refi_need"]["value"] > 0 for r in rows)
-    assert rows[2]["verdict"] == "unrefinanceable"          # own CCC-band conditional
-    assert rows[1]["verdict"] == "unrefinanceable"          # shows the 2028->2031 interval
-    assert rows[0]["verdict"] == "unrefinanceable"          # inherited, near cond 1% only
-    assert rows[0]["cond_pd"] == pytest.approx(0.0101)      # to the NEXT wall
-    assert rows[0]["band"] != "CCC/C"
+    assert [r["verdict"] for r in rows] == ["unrefinanceable"] * 3
+    assert "cond_pd" not in rows[0] and "band" not in rows[0]
+
+
+def test_unquoted_walls_needing_refi_are_not_called_unrefinanceable():
+    # no marks -> market access is unknown; a wall that needs refi says so, nothing more
+    wall = [{"year": 2027, "face": 500e6, "instruments": ["Term Loan"]},
+            {"year": 2031, "face": 800e6, "instruments": ["9% Notes"]}]
+    rows = build_refi_wall(_ov(wall, liquidity=100e6), [])["rows"]
+    assert [r["verdict"] for r in rows] == ["refi_needed", "refi_needed"]
 
 
 def test_chipco_refi_prob_and_markets_closed():
@@ -94,15 +89,13 @@ def test_chipco_refi_prob_and_markets_closed():
               "last_yield": 12.0}]
     wall = [{"year": 2027, "face": 500e6, "instruments": ["8% Notes due 2027"]},
             {"year": 2031, "face": 800e6, "instruments": ["9% Notes due 2031"]}]
-    out = build_refi_wall(_ov(wall, schedule=sched, liquidity=100e6), bonds, None)
+    out = build_refi_wall(_ov(wall, schedule=sched, liquidity=100e6), bonds)
     rows = out["rows"]
     assert rows[0]["refi_prob_pct"] == 50.0
     assert rows[0]["markets_closed"] is True                # ytm 43.2 >= 40
     assert rows[1]["markets_closed"] is False               # ytm 12 -> open
     assert rows[1]["refi_prob_pct"] is None                 # no longer-dated pari quote
     assert "no strictly-longer" in rows[1]["refi_prob_note"]
-    # no hazard cache -> the note names the proxy
-    assert "run Default Risk once" in out["hazard_note"]
 
 
 def test_lcid_negative_ebitda_persona():
@@ -112,7 +105,7 @@ def test_lcid_negative_ebitda_persona():
     wall = [{"year": 2026, "face": 204e6, "instruments": ["2026 Notes"]},
             {"year": 2030, "face": 1085e6, "instruments": ["2030 Notes"]},
             {"year": 2031, "face": 963e6, "instruments": ["2031 Notes"]}]
-    out = build_refi_wall(_ov(wall, ebitda=-3.3e9, liquidity=1319e6), [], None)
+    out = build_refi_wall(_ov(wall, ebitda=-3.3e9, liquidity=1319e6), [])
     assert out["available"] is True
     assert any("internal repayment capacity set to $0" in n for n in out["notes"])
     assert out["rows"][0]["refi_need"]["value"] == 0.0      # liquidity covers 204
@@ -124,34 +117,14 @@ def test_lcid_negative_ebitda_persona():
 def test_stale_cache_none_liquidity_guarded():
     # AAL-shaped stale cache: no liquidity block at all -> $0 + note, no crash
     wall = [{"year": 2028, "face": 400e6, "instruments": ["Notes"]}]
-    out = build_refi_wall(_ov(wall, ebitda=100e6), [], None)
+    out = build_refi_wall(_ov(wall, ebitda=100e6), [])
     assert out["available"] is True
     assert any("no liquidity block" in n for n in out["notes"])
 
 
-def test_empty_wall_and_missing_hazard_cache(tmp_path, monkeypatch):
-    out = build_refi_wall(_ov([]), [], None)
+def test_empty_wall():
+    out = build_refi_wall(_ov([]), [])
     assert out["available"] is False and "no maturity wall" in out["note"]
-    monkeypatch.setattr(refi, "CACHE_DIR", tmp_path)
-    assert hazard_inputs("ZZREFI") is None
-
-
-def test_hazard_inputs_globs_newest(tmp_path, monkeypatch):
-    import os
-    monkeypatch.setattr(refi, "CACHE_DIR", tmp_path)
-    hzdir = tmp_path / "hazard"
-    hzdir.mkdir()
-    blob = {"as_of": "2026-07-01", "data": {
-        "scores": {"Merton DD": {"inputs": {
-            "E": 2.5e9, "sigma_E": 0.85, "D": 2.7e9, "r": 0.043}}}}}
-    old = hzdir / "ZZREFI_3y.json"
-    old.write_text(json.dumps({**blob, "as_of": "2025-01-01"}), encoding="utf-8")
-    new = hzdir / "ZZREFI_10y.json"          # glob, NOT years-keyed (the design bug)
-    new.write_text(json.dumps(blob), encoding="utf-8")
-    os.utime(old, (1, 1))                    # force old mtime
-    hz = hazard_inputs("zzrefi")
-    assert hz["file"] == "ZZREFI_10y.json" and hz["as_of"] == "2026-07-01"
-    assert hz["E"] == 2.5e9 and hz["D"] == 2.7e9 and hz["r"] > 0
 
 
 def test_refi_api_smoke(monkeypatch):

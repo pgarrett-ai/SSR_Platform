@@ -1,6 +1,6 @@
-"""PR-6 ops: the filing-hours-aware zero-ingest alarm, computed from PR-2b's raw
-worker_status() gauges (plan §10: 'pollers die silently' — the alarm ships in
-Phase 6, not Phase 11). ONE implementation — heartbeat.py stays raw-gauges-only."""
+"""Ops: the filing-hours-aware zero-ingest alarm, computed from the raw worker_status()
+gauges (pollers die silently, so the alarm watches ingest, not just liveness). ONE
+implementation — heartbeat.worker_status stays raw-gauges-only."""
 import datetime as dt
 
 from fastapi.testclient import TestClient
@@ -38,3 +38,9 @@ def test_health_carries_alarm_field(monkeypatch):
     h = client.get("/api/health").json()
     assert h["worker"]["alive"] is True
     assert isinstance(h["zero_ingest_alarm"], bool)
+
+
+def test_open_health_lists_no_tickers():
+    # /api/health answers before auth, so it carries no issuer inventory
+    h = client.get("/api/health").json()
+    assert "cached" not in h and "hero_tickers" not in h

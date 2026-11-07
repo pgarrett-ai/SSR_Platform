@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import CitedNumber from "./CitedNumber.jsx";
-import { MUTED_EXCLUDED, MUTED_NA, fmtLev } from "../ui/index.jsx";
+import { MUTED_EXCLUDED, MUTED_NA, fmtLev, fmtMoney } from "../ui/index.jsx";
 
 // The EBITDA box: net income → EBITDA walk (each line XBRL-cited), then the issuer's own
-// covenant add-back categories. Quantified add-backs toggle (checkbox or row click) and
-// the Adjusted EBITDA + implied-leverage lines react; unquantified add-backs are inert —
-// dimmed, no toggle affordance, because excluding them can't change any number.
-
-const fmtM = (v) =>
-  v == null ? "—" : `${v < 0 ? "−" : ""}$${Math.round(Math.abs(v) / 1e6).toLocaleString()}M`;
+// covenant add-back categories — only when at least one is quantified, since a list of
+// unpriced categories cannot move any number. Quantified add-backs toggle (checkbox or
+// row click) and the Adjusted EBITDA + implied-leverage lines react; unquantified ones
+// stay inert — dimmed, no toggle affordance.
 
 export default function EbitdaBuild({ build, economicDebt }) {
   const [excluded, setExcluded] = useState(() => new Set());
@@ -38,8 +36,8 @@ export default function EbitdaBuild({ build, economicDebt }) {
 
   // The one number the user tuned gets the same provenance treatment as everything else.
   const adjustedCv = adjusted == null ? null : {
-    display: fmtM(adjusted), value: adjusted, derived: true,
-    formula: `EBITDA ${fmtM(ebitda)} + ${nIncluded} enabled add-back${nIncluded === 1 ? "" : "s"} ${fmtM(addbackSum)}`,
+    display: fmtMoney(adjusted), value: adjusted, derived: true,
+    formula: `EBITDA ${fmtMoney(ebitda)} + ${nIncluded} enabled add-back${nIncluded === 1 ? "" : "s"} ${fmtMoney(addbackSum)}`,
     note: excluded.size ? `${excluded.size} add-back${excluded.size === 1 ? "" : "s"} excluded by you` : undefined,
   };
 
@@ -63,14 +61,14 @@ export default function EbitdaBuild({ build, economicDebt }) {
         </tbody>
       </table>
 
-      {build.addbacks.length > 0 && (
+      {nQuant > 0 && (
         <>
           <div className="mt-4 mb-1 flex items-baseline justify-between gap-3">
-            <span className="text-[10px] uppercase tracking-wide text-slate-500">
+            <span className="text-[11px] uppercase tracking-wide text-slate-400">
               Covenant add-backs (from the credit agreement)
             </span>
-            <span className="text-[10px] text-slate-500">
-              {nQuant} of {build.addbacks.length} quantifiable · {fmtM(addbackSum)} included
+            <span className="text-[11px] text-slate-400">
+              {nQuant} of {build.addbacks.length} quantifiable · {fmtMoney(addbackSum)} included
             </span>
           </div>
           <table className="w-full text-sm">
@@ -87,7 +85,7 @@ export default function EbitdaBuild({ build, economicDebt }) {
                         {a.amount ? (
                           <CitedNumber cv={a.amount} />
                         ) : (
-                          <span className="text-[11px] italic text-slate-500">
+                          <span className="whitespace-nowrap text-[11px] italic text-slate-400">
                             not quantified — disclosed only
                           </span>
                         )}
@@ -136,11 +134,11 @@ export default function EbitdaBuild({ build, economicDebt }) {
         </>
       )}
 
-      {impliedLev != null && (
-        <p className="mt-2 text-[11px] text-slate-500">
+      {impliedLev != null && nQuant > 0 && (
+        <p className="mt-2 text-[11px] text-slate-400">
           Implied economic leverage vs adjusted EBITDA:{" "}
           <span className="font-mono text-slate-300">{fmtLev(impliedLev)}</span>
-          {" "}(economic debt {fmtM(economicDebt.value)} / adjusted EBITDA {fmtM(adjusted)})
+          {" "}(economic debt {fmtMoney(economicDebt.value)} / adjusted EBITDA {fmtMoney(adjusted)})
         </p>
       )}
     </div>

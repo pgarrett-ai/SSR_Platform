@@ -1,1 +1,1 @@
-"""Phase 6 event engine: detectors, poller, backfill."""
+"""Event engine: detectors, poller, backfill."""

@@ -1,22 +1,24 @@
-"""Asset-based liquidation waterfall (Moyer ch. 5/8): when the firm cannot sustain
-positive EBITDA, cash-flow metrics are irrelevant — value the assets at advance/haircut
-rates (orderly vs fire-sale), net estate costs, and run the SAME waterfall on the
-proceeds (single draw). This is also the negative-EBITDA degradation path for the
-Recovery page (C4): a going-concern EV simulation is meaningless below zero EBITDA.
+"""Asset-based liquidation waterfall (Moyer, Distressed Debt Analysis, ch. 5 and 8): when
+the firm cannot sustain positive EBITDA, cash-flow metrics are irrelevant — value the assets
+at advance/haircut rates (orderly vs fire-sale), net estate costs, and run the SAME waterfall
+on the proceeds (single draw). This is also the negative-EBITDA path for the Recovery page:
+a going-concern EV simulation is meaningless below zero EBITDA.
 
 All dollar figures $mm.
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Optional
 
 import numpy as np
 
+from ..edgar.facts import fmt_money_millions
 from .structure import CapitalStructure
 from .waterfall import run_waterfall
 
 # Recovery rate on book value by asset category. Fire-sale ≈ half the orderly rate on
-# non-cash assets (Moyer: the disposition basis is a key, stated assumption).
+# non-cash assets; the disposition basis is a key, stated assumption.
 ORDERLY = {"cash": 1.00, "accounts_receivable": 0.75, "inventory": 0.50,
            "ppe": 0.40, "intangibles": 0.10, "other": 0.25}
 FIRE_SALE = {"cash": 1.00, "accounts_receivable": 0.40, "inventory": 0.25,
@@ -43,24 +45,27 @@ def _scenario(assets: dict[str, float], structure: CapitalStructure,
         gross += proceeds
         lines.append({"key": key, "label": label, "book": round(book, 1),
                       "rate": rate, "proceeds": round(proceeds, 1),
-                      "formula": f"{label} ${book:,.0f}M × {100 * rate:.0f}%"})
-    net = gross * (1.0 - admin_pct)
-
-    wf = run_waterfall(structure, np.array([net]), accrual_years=accrual_years)
+                      "formula": f"{label} {fmt_money_millions(book * 1e6)} × {100 * rate:.0f}%"})
+    # estate costs come off once, here: the waterfall runs with its own cost knobs at zero
+    net = max(gross * (1.0 - admin_pct) - structure.admin_fees, 0.0)
+    wf = run_waterfall(replace(structure, admin_pct=0.0, admin_fees=0.0), np.array([net]),
+                       accrual_years=accrual_years)
     order = structure.priority_order()
     tmap = {t.name: t for t in structure.tranches}
     rows = []
-    fulcrum = None
+    first_short = None
     for n in order:
         c = tmap[n].claim(accrual_years)
         rec = float(wf[n][0])
         pct = 100 * rec / c if c > 0 else None
-        if fulcrum is None and c > 0 and rec < c * 0.999:
-            fulcrum = n
+        if first_short is None and c > 0 and rec < c * 0.999:
+            first_short = n
         rows.append({"tranche": n, "entity": tmap[n].entity, "face": tmap[n].face,
                      "claim": round(c, 1), "recovery": round(rec, 1),
-                     "recovery_pct": round(pct, 1) if pct is not None else None,
-                     "is_fulcrum": n == fulcrum and fulcrum is not None})
+                     "recovery_pct": round(pct, 1) if pct is not None else None})
+    fulcrum, members = structure.priority_class(first_short) if first_short else (None, [])
+    for r in rows:
+        r["is_fulcrum"] = r["tranche"] in members
     return {"lines": lines, "gross_proceeds": round(gross, 1), "admin_pct": admin_pct,
             "net_proceeds": round(net, 1), "tranches": rows, "fulcrum": fulcrum}
 
@@ -83,8 +88,8 @@ def liquidate(assets: dict[str, float], structure: CapitalStructure,
         "presets": {"orderly": ORDERLY, "fire_sale": FIRE_SALE,
                     "admin_ch11": ADMIN_CH11, "admin_ch7": ADMIN_CH7},
         "note": "asset-based liquidation: book values × advance/haircut rates, net of "
-                "estate costs, distributed by absolute priority (Moyer ch. 5: when positive "
-                "EBITDA is unattainable, cash-flow metrics are irrelevant)",
+                "estate costs, distributed by absolute priority (when positive EBITDA is "
+                "unattainable, cash-flow metrics are irrelevant)",
     }
 
 

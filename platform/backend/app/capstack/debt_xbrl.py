@@ -10,7 +10,7 @@ Retired instruments carry $0 at the latest instant and no committed capacity, so
 drop without any text interpretation — but undrawn committed facilities (revolvers,
 delayed-draw term loans) are KEPT as rows: their commitment/undrawn capacity is the
 liquidity story for a cash-burner. Issuers that don't dimension their debt
-(< _MIN_MEMBERS members) fall back to the legacy footnote extraction in debt_schedule.py.
+(< _MIN_MEMBERS members) fall back to the footnote extraction in debt_schedule.py.
 """
 from __future__ import annotations
 
@@ -21,6 +21,13 @@ from ..edgar.client import index_url_for
 from ..edgar.facts import fmt_money_millions
 from ..schemas import Citation, CitedValue, DebtInstrument
 
+# After a Chapter 11 petition the pre-petition instruments are carried as subject to
+# compromise. Those amounts add accrued interest, so they stand in for a member's carrying
+# amount only where no carrying concept is tagged for it (_pick_key).
+_COMPROMISE_CONCEPTS = {
+    "us-gaap:LiabilitiesSubjectToCompromiseDebtAndAccruedInterest",
+    "us-gaap:LiabilitiesSubjectToCompromise",
+}
 # Carrying-amount concepts. Issuers spread their instrument table across these (LCID tags
 # converts as LongTermDebt/ConvertibleDebt, facilities as ShortTermBorrowings; AAL uses
 # DebtInstrumentCarryingAmount throughout). Per member we take the LARGEST value at the
@@ -39,7 +46,7 @@ _CARRYING_CONCEPTS = {
     "us-gaap:LongTermLineOfCredit",
     "us-gaap:LinesOfCreditCurrent",
     "us-gaap:ShortTermBorrowings",
-}
+} | _COMPROMISE_CONCEPTS
 # Facility capacity concepts — commitment size and undrawn headroom. Selected at their own
 # latest instant (subsequent-event amendments are exactly what we want to surface).
 _COMMITMENT_CONCEPTS = {
@@ -55,8 +62,9 @@ _EFFECTIVE_PCT = "LongTermDebtPercentageBearingVariableInterestRate"
 _SPREAD_TOKEN = "BasisSpreadOnVariableRate"
 _MIN_MEMBERS = 3   # fewer dimensioned members than this -> issuer doesn't tag debt; fall back
 
-# OID / convert trade-mechanics concepts (Moyer ch. 5/6): principal at maturity vs the
-# accreted carrying amount, the conversion strike, and PIK detection.
+# OID / convert trade-mechanics concepts (Moyer, Distressed Debt Analysis, ch. 5 and 6):
+# principal at maturity vs the accreted carrying amount, the conversion strike, and PIK
+# detection.
 _FACE_CONCEPTS = {"us-gaap:DebtInstrumentFaceAmount"}
 _DISCOUNT_CONCEPTS = {"us-gaap:DebtInstrumentUnamortizedDiscount"}
 _CONV_PRICE_CONCEPTS = {"us-gaap:DebtInstrumentConvertibleConversionPrice1"}
@@ -287,18 +295,28 @@ def _instrument_from_member(member: str, carrying: Optional[dict], related: list
     )
 
 
-def _pick_key(f: dict) -> tuple[int, float]:
-    """Consolidated (no LegalEntityAxis) beats per-entity duplicates; then the larger
-    amount wins — carrying concepts overlap (LongTermDebt spans ConvertibleDebt etc.),
-    so max-of-concepts avoids double-counting a member without preferring a tag style."""
-    return (0 if f.get("dim_dei_LegalEntityAxis") else 1, _num(f) or 0.0)
+def _pick_key(f: dict) -> tuple[int, int, float]:
+    """Consolidated (no LegalEntityAxis) beats per-entity duplicates; a positive carrying
+    amount beats a subject-to-compromise amount (a carrying column tagged 0 after the
+    petition does not); then the larger amount wins — carrying concepts overlap
+    (LongTermDebt spans ConvertibleDebt etc.), so max-of-concepts avoids double-counting a
+    member without preferring a tag style."""
+    amount = _num(f) or 0.0
+    carrying = str(f.get("concept")) not in _COMPROMISE_CONCEPTS and amount > 0
+    return (0 if f.get("dim_dei_LegalEntityAxis") else 1, 1 if carrying else 0, amount)
+
+
+def _usd(fact: dict) -> bool:
+    """USD amounts and unitless facts (rates). Every amount here is summed as dollars, so a
+    SAR or EUR fact would inflate the schedule (LCID's SAR 1.9bn GIB facility read $1,890M)."""
+    return fact.get("currency") in (None, "USD")
 
 
 def group_debt_facts(facts: list[dict]) -> tuple[dict[str, dict], list[dict], Optional[str]]:
-    """(carrying fact per member at the latest instant, all debt-dimensioned facts, as-of).
-    Comparative-period columns and duplicate per-entity tagging are filtered here:
+    """(carrying fact per member at the latest instant, all USD debt-dimensioned facts,
+    as-of). Comparative-period columns and duplicate per-entity tagging are filtered here:
     only the latest instant counts, and consolidated (no LegalEntityAxis) facts win."""
-    debt = [f for f in facts if f.get("dim_us-gaap_DebtInstrumentAxis")]
+    debt = [f for f in facts if f.get("dim_us-gaap_DebtInstrumentAxis") and _usd(f)]
     carrying = [f for f in debt
                 if str(f.get("concept")) in _CARRYING_CONCEPTS and _num(f) is not None]
     if not carrying:
@@ -337,18 +355,25 @@ def facility_capacity(debt: list[dict]) -> dict[str, dict[str, dict]]:
 
 
 def build_xbrl_debt_schedule(company, rates: Optional[dict] = None
-                             ) -> tuple[list[DebtInstrument], Optional[str], Optional[object]]:
+                             ) -> tuple[list[DebtInstrument], Optional[str], Optional[object],
+                                        Optional[str]]:
     """Instrument-level debt schedule from the latest 10-K/10-Q's dimensional XBRL.
-    Returns ([], None, filing) when the issuer doesn't dimension debt — caller falls back
-    to the legacy footnote extraction. The source filing rides along so maturity
-    annotation reads the same document the numbers came from."""
-    filing = company.get_filings(form=["10-K", "10-Q"]).latest(1)
+    Returns ([], None, filing, note) when the issuer doesn't dimension debt — caller falls
+    back to the footnote extraction. The source filing rides along so maturity
+    annotation reads the same document the numbers came from; the note names debt facts
+    left out for being in a foreign currency."""
+    filing = company.get_filings(form=["10-K", "10-Q"], amendments=False).latest(1)
     if filing is None:
-        return [], None, None
+        return [], None, None, None
     facts = filing.xbrl().query().execute()
+    foreign = sorted({f"{prettify_member(str(f['dim_us-gaap_DebtInstrumentAxis']))} "
+                      f"({f.get('currency')})"
+                      for f in facts if f.get("dim_us-gaap_DebtInstrumentAxis") and not _usd(f)})
+    note = (f"Non-USD debt facts left out of the schedule: {', '.join(foreign)}. A facility "
+            "shows only where the filing also tags its USD amount.") if foreign else None
     by_member, debt, asof = group_debt_facts(facts)
     if len(by_member) < _MIN_MEMBERS:
-        return [], None, filing
+        return [], None, filing, note
 
     cik = str(company.cik)
     accession = getattr(filing, "accession_no", None)
@@ -380,4 +405,4 @@ def build_xbrl_debt_schedule(company, rates: Optional[dict] = None
                    inst.face_amount, inst.unamortized_discount, inst.conversion_price):
             stamp(cv)
         instruments.append(inst)
-    return instruments, asof, filing
+    return instruments, asof, filing, note

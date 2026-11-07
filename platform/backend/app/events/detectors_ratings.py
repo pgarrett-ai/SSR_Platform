@@ -5,17 +5,16 @@ corporate rating histories that seed the model's real default LABELS become time
 EVENTS. `events_from_sd_rows` is pure; `refresh_ratings` fetches the CSVs through the one
 feed seam and inserts idempotently.
 
-Scope cut (deliberate, not silent — this is HALF of handoff deliverable 5): >=2-notch
-DOWNGRADE events are DEFERRED. They need a per-agency rating-scale order to compute notch
-distance, which this module has no reason to carry; re-entry point is the Phase-7
-credit-stress score, which will own scale ordering. The DEFAULT half (issuer D/RD/C rating
-actions) ships here."""
+Only default actions (issuer D/RD/C) become events. Multi-notch downgrades are not
+detected: that needs a per-agency rating-scale order this module does not carry."""
 from __future__ import annotations
 
 import datetime as dt
 
 from . import edgar_feed as feed
 from .types import Event
+
+RECENT_DAYS = 60
 
 
 def events_from_sd_rows(rows: list[dict]) -> list[Event]:
@@ -64,5 +63,12 @@ def refresh_ratings() -> int:
             if cur is None or ev["filed"] < cur["filed"]:
                 by_cik[ev["cik"]] = ev
     events = events_from_sd_rows(sorted(by_cik.values(), key=lambda e: e["filed"]))
+    # a default years old found by a first run is history, not news: only recent actions
+    # get a detection stamp, so the feed's "newly detected" ordering stays honest
+    recent_from = (dt.date.today() - dt.timedelta(days=RECENT_DAYS)).isoformat()
+    now = dt.datetime.now(dt.UTC).replace(tzinfo=None)    # naive UTC, the store's convention
     with session_scope() as session:
-        return insert_events(session, events, detected_at=dt.datetime.utcnow())
+        return (insert_events(session, [e for e in events if e.occurred_at < recent_from],
+                              detected_at=None)
+                + insert_events(session, [e for e in events if e.occurred_at >= recent_from],
+                                detected_at=now))

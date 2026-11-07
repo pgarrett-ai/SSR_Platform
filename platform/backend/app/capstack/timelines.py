@@ -1,6 +1,6 @@
-"""Phase 4.6: leverage timeline, maturity wall, and the "what changed" card.
+"""Leverage timeline, maturity wall, and the "what changed" card.
 
-Quarterly cadence (4.6b): `build_quarterly_series` reads 10-Q XBRL and computes TTM flows,
+Quarterly cadence: `build_quarterly_series` reads 10-Q XBRL and computes TTM flows,
 so the timeline and the change card move quarter-over-quarter (TTM EBITDA/FCF, point-in-time
 debt/cash) — the industry-standard view. The annual FY-vs-FY versions remain as the fallback
 when an issuer's quarterly facts are unavailable.
@@ -17,6 +17,7 @@ from ..schemas import (
     LeverageTimelinePoint,
     MaturityBucket,
 )
+from .forensic import _ebitda, total_debt, ttm_view
 
 
 def _v(cv) -> float | None:
@@ -68,7 +69,7 @@ def maturity_wall(instruments: list[DebtInstrument]) -> list[MaturityBucket]:
 _CHANGE_METRICS = {
     "total_debt": ("Total reported debt", "USD", True),
     "cash": ("Cash & equivalents", "USD", False),
-    "ebitda": ("EBITDA (proxy)", "USD", False),
+    "ebitda": ("EBITDA", "USD", False),
     "free_cash_flow": ("Free cash flow", "USD", False),
     "revenue": ("Revenue", "USD", False),
 }
@@ -113,15 +114,13 @@ def what_changed(rows: list[ForensicTableRow], threshold_pct: float = 2.0) -> li
 
 
 def _q_debt(q: QuarterFacts) -> float | None:
-    parts = [getattr(q.get(k), "numeric_value", None)
-             for k in ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt")]
-    present = [p for p in parts if p is not None]
-    return sum(present) if present else None
+    return total_debt(q)[0]
 
 
 def _q_ebitda(q: QuarterFacts) -> float | None:
-    oi, da = q.ttm.get("operating_income"), q.ttm.get("d_and_a")
-    return oi + (da or 0.0) if oi is not None else None
+    """TTM EBITDA by the forensic definition — None, not OI alone, when TTM D&A is missing
+    (an OI-only quarter between full ones read as AAL leverage jumping 7.7x → 15.9x)."""
+    return _ebitda(ttm_view(q))
 
 
 def quarterly_leverage_timeline(quarters: list[QuarterFacts]) -> list[LeverageTimelinePoint]:

@@ -1,8 +1,8 @@
-"""Covenant dollars (Moyer ch. 7/9): the RP-basket builder — how much value can leak
-to shareholders — and permitted-liens headroom — how much new secured debt can prime
-you. Deterministic regex over already-cached covenant extractions plus XBRL quarterly
-flows; no re-extraction (both heroes' operative RP/lien sections sit outside the
-extraction window — prompt-v3 + window targeting is Phase-3+ backlog).
+"""Covenant dollars (Moyer, Distressed Debt Analysis, ch. 7 and 9): the RP-basket
+builder — how much value can leak to shareholders — and permitted-liens headroom — how
+much new secured debt can prime you. Deterministic regex over already-cached covenant
+extractions plus XBRL quarterly flows; no re-extraction. An operative RP or lien section
+that falls outside the extraction window reads as not extracted.
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import datetime as dt
 import re
 from typing import Optional
 
-from ..edgar.facts import derived_value
+from ..edgar.facts import derived_value, fmt_money_millions
 from ..schemas import RpBasket, RpBasketPoint
 
 FLOW_KEYS = ("net_income", "equity_issuance_proceeds", "dividends_paid",
@@ -31,7 +31,7 @@ _OMISSIONS_NOTE = ("omits junior-debt-issuance proceeds and unrestricted-subsidi
                    "anchors at the lookback-window start — a proxy for the "
                    "issuance-date build convention")
 _UNBOUNDED_LEAKAGE = ("no RP covenant extracted — distributions contractually "
-                      "unrestricted (unbounded leakage, Moyer ch. 9)")
+                      "unrestricted (unbounded leakage)")
 
 
 def parse_capacity_tokens(text: Optional[str]) -> dict:
@@ -49,7 +49,7 @@ def parse_capacity_tokens(text: Optional[str]) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# F1: RP-basket builder
+# RP-basket builder
 # --------------------------------------------------------------------------- #
 
 
@@ -57,7 +57,8 @@ def rp_basket_from_flows(flows: dict, covenants: list[dict], years: int) -> RpBa
     """Assemble the basket from per-quarter flow series (raw $, quarterly_flows shape)
     plus the cached covenant layer. Pure — unit-tested on hand-built series.
 
-    Per quarter (Moyer ch. 7): contribution = (0.5×NI if NI>0 else 1.0×NI)
+    Per quarter (Moyer, Distressed Debt Analysis, ch. 7):
+    contribution = (0.5×NI if NI>0 else 1.0×NI)
     + equity proceeds − dividends − buybacks; capacity = starter + Σ contributions."""
     today = dt.date.today()
     start = today.replace(year=today.year - years, day=min(today.day, 28))
@@ -123,9 +124,10 @@ def rp_basket_from_flows(flows: dict, covenants: list[dict], years: int) -> RpBa
 
     starter = derived_value(
         starter_mm,
-        (f"$-token from RP basket fact: {(value or '')[:80]}" if status == "extracted"
+        (f"dollar amount stated in the RP basket: {(value or '')[:80]}"
+         if status == "extracted"
          else "builder-only (starter basket not extracted) — $0 assumed"),
-        f"${starter_mm:,.0f}M", note=(quote or "")[:200] or None)
+        fmt_money_millions(starter_mm * 1e6), note=(quote or "")[:200] or None)
 
     raw = starter_mm + cum
     cap_v = max(round(raw, 1), 0.0)
@@ -134,10 +136,11 @@ def rp_basket_from_flows(flows: dict, covenants: list[dict], years: int) -> RpBa
         cap_note += "; builder negative — cumulative deductions exceed credits, $0 capacity"
     capacity = derived_value(
         cap_v,
-        f"starter ${starter_mm:,.0f}M + Σ quarterly [0.5×NI if NI>0 else 1.0×NI "
-        f"+ equity issuance − dividends − buybacks] over "
-        f"{points[0].label}→{points[-1].label} (${cum:,.0f}M), floored at 0",
-        f"${cap_v:,.0f}M", note=cap_note)
+        f"starter {fmt_money_millions(starter_mm * 1e6)} + Σ quarterly [0.5×NI if NI>0 "
+        f"else 1.0×NI + equity issuance − dividends − buybacks] over "
+        f"{points[0].label}→{points[-1].label} ({fmt_money_millions(cum * 1e6)}), "
+        f"floored at 0",
+        fmt_money_millions(cap_v * 1e6), note=cap_note)
 
     return RpBasket(available=True, covenant_status=status, starter=starter,
                     points=points, capacity=capacity, formula_note=formula_note,
@@ -153,7 +156,7 @@ def build_rp_basket(entity_facts, covenants: list[dict], years: int) -> RpBasket
 
 
 # --------------------------------------------------------------------------- #
-# F2: permitted-liens headroom
+# Permitted-liens headroom
 # --------------------------------------------------------------------------- #
 
 
@@ -182,12 +185,12 @@ def _nta_mm(ov: dict) -> tuple[Optional[float], Optional[str]]:
         return None, None
     intang = (snap.get("intangibles") or {}).get("value") or 0.0
     nta = (total - intang) / 1e6
-    return nta, (f"total assets ${total / 1e6:,.0f}M − intangibles incl. goodwill "
-                 f"${intang / 1e6:,.0f}M")
+    return nta, (f"total assets {fmt_money_millions(total)} − intangibles incl. goodwill "
+                 f"{fmt_money_millions(intang)}")
 
 
 def build_liens_headroom(ov: dict) -> dict:
-    """Permitted-liens headroom archetypes per extracted lien fact, the fixed unbounded
+    """Permitted-liens headroom archetypes per extracted lien fact, the unbounded
     gate (unsecured/convertible notes whose governing family was extracted with no lien
     fact — the LCID pattern; never fires vacuously on AAL), LME chips, and the priming
     pre-seed for the Recovery page."""
@@ -213,7 +216,7 @@ def build_liens_headroom(ov: dict) -> dict:
                 v = round(tok["pct"] * nta, 1)
                 headroom = derived_value(
                     v, f"{100 * tok['pct']:.0f}% × net tangible assets ({nta_formula})",
-                    f"${v:,.0f}M").model_dump()
+                    fmt_money_millions(v * 1e6)).model_dump()
                 detail = None
             elif tok["dollars"] is not None:
                 arch = "stated_capacity"
@@ -227,9 +230,10 @@ def build_liens_headroom(ov: dict) -> dict:
                          "dollars_mm": tok["dollars"], "pct": tok["pct"],
                          "ratio": tok["ratio"], "headroom": headroom})
 
-    # unbounded gate (fixed): unsecured/convertible notes exist AND a family governing
+    # unbounded gate: unsecured/convertible notes exist AND a family governing
     # them was extracted AND that family has no lien fact
     unbounded: list[str] = []
+    unbounded_docs: set[str] = set()
     for inst in ov.get("debt_schedule") or []:
         if not (inst.get("secured") is False or inst.get("seniority") == "convertible"):
             continue
@@ -237,6 +241,8 @@ def build_liens_headroom(ov: dict) -> dict:
         governing = [p for p in covs if name in (p.get("governs_instruments") or [])]
         if governing and not any(_lien_facts(p) for p in governing):
             unbounded.append(name)
+            unbounded_docs.update(p.get("family_label") or p.get("agreement_type") or ""
+                                  for p in governing)
 
     if unbounded:
         archetype = "unbounded"
@@ -277,8 +283,8 @@ def build_liens_headroom(ov: dict) -> dict:
         if dollar:
             best = max(dollar, key=lambda r: r["dollars_mm"])
             suggested = {"value": best["dollars_mm"],
-                         "basis": f"largest $-token on a lien fact — {best['name']} "
-                                  "(stated capacity, utilization unknown)",
+                         "basis": f"{best['name']}: the largest stated dollar "
+                                  "capacity (utilization unknown)",
                          "note": (best["value"] or "")[:160]}
 
     return {
@@ -286,9 +292,10 @@ def build_liens_headroom(ov: dict) -> dict:
         "archetype": archetype,
         "unbounded_instruments": unbounded,
         "unbounded_note": (
-            "no lien covenant extracted in the famil(ies) governing "
-            + ", ".join(unbounded[:4])
-            + " — unbounded priming risk (covenant-lite; Moyer ch. 9)"
+            "no lien covenant found in the "
+            + ("agreement" if len(unbounded_docs) == 1 else "agreements")
+            + " governing " + ", ".join(unbounded[:4])
+            + " — unbounded priming risk (covenant-lite)"
             if unbounded else None),
         "rows": rows,
         "uptier_priming": uptier,
@@ -297,5 +304,5 @@ def build_liens_headroom(ov: dict) -> dict:
         "derivation": "deterministic $ / % / ratio tokens over cached covenant "
                       "extractions; NTA headroom = pct × (total assets − intangibles "
                       "incl. goodwill) from the asset snapshot; absolute-$ baskets are "
-                      "stated capacity, never headroom (Moyer ch. 9)",
+                      "stated capacity, never headroom",
     }

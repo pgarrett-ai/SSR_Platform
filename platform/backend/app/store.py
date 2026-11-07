@@ -52,8 +52,8 @@ def upsert_filings(
 def persist_covenants(
     session: Session, ticker: str, items: list[tuple[CovenantPackage, str]]
 ) -> None:
-    """Store extracted covenant packages, keeping `clause_text` so a vector index can be added
-    later (brief §5 — embedding/clustering is v2; we just keep the raw clauses now)."""
+    """Store extracted covenant packages, keeping `clause_text` so a vector index can be
+    built over the raw clauses."""
     # Replace prior rows for this ticker so re-runs don't accumulate duplicates.
     for row in session.scalars(
         select(models.Covenant).where(models.Covenant.ticker == ticker)
@@ -227,15 +227,16 @@ def persist_debt_instruments(session: Session, ticker: str, instruments,
 
 
 def upsert_snapshot(session: Session, ticker: str, overview) -> None:
-    """Refresh the ticker's screening-index row from an Overview. merge() replaces every
-    column, so hazard risk values from a prior Default Risk run are carried over."""
+    """Refresh the ticker's screening-index row from an Overview. merge() writes only the
+    attributes set here, so hazard values from a prior Default Risk run are carried over
+    explicitly."""
     def _val(cv):
         return cv.value if cv is not None else None
 
     bridge = overview.economic_debt_bridge
 
-    # Market-layer columns (Moyer creation ladder) — best-effort; quotes are a manual
-    # drop-file so these lag a refresh until the next overview run (tooltip notes it).
+    # Market-layer columns (creation ladder) — best-effort; marks are a local file, so
+    # these lag a refresh until the next overview run (tooltip notes it).
     net_mkt_lev = creation_mult = None
     try:
         import json as _json
@@ -260,10 +261,10 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         last_updated=overview.header.last_updated,
         reported_leverage=_val(bridge.reported_leverage) if bridge else None,
         economic_leverage=_val(bridge.economic_leverage) if bridge else None,
+        ebitda=_val(bridge.ebitda) if bridge else None,
         flag_count=len(overview.forensic_flags),
         net_market_leverage=net_mkt_lev,
         creation_multiple_fulcrum=creation_mult,
-        overall_risk=prior.overall_risk if prior else None,
         trained_pd=prior.trained_pd if prior else None,
         implied_rating=prior.implied_rating if prior else None,
         ebitda_capex_leverage=(overview.coverage_chips.debt_ebitda_capex.value
@@ -284,7 +285,6 @@ def update_snapshot_risk(session: Session, ticker: str, hz: dict) -> None:
     row = session.get(models.Snapshot, ticker)
     if row is None:
         return
-    row.overall_risk = (hz.get("executive_summary") or {}).get("overall_risk")
     trained = (hz.get("scores") or {}).get("Trained hazard") or {}
     row.trained_pd = trained.get("value")
     row.implied_rating = trained.get("implied_rating")
@@ -302,8 +302,9 @@ def update_snapshot_recovery(session: Session, ticker: str, summary: dict) -> No
 
 
 def distress_badge(session: Session, ticker: str, last_price) -> bool | None:
-    """Moyer fact pattern (ch. 1): equity de minimis (< $1) AND any unsecured quote < 60
-    (> 40% discount). Live against the drop-file; None when either input is missing."""
+    """Distress fact pattern (Moyer, Distressed Debt Analysis, ch. 1): equity de minimis
+    (< $1) AND any unsecured quote < 60 (> 40% discount). Live against the marks file;
+    None when either input is missing."""
     from .capstack.quotes import match_quotes
     from .hazard.trace import get_issuer_bonds
 

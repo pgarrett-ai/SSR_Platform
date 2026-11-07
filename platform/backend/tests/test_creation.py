@@ -1,4 +1,4 @@
-"""Creation-multiple ladder (Moyer): quote matching, cumulative math, degradation."""
+"""Creation-multiple ladder: quote matching, cumulative math, degradation."""
 from app.capstack.creation import build_creation_ladder
 from app.capstack.quotes import match_quotes, spread_bps
 
@@ -11,7 +11,7 @@ def _ov(ebitda=100e6, cash=50e6, schedule=None):
     return {
         "header": {"issuer": "Test Co"},
         "economic_debt_bridge": {"ebitda": _cv(ebitda)},
-        "forensic_table": [{"ebitda": _cv(ebitda), "cash": _cv(cash)}],
+        "forensic_table": [{"fiscal_year": 2025, "ebitda": _cv(ebitda), "cash": _cv(cash)}],
         "debt_schedule": schedule if schedule is not None else [
             {"instrument": "Term Loan B", "outstanding": _cv(300e6), "coupon_pct": 7.0,
              "maturity": "April 2028", "secured": True, "seniority": "senior secured"},
@@ -73,6 +73,12 @@ def test_ladder_fulcrum_marker():
     assert build_creation_ladder(_ov(), BONDS)["fulcrum_class"] is None
 
 
+def test_ladder_uses_the_canonical_ebitda():
+    ov = _ov(ebitda=80e6)
+    ov["economic_debt_bridge"]["ebitda"] = _cv(95e6)    # a stale net-income-walk bridge
+    assert build_creation_ladder(ov, BONDS)["ebitda_mm"]["ltm"] == 80.0
+
+
 def test_ladder_negative_ebitda_degrades():
     ladder = build_creation_ladder(_ov(ebitda=-500e6), BONDS)
     assert all(c["multiple_face"] is None for c in ladder["classes"])
@@ -86,7 +92,8 @@ def test_ladder_empty_schedule():
 
 
 def test_oid_market_leg_and_pct_of_accreted():
-    # Moyer Table 5-5 shape: face 100, carrying (accreted) 71.2, quote 65
+    # Table 5-5 shape (Moyer, Distressed Debt Analysis, ch. 5): face 100, carrying (accreted)
+    # 71.2, quote 65
     sched = [
         {"instrument": "Term Loan B", "outstanding": _cv(300e6), "coupon_pct": 7.0,
          "maturity": "April 2028", "secured": True, "seniority": "senior secured"},
@@ -119,15 +126,41 @@ def test_no_face_amount_keeps_phase1_behavior():
     assert ladder["quote_by_instrument"]["8.00% Senior Notes due 2030"]["pct_of_accreted"] == 60.0
 
 
-def test_waterfall_claim_convention_is_carrying():
-    # the adapter feeds carrying (accreted), never face, as Tranche.face — the ch. 5
-    # claim convention holds with zero engine change
+def test_waterfall_claim_is_principal_less_oid():
     from app.fulcrum.adapter import overview_to_structure
-    sched = [{"instrument": "OID Notes due 2030", "outstanding": _cv(71.2e6),
-              "face_amount": _cv(100e6), "coupon_pct": 8.0, "maturity": "2030",
-              "secured": False}]
+    sched = [
+        # LCID 2030 converts: carrying nets issuance costs, the claim is the $1,100M principal
+        {"instrument": "2030 Notes", "facility_type": "notes", "outstanding": _cv(1085e6),
+         "face_amount": _cv(1100e6), "secured": False},
+        # deep-discount notes: unamortized OID is unmatured interest, not part of the claim
+        {"instrument": "OID Notes due 2030", "facility_type": "notes",
+         "outstanding": _cv(71.2e6), "face_amount": _cv(100e6),
+         "unamortized_discount": _cv(28.8e6), "secured": False},
+        # TSE revolver: the face tag is a $50M sub-limit, $265M is drawn
+        {"instrument": "Super-Priority Revolver", "facility_type": "revolver",
+         "outstanding": _cv(265e6), "face_amount": _cv(50e6)},
+        # TSE 2029 PIK notes: par $391.0M already includes the PIK; the $419.9M carrying
+        # adds an exchange premium net of fees, which is not a claim
+        {"instrument": "2029 Refinance Senior Notes", "facility_type": "notes", "pik": True,
+         "outstanding": _cv(419.9e6), "face_amount": _cv(391.0e6)},
+    ]
     structure, _, _ = overview_to_structure(_ov(schedule=sched))
-    assert structure.tranches[0].face == 71.2
+    assert [round(t.face, 1) for t in structure.tranches] == [1100.0, 71.2, 265.0, 391.0]
+
+
+def test_stale_issuance_face_claims_the_carrying_amount():
+    # AAL's 2019-1 EETC: tagged at its $339M issuance face, $228M still owed after amortizing
+    from app.fulcrum.adapter import _claim_amount
+    amount, _ = _claim_amount({"facility_type": "notes", "outstanding": _cv(228e6),
+                               "face_amount": _cv(339e6)})
+    assert amount == 228e6
+
+
+def test_ltm_ebitda_skips_a_row_without_fiscal_year():
+    from app.fulcrum.adapter import ltm_ebitda
+    ov = _ov()
+    ov["forensic_table"].append({"label": "Q1 2026", "ebitda": _cv(90e6)})
+    assert ltm_ebitda(ov) == (100.0, "test")
 
 
 def test_spread_bps_interpolation():

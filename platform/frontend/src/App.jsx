@@ -1,383 +1,218 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
-  Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
+  Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams,
 } from "react-router-dom";
-import { fetchHealth, getToken, overviewJsonUrl, setLlmEnabled, setToken, streamOverview } from "./api.js";
-import { getCached, setCached } from "./cache.js";
-import { Badge, Button, ErrorCard, Input, Loading } from "./ui/index.jsx";
-import ProgressLog from "./components/ProgressLog.jsx";
+import { fetchEvents, fetchHealth, getToken, setToken, streamHazard, streamOverview } from "./api.js";
+import { useAsync, useStreamed } from "./cache.js";
+import { Input, Loading, Section } from "./ui/index.jsx";
+import IssuerStrip from "./components/IssuerStrip.jsx";
 import ScreenTable from "./components/ScreenTable.jsx";
 
 // Route-level code-splitting: the recharts-heavy company pages load on demand as separate
 // chunks (fetched when a tab is first opened) instead of bloating the initial bundle.
-const OverviewPage = lazy(() => import("./pages/OverviewPage.jsx"));
 const CapitalPage = lazy(() => import("./pages/CapitalPage.jsx"));
 const RiskPage = lazy(() => import("./pages/RiskPage.jsx"));
 const RecoveryPage = lazy(() => import("./pages/RecoveryPage.jsx"));
-const TimelinePage = lazy(() => import("./pages/TimelinePage.jsx"));
-const EventsPage = lazy(() => import("./pages/EventsPage.jsx"));
 
-const HEROES = [
-  { t: "AAL", note: "airline · leases + pension" },
-  { t: "ATUS", note: "cable · LME / structural" },
-  { t: "TSE", note: "chemicals · restructuring" },
-];
-
-// Company tabs: id doubles as the route segment and the `g <key>` hotkey target.
+// Company tabs; the id doubles as the route segment.
 const TABS = [
-  { id: "overview", label: "Overview", key: "o" },
-  { id: "capital", label: "Capital Structure", key: "c" },
-  { id: "risk", label: "Default Risk", key: "r" },
-  { id: "recovery", label: "Recovery", key: "v" },
-  { id: "timeline", label: "Timeline", key: "t" },
+  { id: "capital", label: "Capital Structure" },
+  { id: "risk", label: "Default Risk" },
+  { id: "recovery", label: "Recovery" },
 ];
 
-function CompanyLayout({ years, health, overview, onRunLive }) {
-  const { ticker } = useParams();
+// The overview family is read at a fixed 3-year lookback; hazard wants 10 years of history.
+const OVERVIEW_YEARS = 3;
+const HAZARD_YEARS = 10;
+
+// Owns both pipeline streams for the routed ticker, so every tab reads the same run and a
+// tab switch never restarts one. Neither stream blocks rendering of the other's consumers.
+function CompanyLayout() {
+  const t = useParams().ticker.toUpperCase();
+  const tab = useLocation().pathname.split("/")[3];
+  const overview = useStreamed(`overview:${t}:${OVERVIEW_YEARS}`,
+    (onProgress) => streamOverview(t, OVERVIEW_YEARS, false, onProgress));
+  const hazard = useStreamed(`hazard:${t}`,
+    (onProgress) => streamHazard(t, HAZARD_YEARS, onProgress));
+
+  // The RECOVER cell reads the persisted last run until Recovery reports a fresh one
+  // (same shape as overview.recovery_summary: {mode, saved_at, fulcrum, tranches:
+  // [{tranche, mean_recovery_pct, is_fulcrum}]}), so the strip and the tranche table agree;
+  // a fresh run with nothing to report (null) hides the cell. Tagged with its ticker so a
+  // switch never shows the previous issuer's run.
+  // keyed by ticker: a run from the previous issuer that resolves late cannot overwrite this one
+  const [live, setLive] = useState({});
+  const onRecoveryResult = useCallback((summary) => setLive((m) => ({ ...m, [t]: summary })), [t]);
+  const recovery = t in live ? live[t] : overview.data?.recovery_summary;
+
+  useEffect(() => {
+    document.title = `${t} — Distressed Credit`;
+    return () => { document.title = "Distressed Credit"; };
+  }, [t]);
+
   return (
-    <Suspense fallback={<Loading />}>
-      <Routes>
-        <Route path="overview" element={<OverviewPage ticker={ticker} years={years} />} />
-        <Route
-          path="capital"
-          element={<CapitalPage ticker={ticker} health={health} overview={overview} onRunLive={onRunLive} />}
-        />
-        <Route path="risk" element={<RiskPage ticker={ticker} years={years} />} />
-        <Route path="recovery" element={<RecoveryPage ticker={ticker} years={years} />} />
-        <Route path="timeline" element={<TimelinePage ticker={ticker} years={years} />} />
-        <Route path="*" element={<Navigate to="overview" replace />} />
-      </Routes>
-    </Suspense>
+    <>
+      <IssuerStrip ticker={t} tab={tab} overview={overview} hazard={hazard} recovery={recovery} />
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="capital" element={<CapitalPage ticker={t} overview={overview} />} />
+          <Route path="risk" element={
+            <RiskPage ticker={t} hazard={hazard} chapter11={overview.data?.chapter11}
+              overviewReady={!!overview.data} />} />
+          {/* keyed by ticker: a switch remounts it, so no stale run lands on the new issuer */}
+          <Route path="recovery" element={
+            <RecoveryPage key={t} ticker={t} years={OVERVIEW_YEARS} onRecoveryResult={onRecoveryResult} />} />
+          <Route path="*" element={<Navigate to={`/company/${t}/capital`} replace />} />
+        </Routes>
+      </Suspense>
+    </>
   );
 }
 
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [query, setQuery] = useState("AAL");
-  // Draft vs committed lookback: the input edits `years` freely with no side effects;
-  // only the explicit Open action commits it. Everything reactive keys off appliedYears —
-  // otherwise each keystroke in the number field kicked off refetches (worst case the
-  // ~3-min pipeline for a disk-uncached year).
-  const [years, setYears] = useState(3);
-  const [appliedYears, setAppliedYears] = useState(3);
+  const [query, setQuery] = useState("");
   const [health, setHealth] = useState(null);
   const searchRef = useRef(null);
-  const pendingG = useRef(false);
 
-  const activeTicker = location.pathname.match(/^\/company\/([^/]+)/)?.[1] || null;
-  const onCapitalTab = /^\/company\/[^/]+\/capital/.test(location.pathname);
-  const onRiskTab = /^\/company\/[^/]+\/risk/.test(location.pathname);
-
-  // Overview pipeline state lives in the shell so Run Live (sidebar) and the progress
-  // log (top of main) work from any tab; CapitalPage is purely presentational.
-  const [overview, setOverview] = useState(null);
-  const [ovEvents, setOvEvents] = useState([]);
-  const [ovLoading, setOvLoading] = useState(false);
-  const [ovError, setOvError] = useState(null);
-  const streamRef = useRef(null);
-  const lastKeyRef = useRef(null);
-  const cacheKey = activeTicker ? `overview:${activeTicker}:${appliedYears}` : null;
-
-  async function runOverview(live = false) {
-    if (!activeTicker) return;
-    streamRef.current?.cancel();
-    setOvLoading(true);
-    setOvError(null);
-    setOvEvents([]);
-    setOverview(null);
-    const key = cacheKey;
-    const ctrl = streamOverview(activeTicker, appliedYears, live, (e) => setOvEvents((prev) => [...prev, e]));
-    streamRef.current = ctrl;
-    try {
-      const ov = await ctrl.promise;
-      setOverview(setCached(key, ov));
-    } catch (err) {
-      setOvError(err.message || String(err));
-    } finally {
-      setOvLoading(false);
-    }
-  }
+  const [, , activeTicker, activeTab] = location.pathname.split("/");
+  const onCompany = location.pathname.startsWith("/company/") && !!activeTicker;
 
   useEffect(() => {
     fetchHealth().then(setHealth).catch(() => {});
   }, []);
 
-  // One effect owns cached-vs-run: on a ticker/years change, cancel any in-flight run and
-  // serve the session cache; the cached pipeline auto-runs only when the Capital tab needs
-  // it (progress persists across tab switches — only a company/timeframe change cancels).
-  useEffect(() => {
-    if (!cacheKey) return;
-    if (lastKeyRef.current !== cacheKey) {
-      lastKeyRef.current = cacheKey;
-      streamRef.current?.cancel();
-      setOvLoading(false);
-      setOvEvents([]);
-      setOvError(null);
-      setOverview(getCached(cacheKey) || null);
-    }
-    if (onCapitalTab && !overview) {
-      // same session key OverviewPage fetches under — a cache hit hydrates the shell
-      // (pre-existing gap: Overview-first left Capital blank), a miss streams the run
-      const hit = getCached(cacheKey);
-      if (hit) setOverview(hit);
-      else if (!ovLoading) runOverview(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cacheKey, onCapitalTab]);
-
-  // Keyboard: "/" focuses search; "g" then o/c/r/v jumps tabs.
+  // "/" focuses the ticker search from anywhere outside a form field.
   useEffect(() => {
     function onKey(e) {
       const tag = document.activeElement?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-      if (e.key === "/") {
-        e.preventDefault();
-        searchRef.current?.focus();
-        return;
-      }
-      if (e.key === "g") {
-        pendingG.current = true;
-        setTimeout(() => (pendingG.current = false), 800);
-        return;
-      }
-      if (pendingG.current && activeTicker) {
-        const tab = TABS.find((t) => t.key === e.key);
-        if (tab) navigate(`/company/${activeTicker}/${tab.id}`);
-        pendingG.current = false;
-      }
+      if (e.key !== "/" || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      e.preventDefault();
+      searchRef.current?.focus();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [activeTicker, navigate]);
+  }, []);
 
   function go(tk) {
     const t = tk.trim().toUpperCase();
     if (!t) return;
-    setQuery(t);
-    setAppliedYears(years);   // Open commits the drafted lookback
-    const tab = location.pathname.match(/^\/company\/[^/]+\/([^/]+)/)?.[1] || "overview";
+    const tab = onCompany && TABS.some((x) => x.id === activeTab) ? activeTab : "capital";
     navigate(`/company/${t}/${tab}`);
+    setQuery("");
+    searchRef.current?.blur();
   }
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="hidden w-52 shrink-0 border-r border-ink-700 bg-ink-900/60 md:block">
-        <div className="sticky top-0 p-4">
-          <div className="mb-1 font-bold tracking-tight text-slate-100">◆ Distressed Credit</div>
-          <div className="mb-6 text-[10px] uppercase tracking-[0.2em] text-slate-600">research platform</div>
-
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-20 border-b border-ink-700 bg-ink-900/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 px-5">
+          <Link to="/" className="py-3 font-bold tracking-tight text-slate-100">
+            ◆ Distressed Credit
+          </Link>
+          {onCompany && (
+            <nav className="order-last flex w-full overflow-x-auto md:order-none md:w-auto">
+              {TABS.map((tab) => (
+                <NavLink
+                  key={tab.id}
+                  to={`/company/${activeTicker}/${tab.id}`}
+                  className={({ isActive }) =>
+                    `whitespace-nowrap border-b-2 px-3 py-3 text-sm ${isActive
+                      ? "border-accent font-semibold text-white"
+                      : "border-transparent text-slate-400 hover:text-slate-200"}`
+                  }
+                >
+                  {tab.label}
+                </NavLink>
+              ))}
+            </nav>
+          )}
           <form
             onSubmit={(e) => { e.preventDefault(); go(query); }}
-            className="mb-6 flex flex-col gap-2"
+            className="ml-auto flex items-center gap-2 py-2"
           >
-            <Input
-              ref={searchRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="ticker or CIK  ( / )"
-              className="w-full font-mono"
-            />
-            <label className="flex items-center justify-between text-[11px] text-slate-500">
-              lookback (years)
-              <Input
-                type="number"
-                min={1}
-                max={20}
-                value={years}
-                onChange={(e) => setYears(Math.min(20, Math.max(1, Number(e.target.value) || 1)))}
-                className="w-16 px-2 text-right"
-              />
-            </label>
-            <Button type="submit" variant="primary" className="w-full">
-              Open
-            </Button>
-          </form>
-
-          <div className="mb-6 flex flex-col gap-2">
-            <Button
-              onClick={() => runOverview(true)}
-              disabled={!activeTicker || ovLoading}
-              title="re-run the full pipeline against EDGAR (~3 min with LLM)"
-              className="w-full"
-            >
-              Run live ↻
-            </Button>
-            {overview && (
-              <a
-                href={overviewJsonUrl(overview.header.ticker, overview.header.years, false)}
-                target="_blank"
-                rel="noreferrer"
-                className="text-center text-[11px] text-slate-500 hover:text-slate-300"
-              >
-                Download JSON
-              </a>
-            )}
-            {health && !health.llm_enabled && (
-              <div className="text-[11px] text-amber-400">
-                {health.llm_key_set
-                  ? "LLM analysis is off — live runs reuse the last saved analysis"
-                  : "LLM key not set — OBS/covenant sections skipped"}
-              </div>
-            )}
-          </div>
-
-          <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">Companies</div>
-          <nav className="mb-6 flex flex-col gap-1">
-            {HEROES.map((h) => (
-              <button
-                key={h.t}
-                onClick={() => go(h.t)}
-                className={`rounded-md px-2 py-1.5 text-left text-sm hover:bg-ink-700 ${activeTicker === h.t ? "bg-ink-700 text-white" : "text-slate-400"}`}
-                title={h.note}
-              >
-                <span className="font-mono">{h.t}</span>
-                <span className="ml-2 text-[10px] text-slate-600">{h.note.split("·")[0]}</span>
-              </button>
-            ))}
-          </nav>
-
-          <div className="mb-2 text-[10px] uppercase tracking-wide text-slate-600">Platform</div>
-          <nav className="mb-6 flex flex-col gap-1">
-            <NavLink
-              to="/events"
-              className={({ isActive }) =>
-                `rounded-md px-2 py-1.5 text-left text-sm hover:bg-ink-700 ${isActive ? "bg-ink-700 text-white" : "text-slate-400"}`
-              }
-            >
-              Events feed
-              <span className="ml-2 text-[10px] text-slate-600">event-store firehose</span>
-              {health?.zero_ingest_alarm && (
-                <span title="ingestion worker heartbeat stale, or zero events during filing hours">
-                  <Badge tone="high" className="ml-2">stalled</Badge>
-                </span>
-              )}
-            </NavLink>
-          </nav>
-
-          <div className="space-y-1 text-[11px] text-slate-600">
-            <div><kbd className="rounded bg-ink-700 px-1">/</kbd> search</div>
-            <div><kbd className="rounded bg-ink-700 px-1">g</kbd>+<kbd className="rounded bg-ink-700 px-1">o c r v t</kbd> tabs</div>
-          </div>
-
-          {health && (
-            <div className="mt-6 flex items-center gap-2 text-[11px] text-slate-600">
-              LLM:
-              {health.llm_key_set ? (
-                <button
-                  onClick={async () => {
-                    try {
-                      await setLlmEnabled(!health.llm_enabled);
-                      setHealth(await fetchHealth());
-                    } catch {}
-                  }}
-                  title="toggle LLM analysis (covenants, OBS, subsidiaries)"
-                  className={`rounded-full border px-2 py-0.5 ${health.llm_enabled ? "border-emerald-400/40 text-emerald-400" : "border-amber-400/40 text-amber-400"}`}
-                >
-                  {health.llm_enabled ? "on" : "off"}
-                </button>
-              ) : (
-                <span className="text-amber-400" title="set ANTHROPIC_API_KEY in platform/.env">no key</span>
-              )}
-            </div>
-          )}
-
-          {health?.auth_required && (
-            <div className="mt-4">
-              <label className="mb-1 block text-[10px] uppercase tracking-wide text-slate-600">
-                API token
-              </label>
+            {health?.auth_required && (
               <Input
                 type="password"
                 defaultValue={getToken()}
                 onBlur={(e) => setToken(e.target.value.trim())}
-                placeholder="bearer token"
-                title="shared bearer token — stored locally, sent on every API call"
-                className="w-full font-mono"
+                placeholder="API token"
+                aria-label="API token"
+                className="w-32 font-mono"
               />
-            </div>
-          )}
-        </div>
-      </aside>
-
-      {/* Main column */}
-      <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-10 border-b border-ink-700 bg-ink-900/80 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center gap-1 px-5">
-            {activeTicker ? (
-              <>
-                {TABS.map((t) => (
-                  <NavLink
-                    key={t.id}
-                    to={`/company/${activeTicker}/${t.id}`}
-                    className={({ isActive }) =>
-                      `px-4 py-3 text-sm ${isActive ? "border-b-2 border-accent font-semibold text-white" : "text-slate-400 hover:text-slate-200"}`
-                    }
-                  >
-                    {t.label}
-                    <span className="ml-2 hidden text-[9px] text-slate-600 md:inline">g {t.key}</span>
-                  </NavLink>
-                ))}
-                <span className="ml-auto font-mono text-sm text-slate-500">{activeTicker}</span>
-              </>
-            ) : (
-              <span className="py-3 text-sm text-slate-500">Search any SEC issuer — every number traces to an EDGAR filing.</span>
             )}
-          </div>
-        </header>
+            <Input
+              ref={searchRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Ticker or CIK"
+              aria-label="Open a ticker or CIK"
+              className="w-40 font-mono uppercase placeholder:normal-case"
+            />
+          </form>
+        </div>
+      </header>
 
-        <main className="mx-auto max-w-6xl px-5 py-6">
-          {/* Risk has its own hazard ProgressLog — never render two logs at once */}
-          {!onRiskTab && (ovLoading || ovEvents.length > 0) && <ProgressLog events={ovEvents} done={!!overview} />}
-          {ovError && (
-            <ErrorCard className="mb-8">
-              <span className="font-semibold">Could not complete:</span> {ovError}
-            </ErrorCard>
-          )}
-          <Routes>
-            <Route path="/" element={<Landing onPick={go} />} />
-            <Route
-              path="/events"
-              element={<Suspense fallback={<Loading />}><EventsPage /></Suspense>}
-            />
-            <Route
-              path="/company/:ticker/*"
-              element={<CompanyLayout years={appliedYears} health={health} overview={overview}
-                onRunLive={() => runOverview(true)} />}
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
+      <main className="mx-auto max-w-6xl px-5 py-6">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/company/:ticker/*" element={<CompanyLayout />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
     </div>
   );
 }
 
-function Landing({ onPick }) {
+function Landing() {
   return (
-    <div className="mx-auto max-w-4xl py-12">
-      <div className="mx-auto mb-4 max-w-2xl text-center">
-        <h1 className="mb-2 text-2xl font-semibold text-slate-100">
-          Default risk · capital structure · recovery
-        </h1>
-        <p className="mb-8 text-sm text-slate-500">
-          Search any SEC issuer. Every number traces to an EDGAR filing.
-        </p>
-        <div className="flex justify-center gap-3">
-          {HEROES.map((h) => (
-            <button
-              key={h.t}
-              onClick={() => onPick(h.t)}
-              className="rounded-full border border-ink-600 px-4 py-2 text-sm text-slate-300 hover:border-accent hover:text-white"
-            >
-              <span className="font-mono">{h.t}</span>
-              <span className="ml-2 text-slate-500">{h.note}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-      <ScreenTable onPick={onPick} />
-    </div>
+    <>
+      <Section title="Analyzed issuers" subtitle="Every number traces to an EDGAR filing.">
+        <ScreenTable />
+      </Section>
+      <RecentEvents />
+    </>
+  );
+}
+
+// Severe events across every issuer in the event store; absent when there are none.
+function RecentEvents() {
+  const since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+  const { data } = useAsync(`events:recent:${since}`,
+    () => fetchEvents({ min_severity: 4, since, limit: 15 }), [since]);
+  const rows = [...(data?.events || [])]
+    .sort((a, b) => (b.occurred_at || "").localeCompare(a.occurred_at || ""));
+  if (!rows.length) return null;
+
+  return (
+    <Section title="Recent distress events" subtitle="severity 4–5 · last 30 days">
+      <ul>
+        {rows.map((e) => (
+          <li key={e.id} className="flex items-baseline gap-3 border-b border-ink-700/40 py-1.5 text-sm last:border-0">
+            <span className="w-24 shrink-0 font-mono text-xs text-slate-400">
+              {e.occurred_at?.slice(0, 10) || "—"}
+            </span>
+            <span className="w-20 shrink-0 font-mono text-xs">
+              {e.ticker ? (
+                <Link to={`/company/${e.ticker}/capital`} className="text-slate-200 hover:text-accent">
+                  {e.ticker}
+                </Link>
+              ) : (
+                <span className="text-slate-500">CIK {Number(e.cik)}</span>
+              )}
+            </span>
+            {e.source_url ? (
+              <a href={e.source_url} target="_blank" rel="noreferrer"
+                className="truncate text-slate-300 hover:text-accent">
+                {e.title || e.event_type}
+              </a>
+            ) : (
+              <span className="truncate text-slate-300">{e.title || e.event_type}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }

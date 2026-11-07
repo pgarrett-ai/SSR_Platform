@@ -1,4 +1,4 @@
-"""PR-2a event store: schema, idempotent insert, detected_at point-in-time policy.
+"""Event store: schema, idempotent insert, detected_at point-in-time policy.
 Datetimes are naive UTC by convention (pysqlite drops offsets; keeps SQLite/Postgres
 behavior identical). CIKs are String(16), stored 10-digit zero-padded (eightk.py:47)."""
 from datetime import datetime
@@ -13,11 +13,9 @@ init_db()   # idempotent; creates tables + FTS on the conftest temp SQLite
 CIK = "0990000001"   # padded sentinel far above any real EDGAR CIK
 
 
-def test_event_store_tables_and_composite_pk():
+def test_event_store_tables_exist():
     insp = sa.inspect(engine)
     assert me.EVENT_STORE_TABLES <= set(insp.get_table_names())
-    assert insp.get_pk_constraint("scores")["constrained_columns"] == [
-        "cik", "score_name", "asof"]
 
 
 def test_event_indexes_exist():
@@ -177,6 +175,33 @@ def test_upgrade_head_safe_on_create_all_db(tmp_path):
         with eng.connect() as conn:
             version = conn.execute(
                 sa.text("SELECT version_num FROM alembic_version")).scalar()
-        assert version == "0001"
+        assert version == "0002"
+    finally:
+        eng.dispose()
+
+
+def test_sqlite_runs_in_wal_with_a_busy_timeout():
+    with engine.connect() as c:
+        assert c.exec_driver_sql("PRAGMA journal_mode").scalar() == "wal"
+        assert c.exec_driver_sql("PRAGMA busy_timeout").scalar() == 30000
+
+
+def test_unused_tables_dropped_by_migration(tmp_path):
+    from pathlib import Path
+
+    from alembic import command
+    from alembic.config import Config
+
+    backend = Path(__file__).resolve().parents[1]
+    url = "sqlite:///" + (tmp_path / "m2.db").as_posix()
+    cfg = Config(str(backend / "alembic.ini"))
+    cfg.set_main_option("script_location", str(backend / "migrations"))
+    cfg.set_main_option("sqlalchemy.url", url)
+    command.upgrade(cfg, "0001")
+    command.upgrade(cfg, "head")
+    eng = sa.create_engine(url)
+    try:
+        assert not {"scores", "alerts", "alert_log", "watchlists", "watchlist_members"} & set(
+            sa.inspect(eng).get_table_names())
     finally:
         eng.dispose()

@@ -44,5 +44,17 @@ def test_fulcrum_is_first_impaired_class():
         ebitda_vol=0.01, multiple_vol=0.01, n_draws=5_000, seed=6,
     )
     result = analyze(_structure(), cfg)
-    assert result.fulcrum == "2L"
+    assert result.fulcrum == "2nd lien at Co (2L)"
     assert result.table().set_index("tranche")["is_fulcrum"]["2L"]
+
+
+def test_fulcrum_is_the_whole_pari_class():
+    # two notes at one rank share pro rata: naming whichever is listed first is arbitrary
+    structure = CapitalStructure(name="T", entities=[Entity("Co", ev_share=1.0)], tranches=[
+        Tranche("1L", "Co", 500, lien_rank=1, secured=True),
+        Tranche("2030 Notes", "Co", 300), Tranche("2031 Notes", "Co", 300)])
+    cfg = SimConfig(base_ebitda=120, base_multiple=5.0, stress_prob=0.0, ebitda_vol=0.01,
+                    multiple_vol=0.01, n_draws=2_000, seed=6)
+    result = analyze(structure, cfg)
+    assert result.fulcrum == "Unsecured at Co (2030 Notes, 2031 Notes)"
+    assert result.table()["is_fulcrum"].tolist() == [False, True, True]

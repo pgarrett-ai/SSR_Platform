@@ -2,8 +2,7 @@
 
 Accounting ratios are computed for every fiscal year (so the risk timeline / sparklines are
 fully historical). Market-implied features (Merton, vol, drawdown) attach to the latest year
-only, since historical shares-outstanding isn't reliably available from yfinance — historical
-DD is a Phase-2 refinement.
+only, since historical shares-outstanding isn't reliably available from yfinance.
 
 Every ratio guards against missing/zero denominators and returns None rather than raising,
 because real filings have gaps.
@@ -15,6 +14,7 @@ from typing import Optional
 import numpy as np
 
 from ..edgar import FinancialSeries, YearFacts, raw_value
+from ..edgar.facts import DEBT_KEYS
 
 
 def _div(a: Optional[float], b: Optional[float]) -> Optional[float]:
@@ -29,9 +29,9 @@ def _sum(*vals) -> Optional[float]:
 
 
 def total_debt(yf: YearFacts) -> Optional[float]:
-    return _sum(raw_value(yf, "lt_debt_noncurrent"),
-                raw_value(yf, "lt_debt_current"),
-                raw_value(yf, "short_term_debt"))
+    """Includes debt subject to compromise: after a petition the pre-petition debt leaves
+    the debt lines, and a quarter must not read as deleveraged."""
+    return _sum(*(raw_value(yf, k) for k in DEBT_KEYS))
 
 
 def ebitda(yf: YearFacts) -> Optional[float]:
@@ -72,11 +72,12 @@ def year_features(yf: YearFacts) -> dict:
     f = {
         "fiscal_year": yf.fiscal_year,
         "leverage": _div(td, ta),                                  # total debt / assets
-        # C3 sign fix: debt/EBITDA only reads as leverage when EBITDA > 0 — a negative
-        # ratio from negative EBITDA would score as maximal safety under the monotone(+1)
-        # constraint (train.MONOTONE). None -> NaN, which HistGBM handles natively.
+        # debt/EBITDA only reads as leverage when EBITDA > 0 — a negative ratio from negative
+        # EBITDA would score as maximal safety under the monotone(+1) constraint
+        # (train.MONOTONE); the flag tells the model which None means EBITDA <= 0
         "net_debt_to_ebitda": (_div(_sum(td, -(cash or 0.0)), ebd)
                                if ebd is not None and ebd > 0 else None),
+        "ebitda_nonpositive": None if ebd is None else float(ebd <= 0),
         "interest_coverage": _div(ebit, intex),                    # EBIT / interest
         "ebitda_capex_coverage": _div((ebd - capex) if (ebd is not None and capex is not None) else None, intex),
         "current_ratio": _div(raw_value(yf, "current_assets"), raw_value(yf, "current_liabilities")),
@@ -151,22 +152,10 @@ def year_citations(yf: YearFacts, cik: str) -> dict:
         cv.citation.quote = f"{formula} [XBRL]"
         out[key] = cv
 
-    composite("total_debt", total_debt(yf),
-              ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt"))
+    composite("total_debt", total_debt(yf), DEBT_KEYS)
     composite("ebitda", ebitda(yf), ("operating_income", "d_and_a"))
     composite("fcf", fcf(yf), ("operating_cash_flow", "capex"), op=" − ")
     return {k: v.model_dump() for k, v in out.items()}
-
-
-def fcf_margin_slope(timeline: list[dict], window: int = 4) -> Optional[float]:
-    """Deterioration rate: OLS slope of FCF margin over the last `window` years."""
-    pts = [(t["fiscal_year"], t["fcf_margin"]) for t in timeline if t["fcf_margin"] is not None]
-    pts = pts[-window:]
-    if len(pts) < 2:
-        return None
-    x = np.array([p[0] for p in pts], dtype=float)
-    y = np.array([p[1] for p in pts], dtype=float)
-    return float(np.polyfit(x - x.mean(), y, 1)[0])
 
 
 def cash_runway_months(series: FinancialSeries) -> Optional[float]:

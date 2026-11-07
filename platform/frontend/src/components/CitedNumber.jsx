@@ -1,17 +1,17 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Badge } from "../ui/index.jsx";
 
-// Renders a single value with its provenance. Hovering shows the citation (verbatim quote +
-// link to the EDGAR source) or, for a derived figure, the formula. Nothing is shown uncited.
+// Renders a single value with its provenance. Hovering, clicking or focusing it shows the
+// citation (verbatim quote + link to the EDGAR source) or, for a derived figure, the formula.
+// Nothing is shown uncited.
 //
 // The card renders through a portal to <body> with fixed positioning so it can never be
 // clipped by the overflow-x-auto wrappers every data table sits in.
 
 const CARD_W = 320; // matches w-80
 
-function CiteCard({ anchorRef, cv, onEnter, onLeave }) {
-  const cardRef = useRef(null);
+function CiteCard({ id, anchorRef, cardRef, cv, onEnter, onLeave }) {
   const [pos, setPos] = useState(null);
 
   useLayoutEffect(() => {
@@ -29,15 +29,20 @@ function CiteCard({ anchorRef, cv, onEnter, onLeave }) {
 
   return createPortal(
     <div
+      id={id}
+      role="tooltip"
       ref={cardRef}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
+      // a portal still bubbles through the React tree: keep clicks in the card (the SEC.gov
+      // link, selecting the quote) from toggling a clickable row around the number
+      onClick={(e) => e.stopPropagation()}
       style={pos ? { top: pos.top, left: pos.left } : { top: -9999, left: -9999 }}
       className="fixed z-30 w-80 rounded-md border border-ink-600 bg-ink-900 p-3 text-left text-xs shadow-xl"
     >
       {cv.citation ? (
         <div>
-          <div className="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-wide text-slate-400">
+          <div className="mb-1 flex items-center gap-2 text-[11px] uppercase tracking-wide text-slate-400">
             <Badge mono>{cv.citation.form_type || "filing"}</Badge>
             <span className="font-mono">{cv.citation.filing_date}</span>
             {cv.citation.exhibit && <span className="font-mono normal-case">· {cv.citation.exhibit}</span>}
@@ -77,21 +82,29 @@ function CiteCard({ anchorRef, cv, onEnter, onLeave }) {
 
 export default function CitedNumber({ cv, className = "", placeholder = "—" }) {
   const [open, setOpen] = useState(false);
+  const cardId = useId();
   const anchorRef = useRef(null);
+  const cardRef = useRef(null);
   const closeTimer = useRef(null);
 
-  // Close on any scroll — a fixed-position card must not drift from its anchor.
+  // Close on any scroll (a fixed-position card must not drift from its anchor), on Escape,
+  // and when a pointer or focus lands outside both the anchor and the card.
   useEffect(() => {
     if (!open) return;
-    const close = () => setOpen(false);
-    window.addEventListener("scroll", close, { capture: true });
-    return () => window.removeEventListener("scroll", close, { capture: true });
+    const inside = (t) => anchorRef.current?.contains(t) || cardRef.current?.contains(t);
+    const onEvent = (e) => {
+      if (e.type === "scroll" || (e.type === "keydown" ? e.key === "Escape" : !inside(e.target)))
+        setOpen(false);
+    };
+    const types = ["scroll", "keydown", "pointerdown", "focusin"];
+    types.forEach((t) => document.addEventListener(t, onEvent, true));
+    return () => types.forEach((t) => document.removeEventListener(t, onEvent, true));
   }, [open]);
 
   useEffect(() => () => clearTimeout(closeTimer.current), []);
 
   if (!cv || (cv.value == null && !cv.display)) {
-    return <span className="text-slate-600">{placeholder}</span>;
+    return <span className="text-slate-400">{placeholder}</span>;
   }
 
   const label = cv.display ?? (cv.value != null ? String(cv.value) : placeholder);
@@ -110,16 +123,24 @@ export default function CitedNumber({ cv, className = "", placeholder = "—" })
 
   return (
     <span className="relative inline-block" onMouseEnter={openNow} onMouseLeave={closeSoon}>
-      <span
+      <button
+        type="button"
         ref={anchorRef}
+        // a click reads the source; it must not also act on a clickable row around it
+        onClick={(e) => { e.stopPropagation(); openNow(); }}
+        onFocus={openNow}
+        aria-label={`Source for ${label}`}
+        aria-describedby={open ? cardId : undefined}
         className={`cite-link font-mono tabular-nums ${className} ${
           isDerived ? "decoration-amber-400/50" : ""
         }`}
       >
         {label}
-        {isDerived && <sup className="ml-0.5 text-[9px] text-amber-400/80">ƒ</sup>}
-      </span>
-      {open && <CiteCard anchorRef={anchorRef} cv={cv} onEnter={openNow} onLeave={closeSoon} />}
+        {isDerived && <sup className="ml-0.5 text-[11px] text-amber-400/80">ƒ</sup>}
+      </button>
+      {open && (
+        <CiteCard id={cardId} anchorRef={anchorRef} cardRef={cardRef} cv={cv} onEnter={openNow} onLeave={closeSoon} />
+      )}
     </span>
   );
 }

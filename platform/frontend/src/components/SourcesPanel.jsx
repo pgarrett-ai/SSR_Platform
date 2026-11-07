@@ -31,7 +31,7 @@ export default function SourcesPanel({ sources }) {
                   {s.n_credit_docs > 0 ? (
                     <span className="text-accent">{s.n_credit_docs}</span>
                   ) : (
-                    <span className="text-slate-600">0</span>
+                    <span className="text-slate-400">0</span>
                   )}
                 </Td>
                 <Td>

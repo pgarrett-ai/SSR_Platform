@@ -58,6 +58,8 @@ class SimConfig:
         # otherwise poison the whole simulation with NaN
         if not math.isfinite(self.base_ebitda) or self.base_ebitda <= 0:
             raise ValueError("base_ebitda must be a positive finite number")
+        if not self.horizon_years > 0:   # a negative horizon takes the sqrt of a negative: NaN EV
+            raise ValueError("horizon_years must be positive")
         if self.accrual_years < 0:
             raise ValueError("accrual_years must be non-negative")
         if not -1.0 <= self.corr <= 1.0:

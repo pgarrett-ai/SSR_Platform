@@ -1,10 +1,11 @@
 """Creation-multiple ladder: what multiple of EBITDA are you 'creating' the company at
-through each class of the capital structure — at face and at market (Moyer ch. 1/10/11:
-the Magellan computation; market value of the stack through a class ÷ LTM EBITDA).
+through each class of the capital structure — at face and at market (the Magellan
+computation: market value of the stack through a class ÷ LTM EBITDA; Moyer, Distressed
+Debt Analysis, ch. 1, 10 and 11).
 
 Deterministic. Faces come from the same adapter the Recovery page uses (so class ordering
-is the structural priority order, never re-derived); market values use the TRACE drop-file
-quotes where an instrument matched, face otherwise (flagged `unquoted`).
+is the structural priority order, never re-derived); market values use bond marks from the
+marks file where an instrument matched, face otherwise (flagged `unquoted`).
 All dollar figures in $mm.
 """
 from __future__ import annotations
@@ -13,8 +14,9 @@ from typing import Optional
 
 import numpy as np
 
-from ..edgar.facts import derived_value, fmt_ratio
-from ..fulcrum.adapter import overview_to_structure
+from ..edgar.facts import derived_value, fmt_money_millions, fmt_ratio
+from ..fulcrum.adapter import ltm_ebitda, overview_to_structure
+from ..fulcrum.structure import class_label
 from ..fulcrum.waterfall import run_waterfall
 from .quotes import match_quotes
 
@@ -22,31 +24,10 @@ from .quotes import match_quotes
 _FULCRUM_MULTIPLE = 6.0
 
 
-def _class_label(secured: bool, preferred: bool, lien_rank: int, entity: str,
-                 multi_entity: bool) -> str:
-    if preferred:
-        base = "Preferred"
-    elif secured:
-        base = {1: "1st lien", 2: "2nd lien", 3: "3rd lien"}.get(lien_rank, f"Lien {lien_rank}")
-    else:
-        base = "Unsecured"
-    return f"{base} @ {entity}" if multi_entity else base
-
-
 def _ebitda_variants(ov: dict) -> dict[str, Optional[float]]:
-    """$mm. 'ltm' via the same chain the pipeline uses (bridge NI-walk, else forensic);
-    'covenant_adjusted' only when at least one add-back is actually quantified (C5)."""
-    ltm = None
-    bridge = ov.get("economic_debt_bridge") or {}
-    cv = bridge.get("ebitda")
-    if cv and cv.get("value") is not None:
-        ltm = float(cv["value"]) / 1e6
-    else:
-        for row in reversed(ov.get("forensic_table") or []):
-            cv = row.get("ebitda")
-            if cv and cv.get("value") is not None:
-                ltm = float(cv["value"]) / 1e6
-                break
+    """$mm. 'ltm' is the canonical EBITDA (adapter.ltm_ebitda, the one the leverage ratios
+    use); 'covenant_adjusted' only when at least one add-back is actually quantified."""
+    ltm = ltm_ebitda(ov)[0]
     adj = None
     build = ov.get("ebitda_build") or {}
     addbacks = [a.get("amount") for a in build.get("addbacks") or []]
@@ -58,7 +39,7 @@ def _ebitda_variants(ov: dict) -> dict[str, Optional[float]]:
 
 def _face_accreted(ov: dict) -> dict[str, dict]:
     """{instrument[:80]: {face, accreted, oid}} in $mm. Accreted = carrying (GAAP
-    effective-interest ≡ Moyer's original-issue-IRR accretion; ≤ 1 quarter stale);
+    effective-interest ≡ original-issue-IRR accretion; ≤ 1 quarter stale);
     face = tagged DebtInstrumentFaceAmount, else carrying (no OID visible)."""
     out: dict[str, dict] = {}
     for i in ov.get("debt_schedule") or []:
@@ -106,21 +87,23 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         quote = quotes.get(name)
         info = fa.get(name) or {"face": t.face, "accreted": t.face, "oid": False}
         # $mm market value: quoted price % of PRINCIPAL (face), never carrying — quotes
-        # are % of face (Moyer ch. 5); accreted (= t.face) fallback when unquoted
-        mkt = info["face"] * (quote["last_price"] / 100.0) if quote and quote.get("last_price") is not None else t.face
+        # are % of face (Moyer, Distressed Debt Analysis, ch. 5); accreted fallback when
+        # unquoted
+        mkt = (info["face"] * (quote["last_price"] / 100.0)
+               if quote and quote.get("last_price") is not None else info["accreted"])
         if classes and classes[-1]["_key"] == key:
             c = classes[-1]
             c["members"].append(name)
             c["face"] += info["face"]
-            c["accreted"] += t.face
+            c["accreted"] += info["accreted"]
             c["market"] += mkt
             c["quoted"] += 1 if quote else 0
         else:
             classes.append({
                 "_key": key,
-                "label": _class_label(t.secured, t.preferred, t.lien_rank, t.entity, multi_entity),
-                "members": [name], "face": info["face"], "accreted": t.face, "market": mkt,
-                "quoted": 1 if quote else 0,
+                "label": class_label(t) + (f" @ {t.entity}" if multi_entity else ""),
+                "members": [name], "face": info["face"], "accreted": info["accreted"],
+                "market": mkt, "quoted": 1 if quote else 0,
             })
         if name == fulcrum_tranche:
             fulcrum_class_idx = len(classes) - 1
@@ -159,14 +142,15 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         nml = (cum_market - (cash or 0.0)) / e
         net_market_leverage = derived_value(
             round(nml, 2),
-            f"(Σ debt at market ${cum_market:,.0f}M − cash ${cash or 0:,.0f}M) ÷ EBITDA ${e:,.0f}M"
+            f"(Σ debt at market {fmt_money_millions(cum_market * 1e6)} − cash "
+            f"{fmt_money_millions((cash or 0.0) * 1e6)}) ÷ EBITDA {fmt_money_millions(e * 1e6)}"
             + ("" if quotes else " — no quotes matched; debt at face"),
             fmt_ratio(round(nml, 2)),
-            note="market values from TRACE drop-file where quoted, face otherwise",
+            note="market values from bond marks where quoted, face otherwise",
         ).model_dump()
 
-    # % of accreted value, never face, where OID exists (Moyer ch. 5) — a 65 quote on
-    # 71.2 of accreted claim is 91.3, not distressed.
+    # % of accreted value, never face, where OID exists (Moyer, Distressed Debt Analysis,
+    # ch. 5) — a 65 quote on 71.2 of accreted claim is 91.3, not distressed.
     def pct_of_accreted(n: str, q: dict) -> Optional[float]:
         p = q.get("last_price")
         if p is None:
@@ -174,8 +158,9 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         info = fa.get(n)
         return round(p * info["face"] / info["accreted"], 1) if info else p
 
-    # min quoted price among unsecured instruments — one leg of the Moyer distress
-    # fact pattern (stock < $1 AND unsecured debt > 40% discount); equity leg is client-side.
+    # min quoted price among unsecured instruments — one leg of the distress fact pattern
+    # (stock < $1 AND unsecured debt > 40% discount; Moyer, Distressed Debt Analysis, ch. 1);
+    # the equity leg is client-side.
     # Re-based to % of accreted where OID (the raw quote overstates the discount).
     unsec_names = {(i.get("instrument") or "")[:80] for i in ov.get("debt_schedule") or []
                    if i.get("secured") is False}
@@ -194,7 +179,7 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
                                 for n, q in quotes.items()},
         "has_oid": has_oid,
         "oid_note": ("quotes are % of principal; % of accreted value shown where OID — "
-                     "unamortized discount is not a claim (Moyer ch. 5)") if has_oid else None,
+                     "unamortized discount is not a claim") if has_oid else None,
         "ebitda_mm": ebitda,
         "fulcrum_class": classes[fulcrum_class_idx]["label"] if fulcrum_class_idx is not None else None,
         "fulcrum_note": f"fulcrum at {_FULCRUM_MULTIPLE:.1f}x EBITDA reference EV",
@@ -203,13 +188,13 @@ def build_creation_ladder(ov: dict, bonds: list[dict]) -> dict:
         "n_quoted": len(quotes),
         "n_instruments": len(order),
         "notes": notes,
-        "derivation": "cumulative claims through each class ÷ LTM EBITDA; market = drop-file "
-                      "quote % × face where matched (Moyer creation-value test)",
+        "derivation": "cumulative claims through each class ÷ LTM EBITDA; market = bond "
+                      "mark % × face where matched",
     }
 
 
 # --------------------------------------------------------------------------- #
-# F9: capacity-avoidance detector + mezzanine recast (Moyer ch. 6)
+# Capacity-avoidance detector + mezzanine recast (Moyer, Distressed Debt Analysis, ch. 6)
 # --------------------------------------------------------------------------- #
 
 
@@ -226,12 +211,10 @@ def mezz_recast_row(ov: dict) -> Optional[dict]:
 
 def detect_capacity_avoidance(ov: dict, equity_price: Optional[float],
                               bonds: Optional[list[dict]] = None) -> dict:
-    """Instruments engineered around leverage optics (Moyer ch. 6): busted converts
-    (analyze purely as debt), PIK (cash coverage overstated), mezzanine preferred
-    (recast as debt). Price-dependent — assembled on demand in the ladder endpoint;
-    equity_price = Snapshot.last_price (set by a Default Risk run)."""
-    from ..edgar.facts import fmt_money_millions
-
+    """Instruments engineered around leverage optics (Moyer, Distressed Debt Analysis,
+    ch. 6): busted converts (analyze purely as debt), PIK (cash coverage overstated),
+    mezzanine preferred (recast as debt). Price-dependent — assembled on demand in the
+    ladder endpoint; equity_price = Snapshot.last_price (set by a Default Risk run)."""
     quotes, _ = match_quotes(ov.get("debt_schedule") or [], bonds or [])
     items: list[dict] = []
     for inst in ov.get("debt_schedule") or []:
@@ -248,7 +231,7 @@ def detect_capacity_avoidance(ov: dict, equity_price: Optional[float],
                     "tone": "high" if busted else ("watch" if ratio < 1.0 else "neutral"),
                     "note": f"stock ${float(equity_price):,.2f} vs conversion "
                             f"${float(conv):,.2f} ({ratio:.2f}x)"
-                            + (" — deeply busted; analyze purely as debt (Moyer ch. 6)"
+                            + (" — deeply busted; analyze purely as debt"
                                if busted else
                                " — out of the money" if ratio < 1.0 else " — in the money"),
                 })
@@ -275,5 +258,5 @@ def detect_capacity_avoidance(ov: dict, equity_price: Optional[float],
     return {
         "items": items, "equity_price": equity_price,
         "meta_note": ("capacity-avoidance instruments present — effective leverage is "
-                      "already very high (Moyer ch. 6)") if items else None,
+                      "already very high") if items else None,
     }

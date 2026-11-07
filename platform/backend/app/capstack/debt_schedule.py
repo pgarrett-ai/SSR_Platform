@@ -2,16 +2,17 @@
 
 Numbers come from dimensional XBRL (debt_xbrl.py). This module's LLM does the two jobs the
 tags can't: (a) `annotate_maturities` — per-instrument maturity strings and the floating-rate
-base, quote-cited, keyed to the deterministic instrument list; (b) the legacy full extraction
-`extract_debt_schedule`, kept ONLY as the fallback for issuers that don't dimension their
+base, quote-cited, keyed to the deterministic instrument list; (b) the full extraction
+`extract_debt_schedule`, used ONLY as the fallback for issuers that don't dimension their
 debt, with deterministic post-filters (`drop_retired`) on top.
 """
 from __future__ import annotations
 
+import logging
 import re
 from typing import Optional
 
-from ..edgar.documents import FilingText
+from ..edgar.documents import QUOTE_NOT_FOUND, FilingText, quote_in_text
 from ..edgar.facts import fmt_money_millions
 from ..core.llm import extract_structured
 from ..schemas import Citation, CitedValue, DebtInstrument
@@ -20,8 +21,32 @@ _SYSTEM = (
     "You are a distressed-credit analyst building an issuer's debt schedule (cap table) from its "
     "long-term-debt footnote. Extract one row per distinct debt instrument or facility. Be precise "
     "and conservative: use only amounts present in the text, and attach a verbatim quote to each "
-    "instrument. Do not invent coupons, maturities, or lien priorities that aren't stated."
+    "instrument. Do not invent coupons, maturities, or lien priorities that aren't stated. "
+    "A balance-sheet total or caption (total debt, current portion or current maturities, "
+    "long-term debt net of current maturities, a subtotal) is not an instrument: never record "
+    "one, and if the text gives only such totals, record no instruments."
 )
+
+# Balance-sheet captions and subtotals that are never instruments: 'Total debt', 'Debt
+# (current portion)', 'Long-term debt, net of current maturities', 'Less: current maturities'.
+log = logging.getLogger(__name__)
+
+_CAPTION_RE = re.compile(
+    r"^\s*(?:less\b|total\b|sub-?totals?\b|(?:long|short)[- ]term debt\b|debt\b"
+    r"|current (?:portion|maturities)\b)", re.I)
+# Words that also appear in real instrument names ("Term Loan B, including current portion",
+# "6.00% Notes ($500 million aggregate principal)"): only a row without a coupon or a
+# maturity, which a caption never carries, is treated as an aggregate.
+_AGGREGATE_HINT_RE = re.compile(
+    r"\baggregate\b|\bcurrent (?:portion|maturities)\b|\bnet of current\b|\bsub-?totals?\b",
+    re.I)
+
+
+def is_caption(name: str, coupon=None, maturity=None) -> bool:
+    """A balance-sheet caption or subtotal, not an instrument."""
+    name = name or ""
+    return bool(_CAPTION_RE.search(name)
+                or (_AGGREGATE_HINT_RE.search(name) and not coupon and not maturity))
 
 _TOOL_DESCRIPTION = (
     "Record each debt instrument / facility in the issuer's capital structure. Convert amounts to "
@@ -83,6 +108,10 @@ def extract_debt_schedule(ft: FilingText) -> tuple[list[DebtInstrument], Optiona
 
     out: list[DebtInstrument] = []
     for raw in result.get("instruments", []):
+        if is_caption(raw.get("instrument"), raw.get("coupon"), raw.get("maturity")):
+            # an aggregate line as a cap-table row would hide the missing detail
+            log.warning("debt schedule: dropped caption row %r", raw.get("instrument"))
+            continue
         citation = Citation(
             accession_no=ft.accession_no,
             form_type=ft.form_type,
@@ -93,11 +122,12 @@ def extract_debt_schedule(ft: FilingText) -> tuple[list[DebtInstrument], Optiona
         )
         principal = raw.get("principal_usd")
         outstanding = raw.get("outstanding_usd")
+        note = None if quote_in_text(citation.quote, window) else QUOTE_NOT_FOUND
         out.append(
             DebtInstrument(
                 instrument=raw.get("instrument", ""),
-                principal=_cv(principal, citation),
-                outstanding=_cv(outstanding, citation),
+                principal=_cv(principal, citation, note),
+                outstanding=_cv(outstanding, citation, note),
                 coupon=raw.get("coupon"),
                 maturity=raw.get("maturity"),
                 secured=raw.get("secured"),
@@ -108,14 +138,16 @@ def extract_debt_schedule(ft: FilingText) -> tuple[list[DebtInstrument], Optiona
     return out, None
 
 
-def _cv(amount: Optional[float], citation: Citation) -> Optional[CitedValue]:
+def _cv(amount: Optional[float], citation: Citation,
+        note: Optional[str] = None) -> Optional[CitedValue]:
     if amount is None:
         return None
-    return CitedValue(value=amount, display=fmt_money_millions(amount), citation=citation)
+    return CitedValue(value=amount, display=fmt_money_millions(amount), citation=citation,
+                      note=note)
 
 
 def drop_retired(instruments: list[DebtInstrument], asof: Optional[str]) -> list[DebtInstrument]:
-    """Deterministic post-filter for the legacy path: no balance outstanding, or a maturity
+    """Deterministic post-filter for the fallback path: no balance outstanding, or a maturity
     year before the schedule's as-of year, means the instrument is gone."""
     asof_year = None
     if asof:
@@ -138,7 +170,10 @@ def fill_maturity_from_name(instruments: list[DebtInstrument],
                             asof: Optional[str] = None) -> int:
     """Deterministic maturity fallback: '2030 Notes' names its due year; 'Notes due 2028'
     states it outright. Facility vintage years ('2025 GIB Credit Facility') are NOT
-    maturities and are skipped — only notes/bonds carry the year-as-maturity convention.
+    maturities and are skipped — notes carry the year-as-maturity convention, and a term
+    loan only when no vintage can be meant: a year after the as-of year ('2028 Term Loan B'
+    at TSE), or the as-of year itself unless the name calls itself a facility, as vintages
+    do ('2026 Term Loan' is due this year; '2021 AAdvantage Term Loan Facility' at AAL).
     Returns the number of maturities filled."""
     asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
     filled = 0
@@ -148,9 +183,14 @@ def fill_maturity_from_name(instruments: list[DebtInstrument],
         name = f"{inst.instrument} {inst.xbrl_member or ''}"
         m = re.search(r"(?:due|matur\w*)\s+.{0,12}?((?:19|20)\d{2})", name, re.I)
         year = int(m.group(1)) if m else None
-        if year is None and inst.facility_type == "notes":
+        if year is None and inst.facility_type in ("notes", "term loan"):
             ys = re.findall(r"\b(20[2-6]\d)\b", name)
             year = int(ys[0]) if ys else None
+            vintage = "facilit" in name.lower()
+            if inst.facility_type == "term loan" and not (
+                    asof_year and year and (year > asof_year
+                                            or (year == asof_year and not vintage))):
+                year = None
         if year and (asof_year is None or year >= asof_year):
             inst.maturity = str(year)
             filled += 1
@@ -216,15 +256,18 @@ def match_annotation(inst: DebtInstrument, by_name: dict[str, dict],
 
 
 def _apply_annotations(instruments: list[DebtInstrument], annotations: list[dict],
-                       ft: FilingText, asof: Optional[str],
+                       ft: FilingText, asof: Optional[str], source_text: str,
                        aliases: Optional[dict[str, list[str]]] = None,
                        section: str = "Long-term debt footnote",
                        ) -> list[tuple[str, str]]:
-    """Attach maturity/rate-base annotations to their instruments. Returns the
+    """Attach maturity/rate-base annotations to their instruments. An annotation whose
+    quote is not in `source_text` (what the model read) is dropped: a maturity carries no
+    note to flag it, and an unverified date would move debt on the wall. Returns the
     (xbrl_member, annotation name) pairs that matched non-exactly — the aliases worth
     remembering for the next run."""
     asof_year = int(str(asof)[:4]) if asof and str(asof)[:4].isdigit() else None
-    by_name = {a.get("instrument", "").strip().lower(): a for a in annotations}
+    by_name = {a.get("instrument", "").strip().lower(): a for a in annotations
+               if quote_in_text(a.get("quote"), source_text)}
     learned: list[tuple[str, str]] = []
     for inst in instruments:
         ann = match_annotation(inst, by_name, aliases)
@@ -254,14 +297,15 @@ def _apply_annotations(instruments: list[DebtInstrument], annotations: list[dict
 def annotate_maturities(instruments: list[DebtInstrument], ft: FilingText,
                         asof: Optional[str] = None,
                         aliases: Optional[dict[str, list[str]]] = None,
-                        ) -> tuple[Optional[str], list[tuple[str, str]]]:
+                        ) -> tuple[Optional[str], list[tuple[str, str]], int]:
     """One LLM call: maturity strings + floating-rate bases for the XBRL instrument list.
-    Mutates the instruments in place; returns (error-or-None, learned alias pairs)."""
+    Mutates the instruments in place; returns (error-or-None, learned alias pairs, number
+    of annotations dropped because their quote is not in the footnote)."""
     if not instruments:
-        return None, []
+        return None, [], 0
     window = ft.debt_window()
     if not window:
-        return "no debt footnote text", []
+        return "no debt footnote text", [], 0
     names = "\n".join(f"- {i.instrument}" for i in instruments)
     user = (
         f"Filing: {ft.form_type} filed {ft.filing_date} (period {ft.period_of_report}).\n"
@@ -278,8 +322,9 @@ def annotate_maturities(instruments: list[DebtInstrument], ft: FilingText,
         max_tokens=4000,
     )
     if result is None:
-        return "LLM unavailable", []
+        return "LLM unavailable", [], 0
     if "__error__" in result:
-        return result["__error__"], []
-    learned = _apply_annotations(instruments, result.get("annotations", []), ft, asof, aliases)
-    return None, learned
+        return result["__error__"], [], 0
+    annotations = result.get("annotations", [])
+    learned = _apply_annotations(instruments, annotations, ft, asof, window, aliases)
+    return None, learned, sum(not quote_in_text(a.get("quote"), window) for a in annotations)

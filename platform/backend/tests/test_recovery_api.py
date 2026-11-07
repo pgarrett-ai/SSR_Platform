@@ -1,5 +1,6 @@
-"""Phase 1 exit test: the Project-Apex worked example reproduced through the API,
+"""The Project-Apex worked example reproduced through the API,
 plus a scenarios save/list/delete roundtrip. No network needed."""
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -35,7 +36,7 @@ def test_project_apex_via_api():
     assert r.status_code == 200, r.text
     d = r.json()
     # Canonical numbers from fulcrum's README / examples.project_apex (same seed & draws).
-    assert d["fulcrum"] == "2L Notes"
+    assert d["fulcrum"] == "2nd lien at OpCo (2L Notes)"
     assert abs(d["ev"]["median"] - 625) < 10
     assert d["total_face"] == 1020.0
     by_name = {t["tranche"]: t for t in d["tranches"]}
@@ -80,7 +81,7 @@ def test_priming_scenario_rides_same_draws():
     primed = {t["tranche"]: t["mean_recovery_%"] for t in d["priming_tranches"]}
     assert primed["Priming loan"] > base["1L Term Loan"]         # rank 0 pays first
     assert primed["1L Term Loan"] < base["1L Term Loan"]         # primed down
-    assert primed["OpCo Unsecured"] < base["OpCo Unsecured"]     # the Moyer point
+    assert primed["OpCo Unsecured"] < base["OpCo Unsecured"]     # priming comes out of unsecureds
     assert d["primed_structure"]["tranches"][0]["lien_rank"] == 0
     # same EV draws: the base tranche table is unchanged by the priming overlay
     plain = client.post("/api/company/APEX/recovery/simulate", json={
@@ -109,7 +110,7 @@ def test_506_headroom_reported():
 
 
 def _patch_offline(monkeypatch):
-    """No cached overview / drop-file needed — the endpoint's ov + bonds legs degrade."""
+    """No cached overview / marks file needed — the endpoint's ov + bonds legs degrade."""
     import app.hazard.trace as trace
     import app.main as main
     from app.schemas import IssuerHeader, Overview
@@ -137,7 +138,7 @@ def test_exchange_endpoint_smoke(monkeypatch):
     assert s0["holdout"] == d["base_pct"]          # p=0 ≡ base on the same grid
     s90 = next(s for s in d["scenarios"] if s["participation_pct"] == 90.0)
     assert len(s90["tender"]) == 241 and s90["fails"] is False
-    # Cash-free crossover regression: the leading both-zero plateau (EV under the
+    # Cash-free crossover: the leading both-zero plateau (EV under the
     # 30 admin floor) must not read as a crossover at ~0. Hand check: the stub's
     # holdout line starts after admin 30 + 1L 500 + 2L 250 + new paper p·F·ratio,
     # and catches the 50-per-100 tender plateau after (1−p)·F·ratio more —
@@ -155,39 +156,6 @@ def test_exchange_unknown_target_400(monkeypatch):
     r = client.post("/api/company/APEX/recovery/exchange", json={
         "structure": APEX_STRUCTURE, "sim": {"base_ebitda": 120.0},
         "target": "Nope", "ratio_pct": 50.0})
-    assert r.status_code == 400
-
-
-def test_plan_endpoint_smoke(monkeypatch):
-    _patch_offline(monkeypatch)
-    r = client.post("/api/company/APEX/recovery/plan", json={
-        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": 120.0},
-        "reorg_ev": 1000.0, "reorg_debt": 800.0,
-        "plan": [{"tranche": "OpCo Unsecured", "cash": 50.0,
-                  "new_debt_face": 40.0, "new_debt_haircut": 0.6, "new_equity_pct": 10.0}]})
-    assert r.status_code == 200, r.text
-    d = r.json()
-    assert d["available"] is True
-    assert abs(d["reorg_equity_value"]["value"] - 200.0) < 1e-9   # 1000 − 800
-    row = d["rows"][0]
-    # plan value = 50 + 40×0.6 + 10%×200 = 50 + 24 + 20 = 94
-    assert abs(row["plan_value"]["value"] - 94.0) < 1e-9
-    assert row["roi"] is None                                      # unquoted (bonds [])
-
-
-def test_plan_endpoint_haircut_required_400(monkeypatch):
-    _patch_offline(monkeypatch)
-    r = client.post("/api/company/APEX/recovery/plan", json={
-        "structure": APEX_STRUCTURE, "reorg_ev": 500.0,
-        "plan": [{"tranche": "OpCo Unsecured", "new_debt_face": 100.0}]})  # no haircut
-    assert r.status_code == 400
-
-
-def test_plan_endpoint_missing_tranche_400(monkeypatch):
-    _patch_offline(monkeypatch)
-    r = client.post("/api/company/APEX/recovery/plan", json={
-        "structure": APEX_STRUCTURE, "reorg_ev": 500.0,
-        "plan": [{"cash": 10.0}]})           # no "tranche" key -> ValueError, not 500
     assert r.status_code == 400
 
 
@@ -211,7 +179,7 @@ def test_crisis_endpoint_smoke(monkeypatch):
 
 
 def test_crisis_endpoint_detects_trigger(monkeypatch):
-    # B1 regression: cik lives at header.cik, not top-level — the trigger path must actually run.
+    # cik lives at header.cik, not top-level — the trigger path must actually run.
     import app.capstack.eightk as eightk
     import app.main as main
     from app.schemas import CitedValue, IssuerHeader, LiquidityEvent, LiquidityRunway, Overview
@@ -223,7 +191,7 @@ def test_crisis_endpoint_detects_trigger(monkeypatch):
             date="2026-05", kind="maturity", instrument="Notes",
             amount=CitedValue(value=2e9, formula="face"), flags=["maturity_unfundable"])])
     monkeypatch.setattr(main, "load_overview", lambda *a, **k: ov)   # cache-only endpoint
-    monkeypatch.setattr(eightk, "crisis_triggers", lambda cik: [
+    monkeypatch.setattr(eightk, "crisis_triggers", lambda cik, since=None: [
         {"filing_date": "2026-02-01", "accession": "x-26-1", "source_url": "u",
          "items": ["4.02"], "items_unknown": False,
          "triggers": {"4.02": "non-reliance / restatement"}}])
@@ -232,8 +200,25 @@ def test_crisis_endpoint_detects_trigger(monkeypatch):
     assert d["trigger_items"] == ["4.02"] and d["trigger_error"] is False
 
 
+def test_crisis_screen_reads_only_the_last_three_years(monkeypatch):
+    # a decade-old restatement 8-K is history, not a live crisis trigger
+    import datetime as dt
+
+    import app.capstack.eightk as eightk
+    import app.main as main
+    from app.schemas import IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "load_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Old Co", ticker="OLDC", years=3, cik="0000012345")))
+    seen = {}
+    monkeypatch.setattr(eightk, "crisis_triggers",
+                        lambda cik, since=None: seen.update(since=since) or [])
+    client.get("/api/company/OLDC/recovery/crisis")
+    assert seen["since"] == (dt.date.today() - dt.timedelta(days=3 * 365)).isoformat()
+
+
 def test_case_endpoint_detects_petition(monkeypatch):
-    # B1 regression (PR1 twin): recovery_case must read header.cik and cite the petition 8-K.
+    # recovery_case must read header.cik and cite the petition 8-K.
     import app.capstack.eightk as eightk
     import app.main as main
     from app.schemas import IssuerHeader, Overview
@@ -244,27 +229,6 @@ def test_case_endpoint_detects_petition(monkeypatch):
         "date": "2026-03-01", "accession": "x-26-9", "source_url": "u"})
     d = client.get("/api/company/BKRT/recovery/case").json()
     assert d["petition_date"]["value"] == "2026-03-01" and d["petition_error"] is False
-
-
-def test_tax382_endpoint_manual_nol(monkeypatch):
-    _patch_offline(monkeypatch)     # bare overview: no extracted NOL -> manual path
-    r = client.post("/api/company/APEX/recovery/tax382", json={
-        "nol": 500.0, "equity_fmv": 200.0, "rate": 0.05, "tax_rate": 0.20,
-        "horizon_years": 20, "discount_rate": 0.0})
-    assert r.status_code == 200, r.text
-    d = r.json()
-    assert d["available"] is True
-    assert d["annual_limit"]["value"] == 10.0        # 200 × 5%
-    assert d["usable_nol"]["value"] == 200.0
-    assert d["stranded_nol"]["value"] == 300.0       # the P-Corp number
-    assert abs(d["tax_asset_pv"]["value"] - 40.0) < 1e-6   # r=0 -> equals shield (200 × 20%)
-
-
-def test_tax382_endpoint_no_nol_degrades(monkeypatch):
-    _patch_offline(monkeypatch)
-    r = client.post("/api/company/APEX/recovery/tax382", json={"equity_fmv": 200.0})
-    assert r.status_code == 200
-    assert r.json()["available"] is False            # no NOL extracted or supplied
 
 
 def test_simulate_n_draws_bounded_400(monkeypatch):
@@ -293,19 +257,30 @@ def test_simulate_product_bound_400(monkeypatch):
     assert r.status_code == 400          # 100 × 1e6 = 1e8 cells > 20M budget
 
 
-def test_plan_length_bounded_400(monkeypatch):
+_SIM_5K = {**APEX_SIM, "n_draws": 5_000}
+_INF_TRANCHE = {**APEX_STRUCTURE, "tranches": [
+    {**APEX_STRUCTURE["tranches"][0], "face": float("inf")}, *APEX_STRUCTURE["tranches"][1:]]}
+
+
+@pytest.mark.parametrize("body", [
+    {"structure": APEX_STRUCTURE, "sim": {**_SIM_5K, "accrual_years": float("nan")}},
+    {"structure": _INF_TRANCHE, "sim": _SIM_5K},
+    {"structure": APEX_STRUCTURE, "sim": _SIM_5K, "priming": {"face": float("nan")}},
+], ids=["sim", "structure", "priming"])
+def test_simulate_non_finite_number_400(monkeypatch, body):
+    # the JSON parser takes NaN/Infinity literals; untyped dicts carry them past pydantic
+    import json
     _patch_offline(monkeypatch)
-    big = [{"tranche": "OpCo Unsecured", "cash": 1.0} for _ in range(501)]
-    r = client.post("/api/company/APEX/recovery/plan",
-                    json={"structure": APEX_STRUCTURE, "reorg_ev": 100.0, "plan": big})
-    assert r.status_code == 400
+    r = client.post("/api/company/APEX/recovery/simulate", content=json.dumps(body),
+                    headers={"Content-Type": "application/json"})
+    assert r.status_code == 400 and "finite" in r.json()["error"]
 
 
-def test_tax382_horizon_bounded_422():
-    # Field(le=100) rejects at the Pydantic boundary before the handler runs (no network needed)
-    r = client.post("/api/company/APEX/recovery/tax382",
-                    json={"equity_fmv": 200.0, "horizon_years": 10**9})
-    assert r.status_code == 422
+def test_chunked_body_without_length_411():
+    # a chunked body carries no Content-Length for the 5 MB cap to check
+    r = client.post("/api/settings/llm", content=iter([b"{}"]),
+                    headers={"Content-Type": "application/json"})
+    assert r.status_code == 411
 
 
 def test_ticker_charset_rejected_422():
@@ -315,7 +290,7 @@ def test_ticker_charset_rejected_422():
 
 
 def test_simulate_persists_recovery_summary():
-    # the Overview recovery card reads Snapshot.recovery_summary instead of re-simulating
+    # the issuer strip's Recover cell reads Snapshot.recovery_summary instead of re-simulating
     from app import models
     from app.core.db import session_scope
 
@@ -327,13 +302,91 @@ def test_simulate_persists_recovery_summary():
     with session_scope() as s:
         summ = s.get(models.Snapshot, "APEX").recovery_summary
         s.query(models.Snapshot).filter_by(ticker="APEX").delete()
-    assert summ["mode"] == "simulation" and summ["fulcrum"] == "2L Notes"
+    assert summ["mode"] == "simulation" and summ["fulcrum"] == "2nd lien at OpCo (2L Notes)"
     assert {t["tranche"] for t in summ["tranches"]} == {t["name"] for t in APEX_STRUCTURE["tranches"]}
-    assert any(t["is_fulcrum"] for t in summ["tranches"])
+    assert [t["tranche"] for t in summ["tranches"] if t["is_fulcrum"]] == ["2L Notes"]
+    # the response hands the strip the exact summary it persisted
+    assert r.json()["recovery_summary"] == summ
+
+
+def test_overview_stream_carries_the_recovery_summary(monkeypatch):
+    # the strip's RECOVER cell seeds from the stream on a tab's first open
+    import json
+
+    import app.main as main
+    from app import models
+    from app.core.db import session_scope
+    from app.schemas import IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Stream Co", ticker="ZZSTRM", years=3)))
+    with session_scope() as s:
+        s.merge(models.Snapshot(ticker="ZZSTRM", issuer="Stream Co",
+                                recovery_summary={"mode": "simulation", "fulcrum": "X"}))
+    body = client.get("/api/overview/stream?ticker=ZZSTRM").text
+    with session_scope() as s:
+        s.query(models.Snapshot).filter_by(ticker="ZZSTRM").delete()
+    block = body[body.index("event: overview"):]
+    data = json.loads(block.split("data: ", 1)[1].splitlines()[0])
+    assert data["recovery_summary"] == {"mode": "simulation", "fulcrum": "X"}
+
+
+def test_unknown_ticker_is_a_404_with_a_reason(monkeypatch):
+    # one shape on every route: a slug for code, a sentence for the error card
+    import app.main as main
+    from app.edgar.client import TickerNotFoundError
+
+    def _missing(*a, **k):
+        raise TickerNotFoundError("Ticker 'NOPE' not found in SEC company_tickers.json")
+
+    monkeypatch.setattr(main, "run_overview", _missing)
+    for url in ("/api/overview?ticker=NOPE", "/api/company/NOPE/recovery/structure"):
+        r = client.get(url)
+        assert r.status_code == 404, url
+        assert r.json() == {"error": "ticker_not_found",
+                            "detail": "Ticker 'NOPE' not found in SEC company_tickers.json"}
+
+
+def test_structure_carries_the_chapter11_case(monkeypatch):
+    # the page seeds its first run's petition accrual from the same response as the cap table
+    import app.main as main
+    from app.schemas import Chapter11, Citation, IssuerHeader, Overview
+
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Bankrupt Co", ticker="BKRT", years=3),
+        chapter11=Chapter11(petition_date="2026-05-28", source=Citation(form_type="8-K"))))
+    d = client.get("/api/company/BKRT/recovery/structure").json()
+    assert d["chapter11"]["petition_date"] == "2026-05-28"
+    assert d["chapter11"]["confirmed_at"] is None
+
+
+def test_liquidation_mode_reports_the_accrual_it_used(monkeypatch):
+    # Recompute on the liquidation panel re-sends this accrual, so its claims match the run
+    _patch_offline(monkeypatch)
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": -50.0, "accrual_years": 0.5}})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["mode"] == "liquidation" and d["accrual_years"] == 0.5
+
+
+def test_nonfinite_recovery_summary_is_not_persisted():
+    from app import models
+    from app.core.db import session_scope
+    from app.main import _save_recovery_summary
+
+    with session_scope() as s:
+        s.merge(models.Snapshot(ticker="ZZNAN", issuer="NaN Co"))
+    _save_recovery_summary("ZZNAN", {"mode": "simulation", "fulcrum": None,
+                                     "ev": {"median": float("nan")}, "tranches": []})
+    with session_scope() as s:
+        summ = s.get(models.Snapshot, "ZZNAN").recovery_summary
+        s.query(models.Snapshot).filter_by(ticker="ZZNAN").delete()
+    assert summ is None
 
 
 def test_case_crisis_are_cache_only(monkeypatch):
-    # PR-B: the read-only case/crisis screens must NEVER trigger a live pipeline run — they
+    # the read-only case/crisis screens must NEVER trigger a live pipeline run — they
     # self-fetch on page mount, so run_overview here would launch a ~3-min LLM+EDGAR run.
     import app.main as main
 
@@ -358,3 +411,22 @@ def test_scenarios_roundtrip():
     assert any(s["id"] == sid and s["name"] == "Base" for s in listed)
     assert client.delete(f"/api/scenarios/{sid}").json()["deleted"] == 1
     assert not any(s["id"] == sid for s in client.get("/api/company/APEX/scenarios").json())
+
+
+def test_negative_ebitda_body_run_liquidates_on_the_overview_assets(monkeypatch):
+    # the page's auto-run sends its cap table with a negative EBITDA; the liquidation still
+    # needs the overview's asset snapshot, so the overview must load
+    import app.main as main
+    from app.schemas import AssetSnapshot, CitedValue, IssuerHeader, Overview
+
+    _patch_offline(monkeypatch)
+    cash = CitedValue(value=500e6, display="$500M", derived=True, formula="test")
+    monkeypatch.setattr(main, "run_overview", lambda *a, **k: Overview(
+        header=IssuerHeader(issuer="Apex", ticker="APEX", years=3),
+        asset_snapshot=AssetSnapshot(cash=cash)))
+    r = client.post("/api/company/APEX/recovery/simulate", json={
+        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": -50.0}})
+    assert r.status_code == 200, r.text
+    d = r.json()
+    assert d["mode"] == "liquidation" and d["available"] is True
+    assert d["recovery_summary"] is not None

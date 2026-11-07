@@ -1,23 +1,25 @@
-"""Per-CIK 8-K item enumeration (Moyer ch. 8/12 event detection).
+"""Per-CIK 8-K item enumeration (event detection; Moyer, Distressed Debt Analysis, ch. 8
+and 12).
 
 Uses the EDGAR **submissions API** (`data.sec.gov/submissions/CIK{10}.json`),
 which is CIK-scoped by construction and carries each 8-K's `items` codes, filing
 date, and accession in a single request — no full-text-search phrase queries, no
 pagination, none of the market-wide fragility. An empty/absent items list is
-reported as `items_unknown`, never silently treated as "no trigger" (Phase-3
-decision #8).
+reported as `items_unknown`, never silently treated as "no trigger".
 
-Reused by F1 (petition date, `petition_filing`) and F3 (crisis triggers,
-`crisis_triggers`). `_http_get_submissions` is the raw network seam; `_fetch_submissions`
+Feeds the petition date (`petition_filing`) and the crisis triggers
+(`crisis_triggers`). `_http_get_submissions` is the raw network seam; `_fetch_submissions`
 wraps it with a 1h per-CIK disk cache + retry. Tests monkeypatch either. All bytes leave
 through the one paced EDGAR transport (`edgar.http.paced_get`).
 
-ponytail: case/crisis still enumerate 8-K items live per page mount (1h cache); point
-them at the event store (which already carries 1.03/4.01/4.02 rows) once the worker +
-backfill have populated it, keeping this module as the cold-start fallback.
+ponytail: the petition (per overview build) and the crisis screen (per Risk page mount)
+enumerate 8-K items live (1h cache); point them at the event store (which already carries
+1.03/4.01/4.02 rows) once the worker + backfill have populated it, keeping this module as
+the cold-start fallback.
 """
 from __future__ import annotations
 
+import datetime as dt
 import json
 import re
 import time
@@ -26,12 +28,15 @@ from typing import Optional
 
 from ..core.config import CACHE_DIR
 from ..edgar.http import paced_get
+from ..schemas import Citation
 
+_today = dt.date.today   # clock seam: tests pin the date a case counts as resolved from
 _SUBMISSIONS = "https://data.sec.gov/submissions/CIK{cik10}.json"
 _SUBMISSIONS_CACHE_DIR = CACHE_DIR / "eightk"   # per-CIK cache; module global so tests can redirect it
 _SUBMISSIONS_TTL_S = 3600   # 1h — collapses page-mount refetch storms, caps petition-detection lag at ~1h
 
-# crisis-of-confidence 8-K items (Moyer ch. 8): restatement / auditor / management.
+# crisis-of-confidence 8-K items (Moyer, Distressed Debt Analysis, ch. 8): restatement /
+# auditor / management.
 # 4.01/4.02 are the accounting-confidence signals; 5.02 also covers routine appointments
 # (Item 5.02 = Departure/Election/Appointment), so it is noisier — labeled accurately and
 # treated as secondary. A body-keyword read to isolate genuine departures is the upgrade path.
@@ -147,21 +152,52 @@ def list_8k_items(cik, since: Optional[str] = None) -> list[dict]:
     return out
 
 
+_CASE_GAP_DAYS = 2 * 365        # 1.03 filings closer together than this are one case
+_CASE_LOOKBACK_DAYS = 3 * 365   # a case whose last filing is older has been resolved
+
+
 def petition_filing(cik) -> Optional[dict]:
-    """Earliest 8-K carrying Item 1.03 (bankruptcy/receivership) → cited petition-date
-    row {date, accession, source_url}; None if no 1.03 filing is found."""
-    rows = [r for r in list_8k_items(cik) if r["items"] and "1.03" in r["items"]]
+    """The issuer's latest Chapter 11 case from its 8-K Item 1.03 (bankruptcy/receivership)
+    filings → cited petition-date row {date, accession, source_url, plan_confirmed}; None
+    when there is none. Every 1.03 is read, and the most recent run of them, each within
+    two years of the one before, is one case: its first filing is the petition. Item 1.03
+    is filed again when the court confirms a plan, so when the run has more than one filing
+    its last is reported as `plan_confirmed` ({date, accession, source_url}, else None):
+    the case is no longer live from that date. A case whose last filing is more than three
+    years old has been resolved: AAL's CIK still carries AMR's 2011 petition."""
+    rows = sorted((r for r in list_8k_items(cik)
+                   if r["items"] and "1.03" in r["items"] and r["filing_date"]),
+                  key=lambda r: r["filing_date"])
     if not rows:
         return None
-    r = min(rows, key=lambda r: r["filing_date"] or "9999-99-99")
-    return {"date": r["filing_date"], "accession": r["accession"],
-            "source_url": r["source_url"]}
+    days = [dt.date.fromisoformat(r["filing_date"][:10]) for r in rows]
+    first = len(rows) - 1
+    while first > 0 and (days[first] - days[first - 1]).days <= _CASE_GAP_DAYS:
+        first -= 1
+    if (_today() - days[-1]).days > _CASE_LOOKBACK_DAYS:
+        return None
+    case = rows[first:]
+    # ponytail: filings group by a 2-year gap, not by reading the 8-K body. Ceilings: a later
+    # 1.03 for affiliates joining the case (or a first-day order) reads as the confirmation; a
+    # Chapter 22 refiled within 2 years of confirmation merges into the old case; a case that
+    # runs past 2 years from petition to confirmation splits. Read the 8-K body to fix these.
+    cite = [{"date": r["filing_date"], "accession": r["accession"],
+             "source_url": r["source_url"]} for r in (case[0], case[-1])]
+    return {**cite[0], "plan_confirmed": cite[1] if len(case) > 1 else None}
+
+
+def petition_citation(pf: dict) -> Citation:
+    """The citation behind a petition date from petition_filing."""
+    return Citation(form_type="8-K", section="Item 1.03 — Bankruptcy or Receivership",
+                    filing_date=pf.get("date"), accession_no=pf.get("accession"),
+                    source_url=pf.get("source_url"),
+                    quote="petition date proxied by the 8-K Item 1.03 filing date")
 
 
 def crisis_triggers(cik, since: Optional[str] = None) -> list[dict]:
     """8-K filings carrying a crisis-of-confidence item (4.01/4.02/5.02). Rows with an
     unknown items list are still returned (triggers=None, items_unknown=True) so the
-    caller reports "unknown", never "no trigger" (decision #8)."""
+    caller reports "unknown", never "no trigger"."""
     out: list[dict] = []
     for r in list_8k_items(cik, since=since):
         if r["items_unknown"]:
@@ -174,8 +210,8 @@ def crisis_triggers(cik, since: Optional[str] = None) -> list[dict]:
 
 
 def crisis_screen(triggers, liquidity, liquidity_events, accel=None) -> dict:
-    """Crisis-of-confidence four-factor liquidity screen (Moyer ch. 8). PURE — takes
-    already-fetched inputs so it is unit-testable without network/DB.
+    """Crisis-of-confidence four-factor liquidity screen (Moyer, Distressed Debt Analysis,
+    ch. 8). PURE — takes already-fetched inputs so it is unit-testable without network/DB.
 
     A restatement/fraud disclosure only becomes a *liquidity event* when it coincides
     with an immediate cash need the company cannot cover from cash on hand — Global
@@ -227,21 +263,21 @@ def crisis_screen(triggers, liquidity, liquidity_events, accel=None) -> dict:
         "revolver": {
             "undrawn": undrawn, "reliance_pct": reliance_pct,
             "note": "a restatement/fraud disclosure typically trips a covenant and freezes "
-                    "the revolver — reliance on undrawn capacity is fragile (Moyer ch. 8 factor 2)"},
+                    "the revolver — reliance on undrawn capacity is fragile"},
         "acceleration": {
             "clauses_found": accel_found, "sample": accel.get("sample"),
             "available": bool(accel.get("available", True)),
             "note": "best-effort scan of the indexed covenant/notes corpus for cross-default / "
                     "material-adverse-change language — NOT full indenture text, and depends on "
-                    "the LLM covenant extraction having run (Moyer ch. 8 factor 3)"},
+                    "the LLM covenant extraction having run"},
         "immediate_need": {
             "events": at_risk[:3], "need_total": need_total, "covered_by_cash": covered,
-            "note": "nearest coupon/maturity flagged at-risk or unfundable (Moyer ch. 8 factor 4)"},
+            "note": "nearest coupon/maturity flagged at-risk or unfundable"},
     }
     return {
         "triggered": triggered, "trigger_items": sorted(trig_map),
         "trigger_filings": trigger_filings, "factors": factors, "crisis": crisis,
         "note": "crisis = a restatement/fraud 8-K trigger AND an immediate cash need not covered "
                 "by cash on hand; revolver reliance and acceleration language amplify but are "
-                "best-effort/qualitative (Moyer ch. 8).",
+                "best-effort/qualitative.",
     }

@@ -5,7 +5,7 @@ sa.JSON(), silently dropping JSONB on Postgres. Mirrors app/models_events.py exa
 — all cik columns sa.String(16), plain sa.DateTime(), the JSONB variant, and index
 names matching SQLAlchemy's ix_<table>_<column> autonaming so the create_all-SQLite
 schema and this Alembic-Postgres schema are identical. Event-store tables ONLY;
-legacy models.py tables stay on create_all (plan D3).
+the models.py tables stay on create_all.
 
 Idempotent by design: create_all may already own these tables on dev SQLite; upgrade
 then only records the version.

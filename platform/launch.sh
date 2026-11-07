@@ -1,39 +1,23 @@
 #!/usr/bin/env bash
-# Launch the SSR Platform from a WSL (or Git Bash) terminal.
-# Backend :8001 + frontend :5173 run as Windows-side processes via interop,
-# so your Windows browser reaches them at http://localhost:5173 as usual.
-# Logs: platform/.logs/   Stop with: ./stop.sh
-set -e
-DIR="$(cd "$(dirname "$0")" && pwd)"
-mkdir -p "$DIR/.logs"
-
-listening() {
-  powershell.exe -NoProfile -Command \
-    "if (Get-NetTCPConnection -LocalPort $1 -State Listen -ErrorAction SilentlyContinue) { exit 0 } else { exit 1 }" \
-    2>/dev/null
-}
-
-if listening 8001; then
-  echo "backend already running on :8001"
-else
-  (cd "$DIR/backend" && nohup ./.venv/Scripts/python.exe -m uvicorn app.main:app --port 8001 \
-    >"$DIR/.logs/backend.log" 2>&1 &)
-  echo "backend starting on :8001  (log: platform/.logs/backend.log)"
+# Start the API (:8001), the EDGAR events worker and the frontend (:5173) in this terminal.
+# Ctrl-C stops all three. On Windows, use platform_launch.bat.
+set -euo pipefail
+cd "$(dirname "$0")"
+PY="$PWD/backend/.venv/bin/python"
+[ -x "$PY" ] || PY="$PWD/backend/.venv/Scripts/python.exe"
+if [ ! -x "$PY" ]; then
+  echo "no venv: python3 -m venv backend/.venv && backend/.venv/bin/pip install -r backend/requirements.txt"
+  exit 1
 fi
-
-if listening 5173; then
-  echo "frontend already running on :5173"
-else
-  # MSYS_NO_PATHCONV stops Git Bash mangling /c into C:\ (no effect under WSL)
-  (cd "$DIR/frontend" && MSYS_NO_PATHCONV=1 nohup cmd.exe /c npm run dev \
-    >"$DIR/.logs/frontend.log" 2>&1 &)
-  echo "frontend starting on :5173  (log: platform/.logs/frontend.log)"
-fi
-
-# events worker: no port — its own worker.lock freshness guard makes a duplicate
-# start exit cleanly, so an unconditional start is safe
-(cd "$DIR/backend" && nohup ./.venv/Scripts/python.exe -m app.worker \
-  >"$DIR/.logs/worker.log" 2>&1 &)
-echo "events worker starting  (log: platform/.logs/worker.log; /api/health shows worker.alive)"
-
-echo "open http://localhost:5173 in your Windows browser"
+trap 'kill 0' EXIT INT TERM
+(cd backend && "$PY" -m uvicorn app.main:app --host 127.0.0.1 --port 8001) &
+(cd backend && "$PY" -m app.worker) &
+npm --prefix frontend run dev &
+for _ in $(seq 30); do
+  if curl -sf http://127.0.0.1:8001/api/health >/dev/null; then
+    echo "ready: open http://localhost:5173"
+    break
+  fi
+  sleep 1
+done
+wait

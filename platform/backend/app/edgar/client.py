@@ -1,16 +1,23 @@
 """EDGAR retrieval: ticker -> CIK, fetch filings + exhibits over an N-year window.
 
-Thin wrapper over `edgartools`. edgartools handles SEC rate-limiting/caching internally;
-we set the required identity (name + email) once at import time.
+Thin wrapper over `edgartools`, which paces and caches its own requests; the first
+EdgarClient sets the required identity (name + email).
 """
 from __future__ import annotations
 
 import datetime as dt
+import os
 import threading
 from dataclasses import dataclass, field
 from typing import Optional
 
-from edgar import Company, set_identity
+# edgartools sizes its per-process rate limiter from this variable when first imported.
+# 4 req/s here plus paced_get's 1 req/s (Settings.edgar_max_requests_per_sec) is the API's
+# share of SEC's 10 req/s, leaving room for the worker. A value already set in the
+# environment wins.
+os.environ.setdefault("EDGAR_RATE_LIMIT_PER_SEC", "4")
+
+from edgar import Company, CompanyNotFoundError, set_identity  # noqa: E402  after the default
 
 from ..core.config import get_settings
 
@@ -21,7 +28,7 @@ _identity_set = False
 # credit-agreement / LME exhibits; S-1/S-4 carry indentures.
 DEFAULT_FORMS = ["10-K", "10-Q", "8-K", "S-1", "S-4"]
 
-# Exhibit types that are candidate credit documents (brief §5).
+# Exhibit types that are candidate credit documents.
 CREDIT_EXHIBIT_PREFIXES = ("EX-10", "EX-4")
 
 # Legacy / delisted / renamed tickers the SEC's current company_tickers.json no longer maps.
@@ -144,9 +151,11 @@ class EdgarClient:
 
     @staticmethod
     def _safe_company(identifier) -> Optional[Company]:
+        """The Company, or None when EDGAR has no such issuer. Network and HTTP errors
+        propagate, so the API reports the real cause instead of an unknown ticker."""
         try:
             company = Company(identifier)
-        except Exception:
+        except (CompanyNotFoundError, ValueError):   # ValueError: not a usable CIK
             return None
         if company is None or not getattr(company, "cik", None):
             return None
@@ -193,7 +202,7 @@ class EdgarClient:
 
         if not results:
             raise NoFilingsError(
-                f"No {'/'.join(forms)} filings for {company.name} in the last {years} year(s)."
+                f"No {'/'.join(forms)} filings for {company.name} in the last {years} year{'' if years == 1 else 's'}."
             )
         return results
 

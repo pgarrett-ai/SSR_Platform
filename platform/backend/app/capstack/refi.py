@@ -1,86 +1,38 @@
-"""Refi-wall sequencing (Moyer ch. 6/10): can each maturity bucket be repaid internally,
-and if not, will anyone refinance it? Internal capacity is the ch. 6 cash-sweep model;
-the default leg is a Merton PD term structure re-solved from the cached hazard inputs
-(risk-neutral, single default point D = total debt); the market leg reads the TRACE
-drop-file (YTM ≥ 40% = markets closed — book verbatim; a nearer quote's premium over
-longer pari paper proxies the market's refi probability). Calculator, not monitor —
-the hazard cache is used at any age, and its file/as-of are surfaced.
+"""Refi-wall sequencing: can each maturity bucket be repaid internally, and if not, is the
+market open to refinance it? Internal capacity is the cash-sweep model (capacity.sweep);
+market access reads the issuer's bond marks (a yield of 40%+ means the refi market is
+closed; a nearer quote's premium over longer pari paper proxies the market's refi
+probability). Default probability is deliberately not an input: the only PD available is
+risk-neutral Merton, which cannot be banded against real-world default rates.
 """
 from __future__ import annotations
 
 import datetime as dt
-import json
+import re
 from typing import Optional
 
-from ..core.cache import safe_ticker
-from ..core.config import CACHE_DIR
-from ..edgar.facts import derived_value
-from ..hazard.merton import merton
-from ..hazard.score import implied_rating
+from ..edgar.facts import derived_value, fmt_money_millions
 from .capacity import capacity_inputs, sweep
 from .quotes import _maturity_year, match_quotes
-from .triage import _is_bank
 
-_MARKETS_CLOSED_YTM = 40.0   # Moyer ch. 10: a 40%+ yield means the refi market is closed
-_GROWTH = 0.02               # flat sweep growth — matches the capacity card's base case
+_MARKETS_CLOSED_YTM = 40.0   # a 40%+ yield means the refi market is closed
+_GROWTH = 0.02               # flat sweep growth, matching the capacity base case
 
-_METHODOLOGY = ("risk-neutral Merton PD term structure re-solved from the cached hazard "
-                "inputs (E = market cap, σ_E = equity vol, single default point D = "
-                "total debt); conditional PD over an interval = "
-                "(PD(tᵢ) − PD(tᵢ₋₁)) ÷ (1 − PD(tᵢ₋₁)); 'default looks likely' when the "
-                "nearest S&P long-run band by log-distance is CCC/C (≈9.7% cutoff — "
-                "platform-chosen)")
-
-
-def hazard_inputs(ticker: str) -> Optional[dict]:
-    """Merton inputs from the newest cached hazard payload for the ticker — glob
-    {TICKER}_*y.json and take the newest (NOT years-keyed: only *_10y.json typically
-    exists). Any age (calculator, not monitor); file + as_of surfaced in the payload.
-    Reads the EXACT inputs MertonScorer solved with (scores["Merton DD"]["inputs"]) —
-    one input-assembly path platform-wide. None when no usable cache (a pre-inputs
-    cache self-heals on the next Default Risk run)."""
-    try:
-        t = safe_ticker(ticker)   # trust boundary: keep request-derived ticker out of the glob
-    except ValueError:
-        return None
-    files = sorted(CACHE_DIR.glob(f"hazard/{t}_*y.json"),
-                   key=lambda p: p.stat().st_mtime)
-    for p in reversed(files):
-        try:
-            blob = json.loads(p.read_text(encoding="utf-8"))
-            data = blob.get("data") or {}
-            merton_score = (data.get("scores") or {}).get("Merton DD") or {}
-            inp = merton_score.get("inputs") or {}
-            if all(inp.get(k) for k in ("E", "sigma_E", "D")) and inp.get("r") is not None:
-                return {"E": float(inp["E"]), "sigma_E": float(inp["sigma_E"]),
-                        "D": float(inp["D"]), "r": float(inp["r"]),
-                        "as_of": blob.get("as_of"), "file": p.name}
-        except Exception:
-            continue
-    return None
+# facility_type values debt_xbrl.facility_type_of can emit that mean "bank paper"
+BANK_TYPES = {"revolver", "term loan", "delayed-draw term loan", "credit facility",
+              "bridge loan"}
+# name fallback — load-bearing: AAL tags facility_type on none of its 14 rows.
+# "Special Facility Revenue Bonds" and commercial paper correctly miss.
+_BANK_NAME_RE = re.compile(r"revolv|term loan|credit facilit|\babl\b|\bddtl\b|bridge loan",
+                           re.IGNORECASE)
 
 
-def conditional_from_cum(cum: list[float]) -> list[float]:
-    """Interval PDs conditional on surviving the prior horizon:
-    cᵢ = (Pᵢ − Pᵢ₋₁) ÷ (1 − Pᵢ₋₁), floored at 0 (a risk-neutral cum PD can dip at
-    long horizons when drift dominates)."""
-    out, prev = [], 0.0
-    for p in cum:
-        out.append(max((p - prev) / (1.0 - prev), 0.0) if prev < 1.0 else 0.0)
-        prev = p
-    return out
-
-
-def conditional_pds(E: float, sigma_E: float, D: float, r: float,
-                    horizons: tuple[float, ...]) -> Optional[dict]:
-    """One merton() re-solve (reproduces the pipeline's cached PDs exactly) →
-    cumulative + conditional PD per horizon."""
-    res = merton(E=E, sigma_E=sigma_E, D=D, r=r, horizons=tuple(horizons))
-    if res is None:
-        return None
-    cum = [float(res.pd_by_horizon[h]) for h in horizons]
-    return {"cum": cum, "conditional": conditional_from_cum(cum),
-            "converged": res.converged}
+def _is_bank(inst: dict) -> bool:
+    """facility_type when tagged, name regex otherwise."""
+    ft = inst.get("facility_type")
+    if ft is not None:
+        return ft in BANK_TYPES
+    return bool(_BANK_NAME_RE.search(inst.get("instrument") or ""))
 
 
 def sequence_walls(ladder: list[dict], liquidity_mm: float,
@@ -122,21 +74,16 @@ def _cum_internal(inp: Optional[dict], n_years: int) -> tuple[list[float], Optio
     return out, None
 
 
-def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
-    """The refi-wall table: per bucket, internal repayability (sequential), the
-    conditional-PD leg to the next wall, the market overlay, and a verdict walked back
-    to front (an unrefinanceable later wall poisons every earlier refinancing)."""
+def build_refi_wall(ov: dict, bonds: list[dict]) -> dict:
+    """The refi-wall table: per bucket, internal repayability (sequential), the market
+    overlay, and a verdict walked back to front (an unrefinanceable later wall poisons
+    every earlier refinancing)."""
     wall = sorted(ov.get("maturity_wall") or [], key=lambda b: b.get("year") or 0)
     if not wall:
         return {"available": False,
                 "note": "no maturity wall extracted — nothing to sequence"}
 
     base = dt.date.today()
-    if hz and hz.get("as_of"):
-        try:
-            base = dt.date.fromisoformat(str(hz["as_of"])[:10])
-        except ValueError:
-            pass
 
     ladder = [{"year": int(b["year"]),
                "face_mm": round((b.get("face") or 0) / 1e6, 1),
@@ -147,7 +94,7 @@ def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
     liq_v = ((ov.get("liquidity") or {}).get("total_liquidity") or {}).get("value")
     liquidity_mm = (liq_v or 0.0) / 1e6   # $mm→raw-$ boundary kept here, in one place
     if liq_v is None:
-        notes.append("no liquidity block in this cached overview — cash + undrawn "
+        notes.append("no liquidity block in this cached overview — liquidity "
                      "treated as $0 (re-run the pipeline to extract)")
 
     n_years = max(ladder[-1]["year"] - base.year, 1)
@@ -157,13 +104,7 @@ def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
 
     rows = sequence_walls(ladder, liquidity_mm, cum_internal, base.year)
 
-    # PD leg: one merton re-solve at year-end horizons from the hazard as_of
-    horizons = tuple(max((dt.date(r["year"], 12, 31) - base).days / 365.25, 1.0 / 12.0)
-                     for r in rows)
-    pds = (conditional_pds(hz["E"], hz["sigma_E"], hz["D"], hz["r"], horizons)
-           if hz is not None else None)
-
-    # market overlay: matched drop-file quotes keyed to schedule rows
+    # market overlay: matched bond marks keyed to schedule rows
     quotes, _ = match_quotes(ov.get("debt_schedule") or [], bonds)
     sched_by_name = {(i.get("instrument") or ""): i
                      for i in ov.get("debt_schedule") or []}
@@ -198,7 +139,7 @@ def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
                     f"(bucket quote {bq['price']:g} − longer pari "
                     f"{anchor['instrument'][:40]} @ {anchor['price']:g}) ÷ "
                     f"(100 − {anchor['price']:g}) — the nearer paper's premium over "
-                    "longer pari paper (Moyer ch. 10)")
+                    "longer pari paper")
             elif not later:
                 r["refi_prob_note"] = ("no strictly-longer pari passu quote — "
                                        "refi probability not anchorable")
@@ -209,23 +150,11 @@ def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
     n = len(rows)
     for i in range(n - 1, -1, -1):
         r = rows[i]
-        # displayed conditional PD = the interval a refi lender at this wall bears —
-        # to the NEXT wall (the last wall shows the conditional into it)
-        if pds is not None:
-            j = min(i + 1, n - 1)
-            r["cond_pd"] = pds["conditional"][j]
-            r["cum_pd"] = pds["cum"][i]
-            r["band"] = implied_rating(r["cond_pd"]) if r["cond_pd"] > 0 else None
-            pd_leg = r["band"] == "CCC/C"
-        else:
-            r["cond_pd"] = r["cum_pd"] = r["band"] = None
-            # no hazard → next wall's own refi need proxies the default leg
-            pd_leg = (i < n - 1) and rows[i + 1]["refi_need_mm"] > 0
-        own_flag = pd_leg or bool(r.get("markets_closed"))
+        closed = bool(r.get("markets_closed"))
         if i == n - 1:
-            unref = r["refi_need_mm"] > 0 and own_flag
+            unref = r["refi_need_mm"] > 0 and closed
         else:
-            unref = own_flag or unref_later
+            unref = closed or unref_later
         if unref:
             r["verdict"] = "unrefinanceable"
             unref_later = True
@@ -239,8 +168,7 @@ def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
         ann: list[str] = []
         if i > 0 and rows[i - 1]["verdict"] == "fundable":
             ann.append("nearer wall self-funding — new money at this wall can be "
-                       "structured to mature inside it (term-structure seniority, "
-                       "Moyer ch. 10)")
+                       "structured to mature inside it (term-structure seniority)")
         if any(_is_bank(sched_by_name.get(nm) or {"instrument": nm})
                for nm in r["instruments"]):
             ann.append("includes a bank facility — relationship lenders typically "
@@ -250,27 +178,28 @@ def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
             ann.append("repayable internally — but this market would not refinance it")
         r["annotations"] = ann
 
-    # displayed dollars → derived CitedValues; PDs stay raw floats + methodology
+    # displayed dollars → derived CitedValues
+    def m(v: float) -> str:   # $mm -> "-$123M"
+        return fmt_money_millions(v * 1e6)
+
     out_rows = []
     for r in rows:
         insts = ", ".join(r["instruments"])[:120]
         face = derived_value(r["face_mm"], f"Σ face due {r['year']}: {insts}",
-                             f"${r['face_mm']:,.0f}M").model_dump()
+                             m(r["face_mm"])).model_dump()
         repay = derived_value(
             r["repayable_mm"],
-            f"min(face ${r['face_mm']:,.0f}M, max(liquidity ${liquidity_mm:,.0f}M + "
-            f"cumulative sweep ${r['internal_mm']:,.0f}M − earlier walls, 0)) — "
+            f"min(face {m(r['face_mm'])}, max(liquidity {m(liquidity_mm)} + "
+            f"cumulative sweep {m(r['internal_mm'])} − earlier walls, 0)) — "
             f"flat {100 * _GROWTH:.0f}% growth sweep",
-            f"${r['repayable_mm']:,.0f}M").model_dump()
+            m(r["repayable_mm"])).model_dump()
         need = derived_value(
             r["refi_need_mm"],
-            f"face ${r['face_mm']:,.0f}M − repayable internally "
-            f"${r['repayable_mm']:,.0f}M",
-            f"${r['refi_need_mm']:,.0f}M").model_dump()
+            f"face {m(r['face_mm'])} − repayable internally {m(r['repayable_mm'])}",
+            m(r["refi_need_mm"])).model_dump()
         out_rows.append({
             "year": r["year"], "instruments": r["instruments"],
             "face": face, "repayable": repay, "refi_need": need,
-            "cond_pd": r["cond_pd"], "cum_pd": r["cum_pd"], "band": r["band"],
             "quote": r["quote"], "markets_closed": r["markets_closed"],
             "refi_prob_pct": r["refi_prob_pct"], "refi_prob_note": r["refi_prob_note"],
             "verdict": r["verdict"], "annotations": r["annotations"],
@@ -280,16 +209,11 @@ def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
         "available": True,
         "rows": out_rows,
         "liquidity_mm": round(liquidity_mm, 1),
-        "hazard": ({"file": hz["file"], "as_of": hz["as_of"],
-                    "converged": pds["converged"] if pds else None,
-                    "methodology": _METHODOLOGY} if hz else None),
-        "hazard_note": (None if hz else
-                        "no hazard cache — run Default Risk once to populate the PD "
-                        "leg; until then the next wall's refi need proxies it"),
         "notes": notes,
         "derivation": "sequential funding: resources_i = liquidity + cumulative sweep "
                       "capacity (flat 2% growth) − Σ earlier wall faces; refi need = "
-                      "max(face − resources, 0); markets closed at YTM ≥ 40% (Moyer "
-                      "ch. 10); range-spread maturities amortize evenly across the "
+                      "max(face − resources, 0); markets closed at YTM ≥ 40%; "
+                      "unrefinanceable = markets closed here or at a later wall; "
+                      "range-spread maturities amortize evenly across the "
                       "wall — bucket faces inherit that convention",
     }

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { liquidateRecovery } from "../api.js";
-import { Button, ErrorCard, Section, Th, fmt } from "../ui/index.jsx";
+import { Button, ErrorCard, Section, Th, fmt, fmtMoney } from "../ui/index.jsx";
 
-// Asset-based liquidation waterfall (Moyer ch. 5/8): book values × advance rates,
-// net of estate costs, distributed by absolute priority. This is the negative-EBITDA
-// degradation path for the Recovery page (C4 fix).
+// Asset-based liquidation waterfall (Moyer, Distressed Debt Analysis, ch. 5 and 8): book
+// values × advance rates, net of
+// estate costs, distributed by absolute priority. Recovery shows it in place of the
+// going-concern answer when EBITDA ≤ 0. Recompute keeps the simulated run's stack and
+// accrual, so its claims match the run it replaces.
 
 const CATS = ["cash", "accounts_receivable", "inventory", "ppe", "intangibles", "other"];
 
@@ -16,14 +18,15 @@ function RateCell({ value, onChange }) {
   );
 }
 
-export default function LiquidationPanel({ ticker, years, structure, initial }) {
+export default function LiquidationPanel({ ticker, years, initial }) {
   const [data, setData] = useState(initial || null);
   const [rates, setRates] = useState(null);
   const [adminPct, setAdminPct] = useState(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => { setData(initial || null); }, [initial]);
+  // a new run re-seeds the rate inputs from its own scenario
+  useEffect(() => { setData(initial || null); setRates(null); setAdminPct(null); }, [initial]);
 
   const scenario = data?.scenario;
 
@@ -38,7 +41,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
     setRunning(true);
     setError(null);
     try {
-      const body = { structure };
+      const body = { structure: initial.structure, accrual_years: initial.accrual_years || 0 };
       if (preset) {
         body.rates = data?.presets?.[preset];
         body.admin_pct = preset === "fire_sale" ? data?.presets?.admin_ch7 : data?.presets?.admin_ch11;
@@ -78,7 +81,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
   return (
     <Section
       title="Liquidation waterfall"
-      subtitle={data.note}
+      subtitle={initial?.note || data.note}
     >
       {error && <ErrorCard className="mb-4">{error}</ErrorCard>}
 
@@ -86,7 +89,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
         <Button onClick={() => rerun("orderly")} disabled={running}>ch. 11 orderly preset</Button>
         <Button onClick={() => rerun("fire_sale")} disabled={running}>ch. 7 fire-sale preset</Button>
         <label className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500">Estate costs % of proceeds</span>
+          <span className="text-[11px] uppercase tracking-wide text-slate-400">Estate costs % of proceeds</span>
           <input type="number" step={0.01} min={0} max={0.4} value={adminPct ?? ""}
             onChange={(e) => setAdminPct(Number(e.target.value))}
             className="w-24 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent" />
@@ -102,7 +105,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
-                <Th>Asset</Th><Th right>Book $mm</Th><Th right>Rate</Th><Th right>Proceeds $mm</Th>
+                <Th>Asset</Th><Th right>Book $M</Th><Th right>Rate</Th><Th right>Proceeds $M</Th>
               </tr>
             </thead>
             <tbody>
@@ -131,7 +134,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="border-b border-ink-600">
-                <Th>Tranche</Th><Th right>Claim $mm</Th><Th right>Recovery $mm</Th><Th right>%</Th>
+                <Th>Tranche</Th><Th right>Claim $M</Th><Th right>Recovery $M</Th><Th right>% of claim</Th>
               </tr>
             </thead>
             <tbody>
@@ -140,7 +143,7 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
                   className={`border-b border-ink-700/60 font-mono ${r.is_fulcrum ? "bg-rose-900/40 text-rose-100" : "text-slate-300"}`}>
                   <td className="px-2 py-1.5 font-sans">
                     {r.tranche}
-                    {r.is_fulcrum && <span className="ml-2 rounded bg-rose-500/30 px-1.5 py-0.5 text-[9px] uppercase">fulcrum</span>}
+                    {r.is_fulcrum && <span className="ml-2 rounded bg-rose-500/30 px-1.5 py-0.5 text-[11px] uppercase">fulcrum</span>}
                   </td>
                   <td className="px-2 py-1.5 text-right">{fmt(r.claim, 0)}</td>
                   <td className="px-2 py-1.5 text-right">{fmt(r.recovery, 0)}</td>
@@ -152,11 +155,11 @@ export default function LiquidationPanel({ ticker, years, structure, initial }) 
 
           {pair && (
             <div className="mt-3 text-xs text-slate-400">
-              <span className="text-[10px] uppercase tracking-wide text-slate-500">ch. 11 orderly vs ch. 7 fire-sale (net proceeds): </span>
-              <span className="font-mono text-slate-200">{fmt(pair.ch11_orderly.net_proceeds, 0)}</span>
-              <span className="mx-1 text-slate-600">vs</span>
-              <span className="font-mono text-rose-300">{fmt(pair.ch7_fire_sale.net_proceeds, 0)}</span>
-              <span className="ml-2 text-slate-600">$mm — the going-concern-in-ch11 vs shutdown gap</span>
+              <span className="text-[11px] uppercase tracking-wide text-slate-400">ch. 11 orderly vs ch. 7 fire-sale (net proceeds): </span>
+              <span className="font-mono text-slate-200">{fmtMoney(pair.ch11_orderly.net_proceeds * 1e6)}</span>
+              <span className="mx-1 text-slate-400">vs</span>
+              <span className="font-mono text-rose-300">{fmtMoney(pair.ch7_fire_sale.net_proceeds * 1e6)}</span>
+              <span className="ml-2 text-slate-500">— the going-concern vs shutdown gap</span>
             </div>
           )}
         </div>

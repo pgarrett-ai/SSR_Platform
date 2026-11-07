@@ -1,7 +1,7 @@
 """N-PORT fund holdings — who (among registered funds) holds the issuer's bonds.
 
-Data source: the SEC's quarterly "Form N-PORT data sets" ZIP (structured TSVs, ~1GB), the
-drop-file pattern: download the quarter's ZIP from
+Data source: the SEC's quarterly "Form N-PORT data sets" ZIP (structured TSVs, ~1GB), loaded
+by hand: download the quarter's ZIP from
 https://www.sec.gov/about/dera_form-n-port-data-sets and run scripts/ingest_nport.py — the
 ZIP streams row-by-row (never extracted) and only rows matching tracked issuers land in the
 nport_holdings table.

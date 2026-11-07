@@ -1,4 +1,4 @@
-"""PR-6 auth v1: shared bearer token on /api/* when PLATFORM_API_TOKEN is set;
+"""Auth: shared bearer token on /api/* when PLATFORM_API_TOKEN is set;
 open on localhost by default (unset). /api/health stays open for liveness."""
 from fastapi.testclient import TestClient
 

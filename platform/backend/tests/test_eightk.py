@@ -1,7 +1,7 @@
 """capstack.eightk: per-CIK 8-K item enumeration off the EDGAR submissions API.
 The network seam (_fetch_submissions) is monkeypatched — no network. Verifies 8-K
 filtering, items parsing, the items_unknown flag (empty items -> "unknown", never
-"no trigger"), earliest-1.03 petition detection, and crisis-item triggers."""
+"no trigger"), 1.03 petition and plan-confirmation detection, and crisis-item triggers."""
 import pytest
 
 import app.capstack.eightk as eightk
@@ -39,12 +39,64 @@ def test_since_filter(monkeypatch):
     assert [r["filing_date"] for r in rows] == ["2024-05-01"]
 
 
-def test_petition_filing_earliest_103(monkeypatch):
-    _patch(monkeypatch)
+def _with_103(subs, date, accession):
+    for key, v in (("form", "8-K"), ("filingDate", date), ("accessionNumber", accession),
+                   ("items", "1.03")):
+        subs["filings"]["recent"][key].append(v)
+    return subs
+
+
+def test_petition_filing_103_within_three_years(monkeypatch):
+    # AAL's CIK still carries AMR's 2011 petition: a resolved case is not a live Chapter 11
+    import datetime as dt
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2024, 6, 1))
+    subs = _with_103(_submissions(), "2011-11-29", "0000000000-11-000001")
+    monkeypatch.setattr(eightk, "_fetch_submissions", lambda cik: subs)
     pf = eightk.petition_filing("320193")
     assert pf["date"] == "2023-11-20"
     assert pf["accession"] == "0000000000-23-000009"
     assert pf["source_url"] is not None
+    assert pf["plan_confirmed"] is None
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2027, 1, 1))
+    assert eightk.petition_filing("320193") is None        # 2023 filing now > 3 years old
+
+
+def test_later_103_is_the_plan_confirmation(monkeypatch):
+    # Item 1.03 is filed again when the court confirms the plan: the petition is the first
+    import datetime as dt
+    from app import pipeline
+
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2024, 6, 1))
+    subs = _with_103(_submissions(), "2024-03-28", "0000000000-24-000003")
+    monkeypatch.setattr(eightk, "_fetch_submissions", lambda cik: subs)
+    pf = eightk.petition_filing("320193")
+    assert (pf["date"], pf["accession"]) == ("2023-11-20", "0000000000-23-000009")
+    assert pf["plan_confirmed"]["date"] == "2024-03-28"
+    # the case stays on record, marked confirmed; the warning hedges the reading
+    warnings: list[str] = []
+    c11 = pipeline._chapter11("320193", warnings)
+    assert (c11.petition_date, c11.confirmed_at) == ("2023-11-20", "2024-03-28")
+    assert len(warnings) == 1 and "read as plan confirmation" in warnings[0]
+
+
+@pytest.mark.parametrize("filings, expected", [
+    # petition just outside three years, confirmation inside: still one confirmed case
+    (["2023-08-01", "2024-01-15"], ("2023-08-01", "2024-01-15")),
+    # AMR: 2011 petition, 2013 confirmation, long resolved
+    (["2011-11-29", "2013-10-21"], None),
+    # a single recent 1.03 is a live case
+    (["2026-09-14"], ("2026-09-14", None)),
+])
+def test_petition_filing_groups_one_case(monkeypatch, filings, expected):
+    import datetime as dt
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2026, 11, 7))
+    monkeypatch.setattr(eightk, "_fetch_submissions", lambda cik: {"filings": {"recent": {
+        "form": ["8-K"] * len(filings), "filingDate": filings,
+        "accessionNumber": [f"a-{i}" for i in range(len(filings))],
+        "items": ["1.03"] * len(filings)}}})
+    pf = eightk.petition_filing("1")
+    got = pf and (pf["date"], (pf["plan_confirmed"] or {}).get("date"))
+    assert got == expected
 
 
 def test_petition_filing_none_when_no_103(monkeypatch):
@@ -55,7 +107,7 @@ def test_petition_filing_none_when_no_103(monkeypatch):
 
 
 def test_fetch_submissions_day_caches(monkeypatch, tmp_path):
-    # PR-B: the per-CIK day-cache collapses repeated fetches to one EDGAR hit per CIK per day
+    # the per-CIK disk cache collapses repeated fetches to one EDGAR hit per CIK per TTL
     # (SEC 10 req/s fair-access). The raw seam _http_get_submissions is the only network call.
     calls = {"n": 0}
 
@@ -84,6 +136,8 @@ def test_list_8k_follows_overflow_pages(monkeypatch):
         return {"form": ["8-K"], "filingDate": ["2021-05-05"],
                 "accessionNumber": ["a-21-9"], "items": ["1.03"]}   # old bankruptcy filing
 
+    import datetime as dt
+    monkeypatch.setattr(eightk, "_today", lambda: dt.date(2023, 1, 1))
     monkeypatch.setattr(eightk, "_fetch_submissions", subs)
     monkeypatch.setattr(eightk, "_fetch_submission_file", overflow)
     dates = [r["filing_date"] for r in eightk.list_8k_items("320193")]

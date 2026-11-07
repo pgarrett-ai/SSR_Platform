@@ -1,23 +1,26 @@
-"""Merton (1974) distance-to-default and default probability.
+"""Merton (1974) distance-to-default and a market-implied (risk-neutral) PD term structure.
 
 Equity is a call option on firm assets V struck at the debt face D:
 
-    E      = V*N(d1) - D*e^(-rT)*N(d2)
+    E         = V*N(d1) - D*e^(-rT)*N(d2)
     sigma_E*E = N(d1)*sigma_V*V            (Ito / Jones-Mason-Rosenfeld identity)
 
 with d1 = [ln(V/D) + (r + 0.5*sigma_V^2)T] / (sigma_V*sqrt(T)),  d2 = d1 - sigma_V*sqrt(T).
+The two equations are solved once at T=1 for (V, sigma_V); DD is the 1-year d2.
 
-We solve the two equations simultaneously for (V, sigma_V) at T=1 given observed equity value E,
-equity vol sigma_E, and the default point D, then read off
+The PD is first-passage (Black-Cox): default is the first time V, drifting at r, touches
+the barrier K(t) = D*e^(-r(1-t)), the face discounted from the 1-year solve horizon and
+accreting at r. ln(V/K) then drifts at -0.5*sigma_V^2 from x = ln(V/D) + r, and the
+reflection principle gives the cumulative PD to horizon h
 
-    DD = [ln(V/D) + (mu - 0.5*sigma_V^2)T] / (sigma_V*sqrt(T)),   PD = N(-DD).
+    PD(h) = N((-x + 0.5*sigma_V^2*h) / (sigma_V*sqrt(h)))
+          + e^x * N((-x - 0.5*sigma_V^2*h) / (sigma_V*sqrt(h))).
 
-For the risk-neutral PD we take mu = r (the standard Merton/KMV term-structure read), so the
-3/6/12-month PDs come straight from N(-d2(T)) using the single solved (V, sigma_V).
+It is a CDF in h, so it never falls as the horizon lengthens (the terminal N(-d2(h)) read
+does, whenever V is near D). At h = 1 the barrier is D itself, so PD(1y) >= N(-DD).
 
-The audit flagged raw `fsolve` as fragile; we keep `fsolve` but seed it with the standard
-naive guesses (V0 = E + D, sigma_V0 = sigma_E*E/(E+D)), verify the solution, and fall back to
-the naive asset proxy on non-convergence rather than returning garbage.
+fsolve is seeded with the naive guesses (V0 = E + D, sigma_V0 = sigma_E*E/(E+D)); the
+solution is verified, and non-convergence falls back to that naive asset proxy.
 """
 from __future__ import annotations
 
@@ -72,8 +75,13 @@ def solve_assets(E: float, sigma_E: float, D: float, r: float = 0.04,
 
 
 def _pd(V: float, sigma_V: float, D: float, r: float, T: float) -> float:
-    dd = (math.log(V / D) + (r - 0.5 * sigma_V ** 2) * T) / (sigma_V * math.sqrt(T))
-    return float(norm.cdf(-dd))
+    """Cumulative first-passage PD to horizon T (years); see the module docstring."""
+    x = math.log(V / D) + r
+    if x <= 0:
+        return 1.0                         # assets already at or below the barrier
+    s, m = sigma_V * math.sqrt(T), 0.5 * sigma_V ** 2 * T
+    # e^x * N(.) in log space: e^x is huge exactly when N(.) underflows
+    return float(norm.cdf((-x + m) / s) + math.exp(x + norm.logcdf((-x - m) / s)))
 
 
 def merton(E: float, sigma_E: float, D: float, r: float = 0.04,
@@ -109,6 +117,15 @@ def _self_check() -> None:
     # Term structure: longer horizon, higher cumulative PD (for a risky name).
     ts = distressed.pd_by_horizon
     assert ts[0.25] <= ts[0.5] <= ts[1.0], ts
+
+    # V ~ D (thin equity on heavy debt, low asset vol): the terminal read falls with
+    # horizon here; the first-passage curve must not, and sits above N(-DD) at 1y.
+    thin = merton(E=1e9, sigma_E=0.8, D=26e9, horizons=(0.25, 0.5, 1.0, 2.0, 5.0))
+    curve = list(thin.pd_by_horizon.values())
+    assert all(b >= a for a, b in zip(curve, curve[1:])), curve
+    assert thin.pd_by_horizon[1.0] >= norm.cdf(-thin.dd_1y), (curve, thin.dd_1y)
+    # pins the reflection term: e^(-x) instead of e^x would pass both checks above
+    assert abs(thin.pd_by_horizon[1.0] - 0.3295) < 1e-3, curve
 
     print("merton self-check OK")
     print(f"  healthy   DD={healthy.dd_1y:.2f}  PD(1y)={healthy.pd_by_horizon[1.0]:.4f}")

@@ -9,6 +9,7 @@ overlap free. CIKs are canonical 10-digit padded throughout."""
 from __future__ import annotations
 
 import datetime as dt
+import logging
 from pathlib import PurePosixPath
 
 from sqlalchemy import select
@@ -25,9 +26,9 @@ from .store import has_event, insert_events
 
 _UNKNOWN = "8k_items_unknown"
 
-# Form 4 is excluded from market-wide catch-up in P6: ~1,000-2,500/day (plan §5) of
-# owner-CIK-attributed lines. Raw Form-4 ingest happens opportunistically whenever an
-# issuer's submissions doc is resolved; Phase 8 owns real insider flow.
+# Form 4 is excluded from market-wide catch-up: ~1,000-2,500/day of owner-CIK-attributed
+# lines. Raw Form-4 ingest happens opportunistically whenever an issuer's submissions doc
+# is resolved; insider-flow analysis is out of scope.
 CATCHUP_EXCLUDE = ("4",)
 
 
@@ -46,6 +47,20 @@ def _hit_cik_date(hit: dict):
     return feed.pad_cik(raw), filed
 
 
+log = logging.getLogger(__name__)
+
+
+def _ingest_all(ciks: list[str], since: str) -> int:
+    """One CIK whose submissions doc fails (404, transient 5xx) must not stall the pass."""
+    n = 0
+    for cik in ciks:
+        try:
+            n += resolve_and_ingest(cik, since=since)
+        except Exception:
+            log.warning("ingest failed for CIK %s; continuing", cik, exc_info=True)
+    return n
+
+
 def resolve_and_ingest(cik: str, since: str) -> int:
     """Fresh submissions doc -> tracked (meta, raw) pairs -> detectors -> insert.
     The recent window covers >=1yr (eightk.py:127), so a days-scale `since` never
@@ -53,7 +68,7 @@ def resolve_and_ingest(cik: str, since: str) -> int:
     data = feed.fresh_submissions(cik)
     pairs = feed.tracked_rows((data.get("filings") or {}).get("recent") or {},
                               cik, since=since)
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     with session_scope() as session:
         universe.enrich_from_submissions(session, feed.pad_cik(cik), data)
         row = session.get(models_events.UniverseCompany, feed.pad_cik(cik))
@@ -76,7 +91,7 @@ def poll_once() -> int:
                 cik, filed = _hit_cik_date(hit)
                 if cik and not has_event(session, cik, filed, (event_type, _UNKNOWN)):
                     todo.add(cik)
-    return sum(resolve_and_ingest(cik, since=start) for cik in sorted(todo))
+    return _ingest_all(sorted(todo), since=start)
 
 
 def _line_form(line: str, prefix: str) -> bool:
@@ -88,9 +103,8 @@ def _line_form(line: str, prefix: str) -> bool:
 
 def _idx_lines(text: str, prefixes, since: str):
     """(padded_cik, date, accession) from tracked-form lines of a form.idx. Layout per
-    labels.ten_k_ciks (labels.py:257-267): company names hold spaces, so fields come
-    off the END. Accession = FILENAME stem — format UNVERIFIED (ledger #5); a wrong
-    parse only causes extra re-resolution, never a wrong event."""
+    labels.ten_k_ciks: company names hold spaces, so fields come off the END. Accession =
+    FILENAME stem; a wrong parse only causes extra re-resolution, never a wrong event."""
     for line in text.splitlines():
         if not any(_line_form(line, p) for p in prefixes):
             continue
@@ -105,14 +119,13 @@ def _idx_lines(text: str, prefixes, since: str):
 
 def catchup_form_idx(window_days: int = 7) -> int:
     """Daily reconciliation: anything the EFTS poll missed in the last week surfaces
-    here by accession diff against the current quarter's form.idx (URL labels.py:58).
+    here by accession diff against the current quarter's form.idx (the URL labels.py uses).
     Also the sole live path for structural forms (NT/25/15/13D/G).
 
     Convergence note: the accession-diff reconciles against stored events, so a resolved
-    filing that yields NO tracked event is re-resolved on later runs. With only 1.03
-    seeded (this PR) that means a bounded daily re-fetch burst. Once the full detector
-    table lands (next PR: all 16 8-K items + items_unknown + structural forms) the diff
-    converges for all signal-bearing 8-Ks; a bounded residual of all-untracked-item
+    filing that yields NO tracked event is re-resolved on later runs. The full detector
+    table (all 16 8-K items + items_unknown + structural forms) makes the diff converge
+    for all signal-bearing 8-Ks; a bounded residual of all-untracked-item
     8-Ks (notably 9.01-only /A amendments and 6.0x ABS-only filings) still re-resolves
     within the window — paced, idempotent, no data loss. Revisit with a
     processed-accessions ledger only if telemetry shows churn beyond that class
@@ -133,4 +146,4 @@ def catchup_form_idx(window_days: int = 7) -> int:
                    >= dt.datetime.fromisoformat(since))).scalars())
     todo = {cik for cik, date, accession in _idx_lines(text, prefixes, since)
             if accession not in known}
-    return sum(resolve_and_ingest(cik, since=since) for cik in sorted(todo))
+    return _ingest_all(sorted(todo), since=since)

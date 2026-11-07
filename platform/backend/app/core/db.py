@@ -4,20 +4,31 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 
 from .config import get_settings
 
 _settings = get_settings()
 
-# check_same_thread=False so FastAPI's threadpool can share the engine; SQLite is fine for MVP.
+_SQLITE = _settings.database_url.startswith("sqlite")
+
+# check_same_thread=False so FastAPI's threadpool can share the engine.
 engine = create_engine(
     _settings.database_url,
-    connect_args=({"check_same_thread": False}
-                  if _settings.database_url.startswith("sqlite") else {}),
+    connect_args={"check_same_thread": False} if _SQLITE else {},
     future=True,
 )
+
+if _SQLITE:
+    @event.listens_for(engine, "connect")
+    def _sqlite_pragmas(dbapi_conn, _record):
+        # the API (request + SSE threads) and the events worker process write the same
+        # file: WAL lets readers proceed during a write, busy_timeout waits out a lock
+        cur = dbapi_conn.cursor()
+        cur.execute("PRAGMA journal_mode=WAL")
+        cur.execute("PRAGMA busy_timeout=30000")
+        cur.close()
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False, future=True)
 
 
@@ -50,8 +61,8 @@ def _ensure_columns() -> None:
     """Idempotent micro-migration: create_all never ALTERs an existing table, so add any
     mapped columns missing from the live SQLite file. Nullable ADD COLUMN only.
 
-    FROZEN as of PR-2a: legacy (models.py) tables on SQLite only — event-store tables and
-    any Postgres deployment migrate via Alembic exclusively."""
+    Frozen: covers the models.py tables on SQLite only — event-store tables and any
+    Postgres deployment migrate via Alembic exclusively."""
     from .. import models, models_events
 
     if engine.dialect.name != "sqlite":
@@ -83,14 +94,12 @@ def _backfill() -> None:
         if session.query(models.Snapshot).count() == 0:
             from .cache import CACHE_DIR, load_overview
             from ..store import upsert_snapshot
-            for p in sorted(CACHE_DIR.glob("*_*y.json")):
+            for p in sorted(CACHE_DIR.glob("*_3y.json")):   # the app's default window
                 ticker, _, yrs = p.stem.rpartition("_")
                 ov = load_overview(ticker, int(yrs[:-1])) if ticker else None
                 if ov is not None:
                     upsert_snapshot(session, ticker.upper(), ov)
-                    # autoflush is off: without this, two cache files for one ticker
-                    # (AAL_3y + AAL_10y) both INSERT and violate the ticker PK.
-                    session.flush()
+                    session.flush()   # autoflush is off; keep one pending row per ticker
         if FTS_AVAILABLE and session.execute(sql("SELECT count(*) FROM search")).scalar() == 0:
             tickers = session.execute(sql(
                 "SELECT ticker FROM covenants UNION SELECT ticker FROM mdna_sections "
@@ -109,14 +118,5 @@ def session_scope() -> Iterator[Session]:
     except Exception:
         session.rollback()
         raise
-    finally:
-        session.close()
-
-
-def get_session() -> Iterator[Session]:
-    """FastAPI dependency."""
-    session = SessionLocal()
-    try:
-        yield session
     finally:
         session.close()

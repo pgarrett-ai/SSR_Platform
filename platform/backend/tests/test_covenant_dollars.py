@@ -1,6 +1,6 @@
-"""F1/F2 covenant dollars: the Moyer ch. 7 RP-basket template, NI asymmetry,
+"""Covenant dollars: the RP-basket template (Moyer, Distressed Debt Analysis, ch. 7), NI asymmetry,
 quarterly-flow YTD differencing, capacity tokens, and the liens-headroom archetypes
-including the fixed unbounded gate (must NOT fire on AAL-shaped inputs)."""
+including the unbounded gate (must NOT fire on AAL-shaped inputs)."""
 import datetime as dt
 
 from app.capstack.covenant_dollars import (build_liens_headroom, parse_capacity_tokens,
@@ -20,10 +20,10 @@ def _flows(ni=(), eq=(), div=(), buy=()):
             "dividends_paid": list(div), "stock_repurchases": list(buy)}
 
 
-# ---- F1: RP-basket builder -------------------------------------------------------
+# ---- RP-basket builder -----------------------------------------------------------
 
 
-def test_moyer_template_cumulative_15():
+def test_rp_template_cumulative_15():
     # starter $5mm ($-token), NI +10/−4/+6 → credits +5/−4/+3, equity +8, dividends −2
     flows = _flows(ni=[(Q1, 10e6), (Q2, -4e6), (Q3, 6e6)],
                    eq=[(Q1, 8e6)], div=[(Q2, 2e6)])
@@ -42,7 +42,7 @@ def test_moyer_template_cumulative_15():
 
 
 def test_ni_asymmetry():
-    # 50% credit on profits, 100% deduction on losses (Moyer ch. 7)
+    # 50% credit on profits, 100% deduction on losses (Moyer, Distressed Debt Analysis, ch. 7)
     rp = rp_basket_from_flows(_flows(ni=[(Q1, 10e6), (Q2, -10e6)]), [], 3)
     assert rp.points[0].ni_credit == 5.0
     assert rp.points[1].ni_credit == -10.0
@@ -66,6 +66,7 @@ def test_builder_negative_floors_capacity_at_zero():
     rp = rp_basket_from_flows(_flows(ni=[(Q1, -3300e6)]), [], 3)     # the LCID persona
     assert rp.capacity.value == 0.0
     assert "builder negative" in rp.capacity.note
+    assert "(-$3,300M)" in rp.capacity.formula            # sign before the dollar sign
 
 
 def test_no_quarters_unavailable():
@@ -103,13 +104,13 @@ def test_parse_capacity_tokens_fixtures():
     assert stub == {"dollars": None, "pct": None, "ratio": None}
 
 
-# ---- F2: liens-headroom archetypes -----------------------------------------------
+# ---- liens-headroom archetypes ---------------------------------------------------
 
 AAL_SHAPED = {
     "debt_schedule": [
         {"instrument": "2025 AAdvantage Term Loan Facility", "secured": True},
         # unsecured, but governed by NO extracted family (the PSP-note shape) — the
-        # unbounded gate must not fire vacuously (feasibility-critic regression)
+        # unbounded gate must not fire vacuously
         {"instrument": "PSP Promissory Note", "secured": False},
     ],
     "covenants": [
@@ -133,7 +134,7 @@ AAL_SHAPED = {
 }
 
 
-def test_aal_shaped_not_unbounded_gate_regression():
+def test_aal_shaped_unbounded_gate_stays_off():
     out = build_liens_headroom(AAL_SHAPED)
     assert out["archetype"] != "unbounded"
     assert out["unbounded_instruments"] == []
@@ -153,7 +154,8 @@ def test_lcid_shaped_unbounded():
     out = build_liens_headroom(ov)
     assert out["archetype"] == "unbounded"
     assert out["unbounded_instruments"] == ["2030 Notes"]
-    assert "covenant-lite" in out["unbounded_note"]
+    assert out["unbounded_note"] == ("no lien covenant found in the agreement governing "
+                                     "2030 Notes — unbounded priming risk (covenant-lite)")
 
 
 def test_nta_computed_headroom_420():

@@ -1,4 +1,4 @@
-"""Exhibit 21 (Subsidiaries of the Registrant) → structured legal-entity list (Phase 4.5).
+"""Exhibit 21 (Subsidiaries of the Registrant) → structured legal-entity list.
 
 Exhibit 21 is a semi-structured list (name, jurisdiction, occasionally tier/ownership) whose
 format varies wildly across filers, so we parse it with the same structured-LLM approach as the

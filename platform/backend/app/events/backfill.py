@@ -1,20 +1,21 @@
 """python -m app.events.backfill — seed the event store 2020->present.
 
-Strategy (math in the PR description): quarterly form.idx files (URL labels.py:58)
-enumerate every CIK that filed a tracked form in the window — dead filers included,
-which is the whole point (today's company_tickers.json misses exactly the bankrupt
-names). Per-CIK submissions docs (eightk.py pattern, overflow pages followed as at
-eightk.py:134-141) then give items + accessions for everything at ~1.6 req/CIK.
+Strategy: quarterly form.idx files (the URL labels.py uses) enumerate every CIK that
+filed a tracked form in the window — dead filers included, which is the whole point
+(today's company_tickers.json misses exactly the bankrupt names). Per-CIK submissions docs
+(the eightk.py pattern, overflow pages followed) then give items + accessions for
+everything at ~1.6 req/CIK.
 EFTS chunking is rejected: 10-hit pages, a 400-hit/quarter sanity cap even in labels'
 own harvest, documented 500-flakiness, and no verified accession field.
 
-detected_at = NULL, ALWAYS (plan §10: backfilled history never masquerades as
-detected). Checkpoint/resume: data/backfill.db, the labels.py panel.db pattern —
-per-CIK commit, failures not marked done so they retry."""
+detected_at = NULL, ALWAYS: backfilled history never masquerades as detected.
+Checkpoint/resume: data/backfill.db, the labels.py panel.db pattern — per-CIK commit,
+failures not marked done so they retry."""
 from __future__ import annotations
 
 import datetime as dt
 import sqlite3
+from contextlib import closing
 
 from ..core.config import DATA_DIR
 from ..core.db import session_scope
@@ -27,7 +28,8 @@ from .store import insert_events
 from .universe import enrich_from_submissions
 
 BACKFILL_DB = DATA_DIR / "backfill.db"
-BACKFILL_FORMS = ("8-K", "NT 10-K", "NT 10-Q", "25", "15", "SC 13D", "SC 13G")
+BACKFILL_FORMS = ("8-K", "NT 10-K", "NT 10-Q", "25", "15", "SC 13D", "SC 13G",
+                  "SCHEDULE 13D", "SCHEDULE 13G")
 
 
 def _backfill_db() -> sqlite3.Connection:
@@ -82,24 +84,24 @@ def backfill(start: str = "2020-01-01", include_form4: bool = False,
     for text in _quarter_texts(start):
         ciks |= {c for c, _d, _a in _idx_lines(text, prefixes, since=start)}
         print(f"  index pass: {len(ciks)} cumulative CIKs")
-    con = _backfill_db()
-    done = {row[0] for row in con.execute("SELECT cik FROM ciks_done")}
-    todo = sorted(ciks - done)
-    if limit is not None:
-        todo = todo[:limit]
-    total = 0
-    for i, cik in enumerate(todo, 1):
-        try:
-            n = _resolve_cik_full(cik, since=start, prefixes=prefixes)
-        except Exception as exc:
-            print(f"  WARN CIK {cik}: {type(exc).__name__}: {exc}")   # retried next run
-            continue
-        con.execute("INSERT OR REPLACE INTO ciks_done VALUES (?,?,?)",
-                    (cik, dt.date.today().isoformat(), n))
-        con.commit()                       # per-CIK crash checkpoint (panel.db pattern)
-        total += n
-        if i % 200 == 0:
-            print(f"  {i}/{len(todo)} CIKs, {total} events")
+    with closing(_backfill_db()) as con:
+        done = {row[0] for row in con.execute("SELECT cik FROM ciks_done")}
+        todo = sorted(ciks - done)
+        if limit is not None:
+            todo = todo[:limit]
+        total = 0
+        for i, cik in enumerate(todo, 1):
+            try:
+                n = _resolve_cik_full(cik, since=start, prefixes=prefixes)
+            except Exception as exc:
+                print(f"  WARN CIK {cik}: {type(exc).__name__}: {exc}")   # retried next run
+                continue
+            con.execute("INSERT OR REPLACE INTO ciks_done VALUES (?,?,?)",
+                        (cik, dt.date.today().isoformat(), n))
+            con.commit()                   # per-CIK crash checkpoint (panel.db pattern)
+            total += n
+            if i % 200 == 0:
+                print(f"  {i}/{len(todo)} CIKs, {total} events")
     return {"ciks": len(todo), "events": total}
 
 
@@ -110,8 +112,7 @@ if __name__ == "__main__":
         description="Seed the event store from EDGAR history (detected_at=NULL).")
     ap.add_argument("--start", default="2020-01-01")
     ap.add_argument("--include-form4", action="store_true",
-                    help="~2-4M raw Form 4 rows (plan §5 volume); Phase 8 rebuilds "
-                         "insiders from XML — default off")
+                    help="~2-4M raw Form 4 rows; off by default")
     ap.add_argument("--limit", type=int, default=None, help="max CIKs this run (smoke: 25)")
     args = ap.parse_args()
     out = backfill(args.start, include_form4=args.include_form4, limit=args.limit)

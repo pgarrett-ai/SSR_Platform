@@ -1,19 +1,18 @@
-"""8-K item detectors — pure, header-level (plan §3 item map). One factory, N spec
-rows: item detectors differ only in item code, event naming, severity, and title, so
-the table IS the detector set — PR-3 fills it; adding an item is one row + one test.
-An 8-K whose submissions row carries no items list yields a single low-severity
-8k_items_unknown event: unknown is never silently "no trigger" (Phase-3 decision #8,
-same rule eightk.crisis_triggers applies)."""
+"""8-K item detectors — pure, header-level. One factory, N spec rows: item detectors
+differ only in item code, event naming, severity, and title, so the table IS the detector
+set; adding an item is one row + one test. An 8-K whose submissions row carries no items
+list yields a single low-severity 8k_items_unknown event: unknown is never silently
+"no trigger" (the same rule eightk.crisis_triggers applies)."""
 from __future__ import annotations
 
 from .registry import register
 from .types import Event, FilingMeta
 
-# The full plan-§3 item map. Row = the detector: (event_type, severity 1-5, title label).
-# Severity rationale: 1.03/2.04/4.02 Moyer crown jewels -> 5; 4.01/3.01
+# The 8-K item map. Row = the detector: (event_type, severity 1-5, title label).
+# Severity rationale: 1.03/2.04/4.02 bankruptcy, acceleration, restatement -> 5; 4.01/3.01
 # confidence-of-accounts/listing distress -> 4; 1.02/2.03/2.05/2.06/3.02 material
 # credit/ops facts -> 3; 1.01/2.01/5.02 high-volume context-needed -> 2 (5.02 noisiness
-# documented at eightk.py:29-31); 5.07/7.01/8.01 catch-alls -> 1.
+# documented beside eightk.CRISIS_ITEMS); 5.07/7.01/8.01 catch-alls -> 1.
 ITEM_SPECS: dict[str, tuple[str, int, str]] = {
     "1.01": ("material_agreement", 2, "Material agreement entered"),
     "1.02": ("agreement_terminated", 3, "Material agreement terminated"),

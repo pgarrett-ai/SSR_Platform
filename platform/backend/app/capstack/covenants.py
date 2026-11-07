@@ -1,19 +1,20 @@
-"""Covenant extraction from credit agreements / indentures (brief §5), single issuer.
+"""Covenant extraction from credit agreements / indentures, single issuer.
 
 Credit docs carry terse exhibit descriptions (just "EX-10.1"), so we classify by document content,
 not metadata. The agreements are 500k-850k characters, so we don't chunk blindly: we window the
 text around the negative-covenant clauses AND the definitions of the key defined terms they cite
 (Consolidated EBITDA, leverage ratio, Restricted Payment, Unrestricted Subsidiary, …) — a pragmatic
-cross-reference resolution — then feed that to Claude with the fixed §5 schema. `clause_text` is
+cross-reference resolution — then feed that to Claude with a fixed schema. `clause_text` is
 stored so a vector index can be added later (not built now).
 """
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from typing import Optional
 
-from ..edgar.documents import window_by_keywords
+from ..edgar.documents import quote_in_text, window_by_keywords
 from ..core.llm import extract_structured
 from ..schemas import Citation, CovenantFact, CovenantPackage, FinancialCovenant, LmeVector
 
@@ -67,6 +68,17 @@ def _classify(head: str) -> Optional[str]:
     return None
 
 
+def _exhibit_text(attachment) -> Optional[str]:
+    """The exhibit as text. Agreements underline their defined terms and cross-references,
+    and the HTML parser drops text inside <u>, so underline is rendered as a plain span."""
+    content = attachment.content
+    if isinstance(content, str) and "<" in content:
+        from edgar import Document
+        from edgar.richtools import rich_to_text
+        return rich_to_text(Document.parse(re.sub(r"<(/?)u\b", r"<\1span", content, flags=re.I)))
+    return attachment.text()
+
+
 def find_credit_documents(company, years: int, max_check: int = 40,
                           max_keep: int = 24) -> list[CreditDoc]:
     """Fetch + content-classify candidate EX-10.x/EX-4.x exhibits; keep the best credit docs."""
@@ -106,7 +118,7 @@ def find_credit_documents(company, years: int, max_check: int = 40,
             break
         checked += 1
         try:
-            text = a.text()
+            text = _exhibit_text(a)
         except Exception:
             continue
         if not isinstance(text, str) or len(text) < 4000:
@@ -130,13 +142,17 @@ def find_credit_documents(company, years: int, max_check: int = 40,
 
 # --- LLM extraction ----------------------------------------------------------
 
-_PROMPT_VERSION = "v2"   # bump to invalidate the per-doc extraction cache
+# bump to re-extract every doc; _strip_commentary already cleans cached results on read
+_PROMPT_VERSION = "v3"
 
 _SYSTEM = (
     "You are a distressed-credit lawyer-analyst reading a credit agreement or indenture. You extract "
     "the covenant package precisely, resolving defined terms from the Definitions provided in the "
-    "text. You quote verbatim and never invent thresholds. If a term is not present (e.g. the deal is "
-    "covenant-lite with no maintenance financial covenant), say so explicitly rather than guessing."
+    "text. You quote verbatim and never invent thresholds. Every field holds a fact the agreement "
+    "states. When the text does not state a field, return null (or an empty list) — never "
+    "commentary about the text, such as 'not stated in the provided text' or 'not included in the "
+    "excerpt'. A covenant-lite deal with no maintenance financial covenant has an empty "
+    "financial_covenants list."
 )
 
 _TOOL_DESCRIPTION = (
@@ -276,31 +292,115 @@ def _extract_raw(doc: CreditDoc) -> tuple[Optional[dict], Optional[str], Optiona
 
 def _as_list(v) -> list:
     if isinstance(v, list):
-        return v
+        return [s for s in map(_strip_commentary, v) if s]
     if isinstance(v, str) and v and "not present" not in v.lower():
-        return [v]
+        return [s for s in [_strip_commentary(v)] if s]
     return []
 
 
-def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optional[str], Optional[str]]:
+# The extractor sometimes narrates its input ("not stated in the provided text") instead of
+# returning null. Only text that refers to the source document is removed, so a covenant fact
+# that shares a sentence with the narration survives; cached extractions are cleaned the same
+# way when a package is built, without re-calling the model.
+_COMMENTARY_RE = re.compile(
+    r"\b(?:provided|supplied) (?:text|excerpts?|clauses|language|sections?)\b"
+    r"|\bexcerpt(?:s|ed)?\b|\bin (?:the|this) text(?: provided)?\b|\bprovided in the text\b"
+    r"|\bnot reproduced\b", re.IGNORECASE)
+_EMPTY_VALUE_RE = re.compile(
+    r"^\s*(?:not (?:stated|specified|quantified|addressed|identified|determinable)"
+    r"|none (?:stated|specified))\.?\s*$", re.IGNORECASE)
+_PAREN_RE = re.compile(r"\s*\(([^()]*)\)")
+# Party names arrive wrapped in boilerplate ("Lenders party thereto from time to time,
+# JPMorgan Chase Bank, N.A."): keep the institution after the last boilerplate marker.
+_PARTY_MARKER = r"(?:party (?:hereto|thereto)|from time to time|recitals|as guarantors?)"
+_PARTY_LEAD_RE = re.compile(rf"^.*\b{_PARTY_MARKER}\b[^,]*,\s*", re.IGNORECASE)
+_PARTY_ROLE_RE = re.compile(r",?\s+as (?:the )?(?:administrative |collateral |security )?"
+                            r"(?:agent|trustee)\b.*$", re.IGNORECASE)
+_BOILERPLATE_PARTY_RE = re.compile(
+    r"^(?:the\s+)?(?:llc|inc|n\.?a|ltd|l\.?p|plc|corp|company|guarantors?|lenders?|borrowers?"
+    rf"|(?:administrative |collateral |security )?(?:agent|trustee)s?)\.?$|\b{_PARTY_MARKER}\b",
+    re.IGNORECASE)
+
+
+def _clauses(v: str) -> list[str]:
+    """Split after '.' or ';' (a closing quote may follow) outside parentheses, never after
+    an initial ("J. Crew", "N.A."), at a dash, and before 'but' / 'though' / 'although' —
+    "X is defined, but the baskets are not in the excerpt" keeps X."""
+    parts, start, depth = [], 0, 0
+    for i, ch in enumerate(v):
+        depth += (ch == "(") - (ch == ")")
+        j = i + 1 + (v[i + 1:i + 2] in ('"', "”", "'"))
+        initial = ch == "." and v[i - 1:i].isupper() and not v[i - 2:i - 1].isalpha()
+        if depth == 0 and ch in ".;" and v[j:j + 1].isspace() and not initial:
+            parts.append(v[start:j])
+            start = j
+    parts.append(v[start:])
+    return [c.strip() for p in parts
+            for c in re.split(r"\s+[—–]\s+|,?\s+(?=(?:but|though|although)\b)", p)
+            if c.strip()]
+
+
+def _strip_commentary(v):
+    """A string value minus the parentheticals and clauses that comment on the source text;
+    None when it is only that (or a bare "Not stated"). Other values pass through."""
+    if not isinstance(v, str):
+        return v
+    if _EMPTY_VALUE_RE.match(_PAREN_RE.sub("", v)):
+        return None
+    if not _COMMENTARY_RE.search(v):
+        return v
+    v = _PAREN_RE.sub(lambda m: "" if _COMMENTARY_RE.search(m.group(1)) else m.group(0), v)
+    kept = " ".join(c for c in _clauses(v) if not _COMMENTARY_RE.search(c))
+    kept = re.sub(r"^(?:however|instead|but|though|although),?\s+", "", kept.strip(" ;,—–"),
+                  flags=re.I)
+    if not kept or _EMPTY_VALUE_RE.match(kept):
+        return None
+    if v.rstrip().endswith(".") and kept[-1] not in ".\"'”":
+        kept += "."   # a sentence cut short keeps its full stop
+    return kept[:1].upper() + kept[1:]
+
+
+def _party(v) -> Optional[str]:
+    """An agent/trustee name with boilerplate stripped, or None when no institution is named."""
+    if not isinstance(v, str):
+        return None
+    v = _PAREN_RE.sub(lambda m: "" if _COMMENTARY_RE.search(m.group(1)) else m.group(0), v)
+    v = _PARTY_ROLE_RE.sub("", _PARTY_LEAD_RE.sub("", v)).strip(" ,;")
+    return None if not v or _COMMENTARY_RE.search(v) or _BOILERPLATE_PARTY_RE.search(v) else v
+
+
+def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optional[str],
+                                              Optional[str], int]:
     """Extract the covenant package for an agreement family's operative document.
-    Returns (package, clause_text_window, error)."""
+    Returns (package, clause_text_window, error, quotes dropped as not verbatim)."""
     op = family.operative
     doc = op.doc
     result, window, err = _extract_raw(doc)
     if result is None:
-        return None, None, err
+        return None, None, err, 0
+    dropped = [0]
 
-    fincovs = [FinancialCovenant(**{k: fc.get(k) for k in
+    def verbatim(quote: Optional[str]) -> Optional[str]:
+        """Checked against the agreement itself, so cached extractions are checked too: a
+        quote the text does not contain is dropped, never shown as verbatim; its fact stays."""
+        if quote and not quote_in_text(quote, doc.text, list_labels=True):
+            dropped[0] += 1
+            return None
+        return quote
+
+    s = _strip_commentary
+    fincovs = [FinancialCovenant(**{k: s(fc.get(k)) for k in
                                     ("kind", "threshold", "test_frequency",
-                                     "springing_trigger", "quote")})
+                                     "springing_trigger")}, quote=verbatim(fc.get("quote")))
                for fc in result.get("financial_covenants") or [] if isinstance(fc, dict)]
-    baskets = [CovenantFact(name=b.get("name", ""), value=b.get("value"), quote=b.get("quote"))
+    baskets = [CovenantFact(name=b.get("name", ""), value=s(b.get("value")),
+                            quote=verbatim(b.get("quote")))
                for b in result.get("baskets") or [] if isinstance(b, dict) and b.get("name")]
     vectors = [LmeVector(vector=v.get("vector", ""), risk=v.get("risk", "not_addressed"),
-                         rationale=v.get("rationale"), basis=v.get("basis"),
-                         quote=v.get("quote"))
+                         rationale=s(v.get("rationale")), basis=s(v.get("basis")),
+                         quote=verbatim(v.get("quote")))
                for v in result.get("lme_vectors") or [] if isinstance(v, dict) and v.get("vector")]
+    anchor = verbatim(result.get("anchor_clause"))
 
     citation = Citation(
         accession_no=doc.accession,
@@ -309,7 +409,7 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
         exhibit=doc.exhibit_type,
         section="Negative covenants / Definitions",
         source_url=doc.url,
-        quote=result.get("anchor_clause"),
+        quote=anchor,
     )
     package = CovenantPackage(
         family_label=family.label,
@@ -319,24 +419,25 @@ def extract_covenant_package(family) -> tuple[Optional[CovenantPackage], Optiona
         base_missing=family.base_missing,
         governs_instruments=list(family.governs_instruments),
         # deterministic head-parse wins; the LLM fills gaps
-        admin_agent=op.roles.get("admin_agent") or result.get("admin_agent"),
-        trustee=op.roles.get("trustee") or result.get("trustee"),
-        collateral_agent=op.roles.get("collateral_agent") or result.get("collateral_agent"),
+        admin_agent=_party(op.roles.get("admin_agent")) or _party(result.get("admin_agent")),
+        trustee=_party(op.roles.get("trustee")) or _party(result.get("trustee")),
+        collateral_agent=(_party(op.roles.get("collateral_agent"))
+                          or _party(result.get("collateral_agent"))),
         creditor_note=_CREDITOR_NOTE,
-        guarantors=result.get("guarantors"),
+        guarantors=s(result.get("guarantors")),
         financial_covenants=fincovs,
         baskets=baskets,
         ebitda_addback_categories=_as_list(result.get("ebitda_addback_categories")),
-        mfn_sunset_period=result.get("mfn_sunset_period"),
+        mfn_sunset_period=s(result.get("mfn_sunset_period")),
         j_crew_blocker_present=result.get("j_crew_blocker_present"),
-        unrestricted_subsidiary_designation_flexibility=result.get(
-            "unrestricted_subsidiary_designation_flexibility"),
-        anchor_clause=result.get("anchor_clause"),
+        unrestricted_subsidiary_designation_flexibility=s(result.get(
+            "unrestricted_subsidiary_designation_flexibility")),
+        anchor_clause=anchor,
         lme_vectors=vectors,
         citation=citation,
-        # legacy display fields, filled for DB/FTS continuity
+        # flat display fields the covenants table and FTS index read
         agreement_type=family.doc_class,
         leverage_covenant_type=fincovs[0].kind if fincovs else None,
         leverage_ratio_threshold=fincovs[0].threshold if fincovs else None,
     )
-    return package, window, None
+    return package, window, None, dropped[0]

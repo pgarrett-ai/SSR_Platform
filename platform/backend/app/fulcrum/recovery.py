@@ -9,7 +9,7 @@ reorg, that is usually where you want to own the debt.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 import pandas as pd
@@ -24,7 +24,8 @@ class RecoveryResult:
     structure: CapitalStructure
     sim: SimOutput
     recoveries: dict[str, np.ndarray]   # tranche name -> (N,) recovery $
-    fulcrum: str | None
+    fulcrum: str | None                 # the fulcrum class, e.g. "Unsecured at OpCo (A, B)"
+    fulcrum_tranches: list[str] = field(default_factory=list)   # that class's members
     accrual_years: float = 0.0          # accrued-interest assumption used for the claims
 
     # -- per-tranche statistics -------------------------------------------
@@ -61,7 +62,7 @@ class RecoveryResult:
                     "prob_impaired_%": 100 * (pct < 0.999).mean(),
                     "prob_full_%": 100 * (pct >= 0.999).mean(),
                     "prob_zero_%": 100 * (pct <= 0.001).mean(),
-                    "is_fulcrum": name == self.fulcrum,
+                    "is_fulcrum": name in self.fulcrum_tranches,
                 }
             )
         return pd.DataFrame(rows)
@@ -107,6 +108,8 @@ def analyze(structure: CapitalStructure, cfg: SimConfig) -> RecoveryResult:
     """End-to-end: simulate EV, run the waterfall, summarize recoveries."""
     sim = simulate_enterprise_value(cfg)
     recoveries = run_waterfall(structure, sim.ev, cfg.accrual_years)
-    fulcrum = _find_fulcrum(structure, recoveries, cfg.accrual_years)
+    first = _find_fulcrum(structure, recoveries, cfg.accrual_years)
+    label, members = structure.priority_class(first) if first else (None, [])
     return RecoveryResult(structure=structure, sim=sim, recoveries=recoveries,
-                          fulcrum=fulcrum, accrual_years=cfg.accrual_years)
+                          fulcrum=label, fulcrum_tranches=members,
+                          accrual_years=cfg.accrual_years)

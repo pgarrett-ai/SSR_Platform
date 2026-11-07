@@ -1,4 +1,4 @@
-"""Pre-build the hero-name overview cache so the demo opens instantly.
+"""Pre-build the hero-name overview cache so those names open instantly.
 
 Runs the full live pipeline for each hero ticker and writes the snapshot to app/cache/. A live
 run makes several Claude calls + large EDGAR downloads, so this takes a few minutes per name.
@@ -60,10 +60,10 @@ def main(argv: list[str]) -> int:
             bridge = ov.economic_debt_bridge
             lev = bridge.economic_leverage.display if (bridge and bridge.economic_leverage) else "n/a"
             print(f"  [OK] {tk}: {ov.header.issuer} - {len(ov.sources)} filings, "
-                  f"econ leverage {lev}, {len(ov.covenants)} covenant pkg(s)  ({secs:.0f}s)\n")
+                  f"econ leverage {lev}, {len(ov.covenants)} covenant packages  ({secs:.0f}s)\n")
         except Exception as exc:
             print(f"  [FAIL] {tk}: {exc}\n")
-    print("Done. Cached snapshots live in app/cache/ and are served when 'Run live' is off.")
+    print("Done. Snapshots are in app/cache/; the app serves them until a live refresh.")
     return 0
 
 

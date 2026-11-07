@@ -1,4 +1,4 @@
-"""Asset-based liquidation waterfall + the C4 regression (negative EBITDA -> 200)."""
+"""Asset-based liquidation waterfall; a negative-EBITDA simulate answers 200, not 400."""
 import pytest
 from fastapi.testclient import TestClient
 
@@ -28,7 +28,16 @@ def test_proceeds_math_exact():
     by = {r["tranche"]: r for r in s["tranches"]}
     assert by["1L"]["recovery"] == pytest.approx(500.0)
     assert by["Unsec"]["recovery"] == pytest.approx(1960.0 * 0.93 - 500.0)  # impaired
-    assert s["fulcrum"] == "Unsec"
+    assert s["fulcrum"] == "Unsecured at OpCo (Unsec)" and by["Unsec"]["is_fulcrum"]
+
+
+def test_estate_costs_come_off_once():
+    # the UI also sets admin_pct on the structure: it must not be deducted a second time
+    s = _structure()
+    s.admin_pct = 0.07
+    sc = liquidate(ASSETS, s)["scenario"]
+    assert sum(r["recovery"] for r in sc["tranches"]) == pytest.approx(sc["net_proceeds"],
+                                                                      abs=0.2)
 
 
 def test_ch7_below_ch11():
@@ -50,7 +59,7 @@ def test_assets_from_snapshot_units():
 
 
 def test_negative_ebitda_returns_liquidation_mode_not_400():
-    """C4 regression: the Overview's quick simulate on a negative-EBITDA name must not 400."""
+    """A negative-EBITDA simulate must not 400."""
     r = client.post("/api/company/NOSUCHTICKER/recovery/simulate", json={
         "structure": {"name": "L",
                       "entities": [{"name": "OpCo", "ev_share": 1.0, "parent": None}],

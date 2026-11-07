@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { exchangeRecovery } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
-import { Badge, Button, Field, NUM_CLS, Section, Th, fmt } from "../ui/index.jsx";
+import { Badge, Button, Field, NUM_CLS, Section, Th, fmt, fmtMoney, fmtX } from "../ui/index.jsx";
 
-// Exchange-offer analyzer (Moyer ch. 11): a calculator over typed offer terms — the
-// SC TO-I/S-4 parser is Phase-6 backlog. Server returns holdout/tender payoff curves
-// per participation level over the base structure's EV grid; the slider and matrix
-// read the curves client-side. Runs on the edited structure (EvExplorer convention).
+// Exchange-offer analyzer (Moyer, Distressed Debt Analysis, ch. 11): a calculator over typed
+// offer terms. The server
+// returns holdout and tender payoff curves per participation level over the simulated
+// stack's EV grid; the slider and matrix read the curves client-side. It fetches only on
+// Run, so its closed section costs nothing.
 
 export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda, accrualYears }) {
   const tranches = structure?.tranches || [];
@@ -24,7 +25,10 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
   const [error, setError] = useState(null);
   const [idx, setIdx] = useState(120);
 
-  const effTarget = target || tranches[0]?.name || "";
+  // a re-run can drop or rename the picked tranche: fall back to the first, and clear the
+  // previous structure's curves
+  const effTarget = tranches.some((t) => t.name === target) ? target : tranches[0]?.name || "";
+  useEffect(() => { setData(null); }, [structure]);
 
   async function run() {
     setRunning(true);
@@ -79,7 +83,9 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
 
   return (
     <Section
-      title="Exchange analyzer"
+      collapsible
+      defaultOpen={false}
+      title="Exchange / LME analyzer"
       subtitle="holdout vs tender payoff per participation level — offer terms are your input"
     >
       <div className="flex flex-wrap items-end gap-x-5 gap-y-4">
@@ -119,7 +125,7 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
           <input type="number" step={5} value={userP} onChange={(e) => setUserP(Number(e.target.value))} className={NUM_CLS} />
         </Field>
         <label className="flex items-center gap-1.5 pb-1.5 text-xs text-slate-400"
-          title="exit consent: the stub is contractually subordinated to the new paper (single-hop) — the coercion mechanic">
+          title="exit consent: the stub is contractually subordinated to the new paper — the coercion mechanic">
           <input type="checkbox" checked={exitConsent}
             onChange={(e) => setExitConsent(e.target.checked)} className="accent-accent" />
           exit consent
@@ -136,20 +142,20 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
         <>
           <div className="mt-4 mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-400">
             <label className="flex items-center gap-3">
-              <span className="text-[10px] uppercase tracking-wide text-slate-500">EV $mm</span>
+              <span className="text-[11px] uppercase tracking-wide text-slate-400">EV</span>
               <input type="range" min={0} max={data.ev_grid.length - 1} value={idx}
                 onChange={(e) => setIdx(Number(e.target.value))} className="w-64 accent-accent" />
-              <span className="font-mono text-slate-100">{fmt(ev, 0)}</span>
-              {mult != null && <span className="font-mono text-slate-400">= {mult.toFixed(1)}x EBITDA</span>}
+              <span className="font-mono text-slate-100">{fmtMoney(ev * 1e6)}</span>
+              {mult != null && <span className="font-mono text-slate-400">= {fmtX(mult)} EBITDA</span>}
             </label>
             {userRow?.proforma_leverage != null && (
-              <Badge tone="info" title={`pro-forma face ${fmt(userRow.proforma_face, 0)} $mm at your ${userP}% participation`}>
-                pro-forma {userRow.proforma_leverage}x
+              <Badge tone="info" title={`pro-forma face ${fmtMoney(userRow.proforma_face * 1e6)} at your ${userP}% participation`}>
+                pro-forma {fmtX(userRow.proforma_leverage)}
               </Badge>
             )}
             {data.quote_premium && (
               <Badge tone={data.quote_premium.premium_per_100 > 0 ? "ok" : "watch"}
-                title={`package ${data.quote_premium.package_at_ref} vs quote ${data.quote_premium.target_quote} at EV ${fmt(data.quote_premium.ref_ev_mm, 0)} $mm`}>
+                title={`package ${data.quote_premium.package_at_ref} vs quote ${data.quote_premium.target_quote} at EV ${fmtMoney(data.quote_premium.ref_ev_mm * 1e6)}`}>
                 package premium {fmt(data.quote_premium.premium_per_100)}
               </Badge>
             )}
@@ -176,14 +182,14 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.participation_pct}
-                    className={`border-b border-ink-800 font-mono ${r.fails ? "text-slate-600" : "text-slate-300"}`}>
+                    className={`border-b border-ink-800 font-mono ${r.fails ? "text-slate-400" : "text-slate-300"}`}>
                     <td className="px-2 py-1.5 text-right">
                       {fmt(r.participation_pct)}
                       {Math.abs(r.participation_pct - userP) < 1e-6 && (
-                        <span className="ml-1 text-[9px] uppercase text-accent">yours</span>
+                        <span className="ml-1 text-[11px] uppercase text-accent">yours</span>
                       )}
                       {r.fails && (
-                        <span className="ml-1 text-[9px] uppercase text-slate-600"
+                        <span className="ml-1 text-[11px] uppercase text-slate-400"
                           title={`below the ${data.min_tender_pct}% minimum-tender condition — base-structure values shown`}>
                           offer fails
                         </span>
@@ -191,12 +197,12 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
                     </td>
                     <td className="px-2 py-1.5 text-right">{r.fails ? "—" : fmt(r.proforma_face, 0)}</td>
                     <td className="px-2 py-1.5 text-right">
-                      {r.fails || r.proforma_leverage == null ? "—" : `${r.proforma_leverage}x`}
+                      {r.fails || r.proforma_leverage == null ? "—" : fmtX(r.proforma_leverage)}
                     </td>
                     <td className="px-2 py-1.5 text-right text-slate-100">{fmt(r.tenderAt)}</td>
                     <td className="px-2 py-1.5 text-right">{fmt(r.holdoutAt)}</td>
                     <td className={`px-2 py-1.5 text-right font-semibold ${
-                      r.fails || r.delta == null ? "text-slate-600"
+                      r.fails || r.delta == null ? "text-slate-400"
                         : r.delta > 0 ? "text-emerald-300" : r.delta < 0 ? "text-rose-300" : "text-slate-500"}`}>
                       {r.fails || r.delta == null ? "—" : `${r.delta > 0 ? "+" : ""}${fmt(r.delta)}`}
                     </td>
@@ -209,7 +215,7 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
             </table>
           </div>
 
-          <div className="mt-2 text-[11px] text-slate-500">{data.note}</div>
+          <div className="mt-2 text-[11px] text-slate-400">{data.note}</div>
         </>
       )}
     </Section>

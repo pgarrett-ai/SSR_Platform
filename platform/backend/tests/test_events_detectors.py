@@ -1,6 +1,6 @@
-"""PR-3: full 8-K item table, structural form detectors, ratings detector, the golden
-Trinseo submissions fixture, and the route_audit exit-test instrument. Pure unit tests —
-no network, no DB. CIKs are canonical 10-digit zero-padded (Interface Contract)."""
+"""8-K item table, structural form detectors, ratings detector, the golden Trinseo
+submissions fixture, and worker resilience. Network-free; CIKs are canonical 10-digit
+zero-padded."""
 from __future__ import annotations
 
 import json
@@ -24,7 +24,7 @@ def _meta(items, form="8-K", accession=ACCN):
                       items_unknown=(form.startswith("8-K") and not items))
 
 
-# --- Task 18: the full 16-item 8-K table -------------------------------------
+# --- the full 16-item 8-K table ---------------------------------------------
 
 def test_all_sixteen_plan_items_present():
     assert set(ITEM_SPECS) == {"1.01", "1.02", "1.03", "2.01", "2.03", "2.04", "2.05",
@@ -58,7 +58,7 @@ def test_multi_item_one_event_per_tracked_item():
     assert [e.event_type for e in evs] == ["acceleration", "exit_costs"]
 
 
-# --- Task 19: structural (non-8-K) form detectors ----------------------------
+# --- structural (non-8-K) form detectors ------------------------------------
 from app.events import detectors_forms  # noqa: E402,F401 — import registers the detectors
 from app.events.registry import detectors_for
 
@@ -76,6 +76,8 @@ def _fmeta(form):
     ("4", "insider_filing", 1), ("4/A", "insider_filing", 1),
     ("SC 13D", "stake_13d", 3), ("SC 13D/A", "stake_13d", 3),
     ("SC 13G", "stake_13g", 2), ("SC 13G/A", "stake_13g", 2),
+    ("SCHEDULE 13D", "stake_13d", 3), ("SCHEDULE 13D/A", "stake_13d", 3),   # EDGAR since 2024-12
+    ("SCHEDULE 13G", "stake_13g", 2), ("SCHEDULE 13G/A", "stake_13g", 2),
 ])
 def test_structural_form_detector(form, event_type, severity):
     meta = _fmeta(form)
@@ -90,7 +92,7 @@ def test_untracked_forms_route_nowhere(form):
     assert [e for det in detectors_for(form) for e in det(meta, {}, None)] == []
 
 
-# --- Task 20: 17g-7 ratings default detector ---------------------------------
+# --- 17g-7 ratings default detector -----------------------------------------
 from app.events.detectors_ratings import events_from_sd_rows
 
 
@@ -108,7 +110,7 @@ def test_ratings_events_pure_and_idempotent():
     assert events_from_sd_rows(rows)[0].dedupe_key == e.dedupe_key
 
 
-# --- Task 21: golden fixture (real captured Trinseo submissions doc) ----------
+# --- golden fixture (real captured Trinseo submissions doc) ------------------
 GOLD = Path(__file__).parent / "data" / "submissions_1519061_8k.json"
 
 
@@ -123,15 +125,38 @@ def test_golden_trinseo_8k_routing():
     assert bk[0].source_url and bk[0].accession_no.replace("-", "") in bk[0].source_url
 
 
-# --- Task 22: route_audit exit-test instrument (pure path only) ---------------
+def test_old_rating_default_lands_without_a_detection_stamp(monkeypatch):
+    import datetime as dt
 
-def test_route_audit_rows_pure():
-    from app.events.route_audit import audit_rows
-    meta_pairs = feed.tracked_rows(
-        json.loads(GOLD.read_text(encoding="utf-8"))["filings"]["recent"],
-        "1519061", since=None, prefixes=("8-K",))
-    rows = audit_rows(meta_pairs)
-    assert rows and set(rows[0]) == {"accession_no", "cik", "form", "filing_date",
-                                     "items", "routed_event_types", "accepted_at"}
-    bk = [r for r in rows if "bankruptcy" in r["routed_event_types"]]
-    assert bk and "1.03" in bk[0]["items"]
+    import sqlalchemy as sa
+
+    from app import models_events as me
+    from app.core.db import init_db, session_scope
+    from app.events import detectors_ratings as dr
+    from app.hazard import labels
+
+    init_db()
+    recent = (dt.date.today() - dt.timedelta(days=5)).isoformat()
+    rows = [{"cik": "990000071", "name": "Old Co", "filed": "2019-03-01", "source": "fitch_rd"},
+            {"cik": "990000072", "name": "New Co", "filed": recent, "source": "fitch_rd"}]
+    monkeypatch.setattr(labels, "_cik_by_name", lambda: {})
+    monkeypatch.setattr(labels, "_SD_SOURCES", [("u", None, None, "fitch_rd")])
+    monkeypatch.setattr(labels, "sd_events_from_frame", lambda *a: (rows, []))
+    monkeypatch.setattr(dr.feed, "get_bytes", lambda *a, **k: b"x,1")
+    assert dr.refresh_ratings() == 2
+    with session_scope() as s:
+        got = dict(s.execute(sa.select(me.Event.cik, me.Event.detected_at)
+                             .where(me.Event.cik.in_(["0990000071", "0990000072"]))).all())
+    assert got["0990000071"] is None and got["0990000072"] is not None
+
+
+def test_one_failing_cik_does_not_stop_the_pass(monkeypatch):
+    from app.events import poller
+
+    def ingest(cik, since):
+        if cik == "2":
+            raise ConnectionError("submissions 503")
+        return 1
+
+    monkeypatch.setattr(poller, "resolve_and_ingest", ingest)
+    assert poller._ingest_all(["1", "2", "3"], since="2026-01-01") == 2

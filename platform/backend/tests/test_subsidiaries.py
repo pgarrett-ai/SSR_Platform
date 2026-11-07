@@ -1,4 +1,4 @@
-"""Phase 4.5: Exhibit 21 subsidiary normalization (pure; no network)."""
+"""Exhibit 21 subsidiary normalization (pure; no network)."""
 from __future__ import annotations
 
 from app.capstack.subsidiaries import coerce_subsidiaries

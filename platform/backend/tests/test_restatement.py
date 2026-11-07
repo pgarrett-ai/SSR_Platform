@@ -1,4 +1,5 @@
-"""capstack.eightk.crisis_screen (Moyer ch. 8): the crisis-of-confidence four-factor
+"""capstack.eightk.crisis_screen (Moyer, Distressed Debt Analysis, ch. 8): the
+crisis-of-confidence four-factor
 liquidity screen. Calibrated to the book's two anchor cases — WorldCom (a restatement
 trigger + a refi wall it can't cover -> crisis) vs Global Crossing ($2B cash, no near
 need -> not a crisis even amid severe fraud). Pure function, no network/DB."""

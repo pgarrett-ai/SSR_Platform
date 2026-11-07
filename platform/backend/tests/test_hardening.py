@@ -1,9 +1,8 @@
-"""API hardening (PR-A): the ticker path-traversal guard and the resource-exhaustion input
+"""API hardening: the ticker path-traversal guard and the resource-exhaustion input
 bounds. Pure/unit level — no network, no TestClient (endpoint-level 400/422 checks live in
 test_recovery_api.py)."""
 import pytest
 
-from app.capstack.tax382 import tax_asset_pv
 from app.core.cache import cache_path, load_overview, safe_ticker
 from app.core.config import CACHE_DIR
 from app.fulcrum.simulate import SimConfig
@@ -39,6 +38,19 @@ def test_load_overview_invalid_ticker_degrades_to_none():
     assert load_overview("../../etc/x", 3) is None
 
 
+def test_run_overview_rejects_a_malformed_ticker_before_any_lock(monkeypatch):
+    # a path ticker of any length would otherwise leave one never-evicted lock per value
+    from app import pipeline
+    from app.core import cache
+    from app.edgar.client import TickerNotFoundError
+
+    monkeypatch.setattr(pipeline, "_build_overview", lambda *a: pytest.fail("pipeline ran"))
+    before = dict(cache._flight_locks)
+    with pytest.raises(TickerNotFoundError):
+        pipeline.run_overview("X" * 8000, 3)
+    assert cache._flight_locks == before
+
+
 def test_simconfig_n_draws_bounded():
     with pytest.raises(ValueError):
         SimConfig(base_ebitda=100.0, n_draws=10**9)
@@ -60,12 +72,6 @@ def test_structure_caps_entity_and_tranche_counts():
     _struct(n_tranches=10, n_entities=3).validate()   # a real cap table is well under the caps
 
 
-def test_tax_pv_horizon_clamped_no_hang():
-    # a huge horizon with a tiny-but-positive limit must stay bounded (loop clamp), not hang
-    pv = tax_asset_pv(1e18, 1.0, 0.21, 10**9, 0.10)
-    assert 0.0 <= pv < 1e18
-
-
 def test_simconfig_rejects_nonfinite_base_ebitda():
     # NaN evades a bare `<= 0` (all NaN comparisons are False) — must be caught by isfinite
     for bad in (float("nan"), float("inf"), float("-inf")):
@@ -73,10 +79,37 @@ def test_simconfig_rejects_nonfinite_base_ebitda():
             SimConfig(base_ebitda=bad, n_draws=1_000)
 
 
+def test_simconfig_rejects_nonpositive_horizon():
+    # a negative horizon took the sqrt of a negative: every EV draw came back NaN
+    for bad in (-1.0, 0.0, float("nan")):
+        with pytest.raises(ValueError):
+            SimConfig(base_ebitda=100.0, horizon_years=bad, n_draws=1_000)
+
+
 def test_body_models_reject_inf_nan():
     from pydantic import ValidationError
 
-    from app.main import Tax382Body
+    from app.main import ExchangeBody
     for bad in (float("inf"), float("nan")):
         with pytest.raises(ValidationError):
-            Tax382Body(equity_fmv=bad)
+            ExchangeBody(target="Notes", ratio_pct=bad)
+
+
+def test_latest_overview_is_the_newest_build_not_the_newest_file(monkeypatch, tmp_path):
+    # after a git checkout every cache file has the same mtime; the snapshot's own
+    # last_updated decides which window is current
+    import os
+
+    from app.core import cache
+    from app.schemas import IssuerHeader, Overview
+
+    def write(years, built):
+        ov = Overview(header=IssuerHeader(issuer="Z", ticker="ZZLATE", years=years,
+                                          last_updated=built))
+        p = tmp_path / f"ZZLATE_{years}y.json"
+        p.write_text(ov.model_dump_json(), encoding="utf-8")
+        os.utime(p, (1, 1))
+    write(3, "2026-11-06T12:00:00")
+    write(10, "2026-07-14T09:00:00")
+    monkeypatch.setattr(cache, "CACHE_DIR", tmp_path)
+    assert cache.load_latest_overview("ZZLATE").header.years == 3

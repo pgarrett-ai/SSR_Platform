@@ -1,7 +1,7 @@
-"""Pro-forma capital-structure transforms (Moyer ch. 9/11): the priming layer that
-permitted-lien capacity (or a covenant-lite gap) allows, and the exchange-offer
-transform (stub + new paper + holdout/tender payoffs). attacks.py discipline: pure
-transforms over fresh copies; the caller re-runs the waterfall on the SAME EV draws
+"""Pro-forma capital-structure transforms (Moyer, Distressed Debt Analysis, ch. 9 and 11):
+the priming layer that permitted-lien capacity (or a covenant-lite gap) allows, and the
+exchange-offer transform (stub + new paper + holdout/tender payoffs). attacks.py
+discipline: pure transforms over fresh copies; the caller re-runs the waterfall on the SAME EV draws
 (or EV grid).
 """
 from __future__ import annotations
@@ -17,14 +17,15 @@ from .waterfall import run_waterfall
 
 def prime(structure: CapitalStructure, face: float, entity: Optional[str] = None,
           name: str = "Priming loan") -> CapitalStructure:
-    """Prepend a rank-0 secured tranche — new money ahead of every existing lien
-    (waterfall.py sorts plain int ranks, so 0 pays first; zero engine edits).
-    face in $mm; face <= 0 raises ValueError (the API's 400 boundary), as does an
-    unknown entity via CapitalStructure.validate."""
+    """Prepend a secured tranche ranked ahead of every existing lien, a super-priority/DIP
+    rank 0 included (waterfall.py sorts plain int ranks, so the lowest pays first; zero
+    engine edits). face in $mm; face <= 0 raises ValueError (the API's 400 boundary), as
+    does an unknown entity via CapitalStructure.validate."""
     if face is None or face <= 0:
-        raise ValueError("priming face must be positive ($mm)")
+        raise ValueError("priming face must be positive ($M)")
+    rank = min((t.lien_rank for t in structure.tranches if t.secured), default=1) - 1
     tranches = [Tranche(name=name, entity=entity or structure.entities[0].name,
-                        face=float(face), lien_rank=0, secured=True),
+                        face=float(face), lien_rank=min(rank, 0), secured=True),
                 *(replace(t) for t in structure.tranches)]
     return CapitalStructure(name=f"{structure.name} · primed",
                             entities=[replace(e) for e in structure.entities],
@@ -33,7 +34,7 @@ def prime(structure: CapitalStructure, face: float, entity: Optional[str] = None
 
 
 # --------------------------------------------------------------------------- #
-# F4: exchange offer (Moyer ch. 11)
+# Exchange offer (Moyer, Distressed Debt Analysis, ch. 11)
 # --------------------------------------------------------------------------- #
 
 _EXCHANGE_SENIORITIES = ("priming", "second_lien", "unsecured")
@@ -42,10 +43,11 @@ _EXCHANGE_SENIORITIES = ("priming", "second_lien", "unsecured")
 def exchange(structure: CapitalStructure, target: str, *, ratio_pct: float,
              participation_pct: float, seniority: str, coupon: float = 0.0,
              exit_consent: bool = False) -> CapitalStructure:
-    """Exchange-offer transform (Moyer ch. 11): participation p of `target` tenders into
-    a new tranche at face = F × p × ratio/100; the stub keeps F × (1−p). Seniority:
-    'priming' = rank below the lowest secured rank (rank 0 actually primes — pari would
-    share pro rata), 'second_lien' = max secured rank + 1, or 'unsecured'.
+    """Exchange-offer transform (Moyer, Distressed Debt Analysis, ch. 11): participation p
+    of `target` tenders into a new tranche at face = F × p × ratio/100; the stub keeps
+    F × (1−p). Seniority: 'priming' = rank below the lowest secured rank (rank 0 actually
+    primes — pari would share pro rata), 'second_lien' = max secured rank + 1, or
+    'unsecured'.
     `exit_consent` contractually subordinates the stub to the new paper (single-hop,
     same-entity). Maturity-based coercion is not modeled (Tranche.maturity is
     informational). p=0 skips the new tranche (≡ base); p=1 skips the stub.
@@ -99,14 +101,14 @@ def exchange_scenario(structure: CapitalStructure, target: str, ev,
                       accrual_years: float = 0.0) -> dict:
     """One participation scenario over an EV vector: the exchanged structure, stub /
     new-paper recovery curves (% of allowed claim), the equity residual, and the
-    per-100-old-face payoffs (Moyer ch. 11):
+    per-100-old-face payoffs (Moyer, Distressed Debt Analysis, ch. 11):
         holdout = stub recovery % of its allowed claim;
         tender  = cash/100 + ratio × new-paper recovery % ÷ 100
                   + equity residual × share(p) ÷ (p × F) × 100,
         share(p) = p ÷ (p + (1−e)/e), e = equity_pct_at_full — the tendering pool's
     slice of the equity pot scales sub-linearly with participation (Boxco 36.5).
     Cash consideration is valued at face and does not deplete waterfall EV
-    (going-concern convention — the book's cash-depletion point rides the
+    (going-concern convention — the cash the tender spends is measured by the
     holdout-runway chip instead)."""
     ev = np.asarray(ev, dtype=float)
     t0 = next((t for t in structure.tranches if t.name == target), None)

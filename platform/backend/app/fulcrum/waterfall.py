@@ -90,7 +90,8 @@ def allocate_entity(
             unsecured_claims.append((t.name, np.full_like(value, _claim(t))))
     _pay_pro_rata(unsecured_claims + deficiency)
 
-    # 2b. Contractual subordination (Moyer ch. 7 subrogation): redirect a subordinated
+    # 2b. Contractual subordination (subrogation; Moyer, Distressed Debt Analysis, ch. 7):
+    # redirect a subordinated
     # tranche's recovery to its benefited tranche until that claim is paid in full.
     # ponytail: edges processed in tranche-list order; chained subordination (A->B->C)
     # would need a topological pass nobody has modeled yet.

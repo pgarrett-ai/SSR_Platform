@@ -85,3 +85,77 @@ def test_map_instruments():
     assert mapping["8.50% Senior Notes"] is None      # no matching indenture on file
     fam = next(f for f in fams if f.doc_class == "indenture")
     assert fam.governs_instruments == ["5.75% Senior Notes"]
+
+
+def test_covenant_quotes_not_in_the_agreement_are_dropped(monkeypatch):
+    from app.capstack import covenants
+
+    fam = group_families([_doc(INDENTURE, doc_class="indenture", exhibit="EX-4.1")])[0]
+    monkeypatch.setattr(covenants, "_extract_raw", lambda doc: ({
+        "anchor_clause": "governing the 5.75% Senior Secured Notes due 2029",
+        "baskets": [{"name": "General RP basket", "value": "$500 million",
+                     "quote": "Restricted Payments not to exceed $500 million"}],
+        "lme_vectors": []}, "", None))
+    pkg, _, _, dropped = covenants.extract_covenant_package(fam)
+    assert dropped == 1                               # counted for the pipeline's warning
+    assert pkg.anchor_clause == "governing the 5.75% Senior Secured Notes due 2029"
+    assert pkg.baskets[0].value == "$500 million" and pkg.baskets[0].quote is None
+
+
+def test_extractor_commentary_and_boilerplate_parties_never_reach_the_package(monkeypatch):
+    from app.capstack import covenants
+
+    fam = group_families([_doc(INDENTURE, doc_class="indenture", exhibit="EX-4.1")])[0]
+    fam.operative.roles = {"trustee": "LLC", "collateral_agent": "THE GUARANTORS"}
+    monkeypatch.setattr(covenants, "_extract_raw", lambda doc: ({
+        "anchor_clause": "governing the 5.75% Senior Secured Notes due 2029",
+        "financial_covenants": [{
+            "kind": "Minimum Liquidity (the maintenance covenant clause itself, Section 6.x, "
+                    "was not included in the excerpt)",
+            "threshold": "Not stated in provided text", "test_frequency": "Quarterly"}],
+        "baskets": [{"name": "Liens", "value": "Governed by Section 6.02; specific capacity "
+                                               "not included in provided excerpt"}],
+        "guarantors": "Not specified in the provided text",
+        "unrestricted_subsidiary_designation_flexibility": (
+            "Section 5.06 governs designation; specific mechanics not reproduced in the "
+            "provided excerpt. IP sits in ring-fenced SPV Parties."),
+        "admin_agent": "Administrative Agent (not named in the provided text)",
+        "trustee": "Wilmington Trust, National Association",
+        "collateral_agent": "Lenders party thereto from time to time",
+        "lme_vectors": []}, "", None))
+    pkg, _, _, _ = covenants.extract_covenant_package(fam)
+    fc = pkg.financial_covenants[0]
+    assert (fc.kind, fc.threshold, fc.test_frequency) == ("Minimum Liquidity", None, "Quarterly")
+    assert pkg.baskets[0].value == "Governed by Section 6.02"
+    assert pkg.guarantors is None
+    assert pkg.unrestricted_subsidiary_designation_flexibility == (
+        "Section 5.06 governs designation; IP sits in ring-fenced SPV Parties.")
+    assert pkg.admin_agent is None and pkg.collateral_agent is None
+    assert pkg.trustee == "Wilmington Trust, National Association"   # head-parse "LLC" skipped
+
+
+def test_shouting_cover_page_date_reads_in_title_case():
+    shouting = BASE_CA.replace("June 27, 2013", "JULY 6, 2026")
+    fam = group_families([_doc(shouting)])[0]
+    assert fam.label == "Credit agreement dated July 6, 2026"
+
+
+def test_commentary_strip_keeps_the_facts_that_share_its_sentence():
+    from app.capstack.covenants import _party, _strip_commentary as strip
+    # statements about the agreement itself are facts, not narration
+    for fact in ("The indenture does not include a lien covenant or a debt-incurrence covenant.",
+                 "Leverage not to exceed 4.50:1.00, not included in the calculation are "
+                 "Unrestricted Subsidiaries.",
+                 "The indenture permits Additional Notes but contains no debt-incurrence "
+                 "covenant or ratio test."):
+        assert strip(fact) == fact
+    assert strip("4.50:1.00 — the definitions are not reproduced in the excerpt") == "4.50:1.00"
+    assert strip("Quarterly, but the test date is not in the provided text") == "Quarterly"
+    assert strip("Not addressed.") is None
+    # real agent strings from the hero filings keep the institution
+    assert _party("Lenders party thereto from time to time, JPMorgan Chase Bank, N.A.") ==         "JPMorgan Chase Bank, N.A."
+    assert _party("Lenders from time to time party thereto, Goldman Sachs Bank USA") ==         "Goldman Sachs Bank USA"
+    assert _party("THE GUARANTORS PARTY HERETO, as Guarantors, THE BANK OF NEW YORK MELLON") ==         "THE BANK OF NEW YORK MELLON"
+    assert _party("Lenders party hereto. RECITALS A. , DEUTSCHE BANK AG NEW YORK BRANCH") ==         "DEUTSCHE BANK AG NEW YORK BRANCH"
+    assert _party("JPMorgan Chase Bank, N.A., as administrative agent for the lenders party "
+                  "hereto") == "JPMorgan Chase Bank, N.A."

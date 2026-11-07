@@ -1,9 +1,10 @@
 """Pipeline orchestration for a single (ticker, years) run.
 
-Phase 1 covers issuer resolution + filing/exhibit retrieval + persistence, and assembles the
-header + sources of the Overview. Later phases (XBRL facts, economic-debt bridge, covenants,
-MD&A sections) attach their sections here. The function takes a ProgressLog so the API can
-stream "what it's doing" to the UI.
+Resolves the issuer, retrieves and persists filings and exhibits, then builds every Overview
+section in order: XBRL forensic table, footnote/OBS extraction and the economic-debt bridge,
+the debt schedule, covenants, Exhibit 21 entities, sponsor ownership, MD&A, and the
+deterministic liquidity, capacity and covenant-dollar reads. The function takes a ProgressLog
+so the API can stream "what it's doing" to the UI.
 """
 from __future__ import annotations
 
@@ -14,12 +15,13 @@ from typing import Optional
 from .capstack.bridge import build_bridge, build_ebitda_box, renormalize_spliced_bridge
 from .capstack.agreements import group_families, map_instruments
 from .capstack.covenants import extract_covenant_package, find_credit_documents
-from .core.cache import is_hero, load_latest_overview, load_overview, save_overview
+from .core.cache import (is_hero, load_latest_overview, load_overview, safe_ticker,
+                         save_overview, single_flight)
 from .capstack.debt_schedule import (annotate_maturities, drop_retired,
-                                     extract_debt_schedule, fill_maturity_from_name)
+                                     extract_debt_schedule, fill_maturity_from_name, is_caption)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
 from .capstack.forensic import (build_asset_snapshot, build_forensic_table, detect_flags,
-                                quarter_forensic_row, total_debt)
+                                ltm_ebitda, quarter_forensic_row, total_debt, ttm_view)
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .capstack.sponsor import build_sponsor, extract_sponsor_ownership
@@ -31,9 +33,9 @@ from .edgar.client import (
     TickerNotFoundError,
 )
 from .edgar.documents import get_filing_text
-from .edgar.facts import FinancialSeries, build_financial_series, fmt_money_millions
+from .edgar.facts import FinancialSeries, build_financial_series, fmt_count, fmt_money_millions
 from .core.progress import ProgressLog
-from .schemas import IssuerHeader, Overview
+from .schemas import Chapter11, IssuerHeader, Overview
 from .store import (
     filing_refs,
     persist_covenants,
@@ -69,33 +71,84 @@ def _empty_schedule_warning(debt_schedule: list, series: Optional[FinancialSerie
     )
 
 
+def _tieout_warning(debt_schedule: list, debt_asof: Optional[str],
+                    forensic_table: list) -> Optional[str]:
+    """Instrument sum vs reported total debt for the schedule's own as-of period: the
+    forensic column ending on that date, else the latest fiscal year. A big gap means
+    double-counted members (a facility and its sub-facility) or missing instruments."""
+    row = (next((r for r in forensic_table if debt_asof and r.period_end == debt_asof), None)
+           or next((r for r in reversed(forensic_table) if not r.label), None))
+    reported = row.total_debt.value if row and row.total_debt else None
+    sched_sum = sum(i.outstanding.value for i in debt_schedule
+                    if i.outstanding and i.outstanding.value)
+    if not reported or not sched_sum or abs(sched_sum - reported) / reported <= 0.15:
+        return None
+    return (f"Debt schedule sums to {fmt_money_millions(sched_sum)} vs "
+            f"{fmt_money_millions(reported)} reported total debt "
+            f"({row.label or f'FY{row.fiscal_year}'}) — instruments may overlap (a facility "
+            f"and its sub-facility) or be missing; review the schedule citations.")
+
+
+def _chapter11(cik: str, warnings: list[str]) -> Optional[Chapter11]:
+    """The Chapter 11 case from the issuer's 8-K Item 1.03 filings, cited. A later 1.03 in the
+    same case is read as plan confirmation: the case stays on record with confirmed_at, and
+    the caller stops treating payments as stayed."""
+    from .capstack.eightk import petition_citation, petition_filing
+
+    pf = petition_filing(cik)
+    if not pf or not pf.get("date"):
+        return None
+    confirmed = pf.get("plan_confirmed")
+    if confirmed:
+        # ponytail: a second 1.03 can also be a conversion, dismissal or affiliate filing;
+        # reading the 8-K body is the upgrade if an issuer does that
+        warnings.append(f"A later 8-K Item 1.03 ({confirmed['date']}"
+                        + (f", {confirmed['source_url']}" if confirmed.get("source_url") else "")
+                        + f") is read as plan confirmation for the case filed {pf['date']}; "
+                        "payments are no longer flagged stayed.")
+    return Chapter11(petition_date=pf["date"], source=petition_citation(pf),
+                     confirmed_at=confirmed["date"] if confirmed else None)
+
+
 def run_overview(
     ticker: str,
     years: int,
     progress: Optional[ProgressLog] = None,
     live: bool = False,
 ) -> Overview:
-    """Run the pipeline and return a structured Overview.
-
-    Phase 1: header + sources populated; analytical sections come online in later phases.
-    Raises TickerNotFoundError / NoFilingsError for clean handling by the API layer.
+    """The Overview for (ticker, years): the cached run (hero names and any earlier run)
+    unless live=True, else a fresh pipeline run. Concurrent requests for one key run the
+    pipeline once and the rest reuse its result. Raises TickerNotFoundError /
+    NoFilingsError for clean handling by the API layer.
     """
-    settings = get_settings()
     progress = progress or ProgressLog()
-    ticker = ticker.strip().upper()
+    try:   # before any cache read or lock: a malformed ticker never reaches either
+        ticker = safe_ticker(ticker)
+    except ValueError as exc:
+        raise TickerNotFoundError(str(exc)) from exc
     years = max(1, min(int(years), 10))
-    warnings: list[str] = []
+    asked_at = datetime.now(timezone.utc).isoformat()
 
-    # Demo safety: serve hero names (and any previously-cached run) instantly unless "Run live".
-    if not live:
+    def _reuse() -> Optional[Overview]:
         cached = load_overview(ticker, years)
-        if cached is not None:
-            tag = "hero" if is_hero(ticker) else "recent"
-            progress.emit(
-                f"Served {ticker} from the pre-computed {tag} cache "
-                f"(toggle 'Run live' to re-run against EDGAR).", step="cache", pct=100,
-            )
-            return cached
+        # a live request reuses only a run that finished after it was asked (both stamps
+        # are UTC isoformat strings, so they compare in time order)
+        if cached is None or (live and (cached.header.last_updated or "") < asked_at):
+            return None
+        tag = "hero" if is_hero(ticker) else "recent"
+        progress.emit(f"Served {ticker} from the cached {tag} analysis.", step="cache", pct=100)
+        return cached
+
+    if not live and (cached := _reuse()) is not None:   # a cache hit never waits on a build
+        return cached
+    with single_flight(("overview", ticker, years), progress):
+        return _reuse() or _build_overview(ticker, years, progress)
+
+
+def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
+    """Run every pipeline step, assemble the Overview and cache it."""
+    settings = get_settings()
+    warnings: list[str] = []
 
     progress.emit(f"Resolving ticker {ticker} → CIK…", step="resolve", pct=5)
     client = EdgarClient()
@@ -111,7 +164,7 @@ def run_overview(
     )
 
     progress.emit(
-        f"Fetching 10-K / 10-Q / 8-K / S-1 / S-4 filings for the last {years} year(s)…",
+        f"Fetching 10-K / 10-Q / 8-K / S-1 / S-4 filings for the last {fmt_count(years, 'year')}…",
         step="filings",
         pct=20,
     )
@@ -127,7 +180,7 @@ def run_overview(
         rows = upsert_filings(session, ticker, cik, filings)
         sources = filing_refs(rows)
 
-    # --- Phase 2: XBRL forensic cash-vs-debt table + auto-flags (§6a) ---
+    # --- XBRL forensic cash-vs-debt table + auto-flags ---
     forensic_table = []
     forensic_flags = []
     series = None
@@ -140,7 +193,7 @@ def run_overview(
             forensic_flags = detect_flags(series)
             progress.emit(
                 f"Built forensic table over FY{series.years[0].fiscal_year}-"
-                f"FY{series.years[-1].fiscal_year}; {len(forensic_flags)} divergence flag(s) fired.",
+                f"FY{series.years[-1].fiscal_year}; {fmt_count(len(forensic_flags), 'divergence flag')} fired.",
                 step="xbrl", pct=60,
             )
         else:
@@ -150,7 +203,47 @@ def run_overview(
         warnings.append(f"XBRL forensic step failed: {exc}")
         progress.emit(f"XBRL forensic step failed: {exc}", step="xbrl", pct=60)
 
-    # --- Phase 3: footnote/OBS LLM extraction → economic-debt bridge + debt schedule (§6b/§6c/§8.3) ---
+    # --- quarterly TTM cadence: leverage timeline + what-changed when 10-Q XBRL supports
+    # it (annual FY-vs-FY fallback otherwise), and the latest-quarter forensic column ---
+    from .capstack.timelines import (
+        leverage_timeline, maturity_wall, quarterly_leverage_timeline,
+        what_changed, what_changed_quarterly,
+    )
+    quarters = []
+    try:
+        progress.emit("Building quarterly TTM series from 10-Q XBRL…", step="quarterly", pct=61)
+        from .edgar.facts import build_quarterly_series
+        quarters = build_quarterly_series(company, years)
+        progress.emit(f"Built {len(quarters)} quarter-end points (TTM flows).",
+                      step="quarterly", pct=62)
+    except Exception as exc:
+        warnings.append(f"Quarterly XBRL step failed (annual cadence used): {exc}")
+    lev_timeline = quarterly_leverage_timeline(quarters) or leverage_timeline(forensic_table)
+    changes = what_changed_quarterly(quarters) or what_changed(forensic_table)
+
+    # Latest-quarter forensic column: 10-Q snapshots + TTM flows, appended only when the
+    # quarter post-dates the last fiscal year (else it would duplicate the FY column).
+    # Appended to the table only — detect_flags/timelines read series/quarters directly.
+    if quarters and forensic_table:
+        try:
+            latest_q = quarters[-1]
+            if latest_q.period_end.isoformat() > (forensic_table[-1].period_end or ""):
+                forensic_table.append(quarter_forensic_row(latest_q, cik))
+                progress.emit(f"Appended latest-quarter column ({latest_q.label}) to the "
+                              "forensic table.", step="quarterly", pct=62)
+        except Exception as exc:
+            warnings.append(f"Latest-quarter forensic column failed: {exc}")
+
+    # The one EBITDA every ratio divides by, and the facts of its period (TTM view of the
+    # latest quarter, or that fiscal year) for the EBITDA box and the coverage chips.
+    ltm_row = ltm_ebitda(forensic_table)
+    ebitda_cv = ltm_row.ebitda if ltm_row else None
+    ltm_facts = None
+    if ltm_row is not None:
+        ltm_facts = (ttm_view(quarters[-1]) if ltm_row.label else
+                     next(y for y in series.years if y.fiscal_year == ltm_row.fiscal_year))
+
+    # --- footnote/OBS LLM extraction → economic-debt bridge + debt schedule ---
     economic_debt_bridge = None
     obs_items = []
     obs_extractions = []
@@ -164,7 +257,8 @@ def run_overview(
     ft = None
     try:
         progress.emit("Fetching latest 10-K text…", step="obs", pct=65)
-        latest_10k = company.get_filings(form="10-K").latest(1)
+        # amendments off: a Part III 10-K/A carries no footnotes (TSE's latest 10-K was one)
+        latest_10k = company.get_filings(form="10-K", amendments=False).latest(1)
         ft = get_filing_text(latest_10k) if latest_10k is not None else None
     except Exception as exc:
         warnings.append(f"10-K text fetch failed: {exc}")
@@ -177,7 +271,10 @@ def run_overview(
         from .rates import get_key_rates
         with session_scope() as session:
             rate_map = {r["series"]: r["value"] for r in get_key_rates(session)}
-        debt_schedule, debt_asof, debt_filing = build_xbrl_debt_schedule(company, rate_map)
+        debt_schedule, debt_asof, debt_filing, fx_note = build_xbrl_debt_schedule(
+            company, rate_map)
+        if fx_note:
+            warnings.append(fx_note)
         if debt_schedule:
             progress.emit(
                 f"{len(debt_schedule)} instruments from XBRL dimensions (as of {debt_asof}).",
@@ -211,7 +308,8 @@ def run_overview(
                 obs_extractions, obs_err = extract_obs_items(ft)
                 if obs_err:
                     warnings.append(f"OBS extraction error: {obs_err}")
-                economic_debt_bridge, obs_items = build_bridge(series, obs_extractions, ft)
+                economic_debt_bridge, obs_items = build_bridge(series, obs_extractions, ft,
+                                                               ebitda_cv)
                 if obs_items:
                     with session_scope() as session:
                         persist_obs(session, ticker, obs_items)
@@ -219,10 +317,16 @@ def run_overview(
                     from .store import load_aliases, record_aliases
                     with session_scope() as session:
                         known_aliases = load_aliases(session, ticker)
-                    ann_err, learned = annotate_maturities(
+                    ann_err, learned, n_ungrounded = annotate_maturities(
                         debt_schedule, debt_ft or ft, debt_asof, aliases=known_aliases)
                     if ann_err:
                         warnings.append(f"Maturity annotation: {ann_err}")
+                    if n_ungrounded:
+                        warnings.append(
+                            f"{fmt_count(n_ungrounded, 'maturity annotation quote')} not "
+                            "found verbatim in the debt footnote; "
+                            + ("that maturity was" if n_ungrounded == 1
+                               else "those maturities were") + " not applied.")
                     with session_scope() as session:
                         if learned:
                             record_aliases(session, ticker, learned, source="fuzzy")
@@ -233,13 +337,17 @@ def run_overview(
                             session, ticker, debt_schedule, debt_ft or ft, debt_asof,
                             aliases=known_aliases)
                     if n_filled:
-                        progress.emit(f"Gap-fill re-search recovered {n_filled} "
-                                      "annotation(s) from the persisted corpus.",
+                        progress.emit(f"Gap-fill re-search recovered "
+                                      f"{fmt_count(n_filled, 'annotation')} from the "
+                                      "persisted corpus.",
                                       step="debt", pct=79)
                     if gf_err:
                         warnings.append(f"Gap-fill re-search: {gf_err}")
-                else:               # undimensioned issuer: legacy extraction + hard filters
-                    instruments, debt_err = extract_debt_schedule(debt_ft or ft)
+                else:               # undimensioned issuer: footnote extraction + hard filters
+                    note_ft = debt_ft or ft
+                    instruments, debt_err = extract_debt_schedule(note_ft)
+                    if instruments:   # read from the filing's latest balance-sheet column
+                        debt_asof = note_ft.period_of_report
                     debt_schedule = drop_retired(instruments, debt_asof)
                     if debt_err:
                         warnings.append(f"Debt-schedule extraction error: {debt_err}")
@@ -256,37 +364,24 @@ def run_overview(
     if debt_schedule:
         filled = fill_maturity_from_name(debt_schedule, debt_asof)
         if filled:
-            progress.emit(f"Filled {filled} maturity year(s) from instrument names.",
+            progress.emit(f"Filled {fmt_count(filled, 'maturity year')} from instrument names.",
                           step="debt", pct=81)
-        # tie-out: instrument sum vs the reported balance-sheet total. A big gap means
-        # double-counted members (facility + its sub-facility) or missing instruments.
-        try:
-            if series is not None and series.years:
-                reported, _parts = total_debt(series.years[-1])
-                sched_sum = sum((i.outstanding.value or 0) for i in debt_schedule
-                                if i.outstanding and i.outstanding.value)
-                if reported and sched_sum and abs(sched_sum - reported) / reported > 0.15:
-                    warnings.append(
-                        f"Debt schedule sums to {fmt_money_millions(sched_sum)} vs "
-                        f"{fmt_money_millions(reported)} reported total debt "
-                        f"(latest FY) — instruments may overlap (a facility and its "
-                        f"sub-facility) or be missing; review the schedule citations."
-                    )
-        except Exception:
-            pass
+        tieout = _tieout_warning(debt_schedule, debt_asof, forensic_table)
+        if tieout:
+            warnings.append(tieout)
         missing_mat = [i.instrument for i in debt_schedule
                        if not i.maturity and (i.outstanding and (i.outstanding.value or 0) > 0)]
         if missing_mat:
             warnings.append(
-                f"Maturity unknown for {len(missing_mat)} instrument(s) "
-                f"({', '.join(missing_mat[:6])}) — they are missing from the maturity wall."
+                f"Maturity unknown for {fmt_count(len(missing_mat), 'instrument')} "
+                f"({', '.join(missing_mat[:6])}) — missing from the maturity wall."
             )
     else:
         empty_warning = _empty_schedule_warning(debt_schedule, series)
         if empty_warning:
             warnings.append(empty_warning)
 
-    # --- Phase 4: covenant extraction from credit agreements / indentures (§5) ---
+    # --- covenant extraction from credit agreements / indentures ---
     credit_docs = []
     try:   # locating + fetching the exhibits is EDGAR-only — always runs (warms cache)
         from .capstack.covenants import CENSUS_MAX_CHECK, CENSUS_MAX_KEEP, CENSUS_YEARS
@@ -327,25 +422,33 @@ def run_overview(
                 f"extracting up to {_MAX_COVENANT_EXTRACTS}…", step="covenants", pct=85,
             )
             clause_texts: list[tuple] = []
+            n_cov_dropped = 0
             for fam in families[:_MAX_COVENANT_EXTRACTS]:
-                pkg, clause, cov_err = extract_covenant_package(fam)
+                pkg, clause, cov_err, n_drop = extract_covenant_package(fam)
+                n_cov_dropped += n_drop
                 if cov_err:
                     warnings.append(f"Covenant extraction ({fam.label}): {cov_err}")
                 if pkg:
                     covenants.append(pkg)
                     clause_texts.append((pkg, clause))
+            if n_cov_dropped:
+                warnings.append(
+                    f"{fmt_count(n_cov_dropped, 'covenant quote')} not found verbatim in the "
+                    "agreement text; "
+                    + ("its value is kept, the quote dropped." if n_cov_dropped == 1
+                       else "their values are kept, the quotes dropped."))
             if clause_texts:
                 with session_scope() as session:
                     persist_covenants(session, ticker, clause_texts)
             progress.emit(
-                f"Extracted {len(covenants)} covenant package(s) from "
-                f"{len(credit_docs)} credit document(s).", step="covenants", pct=92,
+                f"Extracted {fmt_count(len(covenants), 'covenant package')} from "
+                f"{fmt_count(len(credit_docs), 'credit document')}.", step="covenants", pct=92,
             )
         except Exception as exc:
             warnings.append(f"Covenant step failed: {exc}")
             progress.emit(f"Covenant step failed: {exc}", step="covenants", pct=92)
 
-        # --- Phase 4.5: Exhibit 21 legal-entity list (seeds Fulcrum entities) ---
+        # --- Exhibit 21 legal-entity list (seeds Fulcrum entities) ---
         try:
             progress.emit("Parsing Exhibit 21 (legal-entity list)…", step="entities", pct=93)
             from .capstack.subsidiaries import extract_subsidiaries
@@ -358,7 +461,7 @@ def run_overview(
         except Exception as exc:
             warnings.append(f"Exhibit 21 step failed: {exc}")
 
-        # --- Phase 4.7: sponsor ownership — DEF 14A beneficial table + related-party notes ---
+        # --- sponsor ownership — DEF 14A beneficial table + related-party notes ---
         try:
             progress.emit("Extracting sponsor ownership (DEF 14A beneficial table + "
                           "related-party notes)…", step="sponsor", pct=94)
@@ -370,46 +473,17 @@ def run_overview(
     else:
         progress.emit("Skipping LLM extraction (LLM analysis is off).", step="obs", pct=88)
 
-    # --- Phase 4.6: leverage timeline, maturity wall, what-changed ---
-    # Quarterly TTM cadence when 10-Q XBRL supports it; annual FY-vs-FY fallback otherwise.
-    from .capstack.timelines import (
-        leverage_timeline, maturity_wall, quarterly_leverage_timeline,
-        what_changed, what_changed_quarterly,
-    )
-    quarters = []
-    try:
-        progress.emit("Building quarterly TTM series from 10-Q XBRL…", step="quarterly", pct=95)
-        from .edgar.facts import build_quarterly_series
-        quarters = build_quarterly_series(company, years)
-        progress.emit(f"Built {len(quarters)} quarter-end points (TTM flows).",
-                      step="quarterly", pct=96)
-    except Exception as exc:
-        warnings.append(f"Quarterly XBRL step failed (annual cadence used): {exc}")
-    lev_timeline = quarterly_leverage_timeline(quarters) or leverage_timeline(forensic_table)
     maturities = maturity_wall(debt_schedule)
-    changes = what_changed_quarterly(quarters) or what_changed(forensic_table)
 
-    # Latest-quarter forensic column: 10-Q snapshots + TTM flows, appended only when the
-    # quarter post-dates the last fiscal year (else it would duplicate the FY column).
-    # Appended to the table only — detect_flags/timelines read series/quarters directly.
-    if quarters and forensic_table:
-        try:
-            latest_q = quarters[-1]
-            if latest_q.period_end.isoformat() > (forensic_table[-1].period_end or ""):
-                forensic_table.append(quarter_forensic_row(latest_q, cik))
-                progress.emit(f"Appended latest-quarter column ({latest_q.label}) to the "
-                              "forensic table.", step="quarterly", pct=96)
-        except Exception as exc:
-            warnings.append(f"Latest-quarter forensic column failed: {exc}")
-
-    # --- Phase 5: MD&A section retention — deterministic, runs even without an API key ---
+    # --- MD&A section retention — deterministic, runs even without an API key ---
     try:
         progress.emit("Storing MD&A sections per period…", step="mdna", pct=94)
         mdna_periods = build_mdna_series(company, years)
         if mdna_periods:
             with session_scope() as session:
                 persist_mdna(session, ticker, mdna_periods)
-        progress.emit(f"Stored MD&A for {len(mdna_periods)} period(s).", step="mdna", pct=98)
+        progress.emit(f"Stored MD&A for {fmt_count(len(mdna_periods), 'period')}.", step="mdna",
+                      pct=98)
     except Exception as exc:
         warnings.append(f"MD&A step failed: {exc}")
         progress.emit(f"MD&A step failed: {exc}", step="mdna", pct=98)
@@ -430,12 +504,18 @@ def run_overview(
             # reuse the prior LLM-extracted content, but recompute the ratio arithmetic
             # with current code — a spliced bridge must not fossilize old semantics
             if economic_debt_bridge is None and prior.economic_debt_bridge is not None:
+                # the prior bridge's debt is its latest fiscal-year balance sheet
+                prior_fy = next((r.fiscal_year for r in reversed(prior.forensic_table)
+                                 if not r.label), None)
                 economic_debt_bridge = renormalize_spliced_bridge(
-                    prior.economic_debt_bridge, series)
+                    prior.economic_debt_bridge, ebitda_cv,
+                    f"FY{prior_fy}" if prior_fy else None)
             obs_items = obs_items or prior.obs_items
             covenants = covenants or prior.covenants
             subsidiaries = subsidiaries or prior.subsidiaries
-            debt_schedule = debt_schedule or prior.debt_schedule
+            debt_schedule = debt_schedule or [
+                d for d in prior.debt_schedule
+                if d.xbrl_member or not is_caption(d.instrument, d.coupon, d.maturity)]
         else:
             llm_fallback_note = "LLM analysis is off — re-enable to analyze."
         warnings.append(llm_fallback_note)
@@ -453,21 +533,22 @@ def run_overview(
         except Exception as exc:
             warnings.append(f"Entity role annotation failed: {exc}")
 
-    # --- EBITDA box: net-income walk + the issuer's covenant add-backs (deterministic; the
-    # categories come from whatever covenant packages exist, including a spliced prior run) ---
+    # --- EBITDA box: net income reconciled to the canonical EBITDA + the issuer's covenant
+    # add-backs (deterministic; the categories come from whatever covenant packages exist,
+    # including a spliced prior run) ---
     ebitda_build = None
     try:
-        if series is not None and series.years:
+        if ltm_facts is not None:
             cats: list[str] = []
             for c in covenants:
                 for a in c.ebitda_addback_categories:
                     if a not in cats:
                         cats.append(a)
-            ebitda_build = build_ebitda_box(series, cats)
+            ebitda_build = build_ebitda_box(ltm_facts, cik, cats, ebitda_cv)
     except Exception as exc:
         warnings.append(f"EBITDA box step failed: {exc}")
 
-    # --- Asset snapshot (liquidation-waterfall inputs) — deterministic, from Phase-2 facts ---
+    # --- Asset snapshot (liquidation-waterfall inputs) — deterministic, from the XBRL facts ---
     asset_snapshot = None
     try:
         if series is not None and series.years:
@@ -475,7 +556,7 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"Asset snapshot step failed: {exc}")
 
-    # --- Sponsor / related-party support (Moyer control-holder framing, C8) — deterministic
+    # --- Sponsor / related-party support (the control holder) — deterministic
     # assembler; runs unconditionally so the free admin_agent lender flag survives LLM-off.
     # `covenants` may already be the LLM-off splice above, so admin_agent flows through
     # automatically. Only backfill the richer cached snapshot (e.g. a DEF 14A ownership_pct
@@ -491,45 +572,51 @@ def run_overview(
         prior_sponsor = getattr(load_latest_overview(ticker), "sponsor", None)
         sponsor = prior_sponsor or sponsor
 
+    # --- Chapter 11 status: a case whose last 8-K Item 1.03 is within three years, cited ---
+    chapter11 = None
+    try:
+        chapter11 = _chapter11(cik, warnings)
+    except Exception as exc:
+        warnings.append(f"Chapter 11 check (8-K Item 1.03) failed: {exc}")
+
     # --- Liquidity & runway (distressed-mode framing) — deterministic, LLM-independent ---
     liquidity = None
     liquidity_events: list = []
     liquidity_events_note = None
-    ebitda_v = None
+    ebitda_v = ebitda_cv.value if ebitda_cv else None
     try:
         from .capstack.liquidity import build_event_calendar, build_liquidity
-        if economic_debt_bridge and economic_debt_bridge.ebitda:
-            ebitda_v = economic_debt_bridge.ebitda.value      # canonical NI-walk EBITDA
-        elif forensic_table and forensic_table[-1].ebitda:
-            ebitda_v = forensic_table[-1].ebitda.value        # proxy fallback (LLM off)
         liquidity = build_liquidity(forensic_table, debt_schedule, maturities, ebitda_v)
         total_liq = (liquidity.total_liquidity.value
                      if liquidity and liquidity.total_liquidity else None)
         liquidity_events, liquidity_events_note = build_event_calendar(
-            debt_schedule, total_liq, ebitda_v, debt_asof)
+            debt_schedule, total_liq, ebitda_v, debt_asof,
+            petition_date=(chapter11.petition_date
+                           if chapter11 and not chapter11.confirmed_at else None))
         if liquidity and liquidity_events:
             liquidity.next_event = liquidity_events[0]
     except Exception as exc:
         warnings.append(f"Liquidity/runway step failed: {exc}")
 
-    # --- Capacity-ratio chips (Moyer ch. 6 dual leverage + paired coverage) ---
+    # --- Capacity-ratio chips: dual leverage + paired coverage (Moyer, Distressed Debt
+    # Analysis, ch. 6) ---
     coverage = None
     try:
         from .capstack.capacity import coverage_chips
         from .edgar.facts import raw_value
-        if series is not None and series.years:
-            yf = series.latest()
+        if ltm_facts is not None:
             debt_v = None
             if economic_debt_bridge and economic_debt_bridge.reported_debt:
                 debt_v = economic_debt_bridge.reported_debt.value
             elif forensic_table and forensic_table[-1].total_debt:
                 debt_v = forensic_table[-1].total_debt.value
-            coverage = coverage_chips(debt_v, ebitda_v, raw_value(yf, "capex"),
-                                      raw_value(yf, "interest_expense"))
+            # capex and interest over the same trailing period as the EBITDA
+            coverage = coverage_chips(debt_v, ebitda_v, raw_value(ltm_facts, "capex"),
+                                      raw_value(ltm_facts, "interest_expense"))
     except Exception as exc:
         warnings.append(f"Coverage chips step failed: {exc}")
 
-    # --- Mezzanine / temporary equity — the recast-as-debt input (Moyer ch. 6) ---
+    # --- Mezzanine / temporary equity — the recast-as-debt input ---
     mezzanine = None
     try:
         from .edgar.facts import cited_metric
@@ -538,7 +625,7 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"Mezzanine (temporary equity) step failed: {exc}")
 
-    # --- Gross NOL carryforward — the §382 tax-asset input (Moyer ch. 11) ---
+    # --- Gross NOL carryforward — the §382 tax-asset input ---
     nol_carryforward = None
     try:
         from .edgar.facts import cited_metric
@@ -547,7 +634,7 @@ def run_overview(
     except Exception as exc:
         warnings.append(f"NOL carryforward step failed: {exc}")
 
-    # --- Covenant dollars (Moyer ch. 7/9): RP-basket build + permitted-liens headroom —
+    # --- Covenant dollars: RP-basket build + permitted-liens headroom —
     # deterministic regex over the cached covenant extractions + XBRL quarterly flows ---
     rp_basket = None
     liens_headroom = None
@@ -589,6 +676,7 @@ def run_overview(
 
     overview = Overview(
         header=header,
+        chapter11=chapter11,
         economic_debt_bridge=economic_debt_bridge,
         ebitda_build=ebitda_build,
         debt_schedule=debt_schedule,

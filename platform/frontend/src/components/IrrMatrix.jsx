@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Section, Th } from "../ui/index.jsx";
+import { Section, Th, fmtPct } from "../ui/index.jsx";
 
-// Duration-sensitive IRR (Moyer ch. 9/12): a recovery estimate is meaningless without
+// Duration-sensitive IRR (Moyer, Distressed Debt Analysis, ch. 9 and 12): a recovery
+// estimate is meaningless without
 // time — annualized return = (recovery / entry price)^(1/T) − 1 across entry prices and
 // case durations, shaded where it clears the 15–25% distressed hurdle band.
 
@@ -23,7 +24,7 @@ export default function IrrMatrix({ tranches, quotedByName }) {
   const quote = t ? quotedByName?.[t.tranche] : null;
 
   useEffect(() => {
-    // default entry: matched drop-file quote, else 50
+    // default entry: the bond's last quote when one is matched, else 50
     setEntry(quote?.last_price ?? 50);
   }, [name, quote?.last_price]);
 
@@ -32,12 +33,12 @@ export default function IrrMatrix({ tranches, quotedByName }) {
 
   return (
     <Section
-      title="Duration-sensitive IRR"
-      subtitle="annualized return by entry price × case duration · 15–25% hurdle band shaded"
+      title="IRR per 100 face"
+      subtitle="annualized return by entry price × time to exit · 15–25% hurdle band shaded"
     >
       <div className="mb-3 flex flex-wrap items-end gap-4 text-xs">
         <label className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500">Tranche</span>
+          <span className="text-[11px] uppercase tracking-wide text-slate-400">Tranche</span>
           <select value={t.tranche} onChange={(e) => setName(e.target.value)}
             className="max-w-[280px] rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 text-xs text-slate-200 outline-none focus:border-accent">
             {withRecovery.map((x) => (
@@ -46,16 +47,16 @@ export default function IrrMatrix({ tranches, quotedByName }) {
           </select>
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wide text-slate-500">
+          <span className="text-[11px] uppercase tracking-wide text-slate-400">
             Entry price (per 100){quote ? ` · quote ${quote.last_price} as of ${quote.as_of}` : " · no matched quote"}
           </span>
           <input type="number" step={1} value={entry ?? ""}
             onChange={(e) => setEntry(e.target.value === "" ? null : Number(e.target.value))}
             className="w-28 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent" />
         </label>
-        <div className="text-slate-500">
+        <div className="text-slate-400">
           expected recovery <span className="font-mono text-slate-200">{recovery.toFixed(0)}</span> per 100 face
-          <span className="text-slate-600"> (simulation mean, % of face)</span>
+          <span className="text-slate-400"> (simulation mean, % of face)</span>
         </div>
       </div>
 
@@ -81,7 +82,7 @@ export default function IrrMatrix({ tranches, quotedByName }) {
                     <td key={d}
                       title={`(${recovery.toFixed(0)} ÷ ${p.toFixed(0)})^(1/${d}) − 1`}
                       className={`px-3 py-1.5 text-right font-mono ${cellTone(irr)}`}>
-                      {(100 * irr).toFixed(0)}%
+                      {fmtPct(irr, 0)}
                     </td>
                   );
                 })}
@@ -90,7 +91,7 @@ export default function IrrMatrix({ tranches, quotedByName }) {
           })}
         </tbody>
       </table>
-      <div className="mt-2 text-[11px] text-slate-500">
+      <div className="mt-2 text-[11px] text-slate-400">
         recovery held at the simulation mean — duration only reprices time value, not outcome
       </div>
     </Section>

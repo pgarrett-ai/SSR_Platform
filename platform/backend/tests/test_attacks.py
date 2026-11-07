@@ -1,4 +1,5 @@
-"""Priority-attack transforms + claim-convention engine upgrades (Moyer ch. 7/12)."""
+"""Priority-attack transforms + claim conventions (Moyer, Distressed Debt Analysis, ch. 7
+and 12)."""
 import numpy as np
 import pytest
 
@@ -54,7 +55,8 @@ def test_collateral_cap_and_deficiency():
 
 
 def test_subrogation_redirect():
-    # Dead Co. (Moyer Table 7-1): assets 75; bank 50, trade 50, subs 100 subordinated
+    # Dead Co. (Moyer, Distressed Debt Analysis, ch. 7, Table 7-1): assets 75; bank 50,
+    # trade 50, subs 100 subordinated
     # to the bank only. Pro rata 37.5% each; subs' 37.5 redirects until the bank is whole.
     s = CapitalStructure(
         name="DeadCo", entities=[Entity("OpCo", 1.0)],

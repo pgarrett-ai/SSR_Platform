@@ -1,7 +1,6 @@
-"""Daily universe refresh (plan §4 `universe` table). v1 populates exactly what
-company_tickers.json gives — cik_str/ticker/title (URL+shape UNVERIFIED, ledger #1) —
-plus lazy sic/exchange enrichment from submissions docs the poller fetches anyway
-(fields UNVERIFIED, ledger #2). market_cap: Phase 7 yfinance batch, deliberately not here."""
+"""Daily refresh of the `universe` table: exactly what company_tickers.json gives —
+cik_str/ticker/title — plus lazy sic/exchange enrichment from submissions docs the poller
+fetches anyway. market_cap is deliberately not filled here."""
 from __future__ import annotations
 
 import datetime as dt
@@ -12,13 +11,13 @@ from .. import models_events
 from ..core.db import session_scope
 from . import edgar_feed as feed
 
-_TICKERS_JSON = "https://www.sec.gov/files/company_tickers.json"   # UNVERIFIED (ledger #1)
+_TICKERS_JSON = "https://www.sec.gov/files/company_tickers.json"
 
 
 def refresh_universe() -> int:
     data = feed.get_json(_TICKERS_JSON, timeout=120.0)
     rows = list(data.values()) if isinstance(data, dict) else list(data)
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now(dt.UTC).replace(tzinfo=None)
     seen: set[str] = set()
     with session_scope() as session:
         for r in rows:

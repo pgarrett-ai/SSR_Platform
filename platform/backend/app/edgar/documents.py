@@ -5,12 +5,59 @@ the passages that matter via keyword windowing — so the LLM sees targeted foot
 from __future__ import annotations
 
 import datetime as dt
+import re
 from dataclasses import dataclass
 from typing import Optional
 
 from .client import index_url_for
 
-# Topic keywords used to route footnote text to the OBS extractor (brief §6b).
+QUOTE_NOT_FOUND = "quote not found verbatim in source"
+# Curly quotes/dashes, and the cp1252 bytes older exhibits decode to C1 controls ("\x93Lender\x94").
+_QUOTE_FOLD = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', "–": "-", "—": "-",
+                             "\x91": "'", "\x92": "'", "\x93": '"', "\x94": '"',
+                             "\x96": "-", "\x97": "-"})
+# Quotation marks (an apostrophe inside a word stays), whitespace, soft hyphens and table
+# rules ('|', box drawing): HTML-to-text rendering adds, drops or moves all of these.
+_QUOTE_DROP = re.compile(r"\"|(?<!\w)'|'(?!\w)|[\s|\u2500-\u257f\xad\u200b]+")
+# Hanging-indent list items render as two columns, so a clause label can land mid-sentence
+# ("excluded\n  (h)  from the definition"); the label is the line's first token, then a gap.
+_COLUMN_LABEL = re.compile(
+    r"^[ \t]*(?:\((?:[a-z]{1,4}|[ivxlc]{1,6}|[A-Z]|\d{1,2})\)"
+    r"|(?:[a-z]{1,2}|[ivxlc]{1,6}|[A-Z]{1,4}|\d{1,2})\.)(?=[ \t]{2,}\S)", re.M)
+# Whitespace between two digits separates two numbers ("2.2 4" is not "2.24"): keep a marker.
+_DIGIT_GAP = re.compile(r"(?<=\d)[\s|\u2500-\u257f\xad\u200b]+(?=\d)")
+
+
+def _fold(s: str) -> str:
+    s = _DIGIT_GAP.sub("\x00", s.translate(_QUOTE_FOLD))
+    return _QUOTE_DROP.sub("", s).lower()
+
+
+def _in_order(frags: list[str], t: str) -> bool:
+    pos = 0
+    for f in frags:
+        pos = t.find(f, pos)
+        if pos < 0:
+            return False
+        pos += len(f)
+    return True
+
+
+def quote_in_text(quote: Optional[str], text: Optional[str], list_labels: bool = False) -> bool:
+    """Is an LLM's 'verbatim' quote really in the text it read? Case, curly quotes/dashes,
+    quotation marks, whitespace and table rules are folded away, so the words, digits and
+    other punctuation must match exactly; with list_labels (legal agreements), a clause label
+    the text renders mid-sentence may be read through; a spliced quote ('A ... B') must match as fragments in order. An empty
+    quote is never found."""
+    frags = [f.strip(".,;:") for f in re.split(r"\.\.\.|…", _fold(quote or ""))]
+    frags = [f for f in frags if f]
+    text = text or ""
+    return bool(frags) and (_in_order(frags, _fold(text))
+                            or (list_labels
+                                and _in_order(frags, _fold(_COLUMN_LABEL.sub("", text)))))
+
+
+# Topic keywords used to route footnote text to the OBS extractor.
 OBS_KEYWORDS = (
     "lease", "pension", "postretirement", "opeb", "retirement benefit",
     "supplier finance", "supply chain finance", "supply-chain finance", "payables facility",
@@ -42,7 +89,8 @@ class FilingText:
         return window_by_keywords(self.notes, OBS_KEYWORDS, max_chars=max_chars)
 
     def debt_window(self, max_chars: int = 28000) -> str:
-        return window_by_keywords(self.notes, DEBT_KEYWORDS, max_chars=max_chars)
+        return window_by_keywords(self.notes, DEBT_KEYWORDS, max_chars=max_chars,
+                                  densest_first=True)
 
 
 _SPACE_CHARS = "              　"
@@ -159,9 +207,14 @@ def get_mdna_only(filing) -> Optional[FilingText]:
 
 
 def window_by_keywords(
-    text: str, keywords, radius: int = 2800, max_chars: int = 60000
+    text: str, keywords, radius: int = 2800, max_chars: int = 60000,
+    densest_first: bool = False,
 ) -> str:
-    """Extract merged ±radius windows around every keyword hit, capped at max_chars."""
+    """Extract merged ±radius windows around every keyword hit, capped at max_chars.
+    With `densest_first`, an over-cap text also keeps the windows with the most hits per
+    character, up to another max_chars: the earliest windows alone can be a 10-Q's
+    statement captions ('Long-term debt', one hit each) that fill the cap before the debt
+    note's instrument table. Output stays in document order."""
     if not text:
         return ""
     lowered = text.lower()
@@ -178,21 +231,23 @@ def window_by_keywords(
     if not spans:
         return ""
     spans.sort()
-    merged = [list(spans[0])]
+    merged = [[*spans[0], 1]]   # [start, end, hits]
     for s, e in spans[1:]:
         if s <= merged[-1][1]:
             merged[-1][1] = max(merged[-1][1], e)
+            merged[-1][2] += 1
         else:
-            merged.append([s, e])
-    out: list[str] = []
-    total = 0
-    for s, e in merged:
-        chunk = text[s:e]
-        if total + len(chunk) > max_chars:
-            chunk = chunk[: max(0, max_chars - total)]
-        if chunk:
-            out.append(chunk)
-            total += len(chunk)
-        if total >= max_chars:
-            break
-    return "\n…\n".join(out)
+            merged.append([s, e, 1])
+    orders = [merged]
+    if densest_first:
+        orders.append(sorted(merged, key=lambda m: m[2] / (m[1] - m[0]), reverse=True))
+    kept: dict[int, int] = {}   # window start -> end; each order fills its own max_chars
+    for order in orders:
+        room = max_chars
+        for s, e, _ in order:
+            if room <= 0:
+                break
+            end = min(e, s + room)
+            kept[s] = max(kept.get(s, s), end)
+            room -= end - s
+    return "\n…\n".join(text[s:e] for s, e in sorted(kept.items()))

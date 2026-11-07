@@ -58,6 +58,34 @@ def test_snapshot_upsert_and_screen(tmp_path, monkeypatch):
     _cleanup()
 
 
+def test_screen_ranks_not_meaningful_leverage_as_most_distressed():
+    # leverage is n.m. (None) at EBITDA <= 0: those names lead the screen, while a name
+    # whose leverage was never extracted trails it
+    with session_scope() as s:
+        s.merge(models.Snapshot(ticker="ZZTEST", issuer="Burner", economic_leverage=None,
+                                ebitda=-50e6))
+        s.merge(models.Snapshot(ticker="ZZHIGH", issuer="Levered", economic_leverage=50.0,
+                                ebitda=10e6))
+        s.merge(models.Snapshot(ticker="ZZNONE", issuer="No bridge"))
+    rows = client.get("/api/screen").json()
+    with session_scope() as s:
+        s.query(models.Snapshot).filter(models.Snapshot.ticker.in_(["ZZHIGH", "ZZNONE"])).delete()
+    _cleanup()
+    order = [r["ticker"] for r in rows]
+    assert order.index("ZZTEST") < order.index("ZZHIGH") < order.index("ZZNONE")
+    assert next(r for r in rows if r["ticker"] == "ZZTEST")["ebitda"] == -50e6
+
+
+def test_snapshot_carries_the_bridge_ebitda():
+    ov = _overview()
+    ov.economic_debt_bridge.ebitda = CitedValue(value=-120e6)
+    with session_scope() as s:
+        upsert_snapshot(s, "ZZTEST", ov)
+    row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
+    _cleanup()
+    assert row["ebitda"] == -120e6
+
+
 def test_risk_update_survives_resave(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DIR", tmp_path)
     cache.save_overview("ZZTEST", 3, _overview())
@@ -67,14 +95,15 @@ def test_risk_update_survives_resave(tmp_path, monkeypatch):
             "scores": {"Trained hazard": {"value": 0.0014, "implied_rating": "BBB"}}})
     cache.save_overview("ZZTEST", 3, _overview(lev=8.0))   # capstack re-save
     row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
-    assert row["overall_risk"] == 42.5 and row["implied_rating"] == "BBB"
+    assert row["implied_rating"] == "BBB" and row["trained_pd"] == 0.0014
+    assert row["overall_risk"] is None                     # the composite is never stored
     assert row["economic_leverage"] == 8.0                 # merge kept both sides
     _cleanup()
 
 
 def test_screen_market_columns_and_badge(tmp_path, monkeypatch):
-    """New Moyer columns ride the snapshot; the distress badge computes live against
-    the drop-file (None here — no quotes for ZZTEST)."""
+    """The market-layer columns ride the snapshot; the distress badge computes live against
+    the marks file (None here — no quotes for ZZTEST)."""
     monkeypatch.setattr(cache, "CACHE_DIR", tmp_path)
     cache.save_overview("ZZTEST", 3, _overview())
     with session_scope() as s:
@@ -85,7 +114,7 @@ def test_screen_market_columns_and_badge(tmp_path, monkeypatch):
     row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
     assert row["net_market_leverage"] == 4.1
     assert row["creation_multiple_fulcrum"] == 3.0
-    assert row["distress_badge"] is None      # no drop-file quotes for ZZTEST
+    assert row["distress_badge"] is None      # no bond marks for ZZTEST
     _cleanup()
 
 

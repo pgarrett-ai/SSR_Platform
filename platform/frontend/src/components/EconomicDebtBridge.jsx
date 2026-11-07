@@ -1,160 +1,37 @@
 import React from "react";
 import CitedNumber from "./CitedNumber.jsx";
-import { NEUTRAL, RISK } from "../ui/colors.js";
 
-const B = (v) => (v == null ? null : `${v < 0 ? "−" : ""}$${Math.abs(v / 1e9).toFixed(1)}B`);
-
-const TOTAL_SUBLABEL = { reported_debt: "reported", economic_debt: "economic" };
-
-function LeverageCallout({ bridge }) {
-  const r = bridge.reported_leverage;
-  const e = bridge.economic_leverage;
-  if (!r && !e) return null;
+function Chip({ label, cv }) {
   return (
-    <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl border border-ink-700 bg-ink-900/60 p-4">
-      <div className="flex items-baseline gap-2">
-        <span className="text-[11px] uppercase tracking-wide text-slate-500">Reported lev</span>
-        <CitedNumber cv={r} className="text-2xl font-bold text-slate-200" />
-      </div>
-      <span className="text-2xl text-slate-600">→</span>
-      <div className="flex items-baseline gap-2">
-        <span className="text-[11px] uppercase tracking-wide text-slate-500">Economic lev</span>
-        <CitedNumber cv={e} className="text-3xl font-bold text-rose-300" />
-      </div>
-      {r?.value > 0 && e?.value > 0 ? (
-        <div className={`ml-auto rounded-md px-3 py-1.5 text-sm ${e.value >= r.value ? "bg-rose-500/10 text-rose-200" : "bg-emerald-500/10 text-emerald-200"}`}>
-          {e.value >= r.value ? "Hidden leverage: " : "Below reported: "}
-          <span className="font-mono font-semibold">
-            {e.value >= r.value ? "+" : ""}{(e.value - r.value).toFixed(1)}x
-          </span>{" "}
-          turns vs reported
-        </div>
-      ) : bridge.reported_debt?.value != null && bridge.economic_debt?.value != null ? (
-        // Ratios n.m. (negative EBITDA) — the dollar gap is the story instead.
-        <div className={`ml-auto rounded-md px-3 py-1.5 text-sm ${bridge.economic_debt.value >= bridge.reported_debt.value ? "bg-rose-500/10 text-rose-200" : "bg-emerald-500/10 text-emerald-200"}`}>
-          Hidden debt:{" "}
-          <span className="font-mono font-semibold">
-            {bridge.economic_debt.value >= bridge.reported_debt.value ? "+" : "−"}
-            {B(Math.abs(bridge.economic_debt.value - bridge.reported_debt.value))}
-          </span>{" "}
-          vs reported
-        </div>
-      ) : null}
-    </div>
+    <span className="rounded bg-ink-700/60 px-2 py-1 text-[11px] text-slate-400">
+      {label} <CitedNumber cv={cv} className="text-slate-200" />
+    </span>
   );
 }
 
-// Dependency-free SVG waterfall — deterministic, no ResizeObserver/animation, screenshots cleanly.
-function WaterfallSvg({ lines }) {
-  const W = 760;
-  const H = 300;
-  const padL = 8;
-  const padR = 8;
-  const top = 24;
-  const baseline = 232; // y of $0
-  const labelY = baseline + 14;
-  const areaW = W - padL - padR;
-  const n = lines.length;
-  const slot = areaW / n;
-  const barW = Math.min(72, slot * 0.62);
+// Reported debt → each debt-like obligation → economic debt, every line cited. The footer
+// names the EBITDA every leverage figure divides by, and the coverage it implies.
+export default function EconomicDebtBridge({ bridge, coverage }) {
+  const lines = bridge?.lines || [];
+  if (lines.length === 0)
+    return <p className="text-sm text-slate-400">No reported debt figure tagged in XBRL.</p>;
 
-  const maxV = Math.max(...lines.map((l) => l.amount?.value ?? 0), 1);
-  const scale = (baseline - top) / maxV;
-
-  let running = 0;
-  const bars = lines.map((ln, i) => {
-    const v = ln.amount?.value ?? 0;
-    const cx = padL + slot * i + slot / 2;
-    let yTop, yBot, fill;
-    if (ln.is_total) {
-      yBot = baseline;
-      yTop = baseline - v * scale;
-      running = v;
-      fill = i === 0 ? NEUTRAL : RISK.high;
-    } else {
-      const start = running;
-      running += v;
-      yBot = baseline - start * scale;
-      yTop = baseline - running * scale;
-      fill = v < 0 ? RISK.ok : RISK.watch;
-    }
-    return { ln, v, cx, x: cx - barW / 2, yTop, yBot, fill, isTotal: ln.is_total };
-  });
-
-  const shortLabel = (s) =>
-    s
-      .replace("Economic (adjusted) debt", "Economic debt")
-      .replace(" liabilities", "")
-      .replace(" (underfunded)", "")
-      .replace("Pension / OPEB deficit", "Pension/OPEB")
-      .replace("Supplier / supply-chain finance", "Supplier fin.")
-      .replace("Securitized / factored receivables (recourse)", "Securitization")
-      .replace("Guarantees of external / JV / SPE debt", "Guarantees");
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ maxHeight: 320 }}>
-      <line x1={padL} y1={baseline} x2={W - padR} y2={baseline} stroke="#263041" strokeWidth="1" />
-      {bars.map((b, i) => (
-        <g key={i}>
-          {/* connector from previous running level */}
-          {i > 0 && (
-            <line
-              x1={bars[i - 1].cx + barW / 2}
-              y1={b.isTotal ? baseline : b.yBot}
-              x2={b.x}
-              y2={b.isTotal ? baseline : b.yBot}
-              stroke="#3b475a"
-              strokeDasharray="3 3"
-              strokeWidth="1"
-            />
-          )}
-          <rect
-            x={b.x}
-            y={Math.min(b.yTop, b.yBot)}
-            width={barW}
-            height={Math.max(2, Math.abs(b.yBot - b.yTop))}
-            fill={b.fill}
-            rx="2"
-          />
-          <text x={b.cx} y={Math.min(b.yTop, b.yBot) - 6} textAnchor="middle" fill="#cbd5e1" fontSize="11" fontFamily="monospace">
-            {B(b.v)}
-          </text>
-          <text x={b.cx} y={labelY} textAnchor="middle" fill="#94a3b8" fontSize="10">
-            {shortLabel(b.ln.label).length > 16
-              ? shortLabel(b.ln.label).slice(0, 15) + "…"
-              : shortLabel(b.ln.label)}
-          </text>
-          {b.isTotal && (
-            <text x={b.cx} y={labelY + 13} textAnchor="middle" fill="#64748b" fontSize="9">
-              {TOTAL_SUBLABEL[b.ln.key] || ""}
-            </text>
-          )}
-        </g>
-      ))}
-    </svg>
-  );
-}
-
-// ponytail: pre-rework cached snapshots still carry cash/net lines as data; drop them at
-// render. Remove this filter once the hero caches are regenerated.
-const DROPPED_KEYS = new Set(["cash_offset", "restricted_cash_offset", "net_economic_debt"]);
-
-export default function EconomicDebtBridge({ bridge }) {
-  const lines = (bridge?.lines || []).filter((ln) => !DROPPED_KEYS.has(ln.key));
-  if (lines.length === 0) {
-    return (
-      <p className="text-sm text-slate-400">
-        Bridge unpopulated — requires footnote/OBS extraction (LLM off).
-      </p>
-    );
-  }
+  const e = bridge.ebitda;
+  const positive = e?.value > 0;
+  const cc = coverage || {};
+  const chips = positive ? [
+    ["EBITDA / interest", cc.ebitda_interest],
+    ["Debt / (EBITDA − capex)", cc.debt_ebitda_capex],
+    ["(EBITDA − capex) / interest", cc.ebitda_capex_interest],
+    ["Capex % of EBITDA", cc.capex_pct_ebitda != null && {
+      value: cc.capex_pct_ebitda, display: `${cc.capex_pct_ebitda}%`, derived: true,
+      formula: "capex ÷ EBITDA",
+    }],
+  ].filter(([, cv]) => cv?.display) : [];
 
   return (
     <div>
-      <LeverageCallout bridge={bridge} />
-      <WaterfallSvg lines={lines} />
-
-      <table className="mt-4 w-full text-sm">
+      <table className="w-full text-sm">
         <tbody>
           {lines.map((ln, i) => (
             <tr
@@ -172,20 +49,25 @@ export default function EconomicDebtBridge({ bridge }) {
                 {ln.label}
               </td>
               <td className="py-2 text-right">
-                <CitedNumber cv={ln.amount} className={ln.is_total ? "text-base" : ""} />
+                <CitedNumber cv={ln.amount} />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {bridge.ebitda && (
-        <p className="mt-2 text-[11px] text-slate-500">
-          Both leverage ratios vs EBITDA <CitedNumber cv={bridge.ebitda} /> — see the EBITDA
-          build below. Leases from XBRL; other lines from footnotes.
+      {e && (
+        <p className="mt-3 text-[12px] text-slate-400">
+          Leverage divides by EBITDA <CitedNumber cv={e} className="text-slate-200" />
+          {e.formula && <span className="text-slate-500"> = {e.formula}</span>}
+          {!positive && <span className="text-slate-300"> — not positive, so leverage is n.m.</span>}
         </p>
       )}
-      {bridge.ebitda?.note && (
-        <p className="mt-1 text-[11px] text-amber-300/70">{bridge.ebitda.note}</p>)}
+      {e?.note && <p className="mt-1 text-[11px] text-amber-300/80">{e.note}</p>}
+      {chips.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {chips.map(([label, cv]) => <Chip key={label} label={label} cv={cv} />)}
+        </div>
+      )}
     </div>
   );
 }

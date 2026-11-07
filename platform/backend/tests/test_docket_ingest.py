@@ -1,7 +1,7 @@
-"""PR-D: Moyer F2 docket events, Layer A (manual ingest).
-Manual analyst-entered Chapter-11 milestone events (petition/DIP/363/plan/confirmation…)
-written straight into the Phase-6 event store via a direct store call — no registry
-detector, no schema change (source='manual' already anticipated in models_events.py)."""
+"""Manual docket events: analyst-entered Chapter-11 milestones
+(petition/DIP/363/plan/confirmation…) written straight into the event store via a direct
+store call — no registry detector, no schema change (models_events.py allows
+source='manual')."""
 import pytest
 from fastapi.testclient import TestClient
 
@@ -76,6 +76,7 @@ def test_unknown_ticker_404():
     r = client.post("/api/company/ZZZZNOPE/recovery/docket", json={
         "subtype": "plan", "occurred_at": "2026-03-01", "title": "x"})
     assert r.status_code == 404
+    assert r.json()["error"] == "ticker_not_found" and "ZZZZNOPE" in r.json()["detail"]
 
 
 def test_empty_title_422():
@@ -92,16 +93,6 @@ def test_dedupe_key_distinct_across_ciks():
     ev1 = docket_event("0000000001", b)
     ev2 = docket_event("0000000002", b)
     assert ev1.dedupe_key != ev2.dedupe_key
-
-
-def test_appears_in_timeline():
-    r = client.post(f"/api/company/{TICKER}/recovery/docket", json={
-        "subtype": "confirmation", "occurred_at": "2026-04-01", "title": "Plan confirmed"})
-    assert r.status_code == 200
-
-    items = client.get(f"/api/company/{TICKER}/timeline").json()["items"]
-    matches = [it for it in items if it.get("kind") == "event" and it.get("subtype") == "confirmation"]
-    assert len(matches) == 1
 
 
 def test_delete_manual_row_ok_non_manual_row_refuses():

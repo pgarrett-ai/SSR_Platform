@@ -1,21 +1,23 @@
-"""python -m app.worker — the Phase-6 ingestion daemon.
+"""python -m app.worker — the EDGAR events daemon.
 
-One plain synchronous loop, zero scheduler dependencies. Justification: every job is a
-sequential network-bound call under the single global EDGAR pacing budget, so
-concurrency buys nothing; APScheduler is a new dependency for four fixed cadences;
-asyncio adds Windows-Proactor Ctrl+C pain for zero parallel I/O. KeyboardInterrupt out
-of time.sleep is the one Ctrl+C path that Just Works on Windows. Mid-job kills are
-safe: ingest is idempotent (dedupe_key) and backfill checkpoints per CIK. Re-entry
-trigger for asyncio: a job that genuinely needs parallelism (Phase 7 LLM queue)."""
+One plain synchronous loop, zero scheduler dependencies. Every job is a sequential
+network-bound call under this process's EDGAR pacing budget, so concurrency buys
+nothing; APScheduler is a new dependency for four fixed cadences; asyncio adds
+Windows-Proactor Ctrl+C pain for zero parallel I/O. KeyboardInterrupt out of time.sleep
+is the one Ctrl+C path that works on Windows. Mid-job kills are safe: ingest is
+idempotent (dedupe_key) and backfill checkpoints per CIK."""
 from __future__ import annotations
 
 import datetime as dt
 import json
+import logging
 import os
 import sys
 import time
 
 from .core.config import DATA_DIR
+
+log = logging.getLogger("worker")
 
 LOCK_PATH = DATA_DIR / "worker.lock"
 LOCK_STALE_S = 900
@@ -80,7 +82,7 @@ def _tick_bookkeeping(jobs, ingested) -> None:
         heartbeat.beat(ingested, {j.name: j.last_ok for j in jobs})
         refresh_lock()
     except OSError as exc:
-        print(f"WARN heartbeat/lock write: {type(exc).__name__}: {exc}")
+        log.warning("heartbeat/lock write failed: %s: %s", type(exc).__name__, exc)
 
 
 def run_due(jobs: list[Job], now: float) -> int:
@@ -95,27 +97,32 @@ def run_due(jobs: list[Job], now: float) -> int:
             ingested += int(n or 0)
             job.last_ok = dt.datetime.now().isoformat(timespec="seconds")
         except Exception as exc:
-            print(f"WARN {job.name}: {type(exc).__name__}: {exc}")
+            log.warning("job %s failed: %s: %s", job.name, type(exc).__name__, exc)
         job.next_run = now + job.every_s
     return ingested
 
 
 def main() -> int:
+    # SEC allows ~10 req/s per host and each process paces itself: the worker takes 3 + 1
+    # (paced transport + edgartools) beside the API's 1 + 4. Set before settings load.
+    os.environ.setdefault("EDGAR_MAX_REQUESTS_PER_SEC", "3")
+    os.environ.setdefault("EDGAR_RATE_LIMIT_PER_SEC", "1")
     try:
         sys.stdout.reconfigure(errors="backslashreplace")   # cp1252 log + unicode WARN
     except AttributeError:
         pass
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     from .core.db import init_db
     from .events import heartbeat
     if not acquire_lock():
-        print(f"another worker holds {LOCK_PATH} (fresh heartbeat) — exiting")
+        log.info("another worker holds %s (fresh heartbeat); exiting", LOCK_PATH)
         return 1
     init_db()
     jobs = build_jobs()
     prev_jobs = heartbeat._read().get("jobs") or {}
     for j in jobs:
         j.restore(prev_jobs.get(j.name))
-    print(f"worker up (pid {os.getpid()}); jobs: {[j.name for j in jobs]}; Ctrl+C stops")
+    log.info("worker up (pid %s); jobs: %s; Ctrl+C stops", os.getpid(), [j.name for j in jobs])
     # beat once before the first pass: the cold-start tick (form.idx + ratings CSVs)
     # can run for minutes, and /api/health's alive gauge measures the process, not
     # first-tick completion
@@ -126,7 +133,7 @@ def main() -> int:
             _tick_bookkeeping(jobs, n)
             time.sleep(TICK_S)
     except KeyboardInterrupt:
-        print("worker: shutting down")
+        log.info("shutting down")
     finally:
         try:
             heartbeat.beat(0, {j.name: j.last_ok for j in jobs}, stopping=True)

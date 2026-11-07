@@ -1,14 +1,14 @@
-"""Sponsor-support extraction (brief C8): related-party-lender flag + beneficial ownership.
+"""Sponsor-support extraction: related-party-lender flag + beneficial ownership.
 
 The lender flag is deterministic and effectively free — it reuses the credit-agreement
 admin_agent already extracted for the covenant package (covenants.py: a related-party
 lender named as the agent bank IS the flag). The ownership percentage is the one new LLM
 seam: DEF 14A "beneficial owner" / "related person transactions" text, windowed and read
-with a forced tool call, verbatim-quote-gated like every other extractor in this package.
+with a tool call, verbatim-quote-gated like every other extractor in this package.
 
-Deliberately skips a fuzzy admin_agent<->owner name-matcher (Ayar != "Public Investment
-Fund" literally): the related-person-transaction footnote itself states the lender IS the
-affiliate, so that verbatim quote is the owner->lender bridge. YAGNI the matcher.
+There is no fuzzy admin_agent<->owner name matcher (Ayar != "Public Investment Fund"
+literally): the related-person-transaction footnote itself states the lender IS the
+affiliate, so that verbatim quote is the owner->lender bridge.
 """
 from __future__ import annotations
 
@@ -17,7 +17,8 @@ from dataclasses import dataclass
 from typing import Optional
 
 from ..core.llm import extract_structured
-from ..edgar.documents import window_by_keywords
+from ..edgar.client import index_url_for
+from ..edgar.documents import quote_in_text, window_by_keywords
 from ..edgar.facts import fmt_money_millions
 from ..schemas import BeneficialOwner, Citation, CitedValue, SponsorItem, SponsorSupport
 
@@ -33,8 +34,9 @@ BENEFICIAL_KEYWORDS = (
 )
 _CONTROL_PCT = 20.0   # ponytail: control/anchor threshold, tune knob
 # Cache key is (accession, _PROMPT_VERSION) only — bump this whenever BENEFICIAL_KEYWORDS,
-# the window radius, or max_chars change, or a stale extraction stays pinned silently.
-_PROMPT_VERSION = "v1"
+# the window radius, max_chars or the quote gate change, or a stale extraction stays
+# pinned silently.
+_PROMPT_VERSION = "v2"
 
 _SYSTEM = (
     "You are a forensic distressed-credit analyst reading a DEF 14A proxy statement. You "
@@ -98,6 +100,7 @@ class OwnerRaw:
     pct: Optional[float]
     shares: Optional[float]
     quote: str
+    source: Optional[Citation] = None   # the DEF 14A the quote comes from
 
 
 @dataclass
@@ -107,6 +110,7 @@ class RptRaw:
     amount_usd: Optional[float]
     is_lender: bool
     quote: str
+    source: Optional[Citation] = None
 
 
 def _extract_cache_path(accession: str):
@@ -134,6 +138,13 @@ def extract_sponsor_ownership(company) -> tuple[list[OwnerRaw], list[RptRaw], Op
         return [], [], None
 
     accession = str(getattr(filing, "accession_no", "") or "")
+    source = Citation(
+        accession_no=accession or None, form_type=str(getattr(filing, "form", "DEF 14A")),
+        filing_date=str(getattr(filing, "filing_date", "") or "") or None,
+        section="Beneficial ownership / related person transactions",
+        source_url=getattr(filing, "url", None) or (
+            index_url_for(str(getattr(company, "cik", "") or "0"), accession)
+            if accession else None))
     cache_path = _extract_cache_path(accession) if accession else None
     result = None
     if cache_path and cache_path.exists():
@@ -145,7 +156,7 @@ def extract_sponsor_ownership(company) -> tuple[list[OwnerRaw], list[RptRaw], Op
     if result is None:
         try:
             # A proxy has no Item 8 structure — read the raw filing text directly (same
-            # .text() accessor get_filing_text falls back to; PR-B) rather than routing
+            # .text() accessor get_filing_text falls back to) rather than routing
             # through the 10-K Item-structured parse.
             text = filing.text()
         except Exception as exc:
@@ -176,7 +187,10 @@ def extract_sponsor_ownership(company) -> tuple[list[OwnerRaw], list[RptRaw], Op
             return [], [], None   # LLM off
         if "__error__" in raw:
             return [], [], raw["__error__"]
-        result = raw
+        # verbatim gate before caching: a row whose quote is not in the text read is dropped
+        result = {k: [r for r in raw.get(k) or []
+                      if isinstance(r, dict) and quote_in_text(r.get("quote"), window)]
+                  for k in ("owners", "rpts")}
         if cache_path:
             try:
                 cache_path.write_text(json.dumps({"result": result}), encoding="utf-8")
@@ -191,7 +205,7 @@ def extract_sponsor_ownership(company) -> tuple[list[OwnerRaw], list[RptRaw], Op
         if not quote:   # verbatim gate: no quote, no row
             continue
         owners.append(OwnerRaw(name=raw_o.get("name", ""), pct=raw_o.get("pct"),
-                               shares=raw_o.get("shares"), quote=quote))
+                               shares=raw_o.get("shares"), quote=quote, source=source))
 
     rpts: list[RptRaw] = []
     for raw_r in result.get("rpts") or []:
@@ -204,13 +218,13 @@ def extract_sponsor_ownership(company) -> tuple[list[OwnerRaw], list[RptRaw], Op
                            description=raw_r.get("description", ""),
                            amount_usd=raw_r.get("amount_usd"),
                            is_lender=bool(raw_r.get("is_lender", False)),
-                           quote=quote))
+                           quote=quote, source=source))
     return owners, rpts, None
 
 
 # --- deterministic assembly ---------------------------------------------------------
 
-def _cv(value: Optional[float], unit: str, quote: str) -> Optional[CitedValue]:
+def _cv(value: Optional[float], unit: str, row) -> Optional[CitedValue]:
     if value is None:
         return None
     if unit == "%":
@@ -219,19 +233,20 @@ def _cv(value: Optional[float], unit: str, quote: str) -> Optional[CitedValue]:
         display = fmt_money_millions(value)
     else:
         display = f"{value:,.0f}"
-    return CitedValue(value=value, display=display, unit=unit, citation=Citation(quote=quote))
+    citation = (row.source or Citation()).model_copy(update={"quote": row.quote})
+    return CitedValue(value=value, display=display, unit=unit, citation=citation)
 
 
 def _owner_item(o: OwnerRaw) -> BeneficialOwner:
-    return BeneficialOwner(name=o.name, pct=_cv(o.pct, "%", o.quote),
-                           shares=_cv(o.shares, "shares", o.quote))
+    return BeneficialOwner(name=o.name, pct=_cv(o.pct, "%", o),
+                           shares=_cv(o.shares, "shares", o))
 
 
 def _rpt_item(r: RptRaw) -> SponsorItem:
     return SponsorItem(
         kind="related-party lender" if r.is_lender else "related-party transaction",
         counterparty=r.counterparty,
-        amount=_cv(r.amount_usd, "USD", r.quote),
+        amount=_cv(r.amount_usd, "USD", r),
         description=r.description,
     )
 
@@ -255,7 +270,7 @@ def build_sponsor(covenants, owners: list[OwnerRaw],
         sponsor_name=(top.name if top else None)
                      or (rp_lender.counterparty if rp_lender else None)
                      or (lenders[0] if lenders else None),
-        ownership_pct=_cv(top.pct, "%", top.quote) if top else None,
+        ownership_pct=_cv(top.pct, "%", top) if top else None,
         related_party_lender=(rp_lender.counterparty if rp_lender else (lenders[0] if lenders else None)),
         lender_source="related-party-transactions footnote" if rp_lender else
                      ("covenant admin agent" if lenders else None),

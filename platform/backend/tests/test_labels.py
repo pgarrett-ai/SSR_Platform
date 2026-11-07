@@ -1,4 +1,4 @@
-"""Phase 5: real default labels — label-window logic + bundle provenance (no network)."""
+"""Real default labels — label-window logic + bundle provenance (no network)."""
 from __future__ import annotations
 
 import datetime as dt
@@ -20,10 +20,12 @@ D = dt.date
 def test_label_window():
     ev = D(2024, 6, 15)
     assert label_for_year(D(2023, 12, 31), ev) == 1          # default 167d after FY end
-    assert label_for_year(D(2022, 12, 31), ev) == 0          # >365d before the event
+    assert label_for_year(D(2022, 12, 31), ev) == 0          # >1y after the 10-K
     assert label_for_year(D(2024, 12, 31), ev) is None       # post-petition FY -> dropped
     assert label_for_year(D(2024, 6, 15), ev) is None        # FY end ON the event day
-    assert label_for_year(D(2023, 6, 16), ev) == 1           # exactly 365d -> inside horizon
+    assert label_for_year(D(2024, 3, 31), ev) is None        # default inside the 90d filing lag
+    assert label_for_year(D(2023, 3, 18), ev) == 1           # exactly 90d + 365d -> inside horizon
+    assert label_for_year(D(2023, 3, 17), ev) == 0           # one day past it
     assert label_for_year(D(2023, 12, 31), None) == 0        # control firm
 
 
@@ -189,12 +191,13 @@ def test_panel_store_checkpoints_and_resumes(tmp_path, monkeypatch):
     assert len(df2) == len(df1) and list(df2.columns) == list(df1.columns)
 
 
-def test_sd_merge_keeps_earliest_event(tmp_path, monkeypatch):
+def test_sd_merge_keeps_earliest_in_window_event(tmp_path, monkeypatch):
     ev_path, sd_path = tmp_path / "ev.json", tmp_path / "sd.json"
     ev_path.write_text(json.dumps([
         {"cik": "1", "name": "A", "filed": "2020-06-01"},
         {"cik": "2", "name": "B", "filed": "2021-01-01"}]))
     sd_path.write_text(json.dumps([
+        {"cik": "2", "name": "B", "filed": "2005-03-01", "source": "lopucki_brd"},  # pre-window
         {"cik": "1", "name": "A", "filed": "2019-03-01", "source": "fitch_rd"},   # earlier -> wins
         {"cik": "3", "name": "C", "filed": "2022-07-01", "source": "fitch_rd"}])) # new CIK -> added
     monkeypatch.setattr(labels, "EVENTS_PATH", ev_path)
@@ -229,6 +232,7 @@ def test_walk_forward_eval_reports_operating_points():
     df = _synthetic_panel(n_firms=150, years=6, seed=1)
     ev = walk_forward_eval(df)
     assert ev["auc_by_year"], "expected at least one walk-forward fold"
+    assert 0.5 < ev["pooled_auc"] <= 1.0
     ops = ev["operating_points"]
     assert set(ops) == {"top_5pct", "top_10pct"}
     for op in ops.values():
@@ -253,8 +257,8 @@ def test_bundle_meta_and_real_labels_flag():
 
 
 def test_sign_safe_panel_backfills_stale_checkpoint_rows():
-    # panel.db rows fetched before the C3 fix carry a negative net_debt_to_ebitda and no
-    # runway_years — build_real_panel recomputes both from the cached raw levels.
+    # older panel.db rows carry a negative net_debt_to_ebitda, no EBITDA flag and no
+    # runway_years — build_real_panel recomputes all three from the cached raw levels.
     import pytest
 
     df = pd.DataFrame([
@@ -271,8 +275,28 @@ def test_sign_safe_panel_backfills_stale_checkpoint_rows():
     assert out.loc[1, "net_debt_to_ebitda"] == pytest.approx(1.5 / 1.2)
     assert np.isnan(out.loc[1, "runway_years"])
     # both debt+cash missing with EBITDA>0: 0.0, mirroring year_features' _sum semantics
-    # (adversarial-gate fix — the panel recompute must match the serve-side source of truth)
+    # (the panel recompute must match the serve-side source of truth)
     assert out.loc[2, "net_debt_to_ebitda"] == 0.0
+    assert list(out["ebitda_nonpositive"]) == [1.0, 0.0, 0.0]
+
+
+def test_checkpointed_rows_relabeled_under_current_rule(tmp_path, monkeypatch):
+    import pytest
+
+    # a row stored under a different label rule: FY2019 holds the positive, but the default
+    # lands 61 days after FYE, before its 10-K could be public, so FY2018 must carry it
+    monkeypatch.setattr(labels, "PANEL_DB", tmp_path / "panel.db")
+    con = labels._panel_db()
+    con.execute("INSERT INTO firm_rows VALUES (?,?,?,?,?)", ("1", "2020-03-01", 365, "2026-07-06",
+                json.dumps([{"firm_id": "1", "date": "2019-12-31", "label": 1},
+                            {"firm_id": "1", "date": "2018-12-31", "label": 0}])))
+    con.commit()
+    con.close()
+    monkeypatch.setattr(labels, "_fetch_firm_rows", lambda *a: pytest.fail("expected a cache hit"))
+    monkeypatch.setattr(labels, "load_or_harvest_universe", lambda *a, **k: {})
+    df = labels.build_real_panel([{"cik": "1", "filed": "2020-03-01"}], n_defaulters=1,
+                                 n_controls=0)
+    assert list(zip(df["date"], df["label"])) == [("2018-12-31", 1)]
 
 
 def test_runway_feature_registered_with_monotone_sign():
@@ -284,7 +308,7 @@ def test_runway_feature_registered_with_monotone_sign():
 
 def test_fts_429_truncates_without_outer_retries(monkeypatch, capsys):
     # paced_get already spends the sanctioned 429/403 backoff (~14s) before re-raising;
-    # the harvest's 4-attempt outer loop must NOT re-amplify it (~56s/page pre-fix).
+    # the harvest's 4-attempt outer loop must NOT re-amplify it (~56s/page if it did).
     # A persistent 429 goes straight to the documented WARN-and-truncate path.
     import urllib.error
 
@@ -301,3 +325,29 @@ def test_fts_429_truncates_without_outer_retries(monkeypatch, capsys):
     assert len(calls) == 4          # ONE attempt per quarter window, no outer retries
     assert sleeps == []             # zero outer backoff sleeps stacked on paced_get's
     assert "window truncated" in capsys.readouterr().out
+
+
+def test_pre_window_defaulter_is_never_a_control(tmp_path, monkeypatch):
+    # CIK 5 defaulted in 2005 (LoPucki): outside the 2015+ label window, but its later
+    # survivor-looking years must not enter the panel as controls
+    ev_path, sd_path = tmp_path / "ev.json", tmp_path / "sd.json"
+    ev_path.write_text(json.dumps([{"cik": "1", "name": "A", "filed": "2020-06-01"}]))
+    sd_path.write_text(json.dumps([{"cik": "5", "name": "E", "filed": "2005-03-01",
+                                    "source": "lopucki_brd"}]))
+    monkeypatch.setattr(labels, "EVENTS_PATH", ev_path)
+    monkeypatch.setattr(labels, "SD_PATH", sd_path)
+    monkeypatch.setattr(labels, "PANEL_DB", tmp_path / "panel.db")
+    fetched = []
+
+    def fake_fetch(cik, event_date, lookback, horizon_days):
+        fetched.append(cik)
+        return [{"firm_id": cik, "date": "2019-12-31", "label": 1 if event_date else 0},
+                {"firm_id": cik, "date": "2018-12-31", "label": 0}]
+
+    monkeypatch.setattr(labels, "_fetch_firm_rows", fake_fetch)
+    monkeypatch.setattr(labels, "load_or_harvest_universe",
+                        lambda *a, **k: {"5": [2015, 2026], "2": [2015, 2026]})
+    events = labels.load_or_harvest_events(2015)
+    assert [e["cik"] for e in events] == ["1"]          # the 2005 case is out of window
+    labels.build_real_panel(events, n_defaulters=1, n_controls=2, start_year=2015)
+    assert "5" not in fetched and "2" in fetched

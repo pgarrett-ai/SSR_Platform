@@ -1,4 +1,4 @@
-"""Train the SSR Platform hazard model in the cloud (molab.marimo.io).
+"""Train the Distressed Credit hazard model in the cloud (molab.marimo.io).
 
 Create a notebook at https://molab.marimo.io -> "New notebook" -> paste this file's
 GitHub URL. Everything it needs installs in the first cell; the committed label/universe
@@ -22,12 +22,15 @@ def _():
 def _(mo):
     mo.md(
         """
-        # SSR Platform — hazard-model training
+        # Distressed Credit — hazard-model training
 
-        Trains the distress-hazard model on **real data**: 8-K Item 1.03 bankruptcies +
-        Fitch 17g-7 D/RD events as labels, controls from the point-in-time 10-K filer
-        universe, EDGAR XBRL fundamentals and point-in-time market features per firm-year.
-        Walk-forward validated; PDs prior-corrected to the measured base rate.
+        Trains the distress-hazard model on **real data**: 8-K Item 1.03 bankruptcies,
+        the UCLA-LoPucki BRD, and Fitch D/RD and Moody's C rating defaults as labels,
+        controls from the point-in-time 10-K filer universe, and accounting ratios from
+        EDGAR XBRL fundamentals per firm-year. Survivor rows whose year-ahead window is not
+        yet observed are dropped. The model takes no market features; market signal stays
+        in Merton as a separate cross-check. Walk-forward validated with a one-year embargo;
+        PDs prior-corrected to the measured base rate.
         """
     )
     return
@@ -75,7 +78,7 @@ def _(backend, controls, defaulters, mo, ua):
 
     from app.hazard.labels import (annual_default_rate, build_real_panel,
                                    load_or_harvest_events, load_or_harvest_universe)
-    from app.hazard.train import train_from_panel
+    from app.hazard.train import drop_unobserved, train_from_panel
 
     events = load_or_harvest_events(2010)
     # Shuffle so a partial run samples firms uniformly instead of chronologically.
@@ -86,9 +89,12 @@ def _(backend, controls, defaulters, mo, ua):
     random.Random(0).shuffle(events)
     print(f"{len(events)} default events across {len({e['cik'] for e in events})} firms")
     df = build_real_panel(events, defaulters.value, controls.value, start_year=2010)
+    observed_through = max(e["filed"] for e in events)   # events are shuffled above
+    df = drop_unobserved(df, observed_through)   # before sample_rate: the prior uses it
     true_rate = annual_default_rate(events, load_or_harvest_universe(2010))
-    aucs, bundle = train_from_panel(df, save=True, meta={
-        "label_source": (f"molab run {dt.date.today()}: 8-K Item 1.03 + Fitch 17g-7 D/RD, "
+    aucs, bundle = train_from_panel(df, save=True, observed_through=observed_through, meta={
+        "label_source": (f"molab run {dt.date.today()}: 8-K Item 1.03 + UCLA-LoPucki BRD + "
+                         f"17g-7 rating defaults (Fitch D/RD, Moody's C), "
                          f"{int(df['label'].sum())} default firm-years / {len(df)} rows"),
         "prior": {"sample_rate": float(df["label"].mean()), "true_rate": true_rate}})
     print("walk-forward AUC:", {y: round(a, 3) for y, a in sorted(aucs.items())})

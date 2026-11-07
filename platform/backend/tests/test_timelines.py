@@ -1,4 +1,4 @@
-"""Phase 4.6: leverage timeline / maturity wall / what-changed (pure; no network)."""
+"""Leverage timeline / maturity wall / what-changed (pure; no network)."""
 from __future__ import annotations
 
 from app.capstack.timelines import leverage_timeline, maturity_wall, what_changed
@@ -44,7 +44,7 @@ def test_what_changed_directions_and_threshold():
     changes = what_changed(rows)
     by_metric = {c.metric: c for c in changes}
     assert by_metric["Total reported debt"].direction == "better"      # debt down = better
-    assert by_metric["EBITDA (proxy)"].direction == "worse"            # ebitda down = worse
+    assert by_metric["EBITDA"].direction == "worse"                    # ebitda down = worse
     assert by_metric["Free cash flow"].direction == "worse"
     assert by_metric["Leverage (debt/EBITDA)"].direction == "worse"    # 6.0x -> 7.6x
     assert "Revenue" not in by_metric                                  # +0.9% < 2% threshold

@@ -2,12 +2,13 @@ import React from "react";
 import CitedNumber from "./CitedNumber.jsx";
 import { Td, Th, rowClass } from "../ui/index.jsx";
 
-// The §6a cash-vs-debt table. Every cell is citation- or formula-linked.
+// The cash-vs-debt test per period. Every cell is citation- or formula-linked. The EBITDA
+// row is named by its formula, the same canonical EBITDA the leverage ratios divide by.
 const ROWS = [
   ["total_debt", "Total reported debt"],
   ["cash", "Cash & equivalents"],
   ["revenue", "Revenue"],
-  ["ebitda", "EBITDA (proxy)"],
+  ["ebitda", "EBITDA (op. income + D&A + impairments)"],
   ["operating_cash_flow", "Operating cash flow"],
   ["free_cash_flow", "Free cash flow"],
   ["capex", "Capex"],
@@ -50,9 +51,9 @@ export default function ForensicTable({ rows }) {
           })}
         </tbody>
       </table>
-      <p className="mt-2 text-[11px] text-slate-500">
-        EBITDA and FCF are XBRL proxies (op. income + D&A; OCF − capex). A quarter column
-        shows 10-Q balance-sheet snapshots with trailing-12-month flows.
+      <p className="mt-2 text-[11px] text-slate-400">
+        Free cash flow = operating cash flow − capex. A quarter column shows the 10-Q balance
+        sheet with trailing-12-month flows.
       </p>
     </div>
   );

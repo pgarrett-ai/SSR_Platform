@@ -2,23 +2,20 @@
 from __future__ import annotations
 
 from app.hazard.merton import _self_check as merton_check
-from app.hazard.score import AltmanZScore, CHSHazard
-from app.hazard.trace import _breadth, _signal
+from app.hazard.score import AltmanZScore
 
 
 def test_merton():
     merton_check()   # asserts inside; covers DD/PD sanity, monotonicity, term structure
 
 
-def test_altman_value_and_contributions_sum():
-    # Healthy-ish firm: contributions + baseline must reconstruct the score exactly.
+def test_altman_value():
+    # Healthy-ish firm: 6.56·0.30 + 3.26·0.40 + 6.72·0.12 + 1.05·1.5 = 5.65
     feats = {"wc_to_assets": 0.30, "re_to_assets": 0.40, "ebit_to_assets": 0.12,
              "equity_to_liabilities": 1.5}
-    s = AltmanZScore()
-    sc = s.score(feats)
+    sc = AltmanZScore().score(feats)
     assert sc["available"] and sc["zone"] == "safe", sc
-    contrib = s.contributions(feats)
-    assert abs(sum(contrib.values()) - sc["value"]) < 0.01, (sum(contrib.values()), sc["value"])
+    assert sc["value"] == 5.65, sc
 
 
 def test_altman_zones():
@@ -28,29 +25,17 @@ def test_altman_zones():
     assert s.score(distressed)["zone"] == "distress"
 
 
+def test_altman_mid_distress_reads_distress():
+    # Z'' = 0 − 0.326 + 0.202 + 0.315 = 0.19: distress under the classic cutoffs. The +3.25
+    # EM constant would print 3.44 and call it "safe".
+    mid = {"wc_to_assets": 0.0, "re_to_assets": -0.10, "ebit_to_assets": 0.03,
+           "equity_to_liabilities": 0.30}
+    sc = AltmanZScore().score(mid)
+    assert sc["value"] == 0.19 and sc["zone"] == "distress", sc
+
+
 def test_altman_missing_inputs():
     assert AltmanZScore().score({"wc_to_assets": 0.1})["available"] is False
-
-
-def test_chs_logit_contributions_sum():
-    # CHS contributions + baseline must reconstruct the logit exactly.
-    class M:
-        ok = True; market_cap = 5e9; equity_vol = 0.6; price = 8.0; excess_return_1y = -0.2
-    feats = {"total_liabilities": 8e9, "net_income": -3e8, "cash": 4e8, "book_equity": 2e9}
-    s = CHSHazard()
-    sc = s.score(feats, M())
-    assert sc["available"], sc
-    contrib = s.contributions(feats, M())
-    assert abs(sum(contrib.values()) - sc["logit"]) < 1e-2, (sum(contrib.values()), sc["logit"])
-
-
-def test_trace_breadth_and_signal():
-    assert _breadth(60, 40) == 0.6
-    assert _breadth(0, 0) is None
-    assert _signal(0.30) == "risk-off"
-    assert _signal(0.50) == "neutral"
-    assert _signal(0.70) == "risk-on"
-    assert _signal(None) == "neutral"
 
 
 def test_trained_hazard_framework():
@@ -83,3 +68,14 @@ def _run_all():
 
 if __name__ == "__main__":
     _run_all()
+
+
+def test_merton_is_not_reported_when_the_solve_does_not_converge():
+    # TSE after its petition: $0.15M of OTC equity at 705% vol against $2.5bn of debt; the
+    # naive fallback would print a 98.8-sigma DD and a ~0% PD for a company in Chapter 11
+    from types import SimpleNamespace
+
+    from app.hazard.score import MertonScorer
+    tape = SimpleNamespace(ok=True, market_cap=146239.48, equity_vol=7.055)
+    out = MertonScorer().score({"total_debt": 2545.4e6}, tape)
+    assert out["available"] is False and "not meaningful" in out["note"]

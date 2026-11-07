@@ -64,6 +64,18 @@ def test_group_latest_instant_and_entity_preference():
     assert not by_member["aal:Notes575Member"].get("dim_dei_LegalEntityAxis")  # consolidated wins
 
 
+def test_subject_to_compromise_amount_never_beats_carrying():
+    # post-petition, a member's compromise amount adds accrued interest to its carrying value
+    lstc = "us-gaap:LiabilitiesSubjectToCompromiseDebtAndAccruedInterest"
+    by_member, _, _ = group_debt_facts([
+        _fact("us-gaap:LongTermDebt", 400e6, "tse:NotesMember"),
+        _fact(lstc, 419.9e6, "tse:NotesMember"),
+        _fact(lstc, 1266.2e6, "tse:TermLoanMember"),   # only the compromise amount is tagged
+    ])
+    assert {m: float(f["numeric_value"]) for m, f in by_member.items()} == {
+        "tse:NotesMember": 400e6, "tse:TermLoanMember": 1266.2e6}
+
+
 # LCID-shaped facts: converts under LongTermDebt/ConvertibleDebt (dual-tagged), an undrawn
 # revolver, a commitment-only amendment member, and two facilities sharing a generic label.
 LCID_FACTS = [
@@ -98,6 +110,21 @@ def test_broadened_concepts_and_asof_ignores_capacity_instants():
     assert float(cap["lcid:DDTLAmendmentMember"]["commitment"]["numeric_value"]) == 2500e6
 
 
+def test_non_usd_debt_facts_are_never_read_as_dollars():
+    # LCID tags its Saudi GIB facility in SAR; its USD amount sits on another member
+    facts = [
+        _fact("us-gaap:ShortTermBorrowings", 1890e6, "lcid:A2025GIBCreditFacilityMember",
+              currency="SAR"),
+        _fact("us-gaap:LineOfCreditFacilityMaximumBorrowingCapacity", 1900e6,
+              "lcid:A2025GIBCreditFacilityMember", currency="SAR"),
+        _fact("us-gaap:ShortTermBorrowings", 503.5e6, "lcid:GIBCreditFacilityMember",
+              currency="USD"),
+    ]
+    by_member, debt, _ = group_debt_facts(facts)
+    assert list(by_member) == ["lcid:GIBCreditFacilityMember"]
+    assert facility_capacity(debt) == {}
+
+
 def test_prettify_and_label_collision():
     assert prettify_member("lcid:A2025GIBCreditFacilityMember") == "2025 GIB Credit Facility"
     assert prettify_member("lcid:DDTLCreditFacilityMember") == "DDTL Credit Facility"
@@ -130,7 +157,7 @@ def test_undrawn_facility_kept_and_convertible_seniority():
     assert notes.facility_type == "notes"
 
 
-# OID / convert / PIK trade-mechanics facts (Moyer ch. 5/6)
+# OID / convert / PIK trade-mechanics facts (Moyer, Distressed Debt Analysis, ch. 5 and 6)
 OID_FACTS = [
     _fact("us-gaap:DebtInstrumentCarryingAmount", 962.8e6, "stlb:DiscountNotesMember",
           dimension_member_label="Senior Discount Notes"),
@@ -178,14 +205,22 @@ def test_fill_maturity_from_name():
         DebtInstrument(instrument="Senior Notes due 2028", facility_type="notes"),
         DebtInstrument(instrument="Term Loan", facility_type="term loan"),
         DebtInstrument(instrument="2026 Notes", facility_type="notes", maturity="December 2026"),
+        # a term loan's year is a maturity only when no vintage could be: after the as-of,
+        # or the as-of year itself when the name doesn't call itself a facility
+        DebtInstrument(instrument="2028 Term Loan B", facility_type="term loan"),
+        DebtInstrument(instrument="2026 Term Loan", facility_type="term loan"),
+        DebtInstrument(instrument="2026 Term Loan Facility", facility_type="term loan"),
+        DebtInstrument(instrument="2021 AAdvantage Term Loan Facility", facility_type="term loan"),
     ]
     n = fill_maturity_from_name(insts, "2026-03-31")
-    assert n == 2
+    assert n == 4
     assert insts[0].maturity == "2030"
     assert insts[1].maturity is None        # facility vintage year is not a maturity
     assert insts[2].maturity == "2028"
     assert insts[3].maturity is None
     assert insts[4].maturity == "December 2026"   # existing annotation untouched
+    # TSE's $1.9bn of 2028s; a term loan due this year is the most urgent wall bucket
+    assert [i.maturity for i in insts[5:]] == ["2028", "2026", None, None]
 
 
 def test_instrument_fields_floater_and_range():
@@ -219,6 +254,30 @@ def test_drop_retired():
     assert [i.maturity for i in kept] == ["February 2028", "2026 to 2038"]
 
 
+def test_footnote_extraction_drops_balance_sheet_aggregates(monkeypatch):
+    # ATUS: read from the balance sheet alone, the model returned its debt captions as rows
+    from app.capstack import debt_schedule
+
+    ft = SimpleNamespace(accession_no="a", form_type="10-Q", filing_date="2026-11-06",
+                         period_of_report="2026-09-30", source_url="u",
+                         debt_window=lambda: "Debt 6,371,609 Long-term debt 20,445,294")
+    rows = [
+        {"instrument": "Debt (current portion, aggregate balance-sheet line; no instrument "
+                       "detail given)", "outstanding_usd": 6.37e9, "quote": "Debt 6,371,609"},
+        {"instrument": "Long-term debt, net of current maturities", "outstanding_usd": 20.4e9,
+         "quote": "Long-term debt 20,445,294"},
+        {"instrument": "Total debt", "outstanding_usd": 26.8e9, "quote": "Debt"},
+        {"instrument": "Less: current maturities", "outstanding_usd": -6.37e9, "quote": "Debt"},
+    ]
+    monkeypatch.setattr(debt_schedule, "extract_structured", lambda **kw: {"instruments": rows})
+    assert debt_schedule.extract_debt_schedule(ft) == ([], None)
+
+    rows.append({"instrument": "CSC Holdings 7.500% Senior Notes due April 1, 2028",
+                 "outstanding_usd": 1.05e9, "quote": "Long-term debt"})
+    insts, _ = debt_schedule.extract_debt_schedule(ft)
+    assert [i.instrument for i in insts] == ["CSC Holdings 7.500% Senior Notes due April 1, 2028"]
+
+
 # ---- empty-schedule warning (ATUS-style silent gap) --------------------------------------
 
 
@@ -248,6 +307,22 @@ def test_empty_schedule_no_warning_when_debt_immaterial():
     assert _empty_schedule_warning([], None) is None
 
 
+def test_tieout_compares_the_schedule_with_its_own_period():
+    # LCID: the 2026-06-30 schedule ($3,256M) ties to the Q2 2026 column ($3,254M), not FY2025
+    from app.pipeline import _tieout_warning
+    from app.schemas import ForensicTableRow
+
+    table = [ForensicTableRow(fiscal_year=2025, period_end="2025-12-31",
+                              total_debt=CitedValue(value=2718e6)),
+             ForensicTableRow(fiscal_year=2026, label="Q2 2026", period_end="2026-06-30",
+                              total_debt=CitedValue(value=3254e6))]
+    sched = [DebtInstrument(instrument="x", outstanding=CitedValue(value=3256e6))]
+    assert _tieout_warning(sched, "2026-06-30", table) is None
+    assert "(FY2025)" in _tieout_warning(sched, "2026-03-31", table)   # no column: latest FY
+    short = [DebtInstrument(instrument="x", outstanding=CitedValue(value=1e9))]
+    assert "(Q2 2026)" in _tieout_warning(short, "2026-06-30", table)
+
+
 def test_tranche_coupon_preference_order():
     assert _tranche_coupon({"effective_rate_pct": 6.0, "coupon": "SOFR + 2.75%"}) == 0.06
     assert _tranche_coupon({"coupon_pct": 2.88, "coupon_pct_max": 7.15}) == (2.88 + 7.15) / 200
@@ -255,3 +330,25 @@ def test_tranche_coupon_preference_order():
     assert _parse_coupon("SOFR + 2.75% → 6.05%") == 0.0605
     assert _parse_coupon("fixed rates ranging from 2.88% to 7.15%, averaging 3.95%") == 0.0395
     assert _parse_coupon(None) == 0.0
+
+
+def test_zero_carrying_column_does_not_beat_a_compromise_amount():
+    # after the petition a member's carrying column can be tagged 0 while the debt sits in
+    # liabilities subject to compromise; the positive amount must win
+    from app.capstack.debt_xbrl import _COMPROMISE_CONCEPTS, _pick_key
+    lstc = {"concept": next(iter(_COMPROMISE_CONCEPTS)), "numeric_value": 391.0e6}
+    zero = {"concept": "us-gaap:LongTermDebt", "numeric_value": 0.0}
+    carrying = {"concept": "us-gaap:LongTermDebt", "numeric_value": 440.2e6}
+    assert max([zero, lstc], key=_pick_key) is lstc
+    assert max([lstc, carrying], key=_pick_key) is carrying
+
+
+def test_caption_rule_keeps_instruments_that_mention_current_portion():
+    from app.capstack.debt_schedule import is_caption
+    assert is_caption("Total debt") and is_caption("Less: current maturities")
+    assert is_caption("Long-term debt, net of current maturities")
+    assert is_caption("Debt (current portion, aggregate balance-sheet line)")
+    # real instruments carry a coupon or a maturity even when their name has the hint words
+    assert not is_caption("Term Loan B, including current portion", maturity="2027")
+    assert not is_caption("6.00% Senior Notes due 2030 ($500 million aggregate principal)",
+                          coupon="6.00%", maturity="2030")

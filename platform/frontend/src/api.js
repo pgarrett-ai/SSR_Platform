@@ -1,6 +1,6 @@
 // Thin API client for the FastAPI backend.
 
-// ---- auth v1 (PR-6): shared bearer token ---------------------------------------
+// ---- auth: shared bearer token -------------------------------------------------
 // Stored in localStorage for fetch headers, mirrored to a same-origin cookie because
 // EventSource (the two SSE streams) cannot send headers.
 
@@ -24,310 +24,153 @@ function apiFetch(url, opts = {}) {
   return fetch(url, { ...opts, headers });
 }
 
-export async function fetchHealth() {
-  const r = await apiFetch("/api/health");
-  if (!r.ok) throw new Error("health check failed");
-  return r.json();
-}
-
-export async function setLlmEnabled(enabled) {
-  const r = await apiFetch("/api/settings/llm", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ enabled }),
-  });
-  if (!r.ok) throw new Error("toggle failed");
-  return r.json();
-}
-
-export async function fetchOverview(ticker, years, live = false) {
-  const url = `/api/overview?ticker=${encodeURIComponent(ticker)}&years=${years}&live=${live}`;
-  const r = await apiFetch(url);
-  const body = await r.json();
+// Every JSON call ends here. The body is read once as text, so a proxy's HTML error page
+// still yields a status message. FastAPI puts the human sentence in `detail` (a string,
+// or for a 422 a list of {loc, msg}); `error` is the machine slug.
+async function jsonOrThrow(r) {
+  const text = await r.text();
+  let body = null;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    if (r.ok) throw new Error("the server sent an unreadable response");
+  }
   if (!r.ok) {
-    throw new Error(body?.detail || body?.error || `request failed (${r.status})`);
+    const d = body?.detail;
+    const msg = typeof d === "string" ? d : Array.isArray(d) ? d[0]?.msg : body?.error;
+    throw new Error(msg || `request failed (${r.status})`);
   }
   return body;
 }
 
-// Stream the progress log over SSE, then resolve with the final overview.
-// Returns { promise, cancel } so the caller can close the connection on unmount or a new run —
-// otherwise an in-flight EventSource leaks and keeps the page's network perpetually active.
+const postJson = (url, body) =>
+  apiFetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  }).then(jsonOrThrow);
+
+const co = (ticker) => `/api/company/${encodeURIComponent(ticker)}`;
+
+export async function fetchHealth() {
+  return jsonOrThrow(await apiFetch("/api/health"));
+}
+
+// A token saved in an earlier session has outlived its cookie; re-mirror it for EventSource.
+if (getToken()) setToken(getToken());
+
+// EventSource hides the HTTP status of a refused stream, so one plain request reads it,
+// sending the cookie only, as EventSource does. A 401 or 422 is answered before the route
+// runs; a 200 means the server is back, and the request is cancelled at its headers.
+async function refusedStreamMessage(url) {
+  const ctl = new AbortController();
+  try {
+    const r = await fetch(url, { signal: ctl.signal });
+    if (r.status === 401) return "API token required: enter it in the header, then retry";
+    // a dev proxy answers a dead backend with an empty 5xx
+    if (r.status >= 500 && !(await r.clone().text())) return "connection to server lost";
+    if (!r.ok) await jsonOrThrow(r);
+  } catch (e) {
+    if (e.name !== "AbortError" && !(e instanceof TypeError)) return e.message;
+  } finally {
+    ctl.abort();
+  }
+  return "connection to server lost";
+}
+
+// One SSE pipeline: progress events, then a final `doneEvent` with the payload (or an
+// `error` event). The connection closes as soon as the run settles.
+function streamSse(url, doneEvent, onProgress) {
+  return new Promise((resolve, reject) => {
+    const es = new EventSource(url);
+    let settled = false;
+    let opened = false;
+    es.addEventListener("open", () => { opened = true; });
+    es.addEventListener("progress", (e) => {
+      try {
+        onProgress?.(JSON.parse(e.data));
+      } catch (_) {}
+    });
+    es.addEventListener(doneEvent, (e) => {
+      settled = true;
+      es.close();
+      resolve(JSON.parse(e.data));
+    });
+    es.addEventListener("error", (e) => {
+      if (e?.data) {
+        settled = true;
+        es.close();
+        let body = null;
+        try { body = JSON.parse(e.data); } catch (_) {}
+        reject(new Error(body?.detail || body?.error || "the analysis could not be completed"));
+      } else if (!settled) {
+        settled = true;
+        es.close();
+        if (opened) reject(new Error("connection to server lost"));
+        else refusedStreamMessage(url).then((m) => reject(new Error(m)));
+      }
+    });
+  });
+}
+
 export function streamOverview(ticker, years, live, onProgress) {
-  const url = `/api/overview/stream?ticker=${encodeURIComponent(
-    ticker
-  )}&years=${years}&live=${live}`;
-  const es = new EventSource(url);
-  let settled = false;
-
-  const promise = new Promise((resolve, reject) => {
-    es.addEventListener("progress", (e) => {
-      try {
-        onProgress?.(JSON.parse(e.data));
-      } catch (_) {}
-    });
-    es.addEventListener("overview", (e) => {
-      settled = true;
-      es.close();
-      resolve(JSON.parse(e.data));
-    });
-    es.addEventListener("error", (e) => {
-      if (e?.data) {
-        settled = true;
-        es.close();
-        try {
-          reject(new Error(JSON.parse(e.data)?.detail || "pipeline error"));
-        } catch (_) {
-          reject(new Error("pipeline error"));
-        }
-      } else if (!settled) {
-        es.close();
-        reject(new Error("connection to server lost"));
-      }
-    });
-  });
-
-  return {
-    promise,
-    cancel: () => {
-      settled = true;
-      es.close();
-    },
-  };
+  return streamSse(
+    `/api/overview/stream?ticker=${encodeURIComponent(ticker)}&years=${years}&live=${live}`,
+    "overview", onProgress);
 }
 
-export function overviewJsonUrl(ticker, years, live = false) {
-  return `/api/overview?ticker=${encodeURIComponent(ticker)}&years=${years}&live=${live}`;
-}
-
-// ---- Default risk (hazard) ---------------------------------------------------
-
-export async function fetchHazard(ticker, years = 10) {
-  const r = await apiFetch(`/api/company/${encodeURIComponent(ticker)}?years=${years}&sections=hazard`);
-  const body = await r.json();
-  if (!r.ok) throw new Error(body?.error || `request failed (${r.status})`);
-  const hz = body?.sections?.hazard;
-  if (hz?.error) throw new Error(hz.error);
-  return hz;
-}
-
-// Same payload as fetchHazard, streamed: progress events over SSE, then the final data.
-// Mirrors streamOverview's { promise, cancel } contract.
 export function streamHazard(ticker, years, onProgress) {
-  const url = `/api/hazard/stream?ticker=${encodeURIComponent(ticker)}&years=${years}`;
-  const es = new EventSource(url);
-  let settled = false;
-
-  const promise = new Promise((resolve, reject) => {
-    es.addEventListener("progress", (e) => {
-      try {
-        onProgress?.(JSON.parse(e.data));
-      } catch (_) {}
-    });
-    es.addEventListener("hazard", (e) => {
-      settled = true;
-      es.close();
-      resolve(JSON.parse(e.data));
-    });
-    es.addEventListener("error", (e) => {
-      if (e?.data) {
-        settled = true;
-        es.close();
-        try {
-          reject(new Error(JSON.parse(e.data)?.detail || "hazard pipeline error"));
-        } catch (_) {
-          reject(new Error("hazard pipeline error"));
-        }
-      } else if (!settled) {
-        es.close();
-        reject(new Error("connection to server lost"));
-      }
-    });
-  });
-
-  return {
-    promise,
-    cancel: () => {
-      settled = true;
-      es.close();
-    },
-  };
+  return streamSse(
+    `/api/hazard/stream?ticker=${encodeURIComponent(ticker)}&years=${years}`,
+    "hazard", onProgress);
 }
 
-// ---- Key rates -----------------------------------------------------------------
-
-export async function fetchRates() {
-  return jsonOrThrow(await apiFetch("/api/rates"));
-}
+// ---- Capital structure -----------------------------------------------------------
 
 export async function fetchHolders(ticker) {
-  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/holders`));
+  return jsonOrThrow(await apiFetch(`${co(ticker)}/holders`));
 }
 
-export async function fetchSponsor(ticker, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/sponsor?years=${years}`)
-  );
-}
-
-// ---- Creation ladder (Moyer market layer) ------------------------------
-
-export async function fetchLadder(ticker, years = 3, recast = false) {
-  return jsonOrThrow(
-    await apiFetch(
-      `/api/company/${encodeURIComponent(ticker)}/capital/ladder?years=${years}&recast_mezz=${recast ? 1 : 0}`
-    )
-  );
-}
-
-export async function fetchCapacity(ticker, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/capacity?years=${years}`)
-  );
+// Quotes matched per instrument (Recovery reads quote_by_instrument).
+export async function fetchLadder(ticker, years = 3) {
+  return jsonOrThrow(await apiFetch(`${co(ticker)}/capital/ladder?years=${years}`));
 }
 
 export async function fetchRefiWall(ticker, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/capital/refi?years=${years}`)
-  );
+  return jsonOrThrow(await apiFetch(`${co(ticker)}/capital/refi?years=${years}`));
 }
-
-export async function fetchTelegraph(ticker, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/telegraph?years=${years}`)
-  );
-}
-
-export async function fetchOptions(ticker, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/options?years=${years}`)
-  );
-}
-
-// ---- Screening + full-text search --------------------------------------------
 
 export async function fetchScreen() {
   return jsonOrThrow(await apiFetch("/api/screen"));
 }
 
-export async function searchText(q, ticker) {
-  const t = ticker ? `&ticker=${encodeURIComponent(ticker)}` : "";
-  return jsonOrThrow(await apiFetch(`/api/search?q=${encodeURIComponent(q)}${t}`));
-}
-
 // ---- Recovery (fulcrum) ------------------------------------------------------
 
-async function jsonOrThrow(r) {
-  const body = await r.json();
-  if (!r.ok) throw new Error(body?.error || body?.detail || `request failed (${r.status})`);
-  return body;
-}
-
 export async function fetchRecoveryStructure(ticker, years = 3) {
-  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/structure?years=${years}`));
+  return jsonOrThrow(await apiFetch(`${co(ticker)}/recovery/structure?years=${years}`));
 }
 
-export async function simulateRecovery(ticker, structure, sim, years = 3, extra = {}) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/simulate?years=${years}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ structure, sim, ...extra }),
-    })
-  );
+export function simulateRecovery(ticker, structure, sim, years = 3, extra = {}) {
+  return postJson(`${co(ticker)}/recovery/simulate?years=${years}`, { structure, sim, ...extra });
 }
 
-export async function exploreRecovery(ticker, body, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/explore?years=${years}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-  );
+export function exploreRecovery(ticker, body, years = 3) {
+  return postJson(`${co(ticker)}/recovery/explore?years=${years}`, body);
 }
 
-export async function exchangeRecovery(ticker, body, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/exchange?years=${years}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-  );
+export function exchangeRecovery(ticker, body, years = 3) {
+  return postJson(`${co(ticker)}/recovery/exchange?years=${years}`, body);
 }
 
-export async function liquidateRecovery(ticker, body, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/liquidation?years=${years}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-  );
-}
-
-export async function planRecovery(ticker, body, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/plan?years=${years}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-  );
-}
-
-export async function addDocketEvent(ticker, body) {
-  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/docket`, {
-    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }));
-}
-
-// Undo for manual docket rows only — the server refuses detector-sourced ids.
-export async function deleteEvent(eventId) {
-  return jsonOrThrow(await apiFetch(`/api/events/${eventId}`, { method: "DELETE" }));
-}
-
-export async function fetchCh11Case(ticker, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/case?years=${years}`)
-  );
+export function liquidateRecovery(ticker, body, years = 3) {
+  return postJson(`${co(ticker)}/recovery/liquidation?years=${years}`, body);
 }
 
 export async function fetchCrisisScreen(ticker, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/crisis?years=${years}`)
-  );
+  return jsonOrThrow(await apiFetch(`${co(ticker)}/recovery/crisis?years=${years}`));
 }
 
-export async function computeTax382(ticker, body, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/recovery/tax382?years=${years}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-  );
-}
-
-export async function listScenarios(ticker) {
-  return jsonOrThrow(await apiFetch(`/api/company/${encodeURIComponent(ticker)}/scenarios`));
-}
-
-export async function saveScenario(ticker, payload) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/scenarios`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-  );
-}
-
-export async function deleteScenario(id) {
-  return jsonOrThrow(await apiFetch(`/api/scenarios/${id}`, { method: "DELETE" }));
-}
-
-// ---- Events + company timeline (Phase 6 event store) --------------------------
+// ---- Events ----------------------------------------------------------------------
 
 export async function fetchEvents({ ticker, cik, event_type = [], min_severity,
                                     since, until, limit = 100, offset = 0 } = {}) {
@@ -341,10 +184,4 @@ export async function fetchEvents({ ticker, cik, event_type = [], min_severity,
   qs.set("limit", limit);
   qs.set("offset", offset);
   return jsonOrThrow(await apiFetch(`/api/events?${qs}`));
-}
-
-export async function fetchCompanyTimeline(ticker, years = 3) {
-  return jsonOrThrow(
-    await apiFetch(`/api/company/${encodeURIComponent(ticker)}/timeline?years=${years}`)
-  );
 }

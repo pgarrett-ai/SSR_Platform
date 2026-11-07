@@ -158,6 +158,26 @@ def test_retry_after_capped(monkeypatch):
     assert sleeps == [60.0]                      # 86400s clamped to the cap
 
 
+def test_api_process_edgar_budget_leaves_room_for_the_worker():
+    # edgartools sizes its limiter once, when first imported, so read it from a fresh API
+    # process; the paced_get rate is the class default (a developer .env cannot move it)
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    from app.core.config import Settings
+
+    env = {k: v for k, v in os.environ.items() if k != "EDGAR_RATE_LIMIT_PER_SEC"}
+    out = subprocess.run(
+        [sys.executable, "-c",
+         "import app.main, edgar.httpclient as h; print(h.HTTP_MGR.request_per_sec_limit)"],
+        cwd=Path(__file__).resolve().parents[1], env=env, capture_output=True, text=True,
+        check=True)
+    paced = Settings.model_fields["edgar_max_requests_per_sec"].default
+    assert int(out.stdout.strip()) + paced == 5   # with the worker's 3: 8 of SEC's 10 req/s
+
+
 def test_zero_rate_setting_does_not_crash(monkeypatch):
     # a misconfigured 0 req/s must not ZeroDivisionError; the rate clamps to 0.1 → 10s interval
     sleeps = _frozen(monkeypatch)

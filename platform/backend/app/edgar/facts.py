@@ -15,7 +15,7 @@ exact `Fact` it came from, so the API can render a citation for every number.
 from __future__ import annotations
 
 import datetime as dt
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Optional
 
 from ..schemas import Citation, CitedValue
@@ -33,10 +33,15 @@ class MetricSpec:
     statement: Optional[str]   # 'BalanceSheet' | 'IncomeStatement' | 'CashFlowStatement' | None
     kind: str                  # 'instant' | 'duration'
     concepts: tuple[str, ...]
+    # A charge added back to EBITDA. Its concepts nest (a total contains its parts), so the
+    # largest tagged value per period wins, and an untagged period is no charge, not unknown.
+    addback: bool = False
 
 
 METRIC_SPECS: tuple[MetricSpec, ...] = (
     # --- balance sheet (instant) ---
+    # LongTermDebt is defined to include current maturities, but issuers tag their
+    # noncurrent line with it (AAL), so it is read as the noncurrent fallback.
     MetricSpec("lt_debt_noncurrent", "Long-term debt (noncurrent)", "BalanceSheet", "instant",
                ("LongTermDebtNoncurrent", "LongTermDebt",
                 "LongTermDebtAndCapitalLeaseObligations")),
@@ -45,12 +50,22 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
                 "DebtCurrent")),
     MetricSpec("short_term_debt", "Short-term borrowings", "BalanceSheet", "instant",
                ("ShortTermBorrowings", "CommercialPaper")),
+    # in Chapter 11 the pre-petition debt moves off the debt lines into this one (TSE Q2
+    # 2026: $2,562M subject to compromise beside $592M of debt); the total also carries
+    # other pre-petition claims, so the debt-only concept is preferred when tagged
+    MetricSpec("debt_subject_to_compromise", "Liabilities subject to compromise",
+               "BalanceSheet", "instant",
+               ("LiabilitiesSubjectToCompromiseDebtAndAccruedInterest",
+                "LiabilitiesSubjectToCompromise")),
+    # balance-sheet cash before the cash-flow total that includes restricted cash (AAL tags
+    # only Cash and that total); its short-term investments line is AFS debt securities
     MetricSpec("cash", "Cash & equivalents", "BalanceSheet", "instant",
                ("CashAndCashEquivalentsAtCarryingValue",
                 "CashAndCashEquivalentsAtCarryingValueIncludingDiscontinuedOperations",
-                "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "Cash")),
+                "Cash", "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents")),
     MetricSpec("short_term_investments", "Short-term investments", "BalanceSheet", "instant",
-               ("ShortTermInvestments",)),
+               ("ShortTermInvestments", "AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+                "MarketableSecuritiesCurrent")),
     MetricSpec("restricted_cash", "Restricted cash", "BalanceSheet", "instant",
                ("RestrictedCashAndCashEquivalents", "RestrictedCash",
                 "RestrictedCashAndCashEquivalentsNoncurrent", "RestrictedCashNoncurrent",
@@ -60,11 +75,12 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
                 "AccountsPayableAndAccruedLiabilitiesCurrent")),
     MetricSpec("inventory", "Inventory", "BalanceSheet", "instant",
                ("InventoryNet", "AirlineRelatedInventoryNet", "InventoryFinishedGoodsNetOfReserves")),
-    # --- liquidation-analysis assets (Moyer asset-based valuation) ---
+    # --- liquidation-analysis assets (asset-based valuation) ---
     MetricSpec("accounts_receivable", "Accounts receivable (net)", "BalanceSheet", "instant",
                ("ReceivablesNetCurrent", "AccountsReceivableNetCurrent", "AccountsReceivableNet")),
     MetricSpec("ppe_net", "PP&E (net)", "BalanceSheet", "instant",
-               ("PropertyPlantAndEquipmentNet",)),
+               ("PropertyPlantAndEquipmentNet",
+                "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization")),
     MetricSpec("goodwill", "Goodwill", "BalanceSheet", "instant", ("Goodwill",)),
     MetricSpec("intangibles", "Intangible assets (ex-goodwill)", "BalanceSheet", "instant",
                ("IntangibleAssetsNetExcludingGoodwill", "FiniteLivedIntangibleAssetsNet")),
@@ -91,8 +107,9 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("stockholders_equity", "Stockholders' equity", "BalanceSheet", "instant",
                ("StockholdersEquity",
                 "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest")),
-    # mezzanine (temporary equity) — the recast-as-debt input (Moyer ch. 6); the
-    # including-NCI variant may carry redeemable NCI (caveated where displayed)
+    # mezzanine (temporary equity) — the recast-as-debt input (Moyer, Distressed Debt
+    # Analysis, ch. 6); the including-NCI variant may carry redeemable NCI (caveated where
+    # displayed)
     MetricSpec("temporary_equity", "Temporary equity (mezzanine)", "BalanceSheet", "instant",
                ("TemporaryEquityCarryingAmountAttributableToParent",
                 "TemporaryEquityCarryingAmountIncludingPortionAttributableToNoncontrollingInterests")),
@@ -112,7 +129,8 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("operating_income", "Operating income", "IncomeStatement", "duration",
                ("OperatingIncomeLoss",)),
     MetricSpec("interest_expense", "Interest expense", "IncomeStatement", "duration",
-               ("InterestExpense", "InterestExpenseDebt", "InterestAndDebtExpense")),
+               ("InterestExpense", "InterestExpenseNonoperating", "InterestExpenseDebt",
+                "InterestAndDebtExpense")),
     # rent for EBITDAR: usually disclosed in the lease footnote, so no statement filter
     MetricSpec("operating_lease_cost", "Operating lease cost (rent)", None, "duration",
                ("OperatingLeaseCost", "LeaseAndRentalExpense",
@@ -127,7 +145,8 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     # tax-footnote ratio (decimal, e.g. 0.24); no statement filter
     MetricSpec("effective_tax_rate", "Effective tax rate", None, "duration",
                ("EffectiveIncomeTaxRateContinuingOperations",)),
-    # GROSS NOL carryforward (Moyer ch. 11 §382). Gross concept ONLY — do NOT add
+    # GROSS NOL carryforward, the §382 input (Moyer, Distressed Debt Analysis, ch. 11).
+    # Gross concept ONLY — do NOT add
     # DeferredTaxAssetsOperatingLossCarryforwards (that is the tax-effected DTA ≈ NOL×rate,
     # a different quantity); often tagged only dimensioned-by-jurisdiction (then skipped),
     # so manual entry is the expected fallback. Footnote item, no statement filter.
@@ -142,8 +161,9 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("capex", "Capital expenditures", "CashFlowStatement", "duration",
                ("PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets",
                 "PaymentsForCapitalImprovements", "PaymentsToAcquireOtherProductiveAssets")),
-    # --- RP-basket builder flows (Moyer ch. 7) — data-only, consumed by quarterly_flows;
-    # three separate specs: _duration_periods is first-concept-wins per spec ---
+    # --- RP-basket builder flows (Moyer, Distressed Debt Analysis, ch. 7) — data-only,
+    # consumed by quarterly_flows;
+    # three separate specs: a spec's concepts are alternates, never summed ---
     MetricSpec("equity_issuance_proceeds", "Proceeds from equity issuance", "CashFlowStatement",
                "duration",
                ("ProceedsFromIssuanceOfCommonStock", "ProceedsFromIssuanceOrSaleOfEquity",
@@ -158,9 +178,16 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("restructuring", "Restructuring charges", None, "duration",
                ("RestructuringCharges", "RestructuringCostsAndAssetImpairmentCharges",
                 "RestructuringSettlementAndImpairmentProvisions", "RestructuringCosts")),
+    # ATUS: the FY2025 10-K tags its $1.6bn franchise-rights charge as indefinite-lived
+    # intangible impairment; its 10-Qs use GoodwillAndIntangibleAssetImpairment.
+    # ponytail: largest-concept rule undercounts two disjoint charges with no total tagged
+    # (goodwill + tangible); sum the components if an issuer tags them that way.
     MetricSpec("impairment", "Impairment charges", None, "duration",
-               ("AssetImpairmentCharges", "ImpairmentOfLongLivedAssetsHeldAndUsed",
-                "GoodwillImpairmentLoss", "TangibleAssetImpairmentCharges")),
+               ("AssetImpairmentCharges", "GoodwillAndIntangibleAssetImpairment",
+                "GoodwillImpairmentLoss", "ImpairmentOfIntangibleAssetsExcludingGoodwill",
+                "ImpairmentOfIntangibleAssetsIndefinitelivedExcludingGoodwill",
+                "ImpairmentOfLongLivedAssetsHeldForUse", "TangibleAssetImpairmentCharges"),
+               addback=True),
 )
 
 _SPEC_BY_KEY = {s.key: s for s in METRIC_SPECS}
@@ -225,26 +252,41 @@ def _rank(fact, statement: Optional[str]) -> tuple:
 
 def _query_concept(entity_facts, concept: str, statement: Optional[str]):
     """Return raw facts for a concept, trying the statement filter first, then unfiltered.
-    Bare concept names get the us-gaap prefix; qualified ones (e.g. dei:…) pass through."""
+    Bare concept names get the us-gaap prefix; qualified ones (e.g. dei:…) pass through.
+    Exact match only: the default substring match lets 'LongTermDebt' pull in
+    LongTermDebtCurrent and 'Liabilities' pull in LiabilitiesAndStockholdersEquity."""
     base = concept if ":" in concept else f"us-gaap:{concept}"
     results = []
     if statement:
         try:
-            results = entity_facts.query().by_concept(base).by_statement_type(statement).execute()
+            results = (entity_facts.query().by_concept(base, exact=True)
+                       .by_statement_type(statement).execute())
         except Exception:
             results = []
     if not results:
         try:
-            results = entity_facts.query().by_concept(base).execute()
+            results = entity_facts.query().by_concept(base, exact=True).execute()
         except Exception:
             results = []
     return results
 
 
-def _select_metric(entity_facts, spec: MetricSpec, anchors: dict[int, dt.date]) -> dict[int, object]:
-    """For each anchor fiscal year, pick the best fact for this metric (first concept that hits)."""
-    for concept in spec.concepts:
-        facts = _query_concept(entity_facts, concept, spec.statement)
+def _select_metric(entity_facts, spec: MetricSpec, anchors: dict[int, dt.date],
+                   accession: Optional[str] = None) -> dict[int, object]:
+    """For each anchor fiscal year, pick the best fact from the first concept present IN
+    THAT YEAR — issuers migrate tags (AAL: InterestExpense through FY2023, then
+    InterestExpenseNonoperating), so a concept that covers only early years must not block
+    the fallbacks for later ones. An add-back takes its largest concept instead.
+    A statement line is tagged in every 10-Q too, so for a statement flow a concept the issuer
+    also reports for interim periods goes ahead of an annual-only one, and the fiscal years
+    share the definition the TTM strip uses (AAL's D&A: DepreciationDepletionAndAmortization
+    is an annual-only, rounded $2.2bn; the quarterly DepreciationAndAmortization is $1,890M).
+    `accession` restricts the candidates to one filing."""
+    out: dict[int, object] = {}
+    by_concept = [_query_concept(entity_facts, c, spec.statement) for c in spec.concepts]
+    if spec.kind == "duration" and spec.statement:
+        by_concept.sort(key=lambda fs: not _has_interim(fs))
+    for facts in by_concept:
         per_year: dict[int, list] = {}
         for f in facts:
             if getattr(f, "is_dimensioned", False):
@@ -263,13 +305,99 @@ def _select_metric(entity_facts, spec: MetricSpec, anchors: dict[int, dt.date]) 
                 if d is None or not (_MIN_DAYS <= d <= _MAX_DAYS):
                     continue
                 year = pe.year if pe.year in anchors else None
-            if year is None:
+            if year is None or (year in out and not spec.addback):
+                continue
+            if accession and getattr(f, "accession", None) != accession:
                 continue
             per_year.setdefault(year, []).append(f)
-        if per_year:
-            return {y: max(cands, key=lambda fc: _rank(fc, spec.statement))
-                    for y, cands in per_year.items()}
-    return {}
+        for y, cands in per_year.items():
+            best = max(cands, key=lambda fc: _rank(fc, spec.statement))
+            if y not in out or best.numeric_value > out[y].numeric_value:
+                out[y] = best
+    return out
+
+
+# the components summed into total debt (capstack.forensic, hazard.features)
+DEBT_KEYS = ("lt_debt_noncurrent", "lt_debt_current", "short_term_debt",
+             "debt_subject_to_compromise")
+_LTD = MetricSpec("long_term_debt", "Long-term debt", "BalanceSheet", "instant", ("LongTermDebt",))
+
+
+def _ltd_is_total(entity_facts) -> bool:
+    """Whether the issuer's LongTermDebt is its total, noncurrent + current, as the taxonomy
+    defines it (ATUS Q2 2026: 26,550.8 = 22,402.9 + 4,147.8), rather than its noncurrent
+    line (AAL). Read off the latest balance sheet tagging LongTermDebt and
+    LongTermDebtCurrent: issuers change convention (AMR's 2012 10-K used the total)."""
+    def by_filing(concept: str) -> dict:
+        return {(f.accession, f.period_end): f.numeric_value
+                for f in _query_concept(entity_facts, concept, "BalanceSheet")
+                if not getattr(f, "is_dimensioned", False) and _is_instant(f)
+                and getattr(f, "numeric_value", None) is not None}
+    ltd, nc, cur = (by_filing(c) for c in ("LongTermDebt", "LongTermDebtNoncurrent",
+                                           "LongTermDebtCurrent"))
+    both = [k for k in ltd if k in cur]
+    if not both:
+        return False
+    k = max(both, key=lambda k: k[1])
+    return k in nc and abs(ltd[k] - nc[k] - cur[k]) <= 1e-3 * abs(ltd[k])
+
+
+def _align_debt(entity_facts, metrics: dict, anchor: dict, ltd_is_total: bool) -> None:
+    """The debt components are summed into total debt, so they must come from one balance
+    sheet: the best-ranked filing that reports any of them. Issuers re-tag comparatives
+    (LCID's FY2024 $126M is ShortTermBorrowings in that 10-K, LongTermDebtCurrent in the
+    next), so a component taken from another filing is re-read from that one, or dropped
+    when that balance sheet doesn't carry it. `anchor` is the one {key: date} entry these
+    metrics belong to; `ltd_is_total` is _ltd_is_total for this issuer."""
+    present = [metrics[k] for k in DEBT_KEYS if k in metrics]
+    if not present:
+        return
+    acc = getattr(max(present, key=lambda f: _rank(f, "BalanceSheet")), "accession", None)
+    for key in DEBT_KEYS:
+        if key in metrics and getattr(metrics[key], "accession", None) != acc:
+            del metrics[key]
+            same_filing = _select_metric(entity_facts, _SPEC_BY_KEY[key], anchor, accession=acc)
+            if same_filing:
+                metrics[key] = next(iter(same_filing.values()))
+    if getattr(metrics.get("lt_debt_current"), "concept", None) == "us-gaap:DebtCurrent":
+        metrics.pop("short_term_debt", None)   # DebtCurrent already includes it
+    if ltd_is_total and getattr(metrics.get("lt_debt_noncurrent"), "concept",
+                                None) == "us-gaap:LongTermDebt":
+        metrics.pop("lt_debt_current", None)   # the total already holds current maturities
+    _compromised_debt_only(entity_facts, metrics, anchor, acc)
+
+
+def _compromised_debt_only(entity_facts, metrics: dict, anchor: dict, acc) -> None:
+    """LiabilitiesSubjectToCompromise also holds trade payables, rejection claims and accrued
+    interest. When a LongTermDebt total on the same balance sheet exceeds the debt lines, the
+    excess is the compromised debt alone (TSE Q2 2026: 3,024.1 − 1.9 − 589.6 = 2,432.6 of
+    the 2,562.3 total)."""
+    lstc = metrics.get("debt_subject_to_compromise")
+    if getattr(lstc, "concept", None) != "us-gaap:LiabilitiesSubjectToCompromise":
+        return
+    ltd = next(iter(_select_metric(entity_facts, _LTD, anchor, accession=acc).values()), None)
+    lines = sum(metrics[k].numeric_value for k in ("lt_debt_noncurrent", "lt_debt_current")
+                if k in metrics)
+    if ltd is not None and lines < ltd.numeric_value <= lines + lstc.numeric_value:
+        v = ltd.numeric_value - lines
+        metrics["debt_subject_to_compromise"] = replace(
+            ltd, value=v, numeric_value=v,
+            concept="LongTermDebt − LongTermDebtNoncurrent − LongTermDebtCurrent",
+            label="Debt subject to compromise (long-term debt less the debt lines)")
+
+
+def _derive_liabilities(metrics: dict) -> None:
+    """Issuers that tag no Liabilities total (AAL, TSE) still balance: liabilities = assets −
+    equity − temporary equity. The current and noncurrent subtotals can't stand in: TSE's
+    liabilities subject to compromise sit outside both."""
+    ta, se = metrics.get("total_assets"), metrics.get("stockholders_equity")
+    if "total_liabilities" in metrics or ta is None or se is None:
+        return
+    mezz = getattr(metrics.get("temporary_equity"), "numeric_value", None) or 0.0
+    v = ta.numeric_value - se.numeric_value - mezz
+    metrics["total_liabilities"] = replace(
+        ta, value=v, numeric_value=v, concept="Assets − StockholdersEquity − TemporaryEquity",
+        label="Total liabilities (total assets − equity − temporary equity)")
 
 
 def _build_anchors(entity_facts, min_year: int, max_year: int) -> dict[int, dt.date]:
@@ -311,12 +439,15 @@ def build_financial_series(company, lookback_years: int) -> FinancialSeries:
     for spec in METRIC_SPECS:
         selected[spec.key] = _select_metric(entity_facts, spec, anchors)
 
+    ltd_is_total = _ltd_is_total(entity_facts)
     years: list[YearFacts] = []
     for fy in sorted(anchors):
         yf = YearFacts(fiscal_year=fy, period_end=anchors[fy])
         for key, by_year in selected.items():
             if fy in by_year:
                 yf.metrics[key] = by_year[fy]
+        _align_debt(entity_facts, yf.metrics, {fy: anchors[fy]}, ltd_is_total)
+        _derive_liabilities(yf.metrics)
         years.append(yf)
 
     # keep the most recent (lookback + 1) fiscal years
@@ -325,7 +456,7 @@ def build_financial_series(company, lookback_years: int) -> FinancialSeries:
 
 
 # ---------------------------------------------------------------------------
-# Quarterly cadence + TTM (Phase 4.6b)
+# Quarterly cadence + TTM
 #
 # 10-Q XBRL carries quarter and year-to-date durations; Q4 flows are only implicit
 # (annual − 9M). The industry-standard TTM at any quarter end is therefore
@@ -352,11 +483,14 @@ def _near(a: dt.date, b: dt.date, tol: int = 10) -> bool:
 
 
 def ttm_from_periods(periods: list[tuple[dt.date, dt.date, float]],
-                     asof: dt.date) -> Optional[float]:
+                     asof: dt.date, absent_is_zero: bool = False) -> Optional[float]:
     """Trailing-twelve-month value ending at `asof` from (start, end, value) duration facts.
 
     Prefers an annual period ending at asof (fiscal Q4); otherwise combines
-    annual(prior FY) + YTD(fy start → asof) − YTD(prior year, same span). Pure — unit-tested.
+    annual(prior FY) + YTD(fy start → asof) − YTD(prior year, same span). With
+    `absent_is_zero` (add-back charges) any untagged period counts as no charge, the current
+    YTD included: issuers tag an impairment line only in the periods that had one, so a Q4
+    charge is followed by 10-Qs that carry no line at all. Pure.
     """
     at_asof = [(s, e, v, _bucket((e - s).days)) for s, e, v in periods if _near(e, asof)]
     for s, e, v, b in at_asof:
@@ -364,15 +498,26 @@ def ttm_from_periods(periods: list[tuple[dt.date, dt.date, float]],
             return v
     # longest YTD ending at asof (Q1 → "Q", Q2 → "H", Q3 → "N")
     ytds = [(s, e, v, b) for s, e, v, b in at_asof if b in ("Q", "H", "N")]
-    if not ytds:
+    if ytds:
+        ys, ye, yv, yb = max(ytds, key=lambda t: (t[1] - t[0]).days)
+        fy_end = ys - dt.timedelta(days=1)             # fiscal year ends the day before YTD starts
+    elif absent_is_zero:
+        # no YTD line: the fiscal year end is read off the last annual period instead
+        ends = [e for s, e, _v in periods
+                if _bucket((e - s).days) == "Y" and 10 < (asof - e).days < 355]
+        if not ends:
+            return 0.0                                 # nothing tagged in the trailing year
+        fy_end, yv = max(ends), 0.0
+        yb = _bucket((asof - fy_end).days)
+    else:
         return None
-    ys, ye, yv, yb = max(ytds, key=lambda t: (t[1] - t[0]).days)
-    fy_end = ys - dt.timedelta(days=1)                 # fiscal year ends the day before YTD starts
     prior_asof = dt.date(asof.year - 1, asof.month, min(asof.day, 28))
     annual = next((v for s, e, v in periods
                    if _near(e, fy_end) and _bucket((e - s).days) == "Y"), None)
     prior_ytd = next((v for s, e, v in periods
                       if _near(e, prior_asof) and _bucket((e - s).days) == yb), None)
+    if absent_is_zero:
+        annual, prior_ytd = annual or 0.0, prior_ytd or 0.0
     if annual is None or prior_ytd is None:
         return None
     return annual + yv - prior_ytd
@@ -391,10 +536,14 @@ class QuarterFacts:
         return self.metrics.get(key)
 
 
-def _duration_periods(entity_facts, spec: MetricSpec) -> list[tuple[dt.date, dt.date, float]]:
-    """All clean duration periods for the first concept that has any."""
+Periods = list[tuple[dt.date, dt.date, float]]
+
+
+def _concept_periods(entity_facts, spec: MetricSpec) -> list[Periods]:
+    """Clean (start, end, value) duration periods per concept, in the spec's order."""
+    out: list[Periods] = []
     for concept in spec.concepts:
-        out = []
+        found = set()
         for f in _query_concept(entity_facts, concept, spec.statement):
             if getattr(f, "is_dimensioned", False):
                 continue
@@ -402,10 +551,45 @@ def _duration_periods(entity_facts, spec: MetricSpec) -> list[tuple[dt.date, dt.
             ps, pe = getattr(f, "period_start", None), getattr(f, "period_end", None)
             if v is None or ps is None or pe is None or _bucket((pe - ps).days) is None:
                 continue
-            out.append((ps, pe, float(v)))
-        if out:
-            return sorted(set(out))
-    return []
+            found.add((ps, pe, float(v)))
+        out.append(sorted(found))
+    return out
+
+
+def _has_interim(facts) -> bool:
+    """Any non-dimensioned quarter, half-year or nine-month fact."""
+    return any(_bucket(_duration_days(f)) in ("Q", "H", "N") for f in facts
+               if not getattr(f, "is_dimensioned", False))
+
+
+def _floor0(v: Optional[float]) -> Optional[float]:
+    return None if v is None else max(v, 0.0)
+
+
+def _addback_periods(entity_facts, spec: MetricSpec) -> Periods:
+    """An add-back's concepts nest (a total contains its parts) and issuers move the charge
+    between them from 10-K to 10-Q (ATUS), so each span keeps its largest tagged value."""
+    spans: dict[tuple[dt.date, dt.date], float] = {}
+    for periods in _concept_periods(entity_facts, spec):
+        for ps, pe, v in periods:
+            spans[(ps, pe)] = max(v, spans.get((ps, pe), v))
+    return sorted((ps, pe, v) for (ps, pe), v in spans.items())
+
+
+def _ttm_strip(spec: MetricSpec, by_concept: list[Periods],
+               quarters: list[dt.date]) -> dict[dt.date, Optional[float]]:
+    """TTM at each quarter, each computed inside one concept: an annual from one concept and
+    YTDs from another don't add up (AAL: a $2.2bn annual-only D&A tag beside the $1,890M
+    statement line). The concept that resolves at the latest quarter leads the whole strip,
+    for a statement flow one that also reports interim periods ahead of an annual-only one
+    (as _select_metric orders them); a quarter it cannot resolve falls back to the next
+    concept that can, as a unit."""
+    def lead(p: Periods) -> tuple[bool, bool]:
+        annual_only = all(_bucket((e - s).days) == "Y" for s, e, _ in p)
+        return ttm_from_periods(p, quarters[-1]) is None, bool(spec.statement) and annual_only
+    order = sorted(by_concept, key=lead)
+    return {q: next((v for p in order if (v := ttm_from_periods(p, q)) is not None), None)
+            for q in quarters}
 
 
 def quarters_from_periods(periods: list[tuple[dt.date, dt.date, float]]) -> list[tuple[dt.date, float]]:
@@ -428,8 +612,13 @@ def quarters_from_periods(periods: list[tuple[dt.date, dt.date, float]]) -> list
 
 def quarterly_flows(entity_facts, spec: MetricSpec) -> list[tuple[dt.date, float]]:
     """Quarterly (period_end, value) series for a duration metric — the RP-basket
-    builder's flow input (Moyer ch. 7)."""
-    return quarters_from_periods(_duration_periods(entity_facts, spec))
+    builder's flow input (Moyer, Distressed Debt Analysis, ch. 7). Each quarter is
+    differenced inside one concept, the first that yields it."""
+    out: dict[dt.date, float] = {}
+    for periods in _concept_periods(entity_facts, spec):
+        for pe, v in quarters_from_periods(periods):
+            out.setdefault(pe, v)
+    return sorted(out.items())
 
 
 def build_quarterly_series(company, lookback_years: int) -> list[QuarterFacts]:
@@ -442,9 +631,8 @@ def build_quarterly_series(company, lookback_years: int) -> list[QuarterFacts]:
 
     anchor_dates: set[dt.date] = set()
     for key in _ANCHOR_CONCEPTS:
-        for _s, e, _v in _duration_periods(entity_facts, _SPEC_BY_KEY[key]):
-            if e >= min_date:
-                anchor_dates.add(e)
+        for periods in _concept_periods(entity_facts, _SPEC_BY_KEY[key]):
+            anchor_dates |= {e for _s, e, _v in periods if e >= min_date}
         if anchor_dates:
             break
     quarters = sorted(anchor_dates)[-(lookback_years * 4 + 1):]
@@ -459,9 +647,19 @@ def build_quarterly_series(company, lookback_years: int) -> list[QuarterFacts]:
             inst_selected[spec.key] = _select_metric(entity_facts, spec, anchor_map)
 
     # TTM per duration metric
-    dur_periods = {spec.key: _duration_periods(entity_facts, spec)
-                   for spec in METRIC_SPECS if spec.kind == "duration"}
+    ttm: dict[str, dict[dt.date, Optional[float]]] = {}
+    for spec in METRIC_SPECS:
+        if spec.kind != "duration":
+            continue
+        if spec.addback:
+            periods = _addback_periods(entity_facts, spec)
+            # spans can come from different concepts; a charge never reads as a negative
+            ttm[spec.key] = {q: _floor0(ttm_from_periods(periods, q, absent_is_zero=True))
+                             if periods else None for q in quarters}
+        else:
+            ttm[spec.key] = _ttm_strip(spec, _concept_periods(entity_facts, spec), quarters)
 
+    ltd_is_total = _ltd_is_total(entity_facts)
     out: list[QuarterFacts] = []
     for q in quarters:
         # ponytail: calendar-quarter labels; map to fiscal quarters when a non-Dec-FYE name lands
@@ -469,8 +667,9 @@ def build_quarterly_series(company, lookback_years: int) -> list[QuarterFacts]:
         for key, by_anchor in inst_selected.items():
             if q.toordinal() in by_anchor:
                 qf.metrics[key] = by_anchor[q.toordinal()]
-        for key, periods in dur_periods.items():
-            qf.ttm[key] = ttm_from_periods(periods, q) if periods else None
+        _align_debt(entity_facts, qf.metrics, {q.toordinal(): q}, ltd_is_total)
+        _derive_liabilities(qf.metrics)
+        qf.ttm = {key: by_q[q] for key, by_q in ttm.items()}
         if qf.metrics or any(v is not None for v in qf.ttm.values()):
             out.append(qf)
     return out
@@ -495,6 +694,11 @@ def fmt_ratio(value: Optional[float]) -> Optional[str]:
 
 def fmt_days(value: Optional[float]) -> Optional[str]:
     return None if value is None else f"{value:.0f} days"
+
+
+def fmt_count(n: int, noun: str, plural: Optional[str] = None) -> str:
+    """'1 instrument' / '3 instruments'; `plural` defaults to noun + 's'."""
+    return f"{n} {noun if n == 1 else plural or noun + 's'}"
 
 
 def cited_from_fact(fact, cik: str, kind: str) -> CitedValue:
