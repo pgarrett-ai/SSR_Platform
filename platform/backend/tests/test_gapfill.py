@@ -70,6 +70,23 @@ def test_apply_annotations_drops_a_quote_the_text_does_not_contain():
     assert inst.maturity is None and inst.citation is None
 
 
+def test_gap_fill_asks_a_model_that_accepts_effort(monkeypatch):
+    # extract_structured always sends an effort; Haiku 4.5 rejects it, failing every gap-fill
+    from app.capstack import gapfill
+    from app.schemas import CitedValue
+
+    seen = {}
+    monkeypatch.setattr(gapfill, "_search_windows",
+                        lambda *a, **k: "[notes] The term loan matures in May 2028.")
+    monkeypatch.setattr(gapfill, "extract_structured",
+                        lambda **kw: seen.update(kw) or {"annotations": []})
+    ft = SimpleNamespace(accession_no="a", form_type="10-Q", filing_date="2026-08-06",
+                         period_of_report="2026-06-30", source_url="u")
+    gapfill.gap_fill_maturities(None, "TSE", [_inst("Term Loan", outstanding=CitedValue(
+        value=1e9))], ft, "2026-06-30")
+    assert seen["effort"] == "low" and not seen["model"].startswith("claude-haiku-4")
+
+
 def test_annotate_maturities_counts_the_quotes_it_drops(monkeypatch):
     from app.capstack import debt_schedule
 

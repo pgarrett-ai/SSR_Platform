@@ -20,7 +20,9 @@ from ..store import record_aliases
 from .debt_schedule import _ANNOTATE_SCHEMA, _apply_annotations
 from .debt_xbrl import prettify_member
 
-_GAPFILL_MODEL = "claude-haiku-4-5"   # short, structured extraction — no need for the big model
+# Short, structured extraction: a small model at low effort. extract_structured always
+# sends an effort, which Haiku 4.5 rejects.
+_GAPFILL_MODEL = "claude-haiku-5-5"
 
 _SYSTEM = (
     "You are annotating an issuer's debt schedule from search snippets of its own filings "
@@ -98,6 +100,7 @@ def gap_fill_maturities(session, ticker: str, instruments: list[DebtInstrument],
         input_schema=_ANNOTATE_SCHEMA,
         max_tokens=2000,
         model=_GAPFILL_MODEL,
+        effort="low",
     )
     if result is None:
         return 0, "LLM unavailable"
