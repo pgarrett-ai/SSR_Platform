@@ -1,7 +1,8 @@
 import React from "react";
 import { Card } from "../ui/index.jsx";
 
-export default function ProgressLog({ events, done }) {
+// Pipeline progress, shown only while a stream is still running.
+export default function ProgressLog({ events }) {
   if (!events || events.length === 0) return null;
   const pct = events[events.length - 1]?.pct ?? 0;
   return (
@@ -9,7 +10,7 @@ export default function ProgressLog({ events, done }) {
       <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-ink-700">
         <div
           className="h-full rounded-full bg-accent transition-all duration-300"
-          style={{ width: `${done ? 100 : pct}%` }}
+          style={{ width: `${pct}%` }}
         />
       </div>
       <div className="max-h-40 overflow-y-auto font-mono text-[12px] leading-relaxed text-slate-400">

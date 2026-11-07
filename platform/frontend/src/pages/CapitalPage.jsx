@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Header from "../components/Header.jsx";
-import { EmptyState, Section } from "../ui/index.jsx";
+import { ErrorCard, Loading, Section } from "../ui/index.jsx";
+import ProgressLog from "../components/ProgressLog.jsx";
 import ForensicTable from "../components/ForensicTable.jsx";
 import FlagCard from "../components/FlagCard.jsx";
 import SourcesPanel from "../components/SourcesPanel.jsx";
@@ -59,19 +59,10 @@ function SectionRail({ sections }) {
   );
 }
 
-// Overview data + Run Live + progress log live in the shell (App.jsx) — this page renders
-// whatever snapshot the shell holds for the routed ticker.
-export default function CapitalPage({ ticker, health, overview, onRunLive }) {
+// Renders the overview stream CompanyLayout owns for the routed ticker.
+export default function CapitalPage({ ticker, overview: stream }) {
+  const overview = stream.data;
   const flags = overview?.forensic_flags || [];
-  // Badge for LLM-derived sections: fresh run → none; spliced prior snapshot → "prior
-  // analysis" (info); no key → "needs API key" (high); toggled off → "LLM off" (watch).
-  const llmBadge = overview?.header?.llm_enabled
-    ? null
-    : overview?.llm_fallback_note?.startsWith("Prior")
-      ? { label: "prior analysis", tone: "info", title: overview.llm_fallback_note }
-      : health?.llm_key_set === false
-        ? { label: "needs API key", tone: "high", title: "set ANTHROPIC_API_KEY in platform/.env" }
-        : { label: "LLM off", tone: "watch", title: "LLM analysis toggled off — enable it in the sidebar" };
 
   // Rail entries mirror the section render conditionals below (ids = Section's title
   // slugs, or the explicit obs/covenants anchors). Known holders omitted — async.
@@ -98,19 +89,13 @@ export default function CapitalPage({ ticker, health, overview, onRunLive }) {
 
   return (
     <div>
-      {!overview && (
-        <EmptyState
-          hint="a live run against EDGAR takes ~3 minutes with the LLM on"
-          action={onRunLive ? { label: "Run live ↻", onClick: onRunLive } : undefined}
-        >
-          No analysis loaded for {ticker} yet.
-        </EmptyState>
-      )}
+      {stream.loading && (stream.events.length > 0
+        ? <ProgressLog events={stream.events} />
+        : <Loading>Loading filings for {ticker}…</Loading>)}
+      {stream.error && <ErrorCard>{stream.error}</ErrorCard>}
       {overview && (
         <div className="flex gap-6">
           <div className="min-w-0 flex-1">
-          <Header header={overview.header} />
-
           {overview.warnings?.length > 0 && (
             <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-[13px] text-amber-200/90">
               {overview.warnings.map((w, i) => (
@@ -123,7 +108,6 @@ export default function CapitalPage({ ticker, health, overview, onRunLive }) {
             collapsible
             title="Economic debt bridge"
             subtitle="reported debt → economic (adjusted) debt"
-            badge={llmBadge}
           >
             <EconomicDebtBridge bridge={overview.economic_debt_bridge} />
           </Section>
@@ -218,7 +202,6 @@ export default function CapitalPage({ ticker, health, overview, onRunLive }) {
             id="obs"
             title="Off-balance-sheet findings"
             subtitle={`${overview.obs_items?.length || 0} items extracted from footnotes & MD&A`}
-            badge={llmBadge}
           >
             <ObsFindings items={overview.obs_items} />
           </Section>
@@ -248,7 +231,6 @@ export default function CapitalPage({ ticker, health, overview, onRunLive }) {
             subtitle={`${overview.covenants?.length || 0} agreement famil${
               (overview.covenants?.length || 0) === 1 ? "y" : "ies"
             } from EX-10.x / EX-4.x · RP-basket build + liens headroom at the end`}
-            badge={llmBadge}
           >
             <CovenantPackages
               covenants={overview.covenants}
