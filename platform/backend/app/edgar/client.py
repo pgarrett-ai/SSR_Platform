@@ -10,7 +10,7 @@ import threading
 from dataclasses import dataclass, field
 from typing import Optional
 
-from edgar import Company, set_identity
+from edgar import Company, CompanyNotFoundError, set_identity
 
 from ..core.config import get_settings
 
@@ -144,9 +144,11 @@ class EdgarClient:
 
     @staticmethod
     def _safe_company(identifier) -> Optional[Company]:
+        """The Company, or None when EDGAR has no such issuer. Network and HTTP errors
+        propagate, so the API reports the real cause instead of an unknown ticker."""
         try:
             company = Company(identifier)
-        except Exception:
+        except (CompanyNotFoundError, ValueError):   # ValueError: not a usable CIK
             return None
         if company is None or not getattr(company, "cik", None):
             return None

@@ -1,5 +1,5 @@
 """Demo reliability: concurrent identical requests run the pipeline once; a failed hazard
-run falls back to the last cached payload."""
+run falls back to the last cached payload; an EDGAR outage reports its real cause."""
 from __future__ import annotations
 
 import json
@@ -70,3 +70,18 @@ def test_failed_hazard_run_serves_newest_cache_marked_stale(monkeypatch, tmp_pat
         "scores": {"Merton DD": {"pd": 0.2}}, "stale_as_of": "2026-01-02"}
     with pytest.raises(ConnectionError):   # nothing cached: the real cause surfaces
         main._hazard_section("ZZNONE", 10, live=False)
+
+
+def test_edgar_outage_is_a_pipeline_error_not_an_unknown_ticker(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    import app.edgar.client as edgar_client
+    from app.main import app
+
+    def edgar_down(identifier):
+        raise ConnectionError("SEC unreachable")
+
+    monkeypatch.setattr(edgar_client, "Company", edgar_down)
+    r = TestClient(app).get("/api/overview", params={"ticker": "ZZNET", "live": True})
+    assert r.status_code == 500
+    assert r.json() == {"error": "pipeline_error", "detail": "SEC unreachable"}
