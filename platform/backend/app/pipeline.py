@@ -19,7 +19,7 @@ from .capstack.debt_schedule import (annotate_maturities, drop_retired,
                                      extract_debt_schedule, fill_maturity_from_name)
 from .capstack.debt_xbrl import build_xbrl_debt_schedule
 from .capstack.forensic import (build_asset_snapshot, build_forensic_table, detect_flags,
-                                quarter_forensic_row, total_debt)
+                                ltm_ebitda, quarter_forensic_row, total_debt, ttm_view)
 from .capstack.mdna import build_mdna_series
 from .capstack.obs_llm import extract_obs_items
 from .capstack.sponsor import build_sponsor, extract_sponsor_ownership
@@ -150,6 +150,46 @@ def run_overview(
         warnings.append(f"XBRL forensic step failed: {exc}")
         progress.emit(f"XBRL forensic step failed: {exc}", step="xbrl", pct=60)
 
+    # --- quarterly TTM cadence: leverage timeline + what-changed when 10-Q XBRL supports
+    # it (annual FY-vs-FY fallback otherwise), and the latest-quarter forensic column ---
+    from .capstack.timelines import (
+        leverage_timeline, maturity_wall, quarterly_leverage_timeline,
+        what_changed, what_changed_quarterly,
+    )
+    quarters = []
+    try:
+        progress.emit("Building quarterly TTM series from 10-Q XBRL…", step="quarterly", pct=61)
+        from .edgar.facts import build_quarterly_series
+        quarters = build_quarterly_series(company, years)
+        progress.emit(f"Built {len(quarters)} quarter-end points (TTM flows).",
+                      step="quarterly", pct=62)
+    except Exception as exc:
+        warnings.append(f"Quarterly XBRL step failed (annual cadence used): {exc}")
+    lev_timeline = quarterly_leverage_timeline(quarters) or leverage_timeline(forensic_table)
+    changes = what_changed_quarterly(quarters) or what_changed(forensic_table)
+
+    # Latest-quarter forensic column: 10-Q snapshots + TTM flows, appended only when the
+    # quarter post-dates the last fiscal year (else it would duplicate the FY column).
+    # Appended to the table only — detect_flags/timelines read series/quarters directly.
+    if quarters and forensic_table:
+        try:
+            latest_q = quarters[-1]
+            if latest_q.period_end.isoformat() > (forensic_table[-1].period_end or ""):
+                forensic_table.append(quarter_forensic_row(latest_q, cik))
+                progress.emit(f"Appended latest-quarter column ({latest_q.label}) to the "
+                              "forensic table.", step="quarterly", pct=62)
+        except Exception as exc:
+            warnings.append(f"Latest-quarter forensic column failed: {exc}")
+
+    # The one EBITDA every ratio divides by, and the facts of its period (TTM view of the
+    # latest quarter, or that fiscal year) for the EBITDA box and the coverage chips.
+    ltm_row = ltm_ebitda(forensic_table)
+    ebitda_cv = ltm_row.ebitda if ltm_row else None
+    ltm_facts = None
+    if ltm_row is not None:
+        ltm_facts = (ttm_view(quarters[-1]) if ltm_row.label else
+                     next(y for y in series.years if y.fiscal_year == ltm_row.fiscal_year))
+
     # --- Phase 3: footnote/OBS LLM extraction → economic-debt bridge + debt schedule (§6b/§6c/§8.3) ---
     economic_debt_bridge = None
     obs_items = []
@@ -215,7 +255,8 @@ def run_overview(
                 obs_extractions, obs_err = extract_obs_items(ft)
                 if obs_err:
                     warnings.append(f"OBS extraction error: {obs_err}")
-                economic_debt_bridge, obs_items = build_bridge(series, obs_extractions, ft)
+                economic_debt_bridge, obs_items = build_bridge(series, obs_extractions, ft,
+                                                               ebitda_cv)
                 if obs_items:
                     with session_scope() as session:
                         persist_obs(session, ticker, obs_items)
@@ -374,37 +415,7 @@ def run_overview(
     else:
         progress.emit("Skipping LLM extraction (LLM analysis is off).", step="obs", pct=88)
 
-    # --- Phase 4.6: leverage timeline, maturity wall, what-changed ---
-    # Quarterly TTM cadence when 10-Q XBRL supports it; annual FY-vs-FY fallback otherwise.
-    from .capstack.timelines import (
-        leverage_timeline, maturity_wall, quarterly_leverage_timeline,
-        what_changed, what_changed_quarterly,
-    )
-    quarters = []
-    try:
-        progress.emit("Building quarterly TTM series from 10-Q XBRL…", step="quarterly", pct=95)
-        from .edgar.facts import build_quarterly_series
-        quarters = build_quarterly_series(company, years)
-        progress.emit(f"Built {len(quarters)} quarter-end points (TTM flows).",
-                      step="quarterly", pct=96)
-    except Exception as exc:
-        warnings.append(f"Quarterly XBRL step failed (annual cadence used): {exc}")
-    lev_timeline = quarterly_leverage_timeline(quarters) or leverage_timeline(forensic_table)
     maturities = maturity_wall(debt_schedule)
-    changes = what_changed_quarterly(quarters) or what_changed(forensic_table)
-
-    # Latest-quarter forensic column: 10-Q snapshots + TTM flows, appended only when the
-    # quarter post-dates the last fiscal year (else it would duplicate the FY column).
-    # Appended to the table only — detect_flags/timelines read series/quarters directly.
-    if quarters and forensic_table:
-        try:
-            latest_q = quarters[-1]
-            if latest_q.period_end.isoformat() > (forensic_table[-1].period_end or ""):
-                forensic_table.append(quarter_forensic_row(latest_q, cik))
-                progress.emit(f"Appended latest-quarter column ({latest_q.label}) to the "
-                              "forensic table.", step="quarterly", pct=96)
-        except Exception as exc:
-            warnings.append(f"Latest-quarter forensic column failed: {exc}")
 
     # --- Phase 5: MD&A section retention — deterministic, runs even without an API key ---
     try:
@@ -435,7 +446,7 @@ def run_overview(
             # with current code — a spliced bridge must not fossilize old semantics
             if economic_debt_bridge is None and prior.economic_debt_bridge is not None:
                 economic_debt_bridge = renormalize_spliced_bridge(
-                    prior.economic_debt_bridge, series)
+                    prior.economic_debt_bridge, ebitda_cv)
             obs_items = obs_items or prior.obs_items
             covenants = covenants or prior.covenants
             subsidiaries = subsidiaries or prior.subsidiaries
@@ -457,17 +468,18 @@ def run_overview(
         except Exception as exc:
             warnings.append(f"Entity role annotation failed: {exc}")
 
-    # --- EBITDA box: net-income walk + the issuer's covenant add-backs (deterministic; the
-    # categories come from whatever covenant packages exist, including a spliced prior run) ---
+    # --- EBITDA box: net income reconciled to the canonical EBITDA + the issuer's covenant
+    # add-backs (deterministic; the categories come from whatever covenant packages exist,
+    # including a spliced prior run) ---
     ebitda_build = None
     try:
-        if series is not None and series.years:
+        if ltm_facts is not None:
             cats: list[str] = []
             for c in covenants:
                 for a in c.ebitda_addback_categories:
                     if a not in cats:
                         cats.append(a)
-            ebitda_build = build_ebitda_box(series, cats)
+            ebitda_build = build_ebitda_box(ltm_facts, cik, cats, ebitda_cv)
     except Exception as exc:
         warnings.append(f"EBITDA box step failed: {exc}")
 
@@ -499,13 +511,9 @@ def run_overview(
     liquidity = None
     liquidity_events: list = []
     liquidity_events_note = None
-    ebitda_v = None
+    ebitda_v = ebitda_cv.value if ebitda_cv else None
     try:
         from .capstack.liquidity import build_event_calendar, build_liquidity
-        if economic_debt_bridge and economic_debt_bridge.ebitda:
-            ebitda_v = economic_debt_bridge.ebitda.value      # canonical NI-walk EBITDA
-        elif forensic_table and forensic_table[-1].ebitda:
-            ebitda_v = forensic_table[-1].ebitda.value        # proxy fallback (LLM off)
         liquidity = build_liquidity(forensic_table, debt_schedule, maturities, ebitda_v)
         total_liq = (liquidity.total_liquidity.value
                      if liquidity and liquidity.total_liquidity else None)
@@ -521,15 +529,15 @@ def run_overview(
     try:
         from .capstack.capacity import coverage_chips
         from .edgar.facts import raw_value
-        if series is not None and series.years:
-            yf = series.latest()
+        if ltm_facts is not None:
             debt_v = None
             if economic_debt_bridge and economic_debt_bridge.reported_debt:
                 debt_v = economic_debt_bridge.reported_debt.value
             elif forensic_table and forensic_table[-1].total_debt:
                 debt_v = forensic_table[-1].total_debt.value
-            coverage = coverage_chips(debt_v, ebitda_v, raw_value(yf, "capex"),
-                                      raw_value(yf, "interest_expense"))
+            # capex and interest over the same trailing period as the EBITDA
+            coverage = coverage_chips(debt_v, ebitda_v, raw_value(ltm_facts, "capex"),
+                                      raw_value(ltm_facts, "interest_expense"))
     except Exception as exc:
         warnings.append(f"Coverage chips step failed: {exc}")
 

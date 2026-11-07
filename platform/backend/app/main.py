@@ -36,7 +36,7 @@ from .core.db import init_db, session_scope
 from .edgar.client import NoFilingsError, TickerNotFoundError
 from .fulcrum import CapitalStructure, Entity, SimConfig, Tranche
 from .fulcrum import analyze as fulcrum_analyze
-from .fulcrum.adapter import overview_to_structure
+from .fulcrum.adapter import ltm_ebitda, overview_to_structure
 from .fulcrum.waterfall import run_waterfall
 from .hazard.pipeline import analyze as hazard_analyze
 from .pipeline import run_overview
@@ -812,6 +812,7 @@ def recovery_structure(ticker: str, years: int = Query(3, ge=1, le=10)):
                           for s in ctx.subsidiaries if s.get("name")]
     return JSONResponse(content=jsonable({
         "structure": _structure_dict(ctx.structure), "base_ebitda": ctx.ebitda,
+        "base_ebitda_label": ltm_ebitda(ctx.ov)[1],
         "source": ctx.source,
         "citations": ctx.citations, "available_entities": available_entities,
         "suggested_other_claims": _suggested_other_claims(ctx.ov),

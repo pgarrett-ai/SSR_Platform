@@ -14,7 +14,7 @@ from typing import Optional
 import numpy as np
 
 from ..edgar.facts import derived_value, fmt_ratio
-from ..fulcrum.adapter import overview_to_structure
+from ..fulcrum.adapter import ltm_ebitda, overview_to_structure
 from ..fulcrum.waterfall import run_waterfall
 from .quotes import match_quotes
 
@@ -34,19 +34,9 @@ def _class_label(secured: bool, preferred: bool, lien_rank: int, entity: str,
 
 
 def _ebitda_variants(ov: dict) -> dict[str, Optional[float]]:
-    """$mm. 'ltm' via the same chain the pipeline uses (bridge NI-walk, else forensic);
-    'covenant_adjusted' only when at least one add-back is actually quantified (C5)."""
-    ltm = None
-    bridge = ov.get("economic_debt_bridge") or {}
-    cv = bridge.get("ebitda")
-    if cv and cv.get("value") is not None:
-        ltm = float(cv["value"]) / 1e6
-    else:
-        for row in reversed(ov.get("forensic_table") or []):
-            cv = row.get("ebitda")
-            if cv and cv.get("value") is not None:
-                ltm = float(cv["value"]) / 1e6
-                break
+    """$mm. 'ltm' is the canonical EBITDA (adapter.ltm_ebitda, the one the leverage ratios
+    use); 'covenant_adjusted' only when at least one add-back is actually quantified."""
+    ltm = ltm_ebitda(ov)[0]
     adj = None
     build = ov.get("ebitda_build") or {}
     addbacks = [a.get("amount") for a in build.get("addbacks") or []]

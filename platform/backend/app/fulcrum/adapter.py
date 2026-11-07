@@ -31,7 +31,7 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
 
     CapStack's debt schedule has no legal-entity mapping yet (Phase 4 item), so all
     tranches sit at one OpCo; the UI lets the user split HoldCo/OpCo manually.
-    Returns (structure, latest_ebitda_mm, citations) - EBITDA may be None; citations maps
+    Returns (structure, ltm_ebitda_mm, citations) - EBITDA may be None; citations maps
     tranche name -> the filing citation behind its face amount (drill-down provenance).
     """
     name = (overview.get("header") or {}).get("issuer") or "Company"
@@ -77,14 +77,21 @@ def overview_to_structure(overview: dict) -> tuple[CapitalStructure, Optional[fl
         tranches=tranches,
         admin_fees=0.0,
     )
+    return structure, ltm_ebitda(overview)[0], citations
 
-    ebitda = None
-    for row in reversed(overview.get("forensic_table") or []):
-        cv = row.get("ebitda")
-        if cv and cv.get("value"):
-            ebitda = float(cv["value"]) / 1e6
-            break
-    return structure, ebitda, citations
+
+def ltm_ebitda(overview: dict) -> tuple[Optional[float], Optional[str]]:
+    """($mm, label) of the canonical EBITDA: forensic.ltm_ebitda over the overview's
+    forensic table, so Recovery seeds from the number the leverage ratios use. The label
+    names its definition and period."""
+    from ..capstack.forensic import ltm_ebitda as ltm_row
+    from ..schemas import ForensicTableRow
+
+    row = ltm_row([ForensicTableRow.model_validate(r)
+                   for r in overview.get("forensic_table") or []])
+    if row is None:
+        return None, None
+    return row.ebitda.value / 1e6, row.ebitda.note or row.ebitda.formula
 
 
 def _tranche_coupon(inst: dict) -> float:

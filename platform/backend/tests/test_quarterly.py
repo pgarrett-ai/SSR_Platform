@@ -41,6 +41,19 @@ def test_ttm_missing_prior_ytd_is_none():
     assert ttm_from_periods(periods, D(2025, 9, 30)) is None
 
 
+def test_ttm_untagged_addback_period_is_no_charge():
+    # an impairment line is tagged only in the year a charge was taken: no prior-year 9M
+    periods = [(D(2024, 1, 1), D(2024, 12, 31), 0.0), (D(2025, 1, 1), D(2025, 9, 30), 1611.0)]
+    assert ttm_from_periods(periods, D(2025, 9, 30)) is None
+    assert ttm_from_periods(periods, D(2025, 9, 30), absent_is_zero=True) == 1611.0
+
+
+def test_quarter_without_ttm_da_has_no_leverage():
+    # AAL: a quarter with TTM operating income but no TTM D&A read as 7.7x -> 15.9x
+    q = _q("Q1 2026", D(2026, 3, 31), debt=27e9, oi=1.7e9, da=None)
+    assert quarterly_leverage_timeline([q])[0].leverage is None
+
+
 def _q(label, end, debt=None, cash=None, oi=None, da=0.0, ocf=None, capex=0.0, rev=None):
     metrics = {}
     if debt is not None:

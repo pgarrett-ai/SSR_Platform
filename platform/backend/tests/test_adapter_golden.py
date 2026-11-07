@@ -22,6 +22,17 @@ def test_hero_snapshots_validate_through_merged_schema():
         assert ov.header.from_cache is True
 
 
+def test_hero_snapshots_seed_a_labelled_ebitda():
+    # values move whenever the snapshots are rebuilt; the seam must always name its EBITDA
+    from app.fulcrum.adapter import ltm_ebitda
+
+    for ticker in ("AAL", "ATUS", "TSE", "LCID"):
+        ov = json.loads((CACHE / f"{ticker}_3y.json").read_text(encoding="utf-8"))
+        value, label = ltm_ebitda(ov)
+        assert isinstance(value, float) and isinstance(label, str) and label, ticker
+        assert overview_to_structure(ov)[1] == value, ticker
+
+
 def test_classify_seniority():
     assert classify_seniority(None, None, "First Lien Term Loan") == (True, 1, False)
     assert classify_seniority("second lien", None, "Notes") == (True, 2, False)

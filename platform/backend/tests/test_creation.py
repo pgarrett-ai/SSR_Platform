@@ -11,7 +11,7 @@ def _ov(ebitda=100e6, cash=50e6, schedule=None):
     return {
         "header": {"issuer": "Test Co"},
         "economic_debt_bridge": {"ebitda": _cv(ebitda)},
-        "forensic_table": [{"ebitda": _cv(ebitda), "cash": _cv(cash)}],
+        "forensic_table": [{"fiscal_year": 2025, "ebitda": _cv(ebitda), "cash": _cv(cash)}],
         "debt_schedule": schedule if schedule is not None else [
             {"instrument": "Term Loan B", "outstanding": _cv(300e6), "coupon_pct": 7.0,
              "maturity": "April 2028", "secured": True, "seniority": "senior secured"},
@@ -71,6 +71,12 @@ def test_ladder_fulcrum_marker():
     assert ladder["creation_multiple_fulcrum"] is not None
     # fully covered at the reference EV -> no impaired class, marker stays None
     assert build_creation_ladder(_ov(), BONDS)["fulcrum_class"] is None
+
+
+def test_ladder_uses_the_canonical_ebitda():
+    ov = _ov(ebitda=80e6)
+    ov["economic_debt_bridge"]["ebitda"] = _cv(95e6)    # a stale net-income-walk bridge
+    assert build_creation_ladder(ov, BONDS)["ebitda_mm"]["ltm"] == 80.0
 
 
 def test_ladder_negative_ebitda_degrades():

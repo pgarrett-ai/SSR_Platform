@@ -33,6 +33,9 @@ class MetricSpec:
     statement: Optional[str]   # 'BalanceSheet' | 'IncomeStatement' | 'CashFlowStatement' | None
     kind: str                  # 'instant' | 'duration'
     concepts: tuple[str, ...]
+    # A charge added back to EBITDA. Its concepts nest (a total contains its parts), so the
+    # largest tagged value per period wins, and an untagged period is no charge, not unknown.
+    addback: bool = False
 
 
 METRIC_SPECS: tuple[MetricSpec, ...] = (
@@ -162,9 +165,16 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     MetricSpec("restructuring", "Restructuring charges", None, "duration",
                ("RestructuringCharges", "RestructuringCostsAndAssetImpairmentCharges",
                 "RestructuringSettlementAndImpairmentProvisions", "RestructuringCosts")),
+    # ATUS: the FY2025 10-K tags its $1.6bn franchise-rights charge as indefinite-lived
+    # intangible impairment; its 10-Qs use GoodwillAndIntangibleAssetImpairment.
+    # ponytail: largest-concept rule undercounts two disjoint charges with no total tagged
+    # (goodwill + tangible); sum the components if that shows up in a hero.
     MetricSpec("impairment", "Impairment charges", None, "duration",
-               ("AssetImpairmentCharges", "ImpairmentOfLongLivedAssetsHeldAndUsed",
-                "GoodwillImpairmentLoss", "TangibleAssetImpairmentCharges")),
+               ("AssetImpairmentCharges", "GoodwillAndIntangibleAssetImpairment",
+                "GoodwillImpairmentLoss", "ImpairmentOfIntangibleAssetsExcludingGoodwill",
+                "ImpairmentOfIntangibleAssetsIndefinitelivedExcludingGoodwill",
+                "ImpairmentOfLongLivedAssetsHeldForUse", "TangibleAssetImpairmentCharges"),
+               addback=True),
 )
 
 _SPEC_BY_KEY = {s.key: s for s in METRIC_SPECS}
@@ -253,7 +263,7 @@ def _select_metric(entity_facts, spec: MetricSpec, anchors: dict[int, dt.date],
     """For each anchor fiscal year, pick the best fact from the first concept present IN
     THAT YEAR — issuers migrate tags (AAL: InterestExpense through FY2023, then
     InterestExpenseNonoperating), so a concept that covers only early years must not block
-    the fallbacks for later ones.
+    the fallbacks for later ones. An add-back takes its largest concept instead.
     `accession` restricts the candidates to one filing."""
     out: dict[int, object] = {}
     for concept in spec.concepts:
@@ -276,13 +286,15 @@ def _select_metric(entity_facts, spec: MetricSpec, anchors: dict[int, dt.date],
                 if d is None or not (_MIN_DAYS <= d <= _MAX_DAYS):
                     continue
                 year = pe.year if pe.year in anchors else None
-            if year is None or year in out:
+            if year is None or (year in out and not spec.addback):
                 continue
             if accession and getattr(f, "accession", None) != accession:
                 continue
             per_year.setdefault(year, []).append(f)
         for y, cands in per_year.items():
-            out[y] = max(cands, key=lambda fc: _rank(fc, spec.statement))
+            best = max(cands, key=lambda fc: _rank(fc, spec.statement))
+            if y not in out or best.numeric_value > out[y].numeric_value:
+                out[y] = best
     return out
 
 
@@ -391,11 +403,13 @@ def _near(a: dt.date, b: dt.date, tol: int = 10) -> bool:
 
 
 def ttm_from_periods(periods: list[tuple[dt.date, dt.date, float]],
-                     asof: dt.date) -> Optional[float]:
+                     asof: dt.date, absent_is_zero: bool = False) -> Optional[float]:
     """Trailing-twelve-month value ending at `asof` from (start, end, value) duration facts.
 
     Prefers an annual period ending at asof (fiscal Q4); otherwise combines
-    annual(prior FY) + YTD(fy start → asof) − YTD(prior year, same span). Pure — unit-tested.
+    annual(prior FY) + YTD(fy start → asof) − YTD(prior year, same span). With
+    `absent_is_zero` (add-back charges) an untagged annual or prior-year YTD counts as no
+    charge: issuers tag an impairment line only in the periods that had one. Pure.
     """
     at_asof = [(s, e, v, _bucket((e - s).days)) for s, e, v in periods if _near(e, asof)]
     for s, e, v, b in at_asof:
@@ -412,6 +426,8 @@ def ttm_from_periods(periods: list[tuple[dt.date, dt.date, float]],
                    if _near(e, fy_end) and _bucket((e - s).days) == "Y"), None)
     prior_ytd = next((v for s, e, v in periods
                       if _near(e, prior_asof) and _bucket((e - s).days) == yb), None)
+    if absent_is_zero:
+        annual, prior_ytd = annual or 0.0, prior_ytd or 0.0
     if annual is None or prior_ytd is None:
         return None
     return annual + yv - prior_ytd
@@ -432,11 +448,11 @@ class QuarterFacts:
 
 def _duration_periods(entity_facts, spec: MetricSpec) -> list[tuple[dt.date, dt.date, float]]:
     """All clean duration periods, each (start, end) span from the first concept that
-    reports it (same per-period fallback as _select_metric)."""
-    out: list[tuple[dt.date, dt.date, float]] = []
-    covered: set[tuple[dt.date, dt.date]] = set()
+    reports it (same per-period fallback as _select_metric); an add-back keeps each span's
+    largest value across its concepts."""
+    spans: dict[tuple[dt.date, dt.date], set[float]] = {}
     for concept in spec.concepts:
-        found = []
+        found: dict[tuple[dt.date, dt.date], set[float]] = {}
         for f in _query_concept(entity_facts, concept, spec.statement):
             if getattr(f, "is_dimensioned", False):
                 continue
@@ -444,10 +460,13 @@ def _duration_periods(entity_facts, spec: MetricSpec) -> list[tuple[dt.date, dt.
             ps, pe = getattr(f, "period_start", None), getattr(f, "period_end", None)
             if v is None or ps is None or pe is None or _bucket((pe - ps).days) is None:
                 continue
-            found.append((ps, pe, float(v)))
-        out += [p for p in found if p[:2] not in covered]
-        covered |= {p[:2] for p in found}
-    return sorted(set(out))
+            found.setdefault((ps, pe), set()).add(float(v))
+        for span, vals in found.items():
+            if spec.addback:
+                spans[span] = {max(vals | spans.get(span, set()))}
+            else:
+                spans.setdefault(span, vals)
+    return sorted((ps, pe, v) for (ps, pe), vals in spans.items() for v in vals)
 
 
 def quarters_from_periods(periods: list[tuple[dt.date, dt.date, float]]) -> list[tuple[dt.date, float]]:
@@ -513,7 +532,8 @@ def build_quarterly_series(company, lookback_years: int) -> list[QuarterFacts]:
                 qf.metrics[key] = by_anchor[q.toordinal()]
         _align_debt(entity_facts, qf.metrics, {q.toordinal(): q})
         for key, periods in dur_periods.items():
-            qf.ttm[key] = ttm_from_periods(periods, q) if periods else None
+            qf.ttm[key] = (ttm_from_periods(periods, q, _SPEC_BY_KEY[key].addback)
+                           if periods else None)
         if qf.metrics or any(v is not None for v in qf.ttm.values()):
             out.append(qf)
     return out

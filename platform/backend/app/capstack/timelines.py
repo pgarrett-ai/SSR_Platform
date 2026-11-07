@@ -17,6 +17,7 @@ from ..schemas import (
     LeverageTimelinePoint,
     MaturityBucket,
 )
+from .forensic import _ebitda, ttm_view
 
 
 def _v(cv) -> float | None:
@@ -68,7 +69,7 @@ def maturity_wall(instruments: list[DebtInstrument]) -> list[MaturityBucket]:
 _CHANGE_METRICS = {
     "total_debt": ("Total reported debt", "USD", True),
     "cash": ("Cash & equivalents", "USD", False),
-    "ebitda": ("EBITDA (proxy)", "USD", False),
+    "ebitda": ("EBITDA", "USD", False),
     "free_cash_flow": ("Free cash flow", "USD", False),
     "revenue": ("Revenue", "USD", False),
 }
@@ -120,8 +121,9 @@ def _q_debt(q: QuarterFacts) -> float | None:
 
 
 def _q_ebitda(q: QuarterFacts) -> float | None:
-    oi, da = q.ttm.get("operating_income"), q.ttm.get("d_and_a")
-    return oi + (da or 0.0) if oi is not None else None
+    """TTM EBITDA by the forensic definition — None, not OI alone, when TTM D&A is missing
+    (an OI-only quarter between full ones read as AAL leverage jumping 7.7x → 15.9x)."""
+    return _ebitda(ttm_view(q))
 
 
 def quarterly_leverage_timeline(quarters: list[QuarterFacts]) -> list[LeverageTimelinePoint]:

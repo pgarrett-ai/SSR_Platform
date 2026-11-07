@@ -43,11 +43,36 @@ def total_debt(yf: YearFacts) -> tuple[Optional[float], list[str]]:
     return (total if found else None), parts
 
 
+EBITDA_DEFINITION = "operating income + D&A + impairments"
+
+
 def _ebitda(yf: YearFacts) -> Optional[float]:
+    """The one EBITDA every ratio uses: operating income + D&A + tagged impairment charges
+    (none tagged = none charged). Impairments sit inside operating income but are non-cash
+    one-offs: ATUS's FY2025 $1.6bn franchise write-down alone took OI negative."""
     oi, da = raw_value(yf, "operating_income"), raw_value(yf, "d_and_a")
     if oi is None or da is None:
         return None
-    return oi + da
+    return oi + da + (raw_value(yf, "impairment") or 0.0)
+
+
+def _ebitda_cv(yf: YearFacts, period: str, construction: str = "") -> Optional[CitedValue]:
+    """EBITDA as a derived value; `note` names the definition and period (the label shown
+    wherever the number is used), `formula` shows the inputs."""
+    v = _ebitda(yf)
+    if v is None:
+        return None
+    oi, da, imp = (raw_value(yf, k) for k in ("operating_income", "d_and_a", "impairment"))
+    return derived_value(
+        v, f"operating income {fmt_money_millions(oi)} + D&A {fmt_money_millions(da)} + "
+           f"impairments {fmt_money_millions(imp or 0.0)} ({period}{construction})",
+        fmt_money_millions(v), note=f"{EBITDA_DEFINITION}, {period}")
+
+
+def ltm_ebitda(rows: list[ForensicTableRow]) -> Optional[ForensicTableRow]:
+    """The forensic column behind every EBITDA ratio: the latest one with an EBITDA — the
+    TTM quarter column when a 10-Q post-dates the fiscal year (it is appended last)."""
+    return next((r for r in reversed(rows) if r.ebitda and r.ebitda.value is not None), None)
 
 
 def _fcf(yf: YearFacts) -> Optional[float]:
@@ -76,7 +101,6 @@ def build_forensic_table(series: FinancialSeries) -> list[ForensicTableRow]:
     rows: list[ForensicTableRow] = []
     for yf in series.years:
         td_val, td_parts = total_debt(yf)
-        ebitda_val = _ebitda(yf)
         fcf_val = _fcf(yf)
         dpo_val, denom_label = _dpo(yf)
 
@@ -84,14 +108,6 @@ def build_forensic_table(series: FinancialSeries) -> list[ForensicTableRow]:
             derived_value(td_val, " + ".join(td_parts), fmt_money_millions(td_val),
                           note="Sum of reported debt components (each cited).")
             if td_val is not None else None
-        )
-        ebitda_cv = (
-            derived_value(ebitda_val,
-                          f"operating_income ({fmt_money_millions(raw_value(yf, 'operating_income'))}) "
-                          f"+ D&A ({fmt_money_millions(raw_value(yf, 'd_and_a'))})",
-                          fmt_money_millions(ebitda_val),
-                          note="Proxy EBITDA = operating income + D&A.")
-            if ebitda_val is not None else None
         )
         fcf_cv = (
             derived_value(fcf_val,
@@ -120,7 +136,7 @@ def build_forensic_table(series: FinancialSeries) -> list[ForensicTableRow]:
                 inventory=cited_metric(yf, "inventory", cik),
                 revenue=cited_metric(yf, "revenue", cik),
                 cogs=cited_metric(yf, "cogs", cik),
-                ebitda=ebitda_cv,
+                ebitda=_ebitda_cv(yf, f"FY{yf.fiscal_year}"),
                 operating_cash_flow=cited_metric(yf, "operating_cash_flow", cik),
                 dpo=dpo_cv,
             )
@@ -136,13 +152,19 @@ class _TTMFact:
         self.numeric_value = v
 
 
+def ttm_view(qf) -> YearFacts:
+    """A quarter end read like a fiscal year: TTM flows wrapped as facts (no source to
+    cite), instants as tagged in the 10-Q."""
+    return YearFacts(fiscal_year=qf.period_end.year, period_end=qf.period_end,
+                     metrics={**{k: _TTMFact(v) for k, v in qf.ttm.items() if v is not None},
+                              **qf.metrics})
+
+
 def quarter_forensic_row(qf, cik: str) -> ForensicTableRow:
     """Latest-10-Q column: balance-sheet metrics as of the quarter date (cited XBRL facts)
     + trailing-12-month flows. TTM cells are derived — a TTM sum has no single source fact
     to cite — so they carry the construction as their formula instead."""
-    view = YearFacts(fiscal_year=qf.period_end.year, period_end=qf.period_end,
-                     metrics={**{k: _TTMFact(v) for k, v in qf.ttm.items() if v is not None},
-                              **qf.metrics})
+    view = ttm_view(qf)
     ttm_note = f"TTM through {qf.label} (last annual + YTD − prior-year YTD)"
 
     def ttm_cv(key: str) -> Optional[CitedValue]:
@@ -152,7 +174,6 @@ def quarter_forensic_row(qf, cik: str) -> ForensicTableRow:
         return derived_value(v, ttm_note, fmt_money_millions(v))
 
     td_val, td_parts = total_debt(view)          # debt components are instants → real facts
-    ebitda_val = _ebitda(view)
     fcf_val = _fcf(view)
     dpo_val, denom_label = _dpo(view)
 
@@ -172,10 +193,8 @@ def quarter_forensic_row(qf, cik: str) -> ForensicTableRow:
         inventory=cited_metric(view, "inventory", cik),
         revenue=ttm_cv("revenue"),
         cogs=ttm_cv("cogs"),
-        ebitda=(derived_value(ebitda_val, f"operating_income + D&A, {ttm_note}",
-                              fmt_money_millions(ebitda_val),
-                              note="Proxy EBITDA = operating income + D&A (TTM).")
-                if ebitda_val is not None else None),
+        ebitda=_ebitda_cv(view, f"TTM through {qf.label}",
+                          ": last annual + YTD − prior-year YTD"),
         operating_cash_flow=ttm_cv("operating_cash_flow"),
         dpo=(derived_value(dpo_val, f"accounts_payable (as of {qf.label}) / {denom_label} (TTM) x 365",
                            fmt_days(dpo_val),
@@ -264,7 +283,7 @@ def detect_flags(series: FinancialSeries) -> list[ForensicFlag]:
                     "cash_conversion": round(conversion, 2),
                 },
                 narrative=(
-                    f"Cumulative proxy EBITDA {fmt_money_millions(cum_ebitda)} converted to "
+                    f"Cumulative EBITDA {fmt_money_millions(cum_ebitda)} converted to "
                     f"{round(conversion*100)}% in OCF ({fmt_money_millions(cum_ocf)}). "
                     f"Covenants are EBITDA-based; default is cash-based."
                 ),
