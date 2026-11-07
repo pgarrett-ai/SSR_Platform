@@ -31,9 +31,9 @@ function CompanyLayout() {
   const t = useParams().ticker.toUpperCase();
   const tab = useLocation().pathname.split("/")[3];
   const overview = useStreamed(`overview:${t}:${OVERVIEW_YEARS}`,
-    (onProgress) => streamOverview(t, OVERVIEW_YEARS, false, onProgress).promise);
+    (onProgress) => streamOverview(t, OVERVIEW_YEARS, false, onProgress));
   const hazard = useStreamed(`hazard:${t}`,
-    (onProgress) => streamHazard(t, HAZARD_YEARS, onProgress).promise);
+    (onProgress) => streamHazard(t, HAZARD_YEARS, onProgress));
 
   // The RECOVER cell reads the persisted last run until Recovery reports a fresh one
   // (same shape as overview.recovery_summary: {mode, saved_at, fulcrum, tranches:

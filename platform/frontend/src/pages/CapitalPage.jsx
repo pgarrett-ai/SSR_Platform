@@ -10,14 +10,8 @@ import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
 import ObsFindings from "../components/ObsFindings.jsx";
 import SubsidiariesList from "../components/SubsidiariesList.jsx";
 import CovenantPackages from "../components/CovenantPackages.jsx";
-import CapacityCard from "../components/CapacityCard.jsx";
-import CreationLadder from "../components/CreationLadder.jsx";
-import TradeBasis from "../components/TradeBasis.jsx";
 import RefiWall from "../components/RefiWall.jsx";
-import Telegraph from "../components/Telegraph.jsx";
-import OptionsCard from "../components/OptionsCard.jsx";
 import LiquidityCalendar from "../components/LiquidityCalendar.jsx";
-import DocSearch from "../components/DocSearch.jsx";
 import HoldersPanel from "../components/HoldersPanel.jsx";
 
 // The page map: a quiet sticky rail of section anchors with scroll-spy. Plain fragment
@@ -72,16 +66,10 @@ export default function CapitalPage({ ticker, overview: stream }) {
       { id: "economic-debt-bridge", title: "Debt bridge" },
       ...(overview.ebitda_build ? [{ id: "ebitda-build", title: "EBITDA build" }] : []),
       { id: "as-reported-debt-schedule", title: "Debt schedule" },
-      { id: "creation-multiple-ladder", title: "Creation ladder" },
-      { id: "trade-basis", title: "Trade basis" },
       { id: "liquidity-event-calendar", title: "Liquidity calendar" },
-      { id: "credit-capacity", title: "Credit capacity" },
-      { id: "bank-position-filing-telegraph", title: "Bank & telegraph" },
-      { id: "company-options", title: "Company options" },
       { id: "forensic-cash-vs-debt-test", title: "Forensic test" },
       { id: "obs", title: "OBS findings" },
       ...(overview.subsidiaries?.length ? [{ id: "legal-entities", title: "Legal entities" }] : []),
-      { id: "document-search", title: "Doc search" },
       { id: "covenants", title: "Covenants" },
       { id: "sources", title: "Sources" },
     ];
@@ -136,21 +124,7 @@ export default function CapitalPage({ ticker, overview: stream }) {
             <RefiWall ticker={ticker} years={overview.header?.years || 3} />
           </Section>
 
-          <Section
-            collapsible
-            title="Creation-multiple ladder"
-            subtitle="cumulative claims through each class ÷ EBITDA, at face and at market"
-          >
-            <CreationLadder ticker={ticker} years={overview.header?.years || 3} />
-          </Section>
 
-          <Section
-            collapsible
-            title="Trade basis"
-            subtitle="effective cost basis per matched quote — accrued, trading flat, claim per 100, cash-at-risk"
-          >
-            <TradeBasis ticker={ticker} years={overview.header?.years || 3} />
-          </Section>
 
           <Section
             collapsible
@@ -161,29 +135,8 @@ export default function CapitalPage({ ticker, overview: stream }) {
             <LiquidityCalendar events={overview.liquidity_events} note={overview.liquidity_events_note} />
           </Section>
 
-          <Section
-            collapsible
-            title="Credit capacity"
-            subtitle="can the structure repay itself internally? cash-sweep model, leverage × growth grid, cycle stress"
-          >
-            <CapacityCard ticker={ticker} years={overview.header?.years || 3} />
-          </Section>
 
-          <Section
-            collapsible
-            title="Bank position & filing telegraph"
-            subtitle="where the bank sits when trouble starts, and the five tells a filing is being telegraphed"
-          >
-            <Telegraph ticker={ticker} years={overview.header?.years || 3} />
-          </Section>
 
-          <Section
-            collapsible
-            title="Company options"
-            subtitle="buy back debt, exchange it, or sell assets — what the clock, cash, and covenants allow"
-          >
-            <OptionsCard ticker={ticker} years={overview.header?.years || 3} />
-          </Section>
 
           <Section collapsible title="Forensic cash-vs-debt test" subtitle="XBRL facts by fiscal year · flags fire on divergences">
             <ForensicTable rows={overview.forensic_table} />
@@ -222,7 +175,6 @@ export default function CapitalPage({ ticker, overview: stream }) {
             </Section>
           )}
 
-          <DocSearch ticker={ticker} />
 
           <Section
             collapsible
