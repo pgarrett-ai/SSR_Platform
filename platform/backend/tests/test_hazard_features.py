@@ -40,8 +40,8 @@ def test_year_citations_drilldown():
 
 
 def test_cash_burner_year_features_sign_safe():
-    # C3 regression: negative EBITDA must not yield a negative (monotone-"safe")
-    # net_debt_to_ebitda; the burner carries a runway feature instead.
+    # negative EBITDA must not yield a negative (monotone-"safe") net_debt_to_ebitda; the
+    # burner carries the EBITDA <= 0 flag the trained model reads, and a runway feature.
     import datetime as dt
     from types import SimpleNamespace
 
@@ -61,7 +61,8 @@ def test_cash_burner_year_features_sign_safe():
     })
     f = year_features(burner)
     assert f["ebitda"] == pytest.approx(-2.1e9)
-    assert f["net_debt_to_ebitda"] is None            # pre-fix: −0.71 → "safe"
+    assert f["net_debt_to_ebitda"] is None            # not −0.71, which would read "safe"
+    assert f["ebitda_nonpositive"] == 1.0
     assert f["runway_years"] == pytest.approx(0.5e9 / 3.0e9)   # cash / |OCF − capex|
 
     healthy = YearFacts(fiscal_year=2025, period_end=dt.date(2025, 12, 31), metrics={
@@ -71,4 +72,5 @@ def test_cash_burner_year_features_sign_safe():
     })
     h = year_features(healthy)
     assert h["net_debt_to_ebitda"] == pytest.approx(1.5e9 / 1.2e9)  # classic ratio survives
+    assert h["ebitda_nonpositive"] == 0.0
     assert h["runway_years"] is None                  # FCF-positive: not the binding constraint

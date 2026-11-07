@@ -4,13 +4,10 @@ import { useAsync } from "../cache.js";
 import CitedNumber from "./CitedNumber.jsx";
 import { Badge, EmptyState, Skeleton, Td, Th } from "../ui/index.jsx";
 
-// Refi-wall sequencing (Moyer ch. 6/10) — the maturity wall's analytical extension:
-// can each bucket be repaid internally, and if not, will anyone refinance it?
-// PD leg = conditional Merton term structure re-solved from the cached hazard inputs;
-// market leg = TRACE drop-file (YTM ≥ 40% = markets closed).
+// Refi-wall sequencing: can each maturity bucket be repaid internally, and if not, is
+// the market open to refinance it (bond marks: YTM ≥ 40% = markets closed)?
 
 const VERDICT_TONE = { unrefinanceable: "high", refi_needed: "watch", fundable: "ok" };
-const pd = (v) => (v == null ? "—" : `${(100 * v).toFixed(1)}%`);
 
 export default function RefiWall({ ticker, years }) {
   const { data, loading, error } = useAsync(
@@ -38,7 +35,6 @@ export default function RefiWall({ ticker, years }) {
               <Th right title="Σ face due in the bucket ($mm)">Face</Th>
               <Th right title="min(face, liquidity + cumulative sweep capacity at flat 2% growth − earlier wall faces) — sequential funding, front to back">Repayable internally</Th>
               <Th right title="face − repayable internally, floored at 0">Refi need</Th>
-              <Th right title="risk-neutral Merton conditional PD over the interval a refi lender at this wall bears (to the next wall): (PD(tᵢ)−PD(tᵢ₋₁)) ÷ (1−PD(tᵢ₋₁)); flagged when the nearest agency band is CCC/C (≈9.7% cutoff, platform-chosen)">Cond. PD to next wall</Th>
               <Th right title="bucket quote's YTM — ≥ 40% means the refi market is closed; refi prob = (bucket price − longer pari price) ÷ (100 − longer pari price)">YTM / refi prob</Th>
               <Th>Verdict</Th>
             </tr>
@@ -56,15 +52,6 @@ export default function RefiWall({ ticker, years }) {
                 <Td right mono>
                   <CitedNumber cv={r.refi_need}
                     className={r.refi_need?.value > 0 ? "text-amber-300" : "text-slate-400"} />
-                </Td>
-                <Td right mono className="text-slate-300"
-                  title={r.band ? `nearest band ${r.band} · cumulative PD by ${r.year}: ${pd(r.cum_pd)}` : undefined}>
-                  {pd(r.cond_pd)}
-                  {r.band && (
-                    <span className={`ml-1 text-[9px] uppercase ${r.band === "CCC/C" ? "text-rose-300" : "text-slate-500"}`}>
-                      {r.band}
-                    </span>
-                  )}
                 </Td>
                 <Td right mono className="text-slate-300" title={r.refi_prob_note || undefined}>
                   {r.quote?.ytm != null ? `${r.quote.ytm.toFixed(1)}%` : "—"}
@@ -88,17 +75,7 @@ export default function RefiWall({ ticker, years }) {
           </tbody>
         </table>
       </div>
-      <div className="mt-2 text-[11px] text-slate-500">
-        {data.hazard ? (
-          <span title={data.hazard.methodology}>
-            PD leg: {data.hazard.file} (as of {data.hazard.as_of}) — risk-neutral Merton,
-            single default point D = total debt.
-          </span>
-        ) : (
-          <span>{data.hazard_note}</span>
-        )}{" "}
-        {data.derivation}
-      </div>
+      <div className="mt-2 text-[11px] text-slate-500">{data.derivation}</div>
     </div>
   );
 }

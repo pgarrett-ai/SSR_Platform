@@ -2,7 +2,7 @@
 // stats, table cells, formatters. Every page composes these — no page
 // defines its own card/section/badge styles.
 import React, { useMemo, useState } from "react";
-import { ACCENT, INK, NEUTRAL, RISK } from "./colors.js";
+import { INK, RISK } from "./colors.js";
 
 export { ACCENT, INK, LINE_COLORS, NEUTRAL, RISK } from "./colors.js";
 
@@ -36,14 +36,6 @@ export function fmtMoney(x) {
 }
 
 /* ---------- status colors ---------- */
-
-// Risk band (0-100): green safe -> amber -> red distress. 33/66 everywhere.
-export function riskColor(r) {
-  if (r == null) return NEUTRAL;
-  if (r >= 66) return RISK.high;
-  if (r >= 33) return RISK.watch;
-  return RISK.ok;
-}
 
 export const ZONE_COLOR = { safe: RISK.ok, grey: RISK.watch, distress: RISK.high };
 

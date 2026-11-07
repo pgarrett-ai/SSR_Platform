@@ -15,6 +15,7 @@ export default function RestatementScreen({ ticker, years }) {
   const filings = (data?.trigger_filings || [])
     .filter((fl) => ACCOUNTING.some((it) => fl.triggers?.[it]));
   if (!filings.length) return null;
+  const covered = data.factors?.immediate_need?.covered_by_cash;
 
   return (
     <Section title="Accounting triggers" subtitle="8-K Item 4.01 auditor change · 4.02 non-reliance"
@@ -22,7 +23,9 @@ export default function RestatementScreen({ ticker, years }) {
       <div className="mb-2 text-sm text-slate-300">
         {data.crisis
           ? "An at-risk obligation is not covered by cash on hand."
-          : "No at-risk obligation is shown as uncovered by cash on hand."}
+          : covered == null
+            ? "Cash coverage of near-term obligations could not be determined."
+            : "Near-term at-risk obligations are covered by cash on hand."}
       </div>
       {filings.map((fl) => (
         <div key={fl.accession} className="text-xs text-slate-400">

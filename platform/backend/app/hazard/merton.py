@@ -124,6 +124,8 @@ def _self_check() -> None:
     curve = list(thin.pd_by_horizon.values())
     assert all(b >= a for a, b in zip(curve, curve[1:])), curve
     assert thin.pd_by_horizon[1.0] >= norm.cdf(-thin.dd_1y), (curve, thin.dd_1y)
+    # pins the reflection term: e^(-x) instead of e^x would pass both checks above
+    assert abs(thin.pd_by_horizon[1.0] - 0.3295) < 1e-3, curve
 
     print("merton self-check OK")
     print(f"  healthy   DD={healthy.dd_1y:.2f}  PD(1y)={healthy.pd_by_horizon[1.0]:.4f}")

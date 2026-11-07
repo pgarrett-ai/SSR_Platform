@@ -342,18 +342,17 @@ def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
 
 @app.get("/api/company/{ticker}/capital/refi")
 def capital_refi(ticker: str, years: int = Query(3, ge=1, le=10)):
-    """Refi-wall sequencing (Moyer ch. 6/10): per maturity bucket, internal repayability
-    (sequential sweep funding), the conditional-PD leg from the cached hazard inputs,
-    and the drop-file market overlay. On-demand so a quote refresh reprices without a
-    pipeline run."""
-    from .capstack.refi import build_refi_wall, hazard_inputs
+    """Refi-wall sequencing: per maturity bucket, internal repayability (sequential sweep
+    funding) and the bond-mark market overlay. On-demand so a quote refresh reprices
+    without a pipeline run."""
+    from .capstack.refi import build_refi_wall
     from .hazard.trace import get_issuer_bonds
 
     def _run():
         ov = json.loads(run_overview(ticker, years).model_dump_json())
         bonds = get_issuer_bonds(ticker).get("bonds") or []
         return JSONResponse(content=jsonable(
-            build_refi_wall(ov, bonds, hazard_inputs(ticker))))
+            build_refi_wall(ov, bonds)))
 
     return _handle_pipeline_errors(_run)
 

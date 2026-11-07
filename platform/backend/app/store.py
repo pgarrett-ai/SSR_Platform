@@ -227,8 +227,9 @@ def persist_debt_instruments(session: Session, ticker: str, instruments,
 
 
 def upsert_snapshot(session: Session, ticker: str, overview) -> None:
-    """Refresh the ticker's screening-index row from an Overview. merge() replaces every
-    column, so hazard risk values from a prior Default Risk run are carried over."""
+    """Refresh the ticker's screening-index row from an Overview. merge() writes only the
+    attributes set here, so hazard values from a prior Default Risk run are carried over
+    explicitly."""
     def _val(cv):
         return cv.value if cv is not None else None
 
@@ -283,7 +284,7 @@ def update_snapshot_risk(session: Session, ticker: str, hz: dict) -> None:
     row = session.get(models.Snapshot, ticker)
     if row is None:
         return
-    trained =(hz.get("scores") or {}).get("Trained hazard") or {}
+    trained = (hz.get("scores") or {}).get("Trained hazard") or {}
     row.trained_pd = trained.get("value")
     row.implied_rating = trained.get("implied_rating")
     row.last_price = (hz.get("market") or {}).get("price")   # feeds the distress badge

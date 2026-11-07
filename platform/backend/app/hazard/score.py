@@ -74,23 +74,24 @@ class MertonScorer(Scorer):
         res = merton_mod.merton(E=market.market_cap, sigma_E=market.equity_vol, D=D, r=r)
         if res is None:
             return {"available": False, "note": "Merton solve failed"}
+        below = math.log(res.asset_value / D) + r <= 0
         return {
             "available": True,
             "value": round(res.dd_1y, 2),               # distance-to-default (1y)
             "asset_vol": round(res.asset_vol, 3),
             "converged": res.converged,
             "pd": {f"{int(h*12)}m": res.pd_by_horizon[h] for h in (0.25, 0.5, 1.0)},
-            "note": "market-implied (risk-neutral) first-passage PD",
-            # the exact solved inputs, so cached payloads carry them (refi's conditional
-            # PDs re-solve from these instead of reassembling from market/features)
+            "note": ("implied assets at or below the default barrier — PD is 100% at "
+                     "every horizon" if below else
+                     "market-implied (risk-neutral) first-passage PD"),
+            # the exact solved inputs, so the cached payload is reproducible
             "inputs": {"E": float(market.market_cap), "sigma_E": float(market.equity_vol),
                        "D": float(D), "r": float(r)},
         }
 
 
 # --------------------------------------------------------------------------- #
-# Trained model (P6) — slots into the same interface; appears only once a model
-# has been deliberately trained + saved (so the dashboard stays honest until then).
+# Trained model — same interface; present only when a trained bundle is on disk.
 # --------------------------------------------------------------------------- #
 # S&P Global long-run average one-year corporate default rates by rating (1981–2023),
 # as fractions. AAA/AA historical rates round to ~0 — floored so log-distance works.
@@ -112,19 +113,12 @@ class TrainedHazardScorer(Scorer):
     def __init__(self, bundle: dict):
         self.model = bundle["model"]
         self.features = bundle["features"]
-        self.label_source = bundle.get("label_source")   # real-label provenance (Phase 5)
-        self.walk_forward_auc = bundle.get("walk_forward_auc") or {}
+        self.label_source = bundle.get("label_source")   # real-label provenance
+        self.pooled_auc = (bundle.get("eval") or {}).get("pooled_auc")
         self.prior = bundle.get("prior")                 # case-control -> real-world rates
 
     def score(self, feats: dict, market=None) -> dict:
         import numpy as np
-        if market is not None and getattr(market, "ok", False):
-            # live market snapshot fills the market features the panel trained on
-            # (same trailing-window semantics — see market.pit_market_features)
-            overlay = {k: getattr(market, k, None)
-                       for k in ("equity_vol", "drawdown_52w", "excess_return_1y")}
-            feats = {**feats, **{k: v for k, v in overlay.items()
-                                 if v is not None and k in self.features}}
         x = np.array([[feats.get(f, np.nan) for f in self.features]], dtype=float)
         if np.isnan(x).all():
             return {"available": False, "note": "no features for trained model"}
@@ -137,9 +131,9 @@ class TrainedHazardScorer(Scorer):
             out["implied_rating"] = implied_rating(pd12)
         out["value"] = round(pd12, 4)
         if self.label_source:
-            aucs = list(self.walk_forward_auc.values())
             out["note"] = self.label_source + (
-                f" · walk-forward AUC {min(aucs):.2f}–{max(aucs):.2f}" if aucs else "")
+                f" · pooled out-of-sample AUC {self.pooled_auc:.2f}"
+                if self.pooled_auc is not None else "")
         else:
             out["note"] = "demo-trained (synthetic fixture) — not a real performance claim"
         return out
