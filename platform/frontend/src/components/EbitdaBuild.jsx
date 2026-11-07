@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CitedNumber from "./CitedNumber.jsx";
-import { MUTED_EXCLUDED, MUTED_NA, fmtLev, fmtMoney as fmtM } from "../ui/index.jsx";
+import { MUTED_EXCLUDED, MUTED_NA, fmtLev, fmtMoney } from "../ui/index.jsx";
 
 // The EBITDA box: net income → EBITDA walk (each line XBRL-cited), then the issuer's own
 // covenant add-back categories — only when at least one is quantified, since a list of
@@ -36,8 +36,8 @@ export default function EbitdaBuild({ build, economicDebt }) {
 
   // The one number the user tuned gets the same provenance treatment as everything else.
   const adjustedCv = adjusted == null ? null : {
-    display: fmtM(adjusted), value: adjusted, derived: true,
-    formula: `EBITDA ${fmtM(ebitda)} + ${nIncluded} enabled add-back${nIncluded === 1 ? "" : "s"} ${fmtM(addbackSum)}`,
+    display: fmtMoney(adjusted), value: adjusted, derived: true,
+    formula: `EBITDA ${fmtMoney(ebitda)} + ${nIncluded} enabled add-back${nIncluded === 1 ? "" : "s"} ${fmtMoney(addbackSum)}`,
     note: excluded.size ? `${excluded.size} add-back${excluded.size === 1 ? "" : "s"} excluded by you` : undefined,
   };
 
@@ -68,7 +68,7 @@ export default function EbitdaBuild({ build, economicDebt }) {
               Covenant add-backs (from the credit agreement)
             </span>
             <span className="text-[11px] text-slate-400">
-              {nQuant} of {build.addbacks.length} quantifiable · {fmtM(addbackSum)} included
+              {nQuant} of {build.addbacks.length} quantifiable · {fmtMoney(addbackSum)} included
             </span>
           </div>
           <table className="w-full text-sm">
@@ -138,7 +138,7 @@ export default function EbitdaBuild({ build, economicDebt }) {
         <p className="mt-2 text-[11px] text-slate-400">
           Implied economic leverage vs adjusted EBITDA:{" "}
           <span className="font-mono text-slate-300">{fmtLev(impliedLev)}</span>
-          {" "}(economic debt {fmtM(economicDebt.value)} / adjusted EBITDA {fmtM(adjusted)})
+          {" "}(economic debt {fmtMoney(economicDebt.value)} / adjusted EBITDA {fmtMoney(adjusted)})
         </p>
       )}
     </div>
