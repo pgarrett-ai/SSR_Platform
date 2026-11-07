@@ -572,7 +572,7 @@ def _build_overview(ticker: str, years: int, progress: ProgressLog) -> Overview:
         prior_sponsor = getattr(load_latest_overview(ticker), "sponsor", None)
         sponsor = prior_sponsor or sponsor
 
-    # --- Chapter 11 status: an 8-K Item 1.03 in the last three years, cited ---
+    # --- Chapter 11 status: a case whose last 8-K Item 1.03 is within three years, cited ---
     chapter11 = None
     try:
         chapter11 = _chapter11(cik, warnings)

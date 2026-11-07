@@ -56,14 +56,19 @@ export async function fetchHealth() {
   return jsonOrThrow(await apiFetch("/api/health"));
 }
 
-// EventSource hides the HTTP status of a refused stream, so one plain request reads it. A
-// 401 or 422 is answered before the route runs; a 200 means the server is back, and the
-// request is cancelled at its headers.
+// A token saved in an earlier session has outlived its cookie; re-mirror it for EventSource.
+if (getToken()) setToken(getToken());
+
+// EventSource hides the HTTP status of a refused stream, so one plain request reads it,
+// sending the cookie only, as EventSource does. A 401 or 422 is answered before the route
+// runs; a 200 means the server is back, and the request is cancelled at its headers.
 async function refusedStreamMessage(url) {
   const ctl = new AbortController();
   try {
-    const r = await apiFetch(url, { signal: ctl.signal });
+    const r = await fetch(url, { signal: ctl.signal });
     if (r.status === 401) return "API token required: enter it in the header, then retry";
+    // a dev proxy answers a dead backend with an empty 5xx
+    if (r.status >= 500 && !(await r.clone().text())) return "connection to server lost";
     if (!r.ok) await jsonOrThrow(r);
   } catch (e) {
     if (e.name !== "AbortError" && !(e instanceof TypeError)) return e.message;

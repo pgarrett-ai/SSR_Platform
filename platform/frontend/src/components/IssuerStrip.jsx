@@ -116,8 +116,8 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
           {!liq ? fallback(overview) : (
             <>
               <CitedNumber cv={liq.total_liquidity} className="text-slate-100" />
-              <div className="relative truncate text-xs text-slate-400" title={liquidityParts(liq)}>
-                {liquidityParts(liq)}
+              <div className="truncate text-xs text-slate-400">
+                <span className="relative" title={liquidityParts(liq)}>{liquidityParts(liq)}</span>
                 {liq.is_distressed && liq.runway_months != null && (
                   <span className={runwayTone(liq.runway_months)}>
                     {" "}· runway {liq.runway_months.toFixed(0)} mo
@@ -138,8 +138,10 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
             hazard.data?.merton && !hazard.data.merton.available ? (
               <>
                 <div className="font-mono text-slate-100">n.m.</div>
-                <div className="relative truncate text-xs text-slate-400" title={hazard.data.merton.note}>
-                  {hazard.data.merton.note || "Merton not available"}
+                <div className="truncate text-xs text-slate-400">
+                  <span className="relative" title={hazard.data.merton.note}>
+                    {hazard.data.merton.note || "Merton not available"}
+                  </span>
                 </div>
               </>
             ) : fallback(hazard)
@@ -158,13 +160,15 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
 
         {recovery && (
           <Cell to={`${base}/recovery`} label="Recover" active={tab === "recovery"}>
-            <div
-              className="relative"
-              title={[fulcrumMembers, recovery.saved_at && `run ${recovery.saved_at.slice(0, 10)}`,
-                recovery.mode === "liquidation" ? "liquidation" : "Monte Carlo"].filter(Boolean).join(" · ")}
-            >
+            <div>
               <div className="truncate text-slate-100">
-                {fulcrumClass ? `Fulcrum: ${fulcrumClass}` : "No fulcrum — every class covered"}
+                <span
+                  className="relative"
+                  title={[fulcrumMembers, recovery.saved_at && `run ${recovery.saved_at.slice(0, 10)}`,
+                    recovery.mode === "liquidation" ? "liquidation" : "Monte Carlo"].filter(Boolean).join(" · ")}
+                >
+                  {fulcrumClass ? `Fulcrum: ${fulcrumClass}` : "No fulcrum — every class covered"}
+                </span>
               </div>
               {fulcrum?.mean_recovery_pct != null && (
                 <div className="text-xs text-slate-400">

@@ -177,8 +177,10 @@ def petition_filing(cik) -> Optional[dict]:
     if (_today() - days[-1]).days > _CASE_LOOKBACK_DAYS:
         return None
     case = rows[first:]
-    # ponytail: a later 1.03 for affiliates joining the case reads as a confirmation too;
-    # read the 8-K body to tell them apart if an issuer files one
+    # ponytail: filings group by a 2-year gap, not by reading the 8-K body. Ceilings: a later
+    # 1.03 for affiliates joining the case (or a first-day order) reads as the confirmation; a
+    # Chapter 22 refiled within 2 years of confirmation merges into the old case; a case that
+    # runs past 2 years from petition to confirmation splits. Read the 8-K body to fix these.
     cite = [{"date": r["filing_date"], "accession": r["accession"],
              "source_url": r["source_url"]} for r in (case[0], case[-1])]
     return {**cite[0], "plan_confirmed": cite[1] if len(case) > 1 else None}

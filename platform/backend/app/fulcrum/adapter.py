@@ -102,7 +102,9 @@ def _claim_amount(inst: dict) -> tuple[Optional[float], Optional[dict]]:
     oid = (inst.get("unamortized_discount") or {}).get("value") or 0.0
     principal = float(face["value"]) - float(oid)
     # ponytail: a 10% band, not a reconciliation. The face tag is par at issuance; further
-    # off carrying it is stale (amortized, repurchased or exchanged paper) and carrying claims
+    # off carrying it is stale (amortized, repurchased or exchanged paper) and carrying claims.
+    # The band is symmetric, so notes carried well above par (a TDR, an exchange premium)
+    # claim the inflated carrying amount; map those by hand.
     if abs(principal - carrying[0]) > _FACE_TOLERANCE * carrying[0]:
         return carrying
     return principal, face.get("citation")

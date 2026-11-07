@@ -290,7 +290,7 @@ def test_ticker_charset_rejected_422():
 
 
 def test_simulate_persists_recovery_summary():
-    # the Overview recovery card reads Snapshot.recovery_summary instead of re-simulating
+    # the issuer strip's Recover cell reads Snapshot.recovery_summary instead of re-simulating
     from app import models
     from app.core.db import session_scope
 
