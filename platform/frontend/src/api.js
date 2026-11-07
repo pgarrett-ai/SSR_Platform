@@ -106,10 +106,8 @@ export async function fetchHolders(ticker) {
 }
 
 // Quotes matched per instrument (Recovery reads quote_by_instrument).
-export async function fetchLadder(ticker, years = 3, recast = false) {
-  return jsonOrThrow(
-    await apiFetch(`${co(ticker)}/capital/ladder?years=${years}&recast_mezz=${recast ? 1 : 0}`)
-  );
+export async function fetchLadder(ticker, years = 3) {
+  return jsonOrThrow(await apiFetch(`${co(ticker)}/capital/ladder?years=${years}`));
 }
 
 export async function fetchRefiWall(ticker, years = 3) {

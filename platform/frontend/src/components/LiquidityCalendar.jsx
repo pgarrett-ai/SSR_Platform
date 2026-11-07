@@ -9,7 +9,10 @@ import { Badge, Td, Th } from "../ui/index.jsx";
 const FLAG_LABEL = {
   coupon_at_risk: "coupon at risk",
   maturity_unfundable: "unfundable",
+  stayed: "stayed (Ch. 11)",
 };
+// The automatic stay suspends pre-petition payments: a fact of the case, not an alarm.
+const isAlarm = (f) => f !== "stayed";
 const MAX_ROWS = 12;
 
 export default function LiquidityCalendar({ events, note }) {
@@ -31,7 +34,7 @@ export default function LiquidityCalendar({ events, note }) {
           </thead>
           <tbody>
             {ahead.slice(0, MAX_ROWS).map((e, i) => (
-              <tr key={i} className={`border-b border-ink-700/60 ${e.flags?.length ? "bg-rose-500/5" : ""}`}>
+              <tr key={i} className={`border-b border-ink-700/60 ${e.flags?.some(isAlarm) ? "bg-rose-500/5" : ""}`}>
                 <Td mono className="text-slate-300">{e.date}</Td>
                 <Td className={e.kind === "maturity" ? "text-slate-100" : "text-slate-400"}
                   title={e.assumption || undefined}>{e.kind}</Td>
@@ -44,7 +47,7 @@ export default function LiquidityCalendar({ events, note }) {
                 </Td>
                 <Td>
                   {(e.flags || []).map((f) => (
-                    <Badge key={f} tone="high" className="mr-1">{FLAG_LABEL[f] || f}</Badge>
+                    <Badge key={f} tone={isAlarm(f) ? "high" : "neutral"} className="mr-1">{FLAG_LABEL[f] || f}</Badge>
                   ))}
                 </Td>
               </tr>

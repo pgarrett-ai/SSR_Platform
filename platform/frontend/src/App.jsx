@@ -44,6 +44,11 @@ function CompanyLayout() {
   const onRecoveryResult = useCallback((summary) => setLive({ ticker: t, summary }), [t]);
   const recovery = live?.ticker === t ? live.summary : overview.data?.recovery_summary;
 
+  useEffect(() => {
+    document.title = `${t} — Distressed Credit`;
+    return () => { document.title = "Distressed Credit"; };
+  }, [t]);
+
   return (
     <>
       <IssuerStrip ticker={t} tab={tab} overview={overview} hazard={hazard} recovery={recovery} />

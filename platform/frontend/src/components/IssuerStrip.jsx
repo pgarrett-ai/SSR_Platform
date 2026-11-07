@@ -33,6 +33,14 @@ function Cell({ to, label, active, children }) {
 const pd = (x) => (x < 0.001 ? "<0.1%" : fmtPct(x, 1));
 const runwayTone = (m) => (m < 6 ? "text-rose-300" : m < 12 ? "text-amber-300" : "text-slate-400");
 
+// The fulcrum is a class, "1st lien at OpCo (A, B)": the class reads in the cell, its
+// members in the tooltip. A summary saved before classes existed names one tranche.
+function fulcrumParts(fulcrum, tranches) {
+  if (tranches.some((t) => t.tranche === fulcrum)) return [fulcrum, null];
+  const m = /^(.+?) \((.+)\)$/.exec(fulcrum);
+  return m ? [m[1], m[2]] : [fulcrum, null];
+}
+
 export default function IssuerStrip({ ticker, tab, overview, hazard, recovery }) {
   const ov = overview.data;
   const name = ov?.header?.issuer || hazard.data?.issuer?.name;
@@ -46,8 +54,10 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
 
   // Leverage over non-positive EBITDA is not meaningful; economic debt still reads.
   const nm = b?.ebitda?.value != null && b.ebitda.value <= 0;
-  const fulcrum = recovery &&
-    (recovery.tranches || []).find((t) => t.is_fulcrum || t.tranche === recovery.fulcrum);
+  const tranches = recovery?.tranches || [];
+  const fulcrum = tranches.find((t) => t.is_fulcrum || t.tranche === recovery.fulcrum);
+  const [fulcrumClass, fulcrumMembers] = recovery?.fulcrum
+    ? fulcrumParts(recovery.fulcrum, tranches) : [null, null];
 
   const identity = [
     name && <span className="font-semibold text-slate-100">{name}</span>,
@@ -58,14 +68,16 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
       )}
     </span>,
     liq?.as_of_label && <span>data as of {liq.as_of_label}</span>,
-    ch11?.petition_date && (
+    ch11?.petition_date && (ch11.confirmed_at ? (
+      <span className="text-slate-300">Chapter 11 plan confirmed {ch11.confirmed_at}</span>
+    ) : (
       <span className="text-amber-300">
         In Chapter 11 since{" "}
-        {ch11.citation
-          ? <CitedNumber cv={{ display: ch11.petition_date, citation: ch11.citation }} />
+        {ch11.source
+          ? <CitedNumber cv={{ display: ch11.petition_date, citation: ch11.source }} />
           : ch11.petition_date}
       </span>
-    ),
+    )),
   ].filter(Boolean);
 
   return (
@@ -131,11 +143,11 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
         {recovery && (
           <Cell to={`${base}/recovery`} label="Recover" active={tab === "recovery"}>
             <div
-              title={[recovery.saved_at && `run ${recovery.saved_at.slice(0, 10)}`,
+              title={[fulcrumMembers, recovery.saved_at && `run ${recovery.saved_at.slice(0, 10)}`,
                 recovery.mode === "liquidation" ? "liquidation" : "Monte Carlo"].filter(Boolean).join(" · ")}
             >
               <div className="truncate text-slate-100">
-                {recovery.fulcrum ? `Fulcrum: ${recovery.fulcrum}` : "No fulcrum — every class covered"}
+                {fulcrumClass ? `Fulcrum: ${fulcrumClass}` : "No fulcrum — every class covered"}
               </div>
               {fulcrum?.mean_recovery_pct != null && (
                 <div className="text-xs text-slate-400">

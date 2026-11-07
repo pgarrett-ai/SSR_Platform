@@ -3,12 +3,12 @@ import CitedNumber from "./CitedNumber.jsx";
 import { Td, Th, rowClass } from "../ui/index.jsx";
 
 // The cash-vs-debt test per period. Every cell is citation- or formula-linked. The EBITDA
-// row is named by its formula so it never reads as the bridge's leverage denominator.
+// row is named by its formula, the same canonical EBITDA the leverage ratios divide by.
 const ROWS = [
   ["total_debt", "Total reported debt"],
   ["cash", "Cash & equivalents"],
   ["revenue", "Revenue"],
-  ["ebitda", "Op. income + D&A"],
+  ["ebitda", "EBITDA (op. income + D&A + impairments)"],
   ["operating_cash_flow", "Operating cash flow"],
   ["free_cash_flow", "Free cash flow"],
   ["capex", "Capex"],
