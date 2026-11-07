@@ -268,7 +268,7 @@ export function Th({ right = false, className = "", title, onClick, sorted, chil
   );
 }
 
-// Shared column-sort state (extracted from ScreenTable): nulls last both directions,
+// Shared column-sort state: nulls last both directions,
 // numbers numerically, strings lexicographically. defaultKey null = server order
 // until the first click. Spread thProps(key) onto a sortable <Th>.
 export function useSort(rows = [], defaultKey = null, defaultDir = "desc") {
@@ -305,7 +305,6 @@ export function Td({ right = false, mono = false, className = "", children, ...r
 }
 
 // ---- dense form primitives shared by the Recovery tool cards ----------------------
-// (one definition — these were copy-pasted per component before the consolidation)
 
 export const NUM_CLS =
   "w-28 rounded-md border border-ink-600 bg-ink-800 px-2 py-1.5 font-mono text-xs text-slate-100 outline-none focus:border-accent";
