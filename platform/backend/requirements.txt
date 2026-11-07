@@ -24,7 +24,7 @@ anthropic~=0.115
 numpy~=2.5
 pandas~=2.3
 scipy~=1.18
-scikit-learn~=1.8             # hazard gradient boosting
+scikit-learn~=1.8.0           # hazard model: the bundle is pickled on 1.8; 1.9.1 rejects an all-NaN column
 
 # --- Market data ---
 yfinance~=1.5
