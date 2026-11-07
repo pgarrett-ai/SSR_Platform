@@ -24,12 +24,13 @@ from .triage import _is_bank
 _MARKETS_CLOSED_YTM = 40.0   # Moyer ch. 10: a 40%+ yield means the refi market is closed
 _GROWTH = 0.02               # flat sweep growth — matches the capacity card's base case
 
-_METHODOLOGY = ("risk-neutral Merton PD term structure re-solved from the cached hazard "
-                "inputs (E = market cap, σ_E = equity vol, single default point D = "
-                "total debt); conditional PD over an interval = "
-                "(PD(tᵢ) − PD(tᵢ₋₁)) ÷ (1 − PD(tᵢ₋₁)); 'default looks likely' when the "
-                "nearest S&P long-run band by log-distance is CCC/C (≈9.7% cutoff — "
-                "platform-chosen)")
+_METHODOLOGY = ("risk-neutral first-passage Merton PD term structure re-solved from the "
+                "cached hazard inputs (E = market cap, σ_E = equity vol, single default "
+                "point D = total debt); conditional PD over an interval = "
+                "(PD(tᵢ) − PD(tᵢ₋₁)) ÷ (1 − PD(tᵢ₋₁)), annualized as "
+                "1 − (1 − c)^(1/Δt) before banding; 'default looks likely' when the "
+                "nearest S&P long-run one-year band by log-distance is CCC/C (≈9.7% "
+                "cutoff — platform-chosen)")
 
 
 def hazard_inputs(ticker: str) -> Optional[dict]:
@@ -62,8 +63,7 @@ def hazard_inputs(ticker: str) -> Optional[dict]:
 
 def conditional_from_cum(cum: list[float]) -> list[float]:
     """Interval PDs conditional on surviving the prior horizon:
-    cᵢ = (Pᵢ − Pᵢ₋₁) ÷ (1 − Pᵢ₋₁), floored at 0 (a risk-neutral cum PD can dip at
-    long horizons when drift dominates)."""
+    cᵢ = (Pᵢ − Pᵢ₋₁) ÷ (1 − Pᵢ₋₁), floored at 0 so float noise never goes negative."""
     out, prev = [], 0.0
     for p in cum:
         out.append(max((p - prev) / (1.0 - prev), 0.0) if prev < 1.0 else 0.0)
@@ -215,7 +215,10 @@ def build_refi_wall(ov: dict, bonds: list[dict], hz: Optional[dict]) -> dict:
             j = min(i + 1, n - 1)
             r["cond_pd"] = pds["conditional"][j]
             r["cum_pd"] = pds["cum"][i]
-            r["band"] = implied_rating(r["cond_pd"]) if r["cond_pd"] > 0 else None
+            # the bands are one-year default rates: annualize the interval PD first
+            dt_j = horizons[j] - (horizons[j - 1] if j else 0.0)
+            annual = 1.0 - (1.0 - r["cond_pd"]) ** (1.0 / dt_j) if r["cond_pd"] > 0 else 0.0
+            r["band"] = implied_rating(annual) if annual > 0 else None
             pd_leg = r["band"] == "CCC/C"
         else:
             r["cond_pd"] = r["cum_pd"] = r["band"] = None

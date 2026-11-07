@@ -19,13 +19,13 @@ def test_conditional_identity():
     out = conditional_from_cum([0.10, 0.20])
     assert out[0] == 0.10
     assert out[1] == pytest.approx(0.111111, abs=1e-6)
-    # a dipping risk-neutral cum PD floors at 0, never goes negative
+    # a non-increasing input floors at 0, never goes negative
     assert conditional_from_cum([0.10, 0.09]) == [0.10, 0.0]
 
 
 def test_merton_horizon_extension_monotone():
-    # LCID-shaped distressed profile: cumulative PD non-decreasing over near horizons,
-    # conditionals all >= 0 (floored — a risk-neutral cum PD can dip far out)
+    # LCID-shaped distressed profile: cumulative PD non-decreasing across horizons,
+    # conditionals all >= 0
     out = conditional_pds(E=2.5e9, sigma_E=0.85, D=2.7e9, r=0.04,
                           horizons=(0.5, 1.0, 2.0, 4.0))
     cum = out["cum"]
@@ -80,6 +80,21 @@ def test_back_to_front_regression(monkeypatch):
     assert rows[0]["verdict"] == "unrefinanceable"          # inherited, near cond 1% only
     assert rows[0]["cond_pd"] == pytest.approx(0.0101)      # to the NEXT wall
     assert rows[0]["band"] != "CCC/C"
+
+
+def test_band_annualizes_interval_pd(monkeypatch):
+    # 15% over the 5-year 2026->2031 interval is 3.2%/yr (B), not a CCC/C one-year PD,
+    # so a wall that liquidity covers stays fundable
+    monkeypatch.setattr(refi, "conditional_pds", lambda *a, **k: {
+        "cum": [0.01, 0.1585], "conditional": [0.01, 0.15], "converged": True})
+    wall = [{"year": 2026, "face": 100e6, "instruments": ["Term Loan"]},
+            {"year": 2031, "face": 100e6, "instruments": ["9% Notes"]}]
+    out = build_refi_wall(_ov(wall, liquidity=1e9), [],
+                          {"E": 1.0, "sigma_E": 1.0, "D": 1.0, "r": 0.04,
+                           "as_of": "2026-01-01", "file": "ZZREFI_10y.json"})
+    rows = out["rows"]
+    assert [r["band"] for r in rows] == ["B", "B"]
+    assert [r["verdict"] for r in rows] == ["fundable", "fundable"]
 
 
 def test_chipco_refi_prob_and_markets_closed():

@@ -67,7 +67,8 @@ def test_risk_update_survives_resave(tmp_path, monkeypatch):
             "scores": {"Trained hazard": {"value": 0.0014, "implied_rating": "BBB"}}})
     cache.save_overview("ZZTEST", 3, _overview(lev=8.0))   # capstack re-save
     row = next(r for r in client.get("/api/screen").json() if r["ticker"] == "ZZTEST")
-    assert row["overall_risk"] == 42.5 and row["implied_rating"] == "BBB"
+    assert row["implied_rating"] == "BBB" and row["trained_pd"] == 0.0014
+    assert row["overall_risk"] is None                     # the composite is never stored
     assert row["economic_leverage"] == 8.0                 # merge kept both sides
     _cleanup()
 

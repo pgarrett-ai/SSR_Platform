@@ -263,7 +263,6 @@ def upsert_snapshot(session: Session, ticker: str, overview) -> None:
         flag_count=len(overview.forensic_flags),
         net_market_leverage=net_mkt_lev,
         creation_multiple_fulcrum=creation_mult,
-        overall_risk=prior.overall_risk if prior else None,
         trained_pd=prior.trained_pd if prior else None,
         implied_rating=prior.implied_rating if prior else None,
         ebitda_capex_leverage=(overview.coverage_chips.debt_ebitda_capex.value
@@ -284,8 +283,7 @@ def update_snapshot_risk(session: Session, ticker: str, hz: dict) -> None:
     row = session.get(models.Snapshot, ticker)
     if row is None:
         return
-    row.overall_risk = (hz.get("executive_summary") or {}).get("overall_risk")
-    trained = (hz.get("scores") or {}).get("Trained hazard") or {}
+    trained =(hz.get("scores") or {}).get("Trained hazard") or {}
     row.trained_pd = trained.get("value")
     row.implied_rating = trained.get("implied_rating")
     row.last_price = (hz.get("market") or {}).get("price")   # feeds the distress badge
