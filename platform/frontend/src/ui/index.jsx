@@ -33,6 +33,17 @@ export const fmtMoney = (x, dp = 0) =>
     : `${x < 0 ? "-" : ""}$${(Math.abs(x) / 1e6).toLocaleString("en-US",
       { minimumFractionDigits: dp, maximumFractionDigits: dp })}M`;
 
+// What liquidity.total_liquidity sums, named from the legs present. Short-term
+// investments carry no leg of their own, so they read as the remainder over cash and
+// undrawn credit.
+export function liquidityParts(liq) {
+  const total = liq?.total_liquidity?.value;
+  if (total == null) return "";
+  const sti = total - (liq.cash?.value || 0) - (liq.undrawn_committed?.value || 0);
+  return [liq.cash && "cash", sti > 5e5 && "short-term investments",
+    liq.undrawn_committed && "undrawn"].filter(Boolean).join(" + ");
+}
+
 /* ---------- status colors ---------- */
 
 export const ZONE_COLOR = { safe: RISK.ok, grey: RISK.watch, distress: RISK.high };
@@ -79,10 +90,11 @@ export function Loading({ className = "", children = "Loading…" }) {
   return <div className={`py-8 text-center text-sm text-slate-400 ${className}`}>{children}</div>;
 }
 
-export function ErrorCard({ className = "", children }) {
+export function ErrorCard({ className = "", onRetry, children }) {
   return (
     <div className={`rounded-xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-200 ${className}`}>
       {children}
+      {onRetry && <Button onClick={onRetry} className="ml-3">Retry</Button>}
     </div>
   );
 }

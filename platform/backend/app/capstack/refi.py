@@ -94,7 +94,7 @@ def build_refi_wall(ov: dict, bonds: list[dict]) -> dict:
     liq_v = ((ov.get("liquidity") or {}).get("total_liquidity") or {}).get("value")
     liquidity_mm = (liq_v or 0.0) / 1e6   # $mm→raw-$ boundary kept here, in one place
     if liq_v is None:
-        notes.append("no liquidity block in this cached overview — cash + undrawn "
+        notes.append("no liquidity block in this cached overview — liquidity "
                      "treated as $0 (re-run the pipeline to extract)")
 
     n_years = max(ladder[-1]["year"] - base.year, 1)

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { exchangeRecovery } from "../api.js";
 import CitedNumber from "./CitedNumber.jsx";
 import { Badge, Button, Field, NUM_CLS, Section, Th, fmt, fmtMoney, fmtX } from "../ui/index.jsx";
@@ -25,7 +25,10 @@ export default function ExchangeAnalyzer({ ticker, years, structure, baseEbitda,
   const [error, setError] = useState(null);
   const [idx, setIdx] = useState(120);
 
-  const effTarget = target || tranches[0]?.name || "";
+  // a re-run can drop or rename the picked tranche: fall back to the first, and clear the
+  // previous structure's curves
+  const effTarget = tranches.some((t) => t.name === target) ? target : tranches[0]?.name || "";
+  useEffect(() => { setData(null); }, [structure]);
 
   async function run() {
     setRunning(true);

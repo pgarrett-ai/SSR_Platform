@@ -2,9 +2,10 @@
 
 Leverage multiples are meaningless at negative EBITDA (debt / negative EBITDA sign-flips).
 For a cash-burner the credit question is instead: how long does the money last? This
-bundles the deterministic inputs the platform already computes — cash and tagged undrawn
-committed credit (liquidity), free-cash-flow burn (the drain), and the nearest maturity
-(the wall) — into a runway estimate. Overview pivots to lead with this when EBITDA <= 0.
+bundles the deterministic inputs the platform already computes — cash, short-term
+investments and tagged undrawn committed credit (liquidity), free-cash-flow burn (the
+drain), and the nearest maturity (the wall) — into a runway estimate. The issuer strip
+shows the runway when EBITDA <= 0.
 """
 from __future__ import annotations
 

@@ -28,7 +28,7 @@ export default function LiquidityCalendar({ events, note }) {
             <tr className="border-b border-ink-600">
               <Th>Month</Th><Th>Event</Th><Th>Instrument</Th>
               <Th right>Amount</Th>
-              <Th right title="event amount as % of cash + undrawn credit">% of liquidity</Th>
+              <Th right title="event amount as % of total liquidity: cash, short-term investments and tagged undrawn credit">% of liquidity</Th>
               <Th />
             </tr>
           </thead>

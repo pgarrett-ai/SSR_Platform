@@ -25,7 +25,8 @@ export default function LiquidationPanel({ ticker, years, initial }) {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => { setData(initial || null); }, [initial]);
+  // a new run re-seeds the rate inputs from its own scenario
+  useEffect(() => { setData(initial || null); setRates(null); setAdminPct(null); }, [initial]);
 
   const scenario = data?.scenario;
 

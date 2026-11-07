@@ -4,8 +4,9 @@ import { useAsync } from "../cache.js";
 import CitedNumber from "./CitedNumber.jsx";
 import { Badge, Skeleton, Td, Th } from "../ui/index.jsx";
 
-// Per maturity year: how much of the wall cash, undrawn credit and the cash sweep repay
-// in sequence, what is left to refinance, and whether the market would take it.
+// Per maturity year: how much of the wall total liquidity (cash, short-term investments,
+// undrawn credit) and the cash sweep repay in sequence, what is left to refinance, and
+// whether the market would take it.
 
 const VERDICT = {
   fundable: { tone: "ok", label: "covered internally" },
@@ -33,7 +34,7 @@ export default function RefiWall({ ticker, years }) {
               <Th>Year</Th>
               <Th right>Face</Th>
               <Th>Instruments</Th>
-              <Th right title="repaid in sequence from cash + undrawn credit + the cash sweep, after earlier years">
+              <Th right title="repaid in sequence from total liquidity (cash, short-term investments, undrawn credit) + the cash sweep, after earlier years">
                 Repayable internally
               </Th>
               <Th right title="face − repayable internally">Refi need</Th>

@@ -1,5 +1,5 @@
 import React from "react";
-import { ErrorCard, Loading, Section } from "../ui/index.jsx";
+import { ErrorCard, Loading, Section, liquidityParts } from "../ui/index.jsx";
 import CitedNumber from "../components/CitedNumber.jsx";
 import ProgressLog from "../components/ProgressLog.jsx";
 import DebtScheduleTable from "../components/DebtScheduleTable.jsx";
@@ -41,7 +41,7 @@ export default function CapitalPage({ ticker, overview: stream }) {
     return stream.events.length > 0
       ? <ProgressLog events={stream.events} />
       : <Loading>Loading filings for {ticker}…</Loading>;
-  if (stream.error) return <ErrorCard>{stream.error}</ErrorCard>;
+  if (stream.error) return <ErrorCard onRetry={stream.retry}>{stream.error}</ErrorCard>;
   if (!ov) return null;
 
   const schedule = ov.debt_schedule || [];
@@ -86,11 +86,8 @@ export default function CapitalPage({ ticker, overview: stream }) {
       <Section
         collapsible
         title="Maturities vs liquidity"
-        subtitle={liq?.cash && (
-          <>
-            vs cash <CitedNumber cv={liq.cash} />
-            {liq.undrawn_committed && <> + undrawn <CitedNumber cv={liq.undrawn_committed} /></>}
-          </>
+        subtitle={liq?.total_liquidity && (
+          <>vs total liquidity <CitedNumber cv={liq.total_liquidity} /> ({liquidityParts(liq)})</>
         )}
       >
         <RefiWall ticker={ticker} years={ov.header?.years || 3} />

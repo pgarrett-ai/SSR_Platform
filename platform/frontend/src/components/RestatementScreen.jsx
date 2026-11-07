@@ -6,12 +6,14 @@ import { Badge, Section } from "../ui/index.jsx";
 // An auditor change (8-K Item 4.01) or non-reliance on prior financials (4.02) only turns
 // into a liquidity crisis when an at-risk obligation is not covered by cash on hand. Item
 // 5.02 rides the same screen but is mostly routine appointments, so it is left out here.
-// Renders nothing unless a 4.01/4.02 filing exists.
+// Renders nothing unless a 4.01/4.02 filing exists. The screen reads the cached overview,
+// so it waits for `ready`: an answer from before the overview exists is empty, and the
+// session cache would keep it.
 const ACCOUNTING = ["4.01", "4.02"];
 
-export default function RestatementScreen({ ticker, years }) {
-  const { data } = useAsync(`crisis:${ticker}:${years}`, () => fetchCrisisScreen(ticker, years),
-    [ticker, years]);
+export default function RestatementScreen({ ticker, years, ready }) {
+  const { data } = useAsync(ready ? `crisis:${ticker}:${years}` : null,
+    () => fetchCrisisScreen(ticker, years), [ticker, years, ready]);
   const filings = (data?.trigger_filings || [])
     .filter((fl) => ACCOUNTING.some((it) => fl.triggers?.[it]));
   if (!filings.length) return null;

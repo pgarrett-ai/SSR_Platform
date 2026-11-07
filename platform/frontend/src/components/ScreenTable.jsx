@@ -45,7 +45,7 @@ export default function ScreenTable() {
             <Th {...thProps("ticker")}>Ticker</Th>
             <Th {...thProps("issuer")}>Issuer</Th>
             <Th right {...thProps("_lev")} title="economic debt ÷ EBITDA">Economic lev</Th>
-            <Th right {...thProps("runway_months")} title="months of cash + undrawn credit at the current burn">Runway (mo)</Th>
+            <Th right {...thProps("runway_months")} title="months of total liquidity (cash, short-term investments, undrawn credit) at the current burn">Runway (mo)</Th>
             <Th right {...thProps("flag_count")}>Flags</Th>
             <Th right {...thProps("last_updated")}>As of</Th>
           </tr>

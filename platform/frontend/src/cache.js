@@ -32,11 +32,12 @@ export function useAsync(key, loader, deps) {
 // promise, progress events, outcome — is cached rather than just the result, so a second
 // caller or a remount mid-stream joins the in-flight run instead of opening another
 // stream, and a run outlives the component that started it. A failed run retries on the
-// next mount. `start(onProgress)` returns the stream's promise.
+// next mount or on retry(). `start(onProgress)` returns the stream's promise.
 const runs = {};
 
 export function useStreamed(key, start) {
   const [, rerender] = useState(0);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     if (!key) return;
     let run = runs[key];
@@ -52,12 +53,16 @@ export function useStreamed(key, start) {
     sub();   // a run that settled between render and this effect re-renders now
     return () => run.subs.delete(sub);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  }, [key, attempt]);
   const run = key ? runs[key] : null;
   return {
     data: run?.data ?? null,
     error: run?.error ?? null,
     events: run?.events ?? [],
     loading: !!key && !run?.data && !run?.error,
+    retry: () => {
+      if (runs[key]?.error) delete runs[key];
+      setAttempt((n) => n + 1);
+    },
   };
 }

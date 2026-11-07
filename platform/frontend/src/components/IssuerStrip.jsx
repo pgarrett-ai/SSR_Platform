@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import CitedNumber from "./CitedNumber.jsx";
-import { fmt, fmtNum, fmtPct } from "../ui/index.jsx";
+import { fmt, fmtNum, fmtPct, liquidityParts } from "../ui/index.jsx";
 
 // The whole credit story on every company tab: identity, then one cell per question
 // (what they owe, the liquidity behind it, default odds, recovery). Each cell renders
@@ -11,7 +11,8 @@ const PENDING = <span className="text-slate-500">…</span>;
 const DOT = <span className="text-slate-600">·</span>;
 
 // Stretched link: empty space in the cell navigates (cmd-click included), while cited
-// numbers paint above the link's overlay and keep their hover card.
+// numbers and anything carrying a title tooltip are `relative`, so they paint above the
+// link's overlay and keep their hover.
 function Cell({ to, label, active, children }) {
   return (
     <div
@@ -50,7 +51,8 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
   const liq = ov?.liquidity;
   const es = hazard.data?.executive_summary;
   const base = `/company/${ticker}`;
-  const fallback = (s) => (s.loading ? PENDING : <span className="text-slate-500" title={s.error || undefined}>—</span>);
+  const fallback = (s) => (s.loading ? PENDING
+    : <span className="relative text-slate-500" title={s.error || undefined}>—</span>);
 
   // Leverage over non-positive EBITDA is not meaningful; economic debt still reads.
   const nm = b?.ebitda?.value != null && b.ebitda.value <= 0;
@@ -114,8 +116,8 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
           {!liq ? fallback(overview) : (
             <>
               <CitedNumber cv={liq.total_liquidity} className="text-slate-100" />
-              <div className="truncate text-xs text-slate-400">
-                {liq.undrawn_committed ? "cash + undrawn" : "cash"}
+              <div className="relative truncate text-xs text-slate-400" title={liquidityParts(liq)}>
+                {liquidityParts(liq)}
                 {liq.is_distressed && liq.runway_months != null && (
                   <span className={runwayTone(liq.runway_months)}>
                     {" "}· runway {liq.runway_months.toFixed(0)} mo
@@ -136,7 +138,7 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
             hazard.data?.merton && !hazard.data.merton.available ? (
               <>
                 <div className="font-mono text-slate-100">n.m.</div>
-                <div className="truncate text-xs text-slate-400" title={hazard.data.merton.note}>
+                <div className="relative truncate text-xs text-slate-400" title={hazard.data.merton.note}>
                   {hazard.data.merton.note || "Merton not available"}
                 </div>
               </>
@@ -157,6 +159,7 @@ export default function IssuerStrip({ ticker, tab, overview, hazard, recovery })
         {recovery && (
           <Cell to={`${base}/recovery`} label="Recover" active={tab === "recovery"}>
             <div
+              className="relative"
               title={[fulcrumMembers, recovery.saved_at && `run ${recovery.saved_at.slice(0, 10)}`,
                 recovery.mode === "liquidation" ? "liquidation" : "Monte Carlo"].filter(Boolean).join(" · ")}
             >
