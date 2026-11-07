@@ -13,6 +13,8 @@ const VERDICT = {
   unrefinanceable: { tone: "high", label: "unrefinanceable" },
 };
 
+const poolKey = (r) => [...(r.instruments || [])].sort().join("\n");
+
 export default function RefiWall({ ticker, years }) {
   const { data, loading, error } = useAsync(
     `refi:${ticker}:${years}`, () => fetchRefiWall(ticker, years), [ticker, years]);
@@ -39,15 +41,18 @@ export default function RefiWall({ ticker, years }) {
             </tr>
           </thead>
           <tbody>
-            {data.rows.map((r) => {
+            {data.rows.map((r, i) => {
               const v = VERDICT[r.verdict] || { tone: "neutral", label: r.verdict };
+              const list = (r.instruments || []).join(", ");
+              // a bucket listing exactly the previous bucket's instruments is one amortizing
+              // pool (EETCs, equipment notes) maturing year after year: name it once
+              const samePool = i > 0 && list && poolKey(r) === poolKey(data.rows[i - 1]);
               return (
                 <tr key={r.year} className="border-b border-ink-700/60 align-top">
                   <Td mono className="text-slate-200">{r.year}</Td>
                   <Td right mono><CitedNumber cv={r.face} className="text-slate-200" /></Td>
-                  <Td className="max-w-[18rem] truncate text-xs text-slate-400"
-                    title={(r.instruments || []).join(", ")}>
-                    {(r.instruments || []).join(", ")}
+                  <Td className="max-w-[18rem] truncate text-xs text-slate-400" title={list}>
+                    {samePool ? <span className="italic text-slate-500">same amortizing pool</span> : list}
                   </Td>
                   <Td right mono><CitedNumber cv={r.repayable} className="text-slate-300" /></Td>
                   <Td right mono>
