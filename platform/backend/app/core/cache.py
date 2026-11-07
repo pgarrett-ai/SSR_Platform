@@ -54,20 +54,24 @@ def load_overview(ticker: str, years: int) -> Optional[Overview]:
 
 
 def load_latest_overview(ticker: str) -> Optional[Overview]:
-    """Any cached snapshot for the ticker regardless of years window (newest file wins).
+    """The most recently built cached snapshot for the ticker, any years window. Ordered by
+    the snapshot's own build time: file mtimes are equal after a git checkout.
     Cache-only by design: callers use this for cheap cross-module reads, never a live run."""
     try:
         t = safe_ticker(ticker)
     except ValueError:
         return None
-    for p in sorted(CACHE_DIR.glob(f"{t}_*y.json"),
-                    key=lambda p: p.stat().st_mtime, reverse=True):
+    found = []
+    for p in CACHE_DIR.glob(f"{t}_*y.json"):
         try:
-            ov = Overview.model_validate_json(p.read_text(encoding="utf-8"))
+            found.append(Overview.model_validate_json(p.read_text(encoding="utf-8")))
         except Exception:
             continue
-        ov.header.from_cache = True
-        return ov
+    if not found:
+        return None
+    ov = max(found, key=lambda o: o.header.last_updated or "")
+    ov.header.from_cache = True
+    return ov
     return None
 
 

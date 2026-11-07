@@ -80,3 +80,23 @@ def test_body_models_reject_inf_nan():
     for bad in (float("inf"), float("nan")):
         with pytest.raises(ValidationError):
             ExchangeBody(target="Notes", ratio_pct=bad)
+
+
+def test_latest_overview_is_the_newest_build_not_the_newest_file(monkeypatch, tmp_path):
+    # after a git checkout every cache file has the same mtime; the snapshot's own
+    # last_updated decides which window is current
+    import os
+
+    from app.core import cache
+    from app.schemas import IssuerHeader, Overview
+
+    def write(years, built):
+        ov = Overview(header=IssuerHeader(issuer="Z", ticker="ZZLATE", years=years,
+                                          last_updated=built))
+        p = tmp_path / f"ZZLATE_{years}y.json"
+        p.write_text(ov.model_dump_json(), encoding="utf-8")
+        os.utime(p, (1, 1))
+    write(3, "2026-11-06T12:00:00")
+    write(10, "2026-07-14T09:00:00")
+    monkeypatch.setattr(cache, "CACHE_DIR", tmp_path)
+    assert cache.load_latest_overview("ZZLATE").header.years == 3
