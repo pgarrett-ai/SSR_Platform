@@ -74,6 +74,12 @@ class MertonScorer(Scorer):
         res = merton_mod.merton(E=market.market_cap, sigma_E=market.equity_vol, D=D, r=r)
         if res is None:
             return {"available": False, "note": "Merton solve failed"}
+        if not res.converged:
+            # the naive fallback (V = E + D) gives a near-zero asset vol and a meaningless DD
+            # exactly when equity is a sliver of debt — e.g. a Chapter 11 stock trading OTC
+            return {"available": False,
+                    "note": f"not meaningful: equity ${market.market_cap / 1e6:,.1f}M against "
+                            f"debt ${D / 1e6:,.0f}M (the Merton solve does not converge)"}
         below = math.log(res.asset_value / D) + r <= 0
         return {
             "available": True,

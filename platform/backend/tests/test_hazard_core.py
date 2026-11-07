@@ -68,3 +68,14 @@ def _run_all():
 
 if __name__ == "__main__":
     _run_all()
+
+
+def test_merton_is_not_reported_when_the_solve_does_not_converge():
+    # TSE after its petition: $0.15M of OTC equity at 705% vol against $2.5bn of debt; the
+    # naive fallback would print a 98.8-sigma DD and a ~0% PD for a company in Chapter 11
+    from types import SimpleNamespace
+
+    from app.hazard.score import MertonScorer
+    tape = SimpleNamespace(ok=True, market_cap=146239.48, equity_vol=7.055)
+    out = MertonScorer().score({"total_debt": 2545.4e6}, tape)
+    assert out["available"] is False and "not meaningful" in out["note"]
