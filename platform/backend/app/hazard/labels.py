@@ -9,8 +9,9 @@ Run:  python -m app.hazard.labels --defaulters 120 --controls 120
       (harvest is cached in data/default_events.json; delete it to re-harvest)
 
 Honesty notes baked in:
-  * label = 1 when the firm filed an Item 1.03 8-K within `horizon_days` after the fiscal
-    year end; fiscal years ending after the event are dropped (post-petition financials).
+  * label = 1 when the default event falls within `horizon_days` after the fiscal year's
+    10-K could be public (fiscal year end + 90 days); fiscal years whose 10-K could not
+    precede the event are dropped (post-petition or too-late financials).
   * controls are sampled from a POINT-IN-TIME universe: every CIK that filed a 10-K in the
     panel window, per EDGAR's quarterly form indexes (cached in data/pit_universe.json).
     Firms that later delisted/died are in it, so the control sample is no longer today's
@@ -25,11 +26,12 @@ Honesty notes baked in:
     rating band (see train.prior_correct / score.implied_rating).
   * label enrichment (data/sd_events.json, via --harvest-sd): 17g-7 rating default
     actions (Fitch issuer D/RD, Moody's organization C) — distressed exchanges and
-    missed payments that never file an Item 1.03 8-K; merged with the earliest event
-    winning per CIK.
+    missed payments that never file an Item 1.03 8-K; events outside the panel window are
+    dropped, then the earliest event wins per CIK.
   * market features: each panel row also carries trailing-window equity vol / drawdown /
     excess return AS OF that fiscal year end (market.pit_market_features — no lookahead);
-    delisted firms without price history just leave them NaN.
+    delisted firms without price history leave them NaN, which is why the hazard model
+    does not train on them.
   * panel checkpoint store (data/panel.db, gitignored): per-firm feature rows persist the
     moment they're fetched — killed runs resume for free, bigger samples only fetch new
     firms, and the accumulated store is the training base going forward.
@@ -129,17 +131,21 @@ def harvest_default_events(start_year: int, end_year: int) -> list[dict]:
 
 
 def load_or_harvest_events(start_year: int = 2015, end_year: Optional[int] = None) -> list[dict]:
+    lo, hi = start_year, end_year or dt.date.today().year
     if EVENTS_PATH.exists():
         events = json.loads(EVENTS_PATH.read_text(encoding="utf-8"))
     else:
-        events = harvest_default_events(start_year, end_year or dt.date.today().year)
+        events = harvest_default_events(lo, hi)
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         EVENTS_PATH.write_text(json.dumps(events, indent=1), encoding="utf-8")
+    # window first: an older case (LoPucki reaches back to 1981) would otherwise win the
+    # earliest-per-CIK merge and drop every in-window row of a firm that defaulted again
+    events = [e for e in events if lo <= int(e["filed"][:4]) <= hi]
     if SD_PATH.exists():   # enrich with 17g-7 rating default events; earliest event per CIK
         by_cik = {e["cik"]: e for e in events}
         for ev in json.loads(SD_PATH.read_text(encoding="utf-8")):
             cur = by_cik.get(ev["cik"])
-            if cur is None or ev["filed"] < cur["filed"]:
+            if lo <= int(ev["filed"][:4]) <= hi and (cur is None or ev["filed"] < cur["filed"]):
                 by_cik[ev["cik"]] = ev
         events = sorted(by_cik.values(), key=lambda e: e["filed"])
     return events
@@ -332,15 +338,21 @@ def annual_default_rate(events: list[dict], universe: dict[str, list[int]]) -> f
 # ---------------------------------------------------------------------------
 
 
+# the horizon starts when the 10-K can be public: the slowest filers have 90 days after FYE
+FILING_LAG_DAYS = 90
+
+
 def label_for_year(period_end: dt.date, event_date: Optional[dt.date],
                    horizon_days: int = 365) -> Optional[int]:
-    """1 = defaulted within the horizon after this fiscal year end; 0 = survived it;
-    None = fiscal year ends on/after the event (post-petition financials — drop the row)."""
+    """1 = defaulted within the horizon after this fiscal year's 10-K could be public
+    (period end + FILING_LAG_DAYS); 0 = survived it; None = defaulted before then, so no
+    forecast could have used these financials (drop the row)."""
     if event_date is None:
         return 0
-    if period_end >= event_date:
+    days = (event_date - period_end).days - FILING_LAG_DAYS
+    if days <= 0:
         return None
-    return 1 if (event_date - period_end).days <= horizon_days else 0
+    return 1 if days <= horizon_days else 0
 
 
 def _firm_rows(company, event_date: Optional[dt.date], lookback_years: int,
@@ -398,15 +410,17 @@ def _panel_db():
 
 
 def sign_safe_panel(df):
-    """Recompute the C3-sign-safe feature columns from the raw levels every panel row
-    carries (ebitda/total_debt/cash/fcf): net_debt_to_ebitda only reads as leverage when
-    EBITDA > 0, and runway_years = cash / burn exists only while FCF < 0. Applied to the
-    assembled panel so rows checkpointed in panel.db BEFORE the fix retrain correctly
-    without refetching EDGAR. Pure; idempotent on fresh rows."""
+    """Recompute the sign-sensitive feature columns from the raw levels every panel row
+    carries (ebitda/total_debt/cash/fcf), exactly as features.year_features does:
+    net_debt_to_ebitda only reads as leverage when EBITDA > 0, ebitda_nonpositive flags the
+    rest, and runway_years = cash / burn exists only while FCF < 0. Applied to the assembled
+    panel so rows checkpointed in panel.db under an older feature definition retrain
+    correctly without refetching EDGAR. Pure; idempotent on fresh rows."""
     if {"ebitda", "total_debt", "cash"} <= set(df.columns):
-        td, cash = df["total_debt"], df["cash"]
+        td, cash, e = df["total_debt"], df["cash"], df["ebitda"]
         nd = td.fillna(0.0) - cash.fillna(0.0)          # mirrors _sum(td, -(cash or 0))
-        df["net_debt_to_ebitda"] = (nd / df["ebitda"]).where(df["ebitda"] > 0)
+        df["net_debt_to_ebitda"] = (nd / e).where(e > 0)
+        df["ebitda_nonpositive"] = (e <= 0).astype(float).where(e.notna())
     if {"cash", "fcf"} <= set(df.columns):
         df["runway_years"] = (df["cash"] / -df["fcf"]).where(df["fcf"] < 0)
     return df
@@ -434,7 +448,11 @@ def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: in
         hit = con.execute("SELECT rows_json FROM firm_rows WHERE cik=? AND event_date=? "
                           "AND horizon_days=?", (cik, ev_key, horizon_days)).fetchone()
         if hit is not None:
-            return json.loads(hit[0])
+            # relabeled from the stored dates, so a stricter label_for_year reaches
+            # checkpointed rows (rows dropped at fetch time were never stored)
+            return [{**r, "label": lab} for r in json.loads(hit[0])
+                    if (lab := label_for_year(dt.date.fromisoformat(r["date"]), event_date,
+                                              horizon_days)) is not None]
         try:
             rows = _fetch_firm_rows(cik, event_date, lookback, horizon_days)
         except Exception as exc:
@@ -495,7 +513,7 @@ def build_real_panel(events: list[dict], n_defaulters: int = 120, n_controls: in
     df = pd.DataFrame(rows)
     if df.empty:
         raise RuntimeError("panel came back empty — first skip reasons: " + "; ".join(skips))
-    df = sign_safe_panel(df)    # repair stale checkpoint rows from before the C3 fix
+    df = sign_safe_panel(df)    # checkpointed rows may predate the current feature definition
     print(f"panel: {len(df)} firm-years, {int(df['label'].sum())} defaults, "
           f"{used_defaulters} defaulter firms, {used_controls} controls "
           f"({dead_controls} no longer filing — the survivorship-bias fix at work)")
@@ -550,17 +568,6 @@ if __name__ == "__main__":
     for y, a in sorted(aucs.items()):
         print(f"  {y}: {a:.3f}")
     ev = bundle.get("eval") or {}
-    acct = ev.get("auc_by_year_accounting_only")
-    if acct:
-        import statistics
-        both = [(aucs[y], acct[y]) for y in aucs if y in acct]
-        if both:
-            print(f"ablation: mean AUC {statistics.mean(a for a, _ in both):.3f} with market "
-                  f"features vs {statistics.mean(b for _, b in both):.3f} accounting-only")
-    cov = ev.get("market_coverage")
-    if cov:
-        print(f"market-feature coverage: {cov['defaulter_rows']:.0%} of defaulter rows, "
-              f"{cov['control_rows']:.0%} of control rows")
     for name, op in (ev.get("operating_points") or {}).items():
         print(f"{name}: precision {op['precision']:.1%}, lift {op['lift']}x, "
               f"recall {op['recall']:.1%} ({op['n_flagged']} flagged)")

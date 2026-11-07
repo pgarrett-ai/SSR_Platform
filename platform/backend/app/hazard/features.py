@@ -72,11 +72,12 @@ def year_features(yf: YearFacts) -> dict:
     f = {
         "fiscal_year": yf.fiscal_year,
         "leverage": _div(td, ta),                                  # total debt / assets
-        # C3 sign fix: debt/EBITDA only reads as leverage when EBITDA > 0 — a negative
-        # ratio from negative EBITDA would score as maximal safety under the monotone(+1)
-        # constraint (train.MONOTONE). None -> NaN, which HistGBM handles natively.
+        # debt/EBITDA only reads as leverage when EBITDA > 0 — a negative ratio from negative
+        # EBITDA would score as maximal safety under the monotone(+1) constraint
+        # (train.MONOTONE); the flag tells the model which None means EBITDA <= 0
         "net_debt_to_ebitda": (_div(_sum(td, -(cash or 0.0)), ebd)
                                if ebd is not None and ebd > 0 else None),
+        "ebitda_nonpositive": None if ebd is None else float(ebd <= 0),
         "interest_coverage": _div(ebit, intex),                    # EBIT / interest
         "ebitda_capex_coverage": _div((ebd - capex) if (ebd is not None and capex is not None) else None, intex),
         "current_ratio": _div(raw_value(yf, "current_assets"), raw_value(yf, "current_liabilities")),

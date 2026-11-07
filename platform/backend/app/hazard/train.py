@@ -1,23 +1,25 @@
-"""P6 framework: train a distress-hazard model that slots into the Scorer interface.
+"""Train the distress-hazard model served by `score.TrainedHazardScorer`.
 
-The MVP scorers (Altman/Merton/CHS) need no training. This adds the *framework* so a real trained
-model can drop in behind the same `Scorer` contract, honoring the two audit requirements the
-scorecards can't:
-  - **Monotonic constraints (audit H2):** leverage/net-debt can only *raise* predicted hazard;
-    coverage/liquidity/profitability/size can only *lower* it. Enforced via sklearn's
-    HistGradientBoostingClassifier `monotonic_cst` (no LightGBM dependency needed).
-  - **Walk-forward validation (audit C3):** expanding window — train on prior years, test on the
-    next. Never evaluate on the past. Cross-sectional CV would inflate metrics (defaults cluster
-    in time).
+Input is the panel from `labels.build_real_panel`: one row per firm fiscal year with the
+accounting ratios in TRAIN_FEATURES, `label` (1 = default event within a year of the 10-K
+becoming public), `date` (fiscal year end) and `firm_id`.
 
-THE MISSING INPUT IS REAL LABELS. `train_from_panel` expects a DataFrame with TRAIN_FEATURES +
-`label` (1 = distress event within the forward horizon) + `date` (period end) + `firm_id`. The
-real label source is EDGAR 8-K Item 1.03 filings / the UCLA-LoPucki BRD (not wired yet).
+  - Accounting features only. Price history exists mostly for firms that survived, so a model
+    fed market features learns "has market data = safe"; market signal stays in Merton as a
+    separate cross-check.
+  - Monotone constraints (sklearn HistGradientBoosting `monotonic_cst`): leverage and net
+    debt/EBITDA can only raise hazard; coverage, liquidity, profitability and size can only
+    lower it. EBITDA <= 0 is flagged and pinned above every finite debt/EBITDA, so the
+    constraint also holds as EBITDA crosses zero.
+  - Expanding-window walk-forward evaluation with a one-horizon embargo: each test year is
+    scored by a model trained only on fiscal years ending at least a year before it. Reports AUC
+    by year plus, pooled over those years, AUC, top-5%/10% precision, lift and recall and a
+    decile calibration table.
+  - `prior_correct` turns the case-control probability into a real-world frequency.
 
-`_synthetic_panel` exists ONLY as a plumbing fixture for the self-check — it is NOT real data and
-its metrics are NOT a performance claim. (The audit flagged exactly this: numbers on synthetic
-data say nothing about real-world discrimination.) No synthetic model is ever shipped to the
-dashboard — `score.all_scorers()` only picks up a model deliberately saved to models/.
+`_synthetic_panel` is a plumbing fixture for tests and the self-check; its metrics say nothing
+about real-world discrimination, and it is never saved to the serving path.
+Real training: python -m app.hazard.labels
 """
 from __future__ import annotations
 
@@ -28,29 +30,40 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import FunctionTransformer
 
 MODEL_DIR = Path(__file__).resolve().parent / "models"
 MODEL_PATH = MODEL_DIR / "trained_hazard.joblib"
 
-# Features + monotone sign wrt P(distress). Accounting ratios come from
-# features.year_features; market features from market.pit_market_features (panel) /
-# the live MarketData snapshot (serving) — same trailing-window semantics.
-ACCOUNTING_FEATURES = ["leverage", "net_debt_to_ebitda", "interest_coverage", "current_ratio",
-                       "quick_ratio", "cash_ratio", "roa", "fcf_margin", "wc_to_assets",
-                       "re_to_assets", "size_log_assets", "runway_years"]
-MARKET_FEATURES = ["equity_vol", "drawdown_52w", "excess_return_1y"]
-TRAIN_FEATURES = ACCOUNTING_FEATURES + MARKET_FEATURES
-MONOTONE = {"leverage": 1, "net_debt_to_ebitda": 1, "interest_coverage": -1, "current_ratio": -1,
-            "quick_ratio": -1, "cash_ratio": -1, "roa": -1, "fcf_margin": -1, "wc_to_assets": -1,
-            "re_to_assets": -1, "size_log_assets": -1, "runway_years": -1,
-            # drawdown_52w is <= 0 (price/52w-high - 1): deeper (more negative) -> riskier
-            "equity_vol": 1, "drawdown_52w": -1, "excess_return_1y": -1}
+# Accounting ratios from features.year_features (training panel and live scoring alike), with
+# the monotone sign of each wrt P(distress).
+TRAIN_FEATURES = ["leverage", "net_debt_to_ebitda", "ebitda_nonpositive", "interest_coverage",
+                  "current_ratio", "quick_ratio", "cash_ratio", "roa", "fcf_margin",
+                  "wc_to_assets", "re_to_assets", "size_log_assets", "runway_years"]
+MONOTONE = {"leverage": 1, "net_debt_to_ebitda": 1, "ebitda_nonpositive": 1,
+            "interest_coverage": -1, "current_ratio": -1, "quick_ratio": -1, "cash_ratio": -1,
+            "roa": -1, "fcf_margin": -1, "wc_to_assets": -1, "re_to_assets": -1,
+            "size_log_assets": -1, "runway_years": -1}
+
+# Debt/EBITDA is undefined (NaN) at EBITDA <= 0, and a tree may route NaN to the safe side of
+# a split. Pinning those rows at a ceiling no real ratio exceeds (ratios are clipped to it)
+# puts them under the +1 constraint.
+ND_EBITDA_CEILING = 1e3
+_ND = TRAIN_FEATURES.index("net_debt_to_ebitda")
+_FLAG = TRAIN_FEATURES.index("ebitda_nonpositive")
 
 
-def _matrix(df: pd.DataFrame, features: list[str] = TRAIN_FEATURES) -> np.ndarray:
-    # reindex: absent columns (e.g. market features on an accounting-only panel) become NaN,
-    # which HistGradientBoosting handles natively
-    return df.reindex(columns=features).astype(float).to_numpy()
+def _pin_nonpositive_ebitda(X: np.ndarray) -> np.ndarray:
+    X = np.array(X, dtype=float)
+    X[:, _ND] = np.where(X[:, _FLAG] == 1, ND_EBITDA_CEILING,
+                         np.minimum(X[:, _ND], ND_EBITDA_CEILING))
+    return X
+
+
+def _matrix(df: pd.DataFrame) -> np.ndarray:
+    # reindex: absent columns become NaN, which HistGradientBoosting handles natively
+    return df.reindex(columns=TRAIN_FEATURES).astype(float).to_numpy()
 
 
 def prior_correct(p: float, sample_rate: float, true_rate: float) -> float:
@@ -65,35 +78,31 @@ def prior_correct(p: float, sample_rate: float, true_rate: float) -> float:
     return 1.0 / (1.0 + math.exp(-logit))
 
 
-def _fit(X: np.ndarray, y: np.ndarray,
-         features: list[str] = TRAIN_FEATURES) -> HistGradientBoostingClassifier:
-    m = HistGradientBoostingClassifier(
-        monotonic_cst=[MONOTONE[f] for f in features],   # native NaN handling, scale-free
+def _fit(X: np.ndarray, y: np.ndarray):
+    hgb = HistGradientBoostingClassifier(
+        monotonic_cst=[MONOTONE[f] for f in TRAIN_FEATURES],   # native NaN handling, scale-free
         learning_rate=0.05, max_depth=3, max_iter=300, l2_regularization=1.0, random_state=0)
-    m.fit(X, y)
-    return m
+    return make_pipeline(FunctionTransformer(_pin_nonpositive_ebitda), hgb).fit(X, y)
 
 
-def walk_forward_auc(df: pd.DataFrame,
-                     features: list[str] = TRAIN_FEATURES) -> dict[int, float]:
-    """Expanding-window AUC: for each year, train on all prior years, test on that year."""
-    return walk_forward_eval(df, features)["auc_by_year"]
-
-
-def walk_forward_eval(df: pd.DataFrame, features: list[str] = TRAIN_FEATURES) -> dict:
+def walk_forward_eval(df: pd.DataFrame) -> dict:
     """Expanding-window walk-forward: per-year AUC, plus — pooled over all out-of-sample
-    folds — precision/lift/recall at top-5%/top-10% flagging thresholds and a predicted-
+    folds — AUC, precision/lift/recall at top-5%/top-10% flagging thresholds and a predicted-
     probability decile calibration table. Probabilities here are case-control space; the
     King–Zeng prior correction is rank-preserving, so shape and ordering carry over."""
-    yr = pd.to_datetime(df["date"]).dt.year
+    dates = pd.to_datetime(df["date"])
+    yr = dates.dt.year
     aucs: dict[int, float] = {}
     y_parts, p_parts = [], []
     for split in sorted(yr.unique())[1:]:
-        tr, te = df[yr < split], df[yr == split]
+        # one-horizon embargo: a row's label watches the year after its 10-K, so rows ending
+        # within a year of the test year would train on test-period defaults
+        cutoff = pd.Timestamp(int(split), 1, 1) - dt.timedelta(days=365)
+        tr, te = df[dates < cutoff], df[yr == split]
         if te["label"].nunique() < 2 or len(tr) < 50:
             continue
-        model = _fit(_matrix(tr, features), tr["label"].to_numpy(), features)
-        p = model.predict_proba(_matrix(te, features))[:, 1]
+        model = _fit(_matrix(tr), tr["label"].to_numpy())
+        p = model.predict_proba(_matrix(te))[:, 1]
         aucs[int(split)] = float(roc_auc_score(te["label"], p))
         y_parts.append(te["label"].to_numpy())
         p_parts.append(p)
@@ -119,7 +128,8 @@ def walk_forward_eval(df: pd.DataFrame, features: list[str] = TRAIN_FEATURES) ->
                     "realized": round(float(y[decile == i].mean()), 4),
                     "n": int((decile == i).sum())}
                    for i in range(10) if (decile == i).any()]
-    out.update({"pooled_base_rate": round(base, 4), "operating_points": ops,
+    out.update({"pooled_auc": round(float(roc_auc_score(y, p)), 3),
+                "pooled_base_rate": round(base, 4), "operating_points": ops,
                 "calibration": calibration})
     return out
 
@@ -129,15 +139,6 @@ def train_from_panel(df: pd.DataFrame, save: bool = True, meta: dict | None = No
     `meta` (e.g. label_source provenance) is merged into the bundle for the UI to display."""
     evaluation = walk_forward_eval(df)
     aucs = evaluation["auc_by_year"]
-    has_market = any(f in df.columns and df[f].notna().any() for f in MARKET_FEATURES)
-    if has_market:   # ablation: do market features add out-of-sample signal?
-        evaluation["auc_by_year_accounting_only"] = walk_forward_eval(
-            df, ACCOUNTING_FEATURES)["auc_by_year"]
-        cov = df.reindex(columns=["equity_vol"]).notna().to_numpy().ravel()
-        lbl = df["label"].to_numpy()
-        evaluation["market_coverage"] = {
-            "defaulter_rows": round(float(cov[lbl == 1].mean()), 3) if (lbl == 1).any() else None,
-            "control_rows": round(float(cov[lbl == 0].mean()), 3) if (lbl == 0).any() else None}
     model = _fit(_matrix(df), df["label"].to_numpy())
     bundle = {"model": model, "features": TRAIN_FEATURES, "monotone": MONOTONE,
               "trained_at": dt.datetime.now().isoformat(), "n_rows": int(len(df)),
