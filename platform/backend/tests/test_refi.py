@@ -1,14 +1,28 @@
 """Refi-wall sequencing: sequential funding, back-to-front verdicts, refi-prob anchoring,
-markets-closed threshold, degradation."""
+markets-closed threshold, degradation, bank-paper identification."""
 import datetime as dt
 
 import pytest
 
-from app.capstack.refi import build_refi_wall, sequence_walls
+from app.capstack.refi import _is_bank, build_refi_wall, sequence_walls
 
 
 def _cv(v):
     return {"value": v, "derived": True, "formula": "test"}
+
+
+def test_bank_id_name_fallback_and_type():
+    # AAL tags no facility_type — the name regex is load-bearing
+    assert _is_bank({"instrument": "2014 Revolving Facility"}) is True
+    assert _is_bank({"instrument": "2021 AAdvantage Term Loan Facility"}) is True
+    assert _is_bank({"instrument": "ABL Credit Facility"}) is True
+    assert _is_bank({"instrument": "DDTL Credit Facility"}) is True
+    assert _is_bank({"instrument": "5.75% Senior Notes"}) is False
+    assert _is_bank({"instrument": "Special Facility Revenue Bonds"}) is False
+    # tagged facility_type wins over the name
+    assert _is_bank({"instrument": "X", "facility_type": "revolver"}) is True
+    assert _is_bank({"instrument": "X", "facility_type": "commercial paper"}) is False
+    assert _is_bank({"instrument": "X", "facility_type": "notes"}) is False
 
 
 def test_sequential_funding_hand_checked():

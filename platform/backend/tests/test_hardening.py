@@ -3,7 +3,6 @@ bounds. Pure/unit level — no network, no TestClient (endpoint-level 400/422 ch
 test_recovery_api.py)."""
 import pytest
 
-from app.capstack.tax382 import tax_asset_pv
 from app.core.cache import cache_path, load_overview, safe_ticker
 from app.core.config import CACHE_DIR
 from app.fulcrum.simulate import SimConfig
@@ -60,12 +59,6 @@ def test_structure_caps_entity_and_tranche_counts():
     _struct(n_tranches=10, n_entities=3).validate()   # a real cap table is well under the caps
 
 
-def test_tax_pv_horizon_clamped_no_hang():
-    # a huge horizon with a tiny-but-positive limit must stay bounded (loop clamp), not hang
-    pv = tax_asset_pv(1e18, 1.0, 0.21, 10**9, 0.10)
-    assert 0.0 <= pv < 1e18
-
-
 def test_simconfig_rejects_nonfinite_base_ebitda():
     # NaN evades a bare `<= 0` (all NaN comparisons are False) — must be caught by isfinite
     for bad in (float("nan"), float("inf"), float("-inf")):
@@ -83,7 +76,7 @@ def test_simconfig_rejects_nonpositive_horizon():
 def test_body_models_reject_inf_nan():
     from pydantic import ValidationError
 
-    from app.main import Tax382Body
+    from app.main import ExchangeBody
     for bad in (float("inf"), float("nan")):
         with pytest.raises(ValidationError):
-            Tax382Body(equity_fmv=bad)
+            ExchangeBody(target="Notes", ratio_pct=bad)

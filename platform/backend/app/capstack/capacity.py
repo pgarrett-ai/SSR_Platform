@@ -1,11 +1,9 @@
-"""Credit-capacity machinery (Moyer ch. 6): the bank-style 5-year cash-sweep repayment
-model, the leverage × growth sensitivity grid, the cycle-severity stress, and the
-capacity-ratio chips (dual leverage + paired interest coverage). All deterministic,
-seeded from the cached overview.
+"""Credit-capacity machinery (Moyer ch. 6): the bank-style cash-sweep repayment model the
+refi wall sequences maturities with, and the capacity-ratio chips (dual leverage + paired
+interest coverage). All deterministic, seeded from the cached overview.
 
-Repayment collapses between 3x and 5x: at 2.0x even 0% growth retires ~92% of a loan in
-five years; at 5.0x almost nothing repays. Quoted EBITDA leverage understates true
-leverage when capex is heavy — pair Debt/EBITDA with Debt/(EBITDA−CAPX).
+Quoted EBITDA leverage understates true leverage when capex is heavy — pair Debt/EBITDA
+with Debt/(EBITDA−CAPX).
 """
 from __future__ import annotations
 
@@ -13,10 +11,6 @@ from typing import Optional
 
 from ..edgar.facts import derived_value, fmt_money_millions, fmt_ratio
 from ..schemas import CoverageChips
-
-# Moyer's illustrative cycle: +5, −20, −10, +10, +10 % — scaled by a severity factor.
-CYCLE = (0.05, -0.20, -0.10, 0.10, 0.10)
-SEVERITIES = (0.5, 0.75, 1.0, 1.25, 1.5, 1.75)
 
 
 def sweep(debt0: float, ebitda0: float, rate: float, capex: float,
@@ -40,46 +34,6 @@ def sweep(debt0: float, ebitda0: float, rate: float, capex: float,
         debt = debt_end
     pct = 100.0 * (debt0 - debt) / debt0 if debt0 > 0 else None
     return {"rows": rows, "pct_retired": round(pct, 1) if pct is not None else None}
-
-
-def heatmap(ebitda0: float, rate: float, capex_ratio: float,
-            years: int = 5) -> dict:
-    """% of debt retired over leverage 2.0–5.0x × growth 0–8% (Table 6-3 form)."""
-    levs = [2.0 + 0.5 * i for i in range(7)]
-    gs = [0.0, 0.02, 0.04, 0.06, 0.08]
-    capex = capex_ratio * ebitda0
-    cells = [[sweep(lv * ebitda0, ebitda0, rate, capex, [g] * years)["pct_retired"]
-              for g in gs] for lv in levs]
-    return {"leverage": levs, "growth": gs, "pct_retired": cells}
-
-
-def severity_slices(debt0: float, ebitda0: float, rate: float, capex: float,
-                    wall_by_year: Optional[list[dict]] = None) -> list[dict]:
-    """The cycle vector scaled by each severity factor, with per-year flags:
-    leverage_up_despite_paydown, and wall_breach when the maturity-wall face due in a year
-    exceeds cumulative sweep capacity (substitute for unextracted amortization schedules)."""
-    out = []
-    for s in SEVERITIES:
-        growth = [g * s for g in CYCLE]
-        run = sweep(debt0, ebitda0, rate, capex, growth)
-        cum_capacity = 0.0
-        prev_lev = round(debt0 / ebitda0, 2) if ebitda0 > 0 else None
-        flags = []
-        for i, row in enumerate(run["rows"]):
-            cum_capacity += row["available"]
-            year_flags = []
-            if (row["leverage"] is not None and prev_lev is not None
-                    and row["leverage"] > prev_lev and row["debt_end"] < (debt0 if i == 0 else run["rows"][i - 1]["debt_end"])):
-                year_flags.append("leverage_up_despite_paydown")
-            if wall_by_year and i < len(wall_by_year):
-                due = wall_by_year[i].get("face") or 0.0
-                if due > cum_capacity:
-                    year_flags.append("wall_breach")
-            prev_lev = row["leverage"]
-            flags.append(year_flags)
-        out.append({"severity": s, "growth": [round(g, 3) for g in growth],
-                    **run, "year_flags": flags})
-    return out
 
 
 def coverage_chips(debt: Optional[float], ebitda: Optional[float],
@@ -111,7 +65,7 @@ def coverage_chips(debt: Optional[float], ebitda: Optional[float],
 
 def capacity_inputs(ov: dict) -> Optional[dict]:
     """Pull the sweep-model inputs from an overview dict ($mm). None when EBITDA or debt
-    is unavailable/non-positive (card degrades to 'n.m.')."""
+    is unavailable/non-positive (the refi wall then credits no internal repayment)."""
     def latest(key):
         for row in reversed(ov.get("forensic_table") or []):
             cv = row.get(key)
@@ -153,41 +107,4 @@ def capacity_inputs(ov: dict) -> Optional[dict]:
                       + (f"; {unrated} instrument(s) without a rate excluded" if unrated else ""))
                      if rate is not None else "no tagged rates — 8% assumed",
         "capex_note": "latest FY capex from the forensic table (run-rate, not a 3y average)",
-    }
-
-
-def _has_oid_or_pik(schedule: Optional[list[dict]]) -> bool:
-    for i in schedule or []:
-        face = ((i.get("face_amount") or {}).get("value") or 0)
-        acc = ((i.get("outstanding") or {}).get("value") or 0)
-        if (i.get("pik") or ((i.get("unamortized_discount") or {}).get("value") or 0) > 0
-                or (acc and face > acc * 1.005)):
-            return True
-    return False
-
-
-def build_capacity(ov: dict) -> dict:
-    """The interactive card payload: base sweep + heatmap + severity slices."""
-    inp = capacity_inputs(ov)
-    if inp is None:
-        return {"available": False,
-                "note": "EBITDA or debt unavailable/non-positive — capacity model n.m. "
-                        "(see Liquidity & runway for the cash-burner view)"}
-    debt, e, capex, rate = inp["debt"], inp["ebitda"], inp["capex"], inp["rate"]
-    wall = [{"year": b.get("year"), "face": (b.get("face") or 0) / 1e6}
-            for b in sorted(ov.get("maturity_wall") or [], key=lambda b: b.get("year") or 0)]
-    oid_pik_note = ("OID/PIK present — GAAP interest includes non-cash accretion; "
-                    "the sweep model uses cash coupons"
-                    if _has_oid_or_pik(ov.get("debt_schedule")) else None)
-    return {
-        "oid_pik_note": oid_pik_note,
-        "available": True,
-        "inputs": {**inp, "leverage": round(debt / e, 2), "capex_pct": round(100 * capex / e, 1)},
-        "base_sweep": sweep(debt, e, rate, capex, [0.02] * 5),
-        "heatmap": heatmap(e, rate, capex / e if e > 0 else 0.0),
-        "severity": severity_slices(debt, e, rate, capex, wall),
-        "derivation": "5-yr cash sweep: EBITDA×(1+g) − interest(rate × beginning debt) − "
-                      "capex, residual amortizes principal (Moyer Tables 6-1..6-5; taxes "
-                      "and working capital ignored; wall_breach substitutes for "
-                      "unextracted amortization schedules)",
     }

@@ -38,3 +38,9 @@ def test_health_carries_alarm_field(monkeypatch):
     h = client.get("/api/health").json()
     assert h["worker"]["alive"] is True
     assert isinstance(h["zero_ingest_alarm"], bool)
+
+
+def test_open_health_lists_no_tickers():
+    # /api/health answers before auth, so it carries no issuer inventory
+    h = client.get("/api/health").json()
+    assert "cached" not in h and "hero_tickers" not in h

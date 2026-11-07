@@ -94,16 +94,6 @@ def test_dedupe_key_distinct_across_ciks():
     assert ev1.dedupe_key != ev2.dedupe_key
 
 
-def test_appears_in_timeline():
-    r = client.post(f"/api/company/{TICKER}/recovery/docket", json={
-        "subtype": "confirmation", "occurred_at": "2026-04-01", "title": "Plan confirmed"})
-    assert r.status_code == 200
-
-    items = client.get(f"/api/company/{TICKER}/timeline").json()["items"]
-    matches = [it for it in items if it.get("kind") == "event" and it.get("subtype") == "confirmation"]
-    assert len(matches) == 1
-
-
 def test_delete_manual_row_ok_non_manual_row_refuses():
     from app import models_events as me
 

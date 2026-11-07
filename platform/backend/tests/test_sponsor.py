@@ -1,12 +1,9 @@
-"""C8 sponsor-support card: deterministic assembler (admin_agent lender flag, free) + the
-DEF 14A LLM seam (ownership %, verbatim-quote-gated) + the /sponsor endpoint merge with
-live 13D/G event rows. No network, no live LLM — extract_structured is monkeypatched."""
+"""Sponsor support: the deterministic assembler (admin_agent lender flag, free) + the
+DEF 14A LLM seam (ownership %, verbatim-quote-gated). No network, no live LLM —
+extract_structured is monkeypatched."""
 from __future__ import annotations
 
-import datetime as dt
-
 import pytest
-from fastapi.testclient import TestClient
 
 from app.capstack.sponsor import OwnerRaw, RptRaw, build_sponsor, extract_sponsor_ownership
 from app.schemas import CovenantPackage
@@ -150,58 +147,3 @@ def test_extract_returns_empty_when_llm_off(monkeypatch):
     monkeypatch.setattr(sponsor_mod, "extract_structured", lambda **kw: None)
     owners, rpts, err = extract_sponsor_ownership(_FakeCompany())
     assert owners == [] and rpts == [] and err is None
-
-
-# ---- GET /api/company/{ticker}/sponsor (cache + live event merge) ------------------
-
-client = TestClient(__import__("app.main", fromlist=["app"]).app).__enter__()
-
-CIK = "0009990002"   # test-only padded CIK
-
-
-def _fake_overview_with_sponsor():
-    from app.schemas import CitedValue, IssuerHeader, Overview, SponsorSupport
-    return Overview(
-        header=IssuerHeader(ticker="SPNX", years=3, cik=CIK),
-        sponsor=SponsorSupport(
-            has_sponsor=True, sponsor_name="Ayar Third Investment Company",
-            ownership_pct=CitedValue(value=57.0, display="57.0%"),
-            related_party_lender="Ayar Third Investment Company",
-            lender_source="related-party-transactions footnote",
-        ),
-    )
-
-
-@pytest.fixture(scope="module", autouse=True)
-def _seed_stake_events():
-    from app import models_events as me
-    from app.core.db import session_scope
-    with session_scope() as s:
-        for i in range(2):
-            s.add(me.Event(
-                cik=CIK, event_type="stake_13d", subtype=None, severity=3, confidence=1.0,
-                occurred_at=dt.datetime(2026, 1, 1 + i), detected_at=dt.datetime(2026, 1, 1 + i),
-                source="edgar", source_form="SC 13D", accession_no=None,
-                source_url="https://www.sec.gov/x-index.htm", title="SC 13D", payload={},
-                dedupe_key=f"sponsor-test-{i}",
-            ))
-
-
-def test_endpoint_merges_live_stakes(monkeypatch):
-    from app import main
-    monkeypatch.setattr(main, "load_overview", lambda ticker, years: _fake_overview_with_sponsor())
-    r = client.get("/api/company/SPNX/sponsor")
-    assert r.status_code == 200, r.text
-    body = r.json()
-    assert body["sponsor"]["has_sponsor"] is True
-    assert body["sponsor"]["related_party_lender"] == "Ayar Third Investment Company"
-    assert len(body["stake_filings"]) == 2
-    assert body["cik"] == CIK
-
-
-def test_endpoint_empty_state_when_uncached():
-    r = client.get("/api/company/NOSUCHTICKERZZZ/sponsor")
-    assert r.status_code == 200, r.text
-    body = r.json()
-    assert body["sponsor"] is None
-    assert body["note"]

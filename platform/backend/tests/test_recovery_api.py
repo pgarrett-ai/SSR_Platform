@@ -158,39 +158,6 @@ def test_exchange_unknown_target_400(monkeypatch):
     assert r.status_code == 400
 
 
-def test_plan_endpoint_smoke(monkeypatch):
-    _patch_offline(monkeypatch)
-    r = client.post("/api/company/APEX/recovery/plan", json={
-        "structure": APEX_STRUCTURE, "sim": {"base_ebitda": 120.0},
-        "reorg_ev": 1000.0, "reorg_debt": 800.0,
-        "plan": [{"tranche": "OpCo Unsecured", "cash": 50.0,
-                  "new_debt_face": 40.0, "new_debt_haircut": 0.6, "new_equity_pct": 10.0}]})
-    assert r.status_code == 200, r.text
-    d = r.json()
-    assert d["available"] is True
-    assert abs(d["reorg_equity_value"]["value"] - 200.0) < 1e-9   # 1000 − 800
-    row = d["rows"][0]
-    # plan value = 50 + 40×0.6 + 10%×200 = 50 + 24 + 20 = 94
-    assert abs(row["plan_value"]["value"] - 94.0) < 1e-9
-    assert row["roi"] is None                                      # unquoted (bonds [])
-
-
-def test_plan_endpoint_haircut_required_400(monkeypatch):
-    _patch_offline(monkeypatch)
-    r = client.post("/api/company/APEX/recovery/plan", json={
-        "structure": APEX_STRUCTURE, "reorg_ev": 500.0,
-        "plan": [{"tranche": "OpCo Unsecured", "new_debt_face": 100.0}]})  # no haircut
-    assert r.status_code == 400
-
-
-def test_plan_endpoint_missing_tranche_400(monkeypatch):
-    _patch_offline(monkeypatch)
-    r = client.post("/api/company/APEX/recovery/plan", json={
-        "structure": APEX_STRUCTURE, "reorg_ev": 500.0,
-        "plan": [{"cash": 10.0}]})           # no "tranche" key -> ValueError, not 500
-    assert r.status_code == 400
-
-
 def test_case_endpoint_smoke(monkeypatch):
     _patch_offline(monkeypatch)     # bare overview: no cik, no liquidity
     r = client.get("/api/company/APEX/recovery/case")
@@ -246,27 +213,6 @@ def test_case_endpoint_detects_petition(monkeypatch):
     assert d["petition_date"]["value"] == "2026-03-01" and d["petition_error"] is False
 
 
-def test_tax382_endpoint_manual_nol(monkeypatch):
-    _patch_offline(monkeypatch)     # bare overview: no extracted NOL -> manual path
-    r = client.post("/api/company/APEX/recovery/tax382", json={
-        "nol": 500.0, "equity_fmv": 200.0, "rate": 0.05, "tax_rate": 0.20,
-        "horizon_years": 20, "discount_rate": 0.0})
-    assert r.status_code == 200, r.text
-    d = r.json()
-    assert d["available"] is True
-    assert d["annual_limit"]["value"] == 10.0        # 200 × 5%
-    assert d["usable_nol"]["value"] == 200.0
-    assert d["stranded_nol"]["value"] == 300.0       # the P-Corp number
-    assert abs(d["tax_asset_pv"]["value"] - 40.0) < 1e-6   # r=0 -> equals shield (200 × 20%)
-
-
-def test_tax382_endpoint_no_nol_degrades(monkeypatch):
-    _patch_offline(monkeypatch)
-    r = client.post("/api/company/APEX/recovery/tax382", json={"equity_fmv": 200.0})
-    assert r.status_code == 200
-    assert r.json()["available"] is False            # no NOL extracted or supplied
-
-
 def test_simulate_n_draws_bounded_400(monkeypatch):
     _patch_offline(monkeypatch)
     r = client.post("/api/company/APEX/recovery/simulate",
@@ -291,21 +237,6 @@ def test_simulate_product_bound_400(monkeypatch):
     r = client.post("/api/company/APEX/recovery/simulate",
                     json={"structure": many, "sim": {**APEX_SIM, "n_draws": 1_000_000}})
     assert r.status_code == 400          # 100 × 1e6 = 1e8 cells > 20M budget
-
-
-def test_plan_length_bounded_400(monkeypatch):
-    _patch_offline(monkeypatch)
-    big = [{"tranche": "OpCo Unsecured", "cash": 1.0} for _ in range(501)]
-    r = client.post("/api/company/APEX/recovery/plan",
-                    json={"structure": APEX_STRUCTURE, "reorg_ev": 100.0, "plan": big})
-    assert r.status_code == 400
-
-
-def test_tax382_horizon_bounded_422():
-    # Field(le=100) rejects at the Pydantic boundary before the handler runs (no network needed)
-    r = client.post("/api/company/APEX/recovery/tax382",
-                    json={"equity_fmv": 200.0, "horizon_years": 10**9})
-    assert r.status_code == 422
 
 
 def test_ticker_charset_rejected_422():

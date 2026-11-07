@@ -5,7 +5,7 @@ Key endpoints
   GET  /api/screen                      — the screening index (front door of the funnel)
   GET  /api/overview?ticker=&years=     — capstack Overview (JSON, + last recovery summary)
   GET  /api/overview/stream?ticker=...  — SSE: progress events, then the final overview
-  GET  /api/company/{ticker}            — hazard snapshot (sections=hazard)
+  GET  /api/hazard/stream?ticker=...    — SSE: progress events, then the hazard payload
   POST /api/company/{ticker}/recovery/simulate — fulcrum Monte Carlo on the extracted cap table
 """
 from __future__ import annotations
@@ -30,7 +30,7 @@ import datetime as dt
 
 from . import models
 from . import models_events
-from .core.cache import cached_tickers, load_latest_overview, load_overview, safe_ticker
+from .core.cache import load_latest_overview, load_overview, safe_ticker
 from .core.config import CACHE_DIR, get_settings, set_llm_runtime_enabled
 from .core.db import init_db, session_scope
 from .edgar.client import NoFilingsError, TickerNotFoundError
@@ -116,12 +116,10 @@ def health() -> dict:
         "status": "ok",
         "llm_enabled": s.llm_enabled,
         "llm_key_set": s.llm_key_set,   # lets the UI tell "toggled off" from "no key"
-        "auth_required": bool(s.platform_api_token.strip()),   # PR-6: SPA shows the token box
-        "hero_tickers": sorted(s.hero_ticker_set),
-        "cached": cached_tickers(),
+        "auth_required": bool(s.platform_api_token.strip()),   # the SPA shows the token box
         "sec_user_agent_set": bool(s.sec_user_agent and "example.com" not in s.sec_user_agent),
-        "worker": w,                       # PR-2b raw gauges (kept)
-        "zero_ingest_alarm": alarm,        # PR-6 filing-hours-aware alarm from those gauges
+        "worker": w,                       # raw worker gauges
+        "zero_ingest_alarm": alarm,        # filing-hours-aware alarm from those gauges
     }
 
 
@@ -214,38 +212,6 @@ def _hazard_section(ticker: str, years: int, live: bool, progress: ProgressLog |
     return data
 
 
-@app.get("/api/company/{ticker}")
-def company(
-    ticker: str,
-    years: int = Query(3, ge=1, le=10),
-    live: bool = Query(False),
-    sections: str = Query("hazard"),
-):
-    """The hazard snapshot endpoint (capstack is served by /api/overview — one door each).
-
-    A section failure degrades to {"error": ...} instead of failing the whole payload
-    (the same graceful-degradation pattern the capstack pipeline uses internally).
-    """
-    requested = {s.strip() for s in sections.split(",") if s.strip()}
-    out: dict = {"ticker": ticker.strip().upper(), "years": years, "sections": {}}
-
-    if "hazard" in requested:
-        try:
-            out["sections"]["hazard"] = _hazard_section(ticker, years, live)
-        except TickerNotFoundError as exc:
-            return JSONResponse(status_code=404, content={"error": str(exc)})
-        except Exception as exc:
-            out["sections"]["hazard"] = {"error": str(exc)}
-        else:
-            try:   # fill the screening index's risk columns; never fail the request
-                with session_scope() as session:
-                    update_snapshot_risk(session, out["ticker"], out["sections"]["hazard"])
-            except Exception:
-                pass
-
-    return JSONResponse(content=jsonable(out))
-
-
 @app.get("/api/screen")
 def screen() -> JSONResponse:
     """Every analyzed company's headline metrics — filtering happens client-side. Most
@@ -280,27 +246,14 @@ def screen() -> JSONResponse:
         return JSONResponse(content=jsonable(out))
 
 
-@app.get("/api/company/{ticker}/capacity")
-def credit_capacity(ticker: str, years: int = Query(3, ge=1, le=10)):
-    """Credit-capacity card (Moyer ch. 6): cash-sweep repayment %, leverage×growth
-    heatmap, cycle-severity slices. Deterministic, from the cached overview."""
-    from .capstack.capacity import build_capacity
-
-    def _run():
-        ov = json.loads(run_overview(ticker, years).model_dump_json())
-        return JSONResponse(content=jsonable(build_capacity(ov)))
-
-    return _handle_pipeline_errors(_run)
-
-
 @app.get("/api/company/{ticker}/capital/ladder")
 def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
                    recast_mezz: int = Query(0, ge=0, le=1)):
     """Creation-multiple ladder (Moyer): cumulative claims through each class at face and
-    at market ÷ EBITDA. On-demand (not cached in the overview) so a drop-file refresh
-    reprices without a pipeline run. recast_mezz=1 appends temporary equity as a
-    preferred claim before the structure is derived (Moyer ch. 6)."""
-    from .capstack.basis import build_basis
+    at market ÷ EBITDA, plus the quotes matched per instrument (quote_by_instrument, which
+    Recovery prices its IRR and blocking cost from). On-demand (not cached in the overview)
+    so a marks refresh reprices without a pipeline run. recast_mezz=1 appends temporary
+    equity as a preferred claim before the structure is derived (Moyer ch. 6)."""
     from .capstack.creation import (build_creation_ladder, detect_capacity_avoidance,
                                     mezz_recast_row)
     from .capstack.quotes import spread_bps
@@ -337,7 +290,6 @@ def capital_ladder(ticker: str, years: int = Query(3, ge=1, le=10),
                                "wide_spread": bool(spr is not None and spr > 1000)})
         payload["quotes"] = quotes_out
         payload["quote_feed"] = {k: v for k, v in feed.items() if k != "bonds"}
-        payload["basis"] = build_basis(ov, bonds)
         payload["detector"] = detect_capacity_avoidance(ov, equity_price, bonds)
         return JSONResponse(content=jsonable(payload))
 
@@ -361,51 +313,6 @@ def capital_refi(ticker: str, years: int = Query(3, ge=1, le=10)):
     return _handle_pipeline_errors(_run)
 
 
-@app.get("/api/company/{ticker}/telegraph")
-def telegraph(ticker: str, years: int = Query(3, ge=1, le=10)):
-    """Bank-position triage + filing-telegraph signals (Moyer ch. 8) in one payload.
-    An empty debt schedule (ATUS/TSE) degrades to bank.available: false while the
-    disclosure/payables signals still evaluate."""
-    from .capstack.triage import bank_triage, filing_telegraph
-
-    def _run():
-        ov = json.loads(run_overview(ticker, years).model_dump_json())
-        bank = bank_triage(ov)
-        with session_scope() as session:   # FTS phrase scan
-            tel = filing_telegraph(ov, session)
-        return JSONResponse(content=jsonable(
-            {"available": True, "bank": bank, "telegraph": tel}))
-
-    return _handle_pipeline_errors(_run)
-
-
-@app.get("/api/company/{ticker}/options")
-def company_options(ticker: str, years: int = Query(3, ge=1, le=10)):
-    """Company-options feasibility card (Moyer ch. 11): the clock, the buyback math,
-    the exchange gate, and the asset-sale explorer inputs. On-demand so a drop-file
-    refresh reprices without a pipeline run."""
-    from .capstack.options import build_options
-    from .hazard.trace import get_issuer_bonds
-
-    def _run():
-        ov = json.loads(run_overview(ticker, years).model_dump_json())
-        bonds = get_issuer_bonds(ticker).get("bonds") or []
-        return JSONResponse(content=jsonable(build_options(ov, bonds)))
-
-    return _handle_pipeline_errors(_run)
-
-
-@app.get("/api/rates")
-def key_rates() -> JSONResponse:
-    """Latest key reference rates (SOFR, EFFR, Fed Funds target, prime, T-bill, 10Y/30Y) —
-    stored in the DB, refreshed when stale, served with their observation dates."""
-    from .rates import get_key_rates, refresh_if_stale
-
-    with session_scope() as session:
-        refresh_if_stale(session)
-        return JSONResponse(content={"rates": get_key_rates(session)})
-
-
 @app.get("/api/company/{ticker}/holders")
 def known_holders(ticker: str) -> JSONResponse:
     """Registered-fund holders of the issuer's debt (N-PORT data set, when ingested),
@@ -427,34 +334,6 @@ def known_holders(ticker: str) -> JSONResponse:
                 "value_usd": r.value_usd, "pct_of_fund": r.pct_of_fund, "cusip": r.cusip,
             } for r in rows],
         }))
-
-
-@app.get("/api/company/{ticker}/sponsor")
-def company_sponsor(ticker: str, years: int = Query(3, ge=1, le=10)) -> JSONResponse:
-    """C8 sponsor-support card: the cached Overview's sponsor block (admin_agent lender
-    flag + DEF 14A ownership %, both deterministic/LLM-cached) merged with the LIVE 13D/G
-    event rows. Cache+DB only (/timeline idiom) — a page mount must never launch a live run.
-    `sponsor` is null/{has_sponsor:false} for sponsor-less names."""
-    from sqlalchemy import desc, nulls_last
-
-    ov = _cached_overview(ticker, years)   # {} when the company was never built
-    sponsor = ov.get("sponsor")
-    stakes = []
-    cik = None
-    with session_scope() as session:
-        cik = _pad_cik(_ov_cik(ov)) or _resolve_cik(session, ticker)
-        if cik:
-            rows = (session.query(models_events.Event)
-                    .filter(models_events.Event.cik == cik,
-                            models_events.Event.event_type.in_(["stake_13d", "stake_13g"]))
-                    .order_by(nulls_last(desc(models_events.Event.occurred_at)))
-                    .limit(50).all())
-            stakes = [_event_dict(e) for e in rows]
-    note = None if ov else "open this company's Overview once to populate the sponsor card"
-    return JSONResponse(content=jsonable({
-        "ticker": ticker.strip().upper(), "cik": cik,
-        "sponsor": sponsor, "stake_filings": stakes, "note": note,
-    }))
 
 
 @app.get("/api/search")
@@ -486,7 +365,7 @@ def search(q: str = Query(..., min_length=1, max_length=200),
             for r in rows]})
 
 
-# ---- events feed + company timeline (Phase 6 event store; PR-5) --------------------
+# ---- event store: the events feed ---------------------------------------------------
 
 _EVENT_TYPE_RE = re.compile(r"^[a-z0-9_.\-]{1,48}$")   # detector slugs; trust boundary
 
@@ -591,66 +470,6 @@ def list_events(
             "limit": limit, "offset": offset}))
 
 
-def _change_period_end(items: list[dict]) -> Optional[str]:
-    """Date a what-changed card for the sorted vertical: quarter-end from 'Q3 2025'
-    labels, else FY-end. Derived-display only — never presented as a filing date."""
-    it = items[0]
-    m = re.match(r"^Q([1-4])\s+(\d{4})$", it.get("latest_label") or "")
-    if m:
-        q, y = int(m.group(1)), int(m.group(2))
-        return f"{y}-{q * 3:02d}-{[31, 30, 30, 31][q - 1]:02d}"
-    fy = it.get("latest_fy")
-    return f"{fy}-12-31" if fy else None
-
-
-@app.get("/api/company/{ticker}/timeline")
-def company_timeline(ticker: str, years: int = Query(3, ge=1, le=10),
-                     limit: int = Query(300, ge=1, le=500)):
-    """Company Timeline tab (plan §9): event-store rows + the cached overview's filings
-    (`sources`) and what-changed card, one merged vertical, newest first. Cache+DB only —
-    a page mount must never launch a live pipeline run (PR-B). Filings that already
-    exist as events (same accession) are dropped in favor of the richer event row."""
-    from sqlalchemy import desc, nulls_last
-
-    ov = _cached_overview(ticker, years)   # {} when the company was never built
-    items: list[dict] = []
-    seen_acc: set[str] = set()
-    with session_scope() as session:
-        cik = _pad_cik(_ov_cik(ov)) or _resolve_cik(session, ticker)
-        if cik:
-            evs = (session.query(models_events.Event)
-                   .filter(models_events.Event.cik == cik)
-                   .order_by(nulls_last(desc(models_events.Event.detected_at)),
-                             desc(models_events.Event.occurred_at))
-                   .limit(limit).all())
-            for e in evs:
-                if e.accession_no:
-                    seen_acc.add(e.accession_no)
-                items.append({"kind": "event",
-                              "date": e.occurred_at.date().isoformat()
-                                      if e.occurred_at else None,
-                              **_event_dict(e)})
-    for s in ov.get("sources") or []:
-        if s.get("accession_no") in seen_acc:
-            continue
-        items.append({"kind": "filing", "date": s.get("filing_date"),
-                      "form_type": s.get("form_type"),
-                      "accession_no": s.get("accession_no"),
-                      "url": s.get("filing_index_url") or s.get("primary_doc_url")})
-    changes = ov.get("what_changed") or []
-    if changes:
-        c0 = changes[0]
-        label = (f"{c0.get('latest_label') or c0.get('latest_fy')} vs "
-                 f"{c0.get('prior_label') or c0.get('prior_fy')}")
-        items.append({"kind": "changes", "date": _change_period_end(changes),
-                      "label": label, "items": changes})
-    items.sort(key=lambda x: x.get("date") or "", reverse=True)   # None-dated last
-    note = None if ov else ("no cached overview — open this company's Overview tab once "
-                            "to add its filings and what-changed items to the timeline")
-    return JSONResponse(content=jsonable({
-        "ticker": ticker.strip().upper(), "cik": cik, "items": items, "note": note}))
-
-
 def jsonable(obj):
     """dates and other non-JSON scalars -> strings (filing dicts carry datetime.date)."""
     return json.loads(json.dumps(obj, default=str))
@@ -695,8 +514,8 @@ def recovery_context(ticker: str, years: int, sim: dict,
                      structure: Optional[dict] = None,
                      petition_date: Optional[str] = None,
                      need_ov: bool = True) -> RecoveryCtx:
-    """THE shared preamble of every recovery route (simulate/explore/exchange/plan/
-    liquidation/structure — previously five copy-pasted shells). Cap table from the
+    """The shared preamble of every recovery route (simulate/explore/exchange/
+    liquidation/structure). Cap table from the
     request body if given, else derived from the capstack overview (cache-first) with
     an XBRL total-debt seed fallback; EBITDA defaulting; petition date -> accrual toll.
     need_ov=False skips the overview load on the body-structure path (offline callers)."""
@@ -1189,73 +1008,6 @@ def recovery_exchange(ticker: str, body: ExchangeBody, years: int = Query(3, ge=
     }))
 
 
-class PlanBody(BaseModel):
-    model_config = ConfigDict(allow_inf_nan=False)
-    sim: dict = {}                       # base_ebitda, accrual_years
-    structure: Optional[dict] = None     # explicit (edited) cap table; else derived
-    petition_date: Optional[str] = None
-    reorg_ev: float                      # plan enterprise value ($mm)
-    reorg_debt: float = 0.0              # post-reorg debt ($mm) — reorg equity = EV − debt
-    reorg_shares: Optional[float] = None  # post-reorg share count (millions) — for rights math
-    duration_years: Optional[float] = None
-    plan: list[dict] = []                # per-class PlanConsideration dicts
-
-
-@app.post("/api/company/{ticker}/recovery/plan")
-def recovery_plan(ticker: str, body: PlanBody, years: int = Query(3, ge=1, le=10)):
-    """Plan-of-reorganization recovery & ROI (Moyer ch. 12-13): value the typed package
-    per class → recovery % of allowed claim → annualized ROI vs the market entry price,
-    with a per-class delta vs the absolute-priority recovery at the same reorg EV. The
-    plan is exogenous (never re-run through the waterfall). Clones recovery_exchange's shell."""
-    from .capstack.quotes import match_quotes
-    from .fulcrum.plan import PlanConsideration, evaluate_plan
-    from .hazard.trace import get_issuer_bonds
-
-    try:
-        ctx = recovery_context(ticker, years, body.sim, structure=body.structure,
-                               petition_date=body.petition_date)
-        structure, ov, accrual = ctx.structure, ctx.ov, ctx.accrual_years
-
-        # entry price per tranche (per 100 of face), unquoted-degrading — prefix-match
-        # the drop-file quotes to tranche names (same n[:80] convention as the exchange shell)
-        matches, _ = match_quotes(ov.get("debt_schedule") or [],
-                                  get_issuer_bonds(ticker).get("bonds") or [])
-        tnames = [t.name for t in structure.tranches]
-        entry: dict = {}
-        for n, q in matches.items():
-            price = q.get("last_price")
-            if price is None:
-                continue
-            for tn in tnames:
-                if tn.rstrip(" *")[:80] == n[:80]:
-                    entry[tn] = price
-                    break
-
-        if len(body.plan) > 500:   # request-derived list length; a plan can't exceed the tranches
-            raise ValueError("plan too large (max 500 classes)")
-        cons = [PlanConsideration(
-                    tranche=c.get("tranche"), cash=float(c.get("cash") or 0.0),
-                    new_debt_face=float(c.get("new_debt_face") or 0.0),
-                    new_debt_haircut=(None if c.get("new_debt_haircut") in (None, "")
-                                      else float(c["new_debt_haircut"])),
-                    new_equity_pct=float(c.get("new_equity_pct") or 0.0),
-                    warrant_value=float(c.get("warrant_value") or 0.0),
-                    rights_shares=float(c.get("rights_shares") or 0.0),
-                    rights_strike=float(c.get("rights_strike") or 0.0))
-                for c in body.plan]
-        out = evaluate_plan(structure, cons, reorg_ev=body.reorg_ev, reorg_debt=body.reorg_debt,
-                            reorg_shares=body.reorg_shares, accrual_years=accrual,
-                            entry_prices=entry, duration_years=body.duration_years)
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
-    except (ValueError, TypeError) as exc:   # engine validators = the 400 boundary
-        return JSONResponse(status_code=400, content={"error": str(exc)})
-
-    out["structure"] = _structure_dict(structure)
-    out["accrual_years"] = accrual
-    return JSONResponse(content=jsonable(out))
-
-
 @app.get("/api/company/{ticker}/recovery/case")
 def recovery_case(ticker: str, years: int = Query(3, ge=1, le=10)):
     """Chapter-11 case card inputs (Moyer ch. 12): the cited petition date (the 8-K Item
@@ -1303,13 +1055,11 @@ class DocketBody(BaseModel):
 
 @app.post("/api/company/{ticker}/recovery/docket")
 def add_docket_event(ticker: str, body: DocketBody):
-    """Layer A (manual) docket ingest (Moyer ch. 12 milestones) — a direct event-store
-    write, not a registry-detector route (source='manual' already anticipated in
-    models_events.py:~78). Re-POST of the same (cik, date, subtype[, docket_no]) is
-    idempotent (inserted=0) — that IS the edit path. Rendering is free: /api/events and
-    /api/company/{ticker}/timeline already select+emit these rows (TimelinePage.jsx:~50,
-    EventsPage.jsx:~137 render the badge; TimelinePage.jsx:~52-53, EventsPage.jsx:~142-143
-    render source_url as a raw <a href>)."""
+    """Manual docket ingest (Moyer ch. 12 milestones) — a direct event-store write with
+    source='manual', not a registry-detector route. Re-POST of the same (cik, date,
+    subtype[, docket_no]) is idempotent (inserted=0) — that is the edit path. /api/events
+    serves these rows, and a client may render source_url as a link, hence the http(s)
+    guard below."""
     from .events.store import insert_events
 
     if body.subtype not in DOCKET_SUBTYPES:
@@ -1383,77 +1133,6 @@ def recovery_crisis(ticker: str, years: int = Query(3, ge=1, le=10)):
     screen = crisis_screen(triggers, ov.get("liquidity"), ov.get("liquidity_events"), accel)
     screen["trigger_error"] = trigger_error
     return JSONResponse(content=jsonable(screen))
-
-
-class Tax382Body(BaseModel):
-    model_config = ConfigDict(allow_inf_nan=False)
-    nol: Optional[float] = None          # $mm override; else the extracted gross NOL is used
-    equity_fmv: float                    # $mm — bankruptcy §382(l)(6): post-reorg equity (plan EV − debt)
-    rate: float = 0.045                  # §382 long-term tax-exempt rate (IRS, monthly) — user input
-    tax_rate: float = 0.21               # marginal tax rate
-    horizon_years: int = Field(20, ge=0, le=100)   # NOL usage horizon; bounded (loop bound in tax_asset_pv)
-    discount_rate: float = 0.12          # PV discount rate
-
-
-@app.post("/api/company/{ticker}/recovery/tax382")
-def recovery_tax382(ticker: str, body: Tax382Body, years: int = Query(3, ge=1, le=10)):
-    """NOL / §382 tax-asset read (Moyer ch. 11). Uses the extracted gross NOL (cited) unless
-    the analyst overrides it, and the user-supplied §382 rate / equity FMV / tax rate to
-    compute the annual limit, usable vs stranded NOL, and the PV of the tax shield."""
-    from .capstack.tax382 import analyze_tax_asset
-    from .edgar.facts import derived_value
-
-    try:
-        ov = json.loads(run_overview(ticker, years).model_dump_json())
-    except (TickerNotFoundError, NoFilingsError) as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
-
-    extracted = ov.get("nol_carryforward")   # CitedValue dict (raw USD) or None
-    if body.nol is not None:
-        nol_mm = float(body.nol)
-    elif extracted and extracted.get("value") is not None:
-        nol_mm = float(extracted["value"]) / 1e6   # extracted is raw USD; card works in $mm
-    else:
-        return JSONResponse(content=jsonable({
-            "available": False, "nol_extracted": extracted,
-            "note": "no gross NOL carryforward tagged (OperatingLossCarryforwards is often "
-                    "tagged only dimensioned-by-jurisdiction in the tax footnote, and is then "
-                    "skipped) — enter the NOL manually to run the §382 read"}))
-
-    r = analyze_tax_asset(nol_mm, body.equity_fmv, body.rate, body.tax_rate,
-                          body.horizon_years, body.discount_rate)
-
-    def dv(v, formula, display):
-        return derived_value(v, formula, display).model_dump()
-
-    return JSONResponse(content=jsonable({
-        "available": True,
-        "nol_extracted": extracted,
-        "nol_used_mm": round(nol_mm, 1),
-        "annual_limit": dv(r["annual_limit"],
-                           f"§382 rate {body.rate:.3%} × equity FMV ${body.equity_fmv:,.0f}M",
-                           f"${r['annual_limit']:,.1f}M/yr"),
-        "usable_nol": dv(r["usable_nol"],
-                         f"min(NOL ${nol_mm:,.0f}M, annual limit ${r['annual_limit']:,.1f}M × "
-                         f"{body.horizon_years}y)", f"${r['usable_nol']:,.1f}M"),
-        "stranded_nol": dv(r["stranded_nol"],
-                           f"NOL ${nol_mm:,.0f}M − usable ${r['usable_nol']:,.1f}M",
-                           f"${r['stranded_nol']:,.1f}M"),
-        "undiscounted_shield": dv(r["undiscounted_shield"],
-                                  f"usable ${r['usable_nol']:,.1f}M × tax rate {body.tax_rate:.1%}",
-                                  f"${r['undiscounted_shield']:,.1f}M"),
-        "tax_asset_pv": dv(r["tax_asset_pv"],
-                           f"PV of usable NOL × tax rate {body.tax_rate:.1%} over "
-                           f"{body.horizon_years}y at {body.discount_rate:.1%}",
-                           f"${r['tax_asset_pv']:,.1f}M"),
-        "assumptions": {"rate": body.rate, "tax_rate": body.tax_rate,
-                        "horizon_years": body.horizon_years, "discount_rate": body.discount_rate,
-                        "equity_fmv": body.equity_fmv, "nol_override": body.nol is not None},
-        "note": "bankruptcy §382(l)(6): equity FMV = post-reorg (plan EV − post-reorg debt); the "
-                "§382 rate is the IRS long-term tax-exempt rate (a user input, ~monthly). "
-                "Post-2017 NOLs carry forward indefinitely — raise the horizon to model that. "
-                "The 50% 'old-and-cold' exception (§382(l)(5)) needs 13D/13G history not sourced here.",
-    }))
 
 
 class LiquidationBody(BaseModel):

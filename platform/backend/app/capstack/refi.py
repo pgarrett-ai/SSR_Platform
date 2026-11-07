@@ -8,15 +8,31 @@ risk-neutral Merton, which cannot be banded against real-world default rates.
 from __future__ import annotations
 
 import datetime as dt
+import re
 from typing import Optional
 
 from ..edgar.facts import derived_value
 from .capacity import capacity_inputs, sweep
 from .quotes import _maturity_year, match_quotes
-from .triage import _is_bank
 
 _MARKETS_CLOSED_YTM = 40.0   # a 40%+ yield means the refi market is closed
 _GROWTH = 0.02               # flat sweep growth, matching the capacity base case
+
+# facility_type values debt_xbrl.facility_type_of can emit that mean "bank paper"
+BANK_TYPES = {"revolver", "term loan", "delayed-draw term loan", "credit facility",
+              "bridge loan"}
+# name fallback — load-bearing: AAL tags facility_type on none of its 14 rows.
+# "Special Facility Revenue Bonds" and commercial paper correctly miss.
+_BANK_NAME_RE = re.compile(r"revolv|term loan|credit facilit|\babl\b|\bddtl\b|bridge loan",
+                           re.IGNORECASE)
+
+
+def _is_bank(inst: dict) -> bool:
+    """facility_type when tagged, name regex otherwise."""
+    ft = inst.get("facility_type")
+    if ft is not None:
+        return ft in BANK_TYPES
+    return bool(_BANK_NAME_RE.search(inst.get("instrument") or ""))
 
 
 def sequence_walls(ladder: list[dict], liquidity_mm: float,
