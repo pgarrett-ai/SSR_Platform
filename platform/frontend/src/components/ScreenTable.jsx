@@ -69,7 +69,7 @@ export default function ScreenTable() {
               </Td>
               <Td right mono className="text-slate-300">{r._lev === Infinity ? NM : fmtLev(r._lev)}</Td>
               <Td right mono className={r.runway_months == null ? "text-slate-500" : runwayTone(r.runway_months)}>
-                {r.runway_months == null ? "—" : r.runway_months.toFixed(0)}
+                {r.runway_months == null ? "—" : r.runway_months > 60 ? "60+" : r.runway_months.toFixed(0)}
               </Td>
               <Td right mono className="text-slate-400">{r.flag_count ?? "—"}</Td>
               <Td right mono className="text-[12px] text-slate-400">{r.last_updated?.slice(0, 10) || "—"}</Td>
